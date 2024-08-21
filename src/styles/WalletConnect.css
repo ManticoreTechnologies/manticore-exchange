@@ -1,0 +1,17 @@
+/* WalletConnect.css */
+.link-wallet-button {
+    background-color: #ffffff; /* White background */
+    color: #ff000c; /* Red text */
+    border: 2px solid #ff000c;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .link-wallet-button:hover {
+    background-color: #ff000c; /* Red background on hover */
+    color: #ffffff; /* White text on hover */
+  }
+  

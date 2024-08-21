@@ -1,0 +1,35 @@
+button {
+    border-radius: 8px;
+    border: none; /* Updated to have no border */
+    padding: 0.8em 1.4em; /* Slightly larger padding for a better touch */
+    font-size: 1em;
+    font-weight: 500;
+    background-color: #ff0022; /* Deep red */
+    color: #ffffff; /* White text */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for color and shadow */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* Subtle shadow for 3D effect */
+}
+button.small{
+    padding: 0.5em 1.1em; /* Slightly larger padding for a better touch */
+    margin-left: 1em;
+    font-size: 0.75em;
+}
+button:hover {
+    background-color: #d30000; /* Lighter red on hover */
+    color: #ffffff; /* Switch to black text for contrast */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Increased shadow for lifted effect */
+}
+
+button:focus {
+    outline: none; /* Removing the outline */
+    box-shadow: 0 0 0 4px rgba(235,0,0,0.5); /* Glow effect for focus */
+}
+
+/* Links styling */
+a {
+font-weight: 500;
+color: inherit;
+text-decoration: none;
+}
+  

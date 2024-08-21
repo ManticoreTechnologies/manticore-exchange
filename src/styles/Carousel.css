@@ -1,0 +1,25 @@
+/* Carousel.css */
+
+.slick-prev, .slick-next {
+    color: #e63946;
+    z-index: 1;
+  }
+  
+  .slick-prev:hover, .slick-next:hover {
+    color: #c72c41;
+  }
+  
+  .slick-dots li button:before {
+    color: #e63946;
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #c72c41;
+  }
+  
+  
+  
+  
+  
+  
+  

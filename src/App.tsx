@@ -1,0 +1,64 @@
+// src/App.tsx
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import AssetListPage from "./pages/assets/Assets";
+import Homepage from "./pages/Home";
+import AboutPage from "./pages/About";
+import WalletAssetsListPage from "./pages/Wallets";
+import LaunchPage from "./pages/LaunchPage";
+import "./App.css";
+import AssetDetail from "./components/assets/AssetDetails";
+import BlogPage from "./pages/Blog";
+import AssetNameGenerator from "./pages/assets/AssetNameGenerator";
+import Footer from "./components/Footer";
+import Transactions from "./pages/Transactions";
+import FeaturesPage from "./pages/Features";
+import ContactPage from "./pages/Contact";
+import BankPage from "./pages/BankPage";
+import ExplorePage from "./pages/ExplorePage";
+import Roadmap from "./pages/Roadmap";
+import AssetMinter from "./pages/assets/AssetMinter";
+import EVRPage from "./pages/EVRPage"; // Import the EVRPage component
+import FaucetPage from "./pages/assets/FaucetPage";
+import Explorer from "./pages/Explorer/Explorer";
+
+const App: React.FC = () => {
+  return (
+    <div className="App">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<LaunchPage />} />
+        <Route path="/home" element={<Homepage />} />
+        <Route path="/generate" element={<AssetNameGenerator />} />
+        <Route path="/asset/:name" element={<AssetDetail />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/transactions/:address" element={<Transactions />} />
+        <Route path="/wallet" element={<WalletAssetsListPage />} />
+        <Route path="/explore" element={<AssetListPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/faucet" element={<FaucetPage />} />
+        <Route path="/bank" element={<BankPage />} />
+        <Route path="/discover" element={<ExplorePage />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/mint" element={<AssetMinter />} />
+        <Route path="/evr" element={<EVRPage />} /> {/* Add the new route for EVRPage */}
+        <Route path="/explorer" element={<Explorer />} /> {/* Add the new route for EVRPage */}
+      </Routes>
+      <Footer />
+    </div>
+  );
+};
+
+const AppWrapper: React.FC = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
+export default AppWrapper;
+

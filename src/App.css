@@ -1,0 +1,105 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-grow: 1;
+  min-height: 100vh;
+  max-width: 100%;
+  background-color: #000;
+  color: #ddd;
+  padding: 10px; /* Add padding for better spacing on mobile */
+}
+
+.App-header {
+  background-color: #20232a;
+  padding: 20px;
+  text-align: center;
+}
+
+.App-logo {
+  width: 150px;
+  margin: 0 auto 30px; /* Center the logo and adjust margin */
+}
+
+h1 {
+  color: #ff0022;
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+  font-size: 2em; /* Responsive font size */
+}
+
+p {
+  color: #a8a8a8;
+  font-size: 1.1em;
+  padding: 0 10px; /* Add padding for better readability */
+}
+
+.App-link {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #ff0022;
+  border: 2px solid #ff0022;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.App-link:hover {
+  background-color: #ff0022;
+  color: white;
+}
+
+.App-footer {
+  background-color: #20232a;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: auto;
+}
+
+.App-footer p {
+  color: #a8a8a8;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.App-footer a {
+  color: #ff0022;
+  text-decoration: none;
+  padding: 0 10px;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.App-footer a:hover {
+  color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em; /* Smaller font size on mobile */
+  }
+
+  p {
+    font-size: 1em; /* Adjust font size for readability */
+  }
+
+  .App-link {
+    padding: 8px 16px; /* Adjust padding for smaller buttons */
+    font-size: 16px;
+  }
+
+  .App-footer p, .App-footer a {
+    font-size: 14px; /* Smaller footer text */
+  }
+}
+
+
+
+
+

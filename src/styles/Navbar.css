@@ -1,0 +1,208 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #000; /* Black background */
+  padding: 10px;
+  position: relative;
+  z-index: 10; /* Ensure the navbar is on top */
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand:hover {
+  opacity: 1; /* Makes the text fully opaque on hover */
+  transform: scale(1.1);
+}
+
+.navbar-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin: 0 10px;
+  position: relative; /* Needed for the dropdown menu */
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8; /* Makes the text more translucent */
+  transition: opacity 0.3s, transform 0.3s, border-bottom 0.3s; /* Smooth transition for hover effects */
+}
+
+.nav-link:hover {
+  opacity: 1; /* Makes the text fully opaque on hover */
+  transform: translateX(10px); /* Moves the text slightly to the right on hover */
+  border-bottom: 2px solid #ff000c; /* Adds red border on hover */
+}
+
+.nav-active {
+  border-bottom: 2px solid #fff;
+  opacity: 1; /* Ensures active link is fully opaque */
+}
+
+.dropdown-toggle::after {
+  content: ' ▼';
+  font-size: 12px;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #000; /* Match navbar background */
+  padding: 10px 0;
+  list-style: none;
+  margin: 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 20; /* Ensure the dropdown menu is on top */
+}
+
+.dropdown-open {
+  display: block;
+}
+
+.dropdown-item {
+  margin: 0;
+}
+
+.dropdown-item .nav-link {
+  padding: 10px 20px;
+  color: white;
+  background-color: #000; /* Match navbar background */
+  display: block;
+  opacity: 0.8;
+  transition: opacity 0.3s, background-color 0.3s, transform 0.3s, border-bottom 0.3s;
+}
+
+.dropdown-item .nav-link:hover {
+  background-color: #111; /* Slightly lighter black on hover */
+  opacity: 1;
+  transform: translateX(10px);
+  border-bottom: 2px solid #ff000c; /* Adds red border on hover */
+}
+
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: block;
+  }
+
+  .navbar-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: #000; /* Match navbar background */
+    position: absolute;
+    top: 60px;
+    left: 0;
+    opacity: 0.9; /* Makes the background more translucent */
+  }
+
+  .navbar-nav-open {
+    display: flex;
+  }
+
+  .nav-item {
+    margin: 0;
+    border-bottom: 1px solid #111; /* Match hover background color */
+    text-align: right; /* Align text to the right */
+    padding-right: 20px; /* Add padding to move text away from the edge */
+  }
+
+  .nav-link {
+    padding: 10px;
+  }
+
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .dropdown-item .nav-link {
+    padding: 10px 20px;
+  }
+}
+
+/* Animation for navbar links */
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Apply the animation to nav links */
+.nav-link {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Adding button-like appearance to nav links */
+.nav-link {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #111; /* Slightly lighter black */
+  transition: background-color 0.3s, transform 0.3s, border-bottom 0.3s;
+}
+
+.nav-link:hover {
+  background-color: #222; /* Even lighter black */
+  transform: scale(1.1);
+  border-bottom: 2px solid #ff000c; /* Adds red border on hover */
+}
+
+.nav-link:active {
+  background-color: #333; /* Match navbar color */
+  border-bottom: 2px solid #ff000c; /* Keeps red border on active */
+}
+
+.navbar-footer {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Align the footer to the right */
+}
+
+.navbar-footer-text {
+  margin: 0 10px;
+  color: white;
+  font-size: 0.9em;
+}
+
+.small-logo {
+  width: 20px;
+  height: 20px;
+}
+
+
+
+
+
+

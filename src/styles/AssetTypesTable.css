@@ -1,0 +1,41 @@
+/* AssetTypesTable.css */
+.asset-types-table {
+    font-family: 'Arial', sans-serif;
+    max-width: 960px;
+    margin: auto;
+    padding: 20px;
+    color: #000000;
+  }
+  
+  .asset-types-table h1 {
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  table, th, td {
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f4f4f9;
+  }
+  tr:nth-child(odd){
+    color: #000000;
+    background-color: #222;
+  }
+  tr:nth-child(even) {
+    background-color: #1a1a1a;
+    color: #000000;
+  }
+  

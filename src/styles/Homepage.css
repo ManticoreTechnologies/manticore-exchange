@@ -1,0 +1,267 @@
+.homepage {
+  display: flex;
+  flex-direction: column;
+  color: #ddd;
+  overflow: hidden;
+  background-color: #000; /* Black background */
+}
+
+.hero {
+  text-align: center;
+  padding: 50px 20px;
+  background: rgba(0, 0, 0, 0.9); /* Dark overlay background */
+  color: white;
+  flex-shrink: 0;
+}
+
+.hero h1 {
+  margin-bottom: 20px;
+  font-size: 3em; /* Match font size */
+  font-weight: bold; /* Match font weight */
+  color: #ff000c; /* Red color */
+}
+
+.hero p {
+  font-size: 1.5em; /* Match font size */
+  margin-bottom: 30px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Adds space between the buttons */
+  flex-wrap: wrap; /* Wrap buttons on smaller screens */
+}
+
+.explore-assets-button,
+.register-user-button,
+.merch-shop-button { /* Added .merch-shop-button */
+  padding: 15px 30px;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.explore-assets-button {
+  background-color: #ff000c; /* Red background */
+  color: #ffffff; /* White text */
+  border: none;
+}
+
+.explore-assets-button:hover {
+  background-color: #cc000a; /* Darker red on hover */
+}
+
+.register-user-button {
+  background-color: #ffffff; /* White background */
+  color: #ff000c; /* Red text */
+  border: 2px solid #ff000c;
+}
+
+.register-user-button:hover {
+  background-color: #ff000c; /* Red background on hover */
+  color: #ffffff; /* White text on hover */
+}
+
+.merch-shop-button { /* Styles for the merch shop button */
+  background-color: #ff000c; /* Red background */
+  color: #ffffff; /* White text */
+  border: none;
+}
+
+.merch-shop-button:hover {
+  background-color: #cc000a; /* Darker red on hover */
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  /* Hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.content::-webkit-scrollbar {
+  display: none; /* WebKit browsers */
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  /* Hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.main-content::-webkit-scrollbar {
+  display: none; /* WebKit browsers */
+}
+
+.features,
+.about,
+.contact {
+  padding: 40px 20px;
+  color: #ddd;
+  background-color: #1c1c1c; /* Dark background */
+  border-top: 1px solid #333;
+}
+
+.features h2,
+.about h2,
+.contact h2 {
+  font-size: 2.5em; /* Match font size */
+  margin-bottom: 20px;
+  color: #ff000c; /* Red color */
+}
+
+.features p,
+.about p,
+.contact p {
+  font-size: 1.2em; /* Match font size */
+  line-height: 1.6;
+}
+
+.carousels {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  /* Hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.carousels::-webkit-scrollbar {
+  display: none; /* WebKit browsers */
+}
+
+.carousel-container {
+  padding: 20px;
+}
+
+.carousel-container h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.carousel-item {
+  padding: 10px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.carousel-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.asset-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.featured-asset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #1c1c1c;
+  width: 100%; /* Ensure the container takes full width */
+  max-width: 800px; /* Adjust as needed for responsiveness */
+  margin: 0 auto; /* Center the container */
+}
+
+.featured-asset-image {
+  width: 100%;
+  max-width: 50%;
+  height: auto;
+  max-height: 100%;
+  border-radius: 5px;
+  object-fit: contain; /* Ensures the image maintains aspect ratio and fits within the container */
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .homepage {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .hero h1 {
+    font-size: 2.5em; /* Adjusted font size for smaller screens */
+  }
+
+  .hero p {
+    font-size: 1.2em; /* Adjusted font size for smaller screens */
+  }
+
+  .content {
+    flex-direction: column; /* Change layout to column on mobile */
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .main-content {
+    padding-right: 0;
+  }
+
+  .features,
+  .about,
+  .contact {
+    padding: 20px 10px;
+  }
+
+  .features h2,
+  .about h2,
+  .contact h2 {
+    font-size: 2em; /* Adjusted font size for smaller screens */
+  }
+
+  .features p,
+  .about p,
+  .contact p {
+    font-size: 1.2em; /* Adjusted font size for smaller screens */
+  }
+
+  .carousels {
+    gap: 10px; /* Adjusted gap for smaller screens */
+  }
+
+  .carousel-container {
+    padding: 20px; /* Adjusted padding for smaller screens */
+  }
+
+  .carousel-container h2 {
+    font-size: 1.5em; /* Adjusted font size for smaller screens */
+  }
+
+  .carousel-item {
+    padding: 15px; /* Adjusted padding for smaller screens */
+  }
+
+  .carousel-item img {
+    max-height: 150px; /* Adjusted image height for smaller screens */
+  }
+}
+
+
+
+
+.disable-drag {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}

@@ -1,0 +1,76 @@
+/* General container styling */
+.carousel-container {
+  background-color: #000; /* Darker background */
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  max-width: 80%; /* Set maximum width to center the content */
+  margin-left: auto; /* Center horizontally */
+  margin-right: auto; /* Center horizontally */
+}
+
+/* Heading styling */
+.carousel-container h2 {
+  font-size: 1.5em;
+  text-align: center;
+  color: #ff000c; /* Red color */
+  margin-bottom: 10px;
+}
+
+/* Individual carousel item styling */
+.carousel-item {
+  text-align: center;
+  padding: 10px; /* Adjusted padding for better spacing */
+  background-color: #000000; /* Background color for the card */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Animation for hover effect */
+  text-decoration: none; /* Ensure links have no underline */
+  color: inherit; /* Inherit text color */
+}
+
+.carousel-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Asset content styling */
+.asset-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+/* Image styling */
+.newest-asset-image {
+  width: 5%;
+  height: auto;
+  border-radius: 5px;
+  object-fit: contain; /* Ensures the image maintains aspect ratio and fits within the container */
+}
+
+/* Text styling */
+.carousel-item p {
+  font-size: 0.9em;
+  color: #a8a8a8;
+  margin: 0; /* Remove margin for better alignment */
+}
+
+/* Dots navigation */
+.slick-dots li button:before {
+  color: #e63946;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #c72c41;
+}
+
+/* Center the carousel container */
+.newly-minted-carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}

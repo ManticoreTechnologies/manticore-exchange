@@ -1,0 +1,187 @@
+.minting-form-container {
+    background-color: #1c1c1c;
+    color: #ddd;
+    padding: 40px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 50px auto;
+  }
+  
+  .minting-form-container h2 {
+    color: #ff0022;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-align: center;
+  }
+  
+  .minting-form-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .minting-form-container label {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+  
+  .minting-form-container input[type="text"],
+  .minting-form-container input[type="number"] {
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #ff0022;
+    background-color: transparent;
+    color: #ddd;
+    margin-top: 5px;
+    font-size: 1em;
+    width: 100%;
+  }
+  
+  .minting-form-container input[type="text"]:focus,
+  .minting-form-container input[type="number"]:focus {
+    outline: none;
+    border-bottom: 2px solid #cc001b;
+  }
+  
+  .minting-form-container input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  
+  .minting-form-container button {
+    background-color: #ff0022;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .minting-form-container button:hover {
+    background-color: #cc001b;
+  }
+  
+  .receipt {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #20232a;
+    border-radius: 8px;
+  }
+  
+  .receipt h3 {
+    color: #ff0022;
+    margin-bottom: 20px;
+  }
+  
+  .receipt p {
+    font-size: 1.1em;
+    line-height: 1.6;
+  }
+  .error-message {
+    color: #ff0022;
+    background-color: #20232a;
+    padding: 15px;
+    border: 1px solid #ff0022;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-size: 1em;
+    width: 100%;
+    text-align: left;
+  }
+
+  
+
+ 
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #ff0022; /* Red background for error */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 105%; /* Position to the right of the element */
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow to make it stand out */
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%; /* At the left side of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #ff0022;
+}
+
+.tooltip input:invalid + .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+  
+/* Styled checkbox */
+.styled-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    top: 6px;
+    position: relative;
+  }
+  
+  .styled-checkbox:checked {
+    background-color: red;
+    border-color: red;
+  }
+  
+  .styled-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    left: 50%;
+    top: 38%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  @keyframes flash {
+    0% { background-color: #ff0022; }
+    50% { background-color: #cc001b; }
+    100% { background-color: #ff0022; }
+  }
+  
+  .flash {
+    animation: flash 1s linear infinite;
+  }
+
+  /* Hide the up and down arrows in number inputs */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+}

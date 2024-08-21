@@ -1,0 +1,123 @@
+:root {
+  --cell-max-width: 100%; /* Default to 80% but can be changed as needed */
+}
+
+.transaction-assets-container {
+  font-family: Arial, sans-serif;
+  width: 80%; /* Static width */
+  max-width: 2000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: black;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 80vh;
+  scrollbar-width: none;
+}
+
+.transaction-details {
+  color: black;
+  margin-bottom: 20px;
+}
+
+.transaction-details p {
+  color: rgb(228, 0, 0);
+}
+
+.transaction-details a {
+  color: rgb(228, 0, 0);
+}
+
+.transaction-details a:hover {
+  color: rgb(163, 0, 0);
+}
+
+.transaction-address-form {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.transaction-address-input {
+  flex-grow: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #cc0000;
+  border-radius: 4px;
+}
+
+.txid {
+  color: black;
+}
+
+.error-message {
+  color: #cc0000;
+  margin-bottom: 10px;
+}
+
+.wallet-transactions {
+  color: black;
+}
+
+.wallet-transactions p {
+  color: rgb(0, 0, 0);
+}
+
+.wallet-transactions a {
+  color: rgb(228, 0, 0);
+}
+
+.wallet-transactions a:hover {
+  color: rgb(163, 0, 0);
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transaction-table th, .transaction-table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  max-width: var(--cell-max-width);
+}
+
+.transaction-table .hex-cell {
+  word-break: break-all; /* Apply word-breaking only to hex cells */
+}
+
+.transaction-table .table-section-header {
+  background-color: #cc0000;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+}
+
+.transaction-table th {
+  background-color: #f2f2f2;
+}
+
+.transaction-button {
+  width: 100%;
+  padding: 12px;
+  margin: 5px 0;
+  background-color: #ff2f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.transaction-button:hover {
+  background-color: #e60303;
+}
+
+.transaction-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}

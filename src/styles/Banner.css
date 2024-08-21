@@ -1,0 +1,51 @@
+.banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  color: #ffffff;
+  padding: 15px 20px;
+  border-bottom: 2px solid #ff0022;
+  text-align: center;
+}
+
+.banner p {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+  line-height: 1.4;
+}
+
+.banner-button {
+  background-color: #ff0022;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.banner-button:hover {
+  background-color: #cc001b;
+  transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+  .banner {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .banner p {
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.4;
+  }
+
+  .banner-button {
+    margin-left: 20px;
+  }
+}
+
+  

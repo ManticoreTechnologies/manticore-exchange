@@ -1,0 +1,72 @@
+/* AssetDetail.css */
+
+.asset-detail-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px; /* Outer padding for the whole container */
+    background: #1a1a1a; /* Assuming this is your preferred background color */
+  }
+  
+  .asset-detail-card {
+    display: flex;
+    background: #000; /* Card background */
+    color: #fff; /* Text color */
+    border: 1px solid #e1e1e1; /* Card border */
+    border-radius: 8px;
+    align-items:center;
+    overflow: hidden; /* Ensures that the content respects the border-radius */
+    margin: auto; /* Centers the card in the container */
+    max-width: 1200px; /* Increased maximum width of the card */
+    width: 100%; /* Ensures that the card stretches to max-width */
+  }
+  
+  .asset-image-container {
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    width: 300px; /* Width of the image container */
+    height: 300px; /* Height of the image container */
+    margin-right: 20px; /* Space between the image and the text */
+    margin-bottom: 20px;
+    margin-top: 20px;
+    flex-shrink: 0; /* Prevent the container from shrinking */
+  }
+
+  .asset-detail-image {
+    max-width: 100%; /* Ensures the image is not larger than the container */
+    max-height: 100%; /* Ensures the image is not taller than the container */
+    margin-left: 30px;
+    border-radius: 10px;
+  }
+  
+  .asset-info-container {
+    flex-grow: 1; /* Allows the info container to fill the rest of the card */
+    padding: 20px; /* Padding inside the card around the text */
+  }
+  
+  .asset-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .asset-meta {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    overflow-wrap: break-word; /* Ensures long hashes wrap and don't overflow */
+  }
+  
+  .asset-meta p {
+    margin: 5px 0; /* Spacing between paragraphs */
+  }
+  
+  .asset-description {
+    font-size: 1em;
+    line-height: 1.6;
+  }
+  
+  /* If you have long hashes that still don't fit, you can add this */
+  .asset-meta .block-hash {
+    word-break: break-all; /* Breaks the word to prevent overflow */
+  }
+  

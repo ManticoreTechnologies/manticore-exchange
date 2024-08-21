@@ -1,0 +1,173 @@
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.faucet-page {
+    max-width: 800px;
+    padding: 20px;
+    margin: 0 auto;
+    background-color: #000;
+}
+
+p {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #eee;
+}
+
+a {
+    color: inherit;
+    background-color: inherit;
+    text-decoration: none; /* Ensure links don't have underlines */
+}
+
+.faucet-address-input, .asset-select, .submit-button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background-color: #222;
+    color: #fff;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.faucet-address-input:focus, .asset-select:focus, .submit-button:focus {
+    border-color: #aaa;
+    outline: none;
+}
+
+.asset-select {
+    background-color: #222;
+}
+
+.response-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #333;
+    font-size: 1em;
+}
+
+.submit-button {
+    background-color: #e50914;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #f00;
+}
+
+h3 {
+    margin: 20px 0 10px;
+    color: #fff;
+    font-size: 1.5em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    color: #fff;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #888;
+    text-align: left;
+    color: white;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #444;
+}
+
+td {
+    background-color: #222;
+}
+
+thead {
+    background-color: #333;
+}
+
+tr:nth-child(even) td {
+    background-color: #1a1a1a;
+}
+
+.asset-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.asset-cell img {
+    margin-left: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Responsive table styles */
+@media (max-width: 600px) {
+    .faucet-page {
+        padding: 10px;
+    }
+
+    .faucet-address-input, .asset-select, .submit-button {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 0.8em; /* Reduce font size in table cells */
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        border-bottom: 1px solid #444;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* Ensure items are centered vertically */
+    }
+
+    td {
+        border: none;
+        text-align: left;
+        flex: 1;
+        padding: 6px; /* Adjust padding for smaller screens */
+    }
+
+    td:last-child {
+        text-align: right;
+    }
+
+    .asset-cell img {
+        width: 30px; /* Adjust image size */
+        height: auto;
+    }
+}

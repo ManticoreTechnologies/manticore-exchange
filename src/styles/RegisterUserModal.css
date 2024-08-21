@@ -1,0 +1,74 @@
+/* src/styles/RegisterUserModal.css */
+
+.register-user-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #333; /* Ensure text is visible */
+}
+
+.register-user-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.close-button {
+  background-color: #ff0022;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  align-self: flex-end;
+}
+
+.register-user-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-user-form label {
+  color: #333; /* Ensure labels are visible */
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.register-user-form input,
+.register-user-form select {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.register-user-form button {
+  background-color: #ff0022;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-user-form button:hover {
+  background-color: #c9302c;
+}
+
+
+

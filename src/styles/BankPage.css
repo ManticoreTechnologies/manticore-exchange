@@ -1,0 +1,223 @@
+/* src/styles/BankPage.css */
+
+.bank-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: #1c1c1c;
+}
+
+.title-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    color: white;
+    padding: 20px 0; /* Add padding to create space around the title bar */
+}
+
+.title {
+    font-size: 2em;
+    margin-right: 10px; /* Adjusted margin for better spacing */
+}
+
+.learn-more {
+    color: #e63946;
+    text-decoration: none;
+    font-size: 1.2em;
+    padding: 5px 10px; /* Add padding to create space around the link */
+    transition: color 0.2s, background-color 0.2s;
+    border-radius: 5px; /* Add border radius for smoother look */
+}
+
+.learn-more:hover {
+    color: white;
+    background-color: #e63946; /* Change background color on hover */
+}
+
+.temple {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #444, #1c1c1c);
+    padding: 20px 0;
+}
+
+.roof {
+    width: 100%;
+    max-width: 1200px;
+    height: 60px;
+    background: linear-gradient(90deg, #e63946, #a83232);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.roof:before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background-color: #a83232;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.temple-logo {
+    width: 50px;
+    height: 50px;
+}
+
+.pillars {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 10px;
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.pillar {
+    flex-grow: 1;
+    background: linear-gradient(180deg, #e63946, #d32f2f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    max-height: 500px;
+    position: relative;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    margin: 0 10px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    color: white;
+    font-size: 1.2em;
+    text-align: center;
+    padding: 10px;
+}
+
+.pillar-text {
+    padding: 20px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.pillar:before, .pillar:after {
+    content: '';
+    display: block;
+    width: 80%;
+    height: 10%;
+    background: #b71c1c;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.pillar:before {
+    top: -10%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.pillar:after {
+    bottom: -10%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.pillar:before {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.pillar:after {
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.pillar:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(180deg, #c62828, #b71c1c);
+}
+
+/* Default spacing for small screens */
+.pillar {
+    margin: 0 5px;
+}
+
+/* Medium screens (tablets, etc.) */
+@media (min-width: 768px) {
+    .pillar {
+        margin: 0 15px;
+    }
+}
+
+/* Large screens (desktops, etc.) */
+@media (min-width: 1024px) {
+    .pillar {
+        margin: 0 25px;
+    }
+}
+
+.steps {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+.step {
+    width: 100%;
+    height: 25px;
+    background: linear-gradient(180deg, #e63946, #d32f2f);
+    margin-top: 5px;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+/* Adjust the widths for the steps to create the stone steps effect */
+.step:nth-child(1) {
+    width: 90%;
+}
+
+.step:nth-child(2) {
+    width: 80%;
+}
+
+.step:nth-child(3) {
+    width: 70%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

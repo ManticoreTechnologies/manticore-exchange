@@ -1,0 +1,49 @@
+/* NetworkStats.css */
+.network-stats {
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* Hide anything that goes beyond the box */
+  white-space: nowrap; /* Prevent wrapping of contents */
+  padding: 20px;
+  background-color: #282c34; /* Darker background for better contrast */
+  color: #ffffff; /* Light text for better readability */
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.network-stats ul {
+  animation: moveLeft 25s linear infinite; /* Adjusted for smoother movement */
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.network-stats li {
+  margin: 0 60px; /* Increased spacing */
+  font-size: 16px; /* Larger font size for better readability */
+  display: flex;
+  align-items: center; /* Center text and icons vertically */
+}
+
+.network-stats li::before {
+  content: '•'; /* Simple bullet point for separation */
+  color: #e63946; /* Matching the theme's accent color */
+  font-size: 24px; /* Larger bullet for emphasis */
+  margin-right: 10px; /* Space between bullet and text */
+}
+
+@keyframes moveLeft {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%); /* Only need to translate half the content before repeating */
+  }
+}
+
+.network-stats:hover ul {
+  animation-play-state: paused; /* Pause animation when user hovers over the list */
+}
+
+

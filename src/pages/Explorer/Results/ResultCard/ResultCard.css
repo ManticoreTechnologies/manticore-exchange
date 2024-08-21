@@ -1,0 +1,52 @@
+.result-card {
+    width: 250px; /* Fixed width */
+    height: 370px; /* Adjusted height */
+    border: 1px solid #2e2e2e; /* Subtle border color for a modern look */
+    padding: 20px; /* Increased padding */
+    border-radius: 8px; /* Consistent border radius */
+    background-color: #1f1f1f; /* Dark background color to match the theme */
+    color: #eaeaea; /* Light text color for better contrast */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
+    margin: 0 auto; /* Center each card */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+    overflow: hidden; /* Prevent overflow from long content */
+    text-align: center; /* Center the content */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space evenly */
+    align-items: center; /* Center items horizontally */
+}
+
+.result-card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
+}
+
+.result-card img.result-image {
+    width: 100px; /* Fixed width for images */
+    height: 100px; /* Fixed height for images */
+    object-fit: cover; /* Ensure the image covers the area while maintaining aspect ratio */
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.result-card h3 {
+    margin-top: 10px;
+    color: #e60000; /* Red color for titles */
+    font-size: 18px; /* Larger font for titles */
+    font-weight: bold; /* Make the title bold */
+    white-space: nowrap; /* Prevent title from wrapping */
+    overflow: hidden; /* Ensure overflow is hidden */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+    max-width: 100%; /* Ensure it doesn't overflow the card */
+}
+
+.result-card p {
+    margin: 8px 0;
+    font-size: 14px; /* Adjusted font size for better readability */
+    line-height: 1.5; /* Increased line height for clarity */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Ensure overflow is hidden */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+    max-width: 100%; /* Ensure it doesn't overflow the card */
+}

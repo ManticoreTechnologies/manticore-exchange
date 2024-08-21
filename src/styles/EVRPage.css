@@ -1,0 +1,88 @@
+/* src/styles/EVRPage.css */
+
+.evr-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    color: #ddd;
+    background-color: #000; /* Black background */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    text-align: center; /* Center text */
+  }
+  
+  .evr-page h1 {
+    font-size: 3em; /* Match font size */
+    margin-bottom: 20px;
+    font-weight: bold; /* Match font weight */
+    color: #ff000c; /* Red color */
+  }
+  
+  .evr-page h2 {
+    font-size: 1.5em;
+    margin: 10px 0;
+  }
+  
+  .evr-page p {
+    margin: 5px 0;
+  }
+  
+  .evr-page .historical-chart {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px; /* Center the chart container and limit its width */
+  }
+  
+  .evr-page .toolbar {
+    margin-bottom: 20px;
+  }
+  
+  .evr-page .toolbar label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .evr-page .toolbar select {
+    padding: 5px;
+    font-size: 1em;
+  }
+  
+  .evr-page .chart-container {
+    position: relative;
+    height: 400px; /* Adjust height as needed */
+    width: 100%;
+  }
+  
+  .evr-page canvas {
+    background-color: #1c1c1c; /* Dark background */
+    border: 1px solid #333;
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .evr-page {
+      padding: 10px; /* Reduce padding on smaller screens */
+    }
+  
+    .evr-page h1 {
+      font-size: 2.5em; /* Adjusted font size for smaller screens */
+    }
+  
+    .evr-page h2 {
+      font-size: 1.2em; /* Adjusted font size for smaller screens */
+    }
+  
+    .evr-page .toolbar select {
+      padding: 5px;
+      font-size: 1em;
+    }
+  
+    .evr-page .chart-container {
+      height: 300px; /* Reduce chart height on smaller screens */
+    }
+  }
+  
+
+
+  
+  
