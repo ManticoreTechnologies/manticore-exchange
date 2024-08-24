@@ -3,7 +3,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import AssetListPage from "./pages/assets/Assets";
 import Homepage from "./pages/Home";
 import AboutPage from "./pages/About";
 import WalletAssetsListPage from "./pages/Wallets";
@@ -23,6 +22,7 @@ import AssetMinter from "./pages/assets/AssetMinter";
 import EVRPage from "./pages/EVRPage"; // Import the EVRPage component
 import FaucetPage from "./pages/assets/FaucetPage";
 import Explorer from "./pages/Explorer/Explorer";
+import Trading from "./pages/Trading/Trading";
 
 const App: React.FC = () => {
   return (
@@ -39,11 +39,12 @@ const App: React.FC = () => {
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/transactions/:address" element={<Transactions />} />
         <Route path="/wallet" element={<WalletAssetsListPage />} />
-        <Route path="/explore" element={<AssetListPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/faucet" element={<FaucetPage />} />
         <Route path="/bank" element={<BankPage />} />
         <Route path="/discover" element={<ExplorePage />} />
+        <Route path="/trade" element={<Trading />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/mint" element={<AssetMinter />} />
         <Route path="/evr" element={<EVRPage />} /> {/* Add the new route for EVRPage */}

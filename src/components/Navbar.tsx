@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "../styles/Navbar.css"; // Adjust the path as necessary if it changes
 import logo from "../images/enhanced_logo_eyes.png"; // Adjust the path as necessary if it changes
@@ -7,33 +7,40 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAssetsDropdownOpen, setIsAssetsDropdownOpen] = useState(false);
-  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
-  const [isExplorerDropdownOpen, setIsExplorerDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
+    setOpenDropdown(null); // Close any open dropdown when toggling the navbar
   };
 
-  const handleAssetsDropdownToggle = () => {
-    setIsAssetsDropdownOpen(!isAssetsDropdownOpen);
+  const handleDropdownToggle = (dropdownName: string) => {
+    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
   };
 
-  const handleToolsDropdownToggle = () => {
-    setIsToolsDropdownOpen(!isToolsDropdownOpen);
+  const handleLinkClick = () => {
+    setIsOpen(false); // Close the navbar in mobile view
+    setOpenDropdown(null); // Close any open dropdown
   };
 
-  const handleExplorerDropdownToggle = () => {
-    setIsExplorerDropdownOpen(!isExplorerDropdownOpen);
+  const handleOutsideClick = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.navbar')) {
+      setOpenDropdown(null);
+      setIsOpen(false); // Optionally close the navbar as well if needed
+    }
   };
 
-  const handleDropdownMouseLeave = (dropdownSetter: React.Dispatch<React.SetStateAction<boolean>>) => {
-    dropdownSetter(false);
-  };
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
 
   return (
     <nav className="navbar">
-      <NavLink to="/home" className="navbar-brand">
+      <NavLink to="/home" className="navbar-brand" onClick={handleLinkClick}>
         <img src={logo} alt="Manticore Asset Exchange" className="navbar-logo" />
       </NavLink>
       <button className="navbar-toggle" onClick={handleToggle}>
@@ -41,87 +48,98 @@ const Navbar: React.FC = () => {
       </button>
       <ul className={`navbar-nav ${isOpen ? "navbar-nav-open" : ""}`}>
         <li className="nav-item dropdown">
-          <button className="nav-link dropdown-toggle" onClick={handleAssetsDropdownToggle}>
+          <button
+            className="nav-link dropdown-toggle"
+            onClick={() => handleDropdownToggle("assets")}
+          >
             Assets
           </button>
           <ul
-            className={`dropdown-menu ${isAssetsDropdownOpen ? "dropdown-open" : ""}`}
-            onMouseLeave={() => handleDropdownMouseLeave(setIsAssetsDropdownOpen)}
+            className={`dropdown-menu ${openDropdown === "assets" ? "dropdown-open" : ""}`}
           >
             <li className="dropdown-item">
-              <NavLink to="/explorer" className="nav-link" onClick={handleToggle}>
+              <NavLink to="/explorer" className="nav-link" onClick={handleLinkClick}>
                 Explore
               </NavLink>
             </li>
             <li className="dropdown-item">
-              <NavLink to="/wallet" className="nav-link" onClick={handleToggle}>
+              <NavLink to="/discover" className="nav-link" onClick={handleLinkClick}>
+                Discover
+              </NavLink>
+            </li>
+            <li className="dropdown-item">
+              <NavLink to="/wallet" className="nav-link" onClick={handleLinkClick}>
                 Wallet
               </NavLink>
             </li>
           </ul>
         </li>
         <li className="nav-item dropdown">
-          <button className="nav-link dropdown-toggle" onClick={handleToolsDropdownToggle}>
+          <button
+            className="nav-link dropdown-toggle"
+            onClick={() => handleDropdownToggle("tools")}
+          >
             Tools
           </button>
           <ul
-            className={`dropdown-menu ${isToolsDropdownOpen ? "dropdown-open" : ""}`}
-            onMouseLeave={() => handleDropdownMouseLeave(setIsToolsDropdownOpen)}
+            className={`dropdown-menu ${openDropdown === "tools" ? "dropdown-open" : ""}`}
           >
             <li className="dropdown-item">
-              <NavLink to="/generate" className="nav-link" onClick={handleToggle}>
+              <NavLink to="/generate" className="nav-link" onClick={handleLinkClick}>
                 Name Generator
               </NavLink>
             </li>
             <li className="dropdown-item">
-              <NavLink to="/mint" className="nav-link" onClick={handleToggle}>
+              <NavLink to="/mint" className="nav-link" onClick={handleLinkClick}>
                 Mint
               </NavLink>
             </li>
             <li className="dropdown-item">
-              <a href="https://mantiweb.com" target="_blank" rel="noopener noreferrer" className="nav-link" onClick={handleToggle}>
+              <a href="https://mantiweb.com" target="_blank" rel="noopener noreferrer" className="nav-link" onClick={handleLinkClick}>
                 Web Search
               </a>
             </li>
           </ul>
         </li>
         <li className="nav-item dropdown">
-          <button className="nav-link dropdown-toggle" onClick={handleExplorerDropdownToggle}>
+          <button
+            className="nav-link dropdown-toggle"
+            onClick={() => handleDropdownToggle("explore")}
+          >
             Explore
           </button>
           <ul
-            className={`dropdown-menu ${isExplorerDropdownOpen ? "dropdown-open" : ""}`}
-            onMouseLeave={() => handleDropdownMouseLeave(setIsExplorerDropdownOpen)}
+            className={`dropdown-menu ${openDropdown === "explore" ? "dropdown-open" : ""}`}
           >
             <li className="dropdown-item">
-              <NavLink to="/transactions" className="nav-link" onClick={handleToggle}>
+              <NavLink to="/transactions" className="nav-link" onClick={handleLinkClick}>
                 Transactions
               </NavLink>
             </li>
           </ul>
         </li>
         <li className="nav-item">
-          <NavLink to="/roadmap" className="nav-link" onClick={handleToggle}>
+          <NavLink to="/roadmap" className="nav-link" onClick={handleLinkClick}>
             Roadmap
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="/blog" className="nav-link" onClick={handleToggle}>
+          <NavLink to="/blog" className="nav-link" onClick={handleLinkClick}>
             Blog
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="/evr" className="nav-link" onClick={handleToggle}>
+          <NavLink to="/evr" className="nav-link" onClick={handleLinkClick}>
             EVR Chart
           </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="/faucet" className="nav-link" onClick={handleToggle}>
+          <NavLink to="/faucet" className="nav-link" onClick={handleLinkClick}>
             Faucet
           </NavLink>
         </li>
         <li className="nav-item">
-          <a href={apiUrl} className="nav-link" onClick={handleToggle}>
+          <a href={apiUrl} className="nav-link" onClick={handleLinkClick}>
             API
           </a>
         </li>
@@ -135,5 +153,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
-

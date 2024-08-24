@@ -1,72 +1,104 @@
-/* AssetDetail.css */
-
 .asset-detail-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 50px; /* Outer padding for the whole container */
-    background: #1a1a1a; /* Assuming this is your preferred background color */
-  }
-  
-  .asset-detail-card {
-    display: flex;
-    background: #000; /* Card background */
-    color: #fff; /* Text color */
-    border: 1px solid #e1e1e1; /* Card border */
-    border-radius: 8px;
-    align-items:center;
-    overflow: hidden; /* Ensures that the content respects the border-radius */
-    margin: auto; /* Centers the card in the container */
-    max-width: 1200px; /* Increased maximum width of the card */
-    width: 100%; /* Ensures that the card stretches to max-width */
-  }
-  
-  .asset-image-container {
-    display: flex; /* Enables flexbox */
-    justify-content: center; /* Centers horizontally */
-    align-items: center; /* Centers vertically */
-    width: 300px; /* Width of the image container */
-    height: 300px; /* Height of the image container */
-    margin-right: 20px; /* Space between the image and the text */
-    margin-bottom: 20px;
-    margin-top: 20px;
-    flex-shrink: 0; /* Prevent the container from shrinking */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px; /* Reduced padding for smaller screens */
+  background: #1a1a1a; /* Assuming this is your preferred background color */
+  flex-direction: column; /* Stack items vertically on smaller screens */
+}
+
+.asset-detail-card {
+  display: flex;
+  flex-direction: column; /* Stack image and text vertically on smaller screens */
+  background: #000; /* Card background */
+  color: #fff; /* Text color */
+  border: 1px solid #e1e1e1; /* Card border */
+  border-radius: 8px;
+  overflow: hidden; /* Ensures that the content respects the border-radius */
+  margin: auto; /* Centers the card in the container */
+  max-width: 1200px; /* Maximum width of the card */
+  width: 100%; /* Ensures that the card stretches to max-width */
+}
+
+.asset-image-container {
+  display: flex; /* Enables flexbox */
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  width: 100%; /* Full width for mobile */
+  max-width: 300px; /* Maximum width of the image container */
+  height: auto; /* Let the height adjust according to the image size */
+  margin: 20px auto; /* Center the image on mobile and add margin around it */
+  flex-shrink: 0; /* Prevent the container from shrinking */
+}
+
+.asset-detail-image {
+  max-width: 100%; /* Ensures the image is not larger than the container */
+  height: auto; /* Keep aspect ratio */
+  border-radius: 10px;
+}
+
+.asset-info-container {
+  flex-grow: 1; /* Allows the info container to fill the rest of the card */
+  padding: 20px; /* Padding inside the card around the text */
+  text-align: center; /* Center text on mobile */
+}
+
+.asset-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.asset-meta {
+  font-size: 1em;
+  margin-bottom: 20px;
+  overflow-wrap: break-word; /* Ensures long hashes wrap and don't overflow */
+}
+
+.asset-meta p {
+  margin: 5px 0; /* Spacing between paragraphs */
+}
+
+.asset-description {
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+/* If you have long hashes that still don't fit, you can add this */
+.asset-meta .block-hash {
+  word-break: break-all; /* Breaks the word to prevent overflow */
+}
+
+/* Media query for devices with a max width of 768px (mobile devices) */
+@media (max-width: 768px) {
+  .asset-detail-container {
+      padding: 10px; /* Reduce padding on mobile */
   }
 
-  .asset-detail-image {
-    max-width: 100%; /* Ensures the image is not larger than the container */
-    max-height: 100%; /* Ensures the image is not taller than the container */
-    margin-left: 30px;
-    border-radius: 10px;
+  .asset-detail-card {
+      flex-direction: column; /* Stack content vertically */
+      max-width: 100%; /* Make the card full width */
   }
-  
+
+  .asset-image-container {
+      width: 100%; /* Full width on mobile */
+      max-width: 100%; /* Ensure the image container is full width */
+      height: auto; /* Allow height to adjust automatically */
+  }
+
   .asset-info-container {
-    flex-grow: 1; /* Allows the info container to fill the rest of the card */
-    padding: 20px; /* Padding inside the card around the text */
+      padding: 15px; /* Adjust padding for smaller screens */
+      text-align: center; /* Center text on mobile */
   }
-  
+
   .asset-title {
-    font-size: 2.5em;
-    margin-bottom: 20px;
+      font-size: 1.8em; /* Reduce font size on mobile */
   }
-  
+
   .asset-meta {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    overflow-wrap: break-word; /* Ensures long hashes wrap and don't overflow */
+      font-size: 1em; /* Adjust font size for mobile */
   }
-  
-  .asset-meta p {
-    margin: 5px 0; /* Spacing between paragraphs */
-  }
-  
+
   .asset-description {
-    font-size: 1em;
-    line-height: 1.6;
+      font-size: 0.9em; /* Slightly smaller text for descriptions on mobile */
   }
-  
-  /* If you have long hashes that still don't fit, you can add this */
-  .asset-meta .block-hash {
-    word-break: break-all; /* Breaks the word to prevent overflow */
-  }
-  
+}

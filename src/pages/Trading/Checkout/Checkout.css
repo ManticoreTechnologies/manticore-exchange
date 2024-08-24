@@ -1,0 +1,78 @@
+/* General Checkout Styles */
+.checkout {
+    background-color: #121212;
+    color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    z-index: 10;
+}
+
+.checkout h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    color: #f44336;
+    border-bottom: 2px solid #f44336;
+    padding-bottom: 10px;
+}
+
+.checkout-items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.checkout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+    margin-bottom: 10px;
+    background-color: #1d1d1d;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.checkout-summary {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 2px solid #f44336;
+    text-align: center;
+}
+
+.checkout-summary p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.complete-checkout-button, .back-button {
+    background-color: #f44336;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.complete-checkout-button:hover, .back-button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+.complete-checkout-button:disabled, .back-button:disabled {
+    background-color: #555555;
+    cursor: not-allowed;
+}

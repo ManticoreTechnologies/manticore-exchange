@@ -57,7 +57,7 @@ const NewestAssetsCarousel: React.FC<NewestAssetsCarouselProps> = ({ newAssets, 
             >
               <div className="asset-content">
                 <img
-                  src={asset[2] !== undefined ? `https://api.manticore.exchange:8001/ipfs/cid/${asset[2]}` : logo}
+                  src={asset[2] !== undefined ? `https://api.manticore.exchange:667/ipfs/cid/${asset[2]}` : logo}
                   className="newest-asset-image"
                   onDragStart={handleDragStart}
                   onError={handleImageError} // Handle image load error

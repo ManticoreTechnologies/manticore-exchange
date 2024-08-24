@@ -67,7 +67,7 @@ const FaucetPage: React.FC = () => {
     return (
         <div className="faucet-page">
             <p>Send EVR or assets to "{manticoreFaucetAddress}" and we will add them to the faucet. </p>
-            <p>Rate limit: 1 request per day | 0.01 payout per request</p>
+            <p>Rate limit: 10 request per day | 0.1 payout per request</p>
             <p>Current EVR balance: {currentEVRBalance}</p>
             
             <input 

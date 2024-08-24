@@ -48,7 +48,6 @@ const Explorer: React.FC = () => {
         // Try making the search request
         try {
             const response = await axios.get('https://api.manticore.exchange:666/search', { params });
-            console.log(response.request)
             setResults(response.data)
         } catch (error) {
             console.error('Error fetching data:', error);

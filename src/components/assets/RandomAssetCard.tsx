@@ -10,8 +10,9 @@ interface RandomAssetCardProps {
 
 const RandomAssetCard: React.FC<RandomAssetCardProps> = ({ asset }) => {
   const imageUrl = asset.has_ipfs && asset.ipfs_hash ? 
-    `https://api.manticore.exchange:8001/ipfs/cid/${asset.ipfs_hash}` : 
+    `https://api.manticore.exchange:667/ipfs/cid/${asset.ipfs_hash}` : 
     logo;
+
 
   return (
     <Link to={`/asset/${encodeURIComponent(asset.name)}?query=&page=1&showIPFSOnly=false`} className="assetc-card-link">

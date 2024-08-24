@@ -61,7 +61,7 @@ const AssetDetails: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  const imageUrl = asset && asset.has_ipfs && asset.ipfs_hash ? `https://api.manticore.exchange:8001/ipfs/cid/${asset.ipfs_hash}` : logo;
+  const imageUrl = asset && asset.has_ipfs && asset.ipfs_hash ? `https://api.manticore.exchange:667/ipfs/cid/${asset.ipfs_hash}` : logo;
 
   return (
     <div className="asset-detail-container">

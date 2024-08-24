@@ -25,7 +25,13 @@ body {
   padding: 0;
   flex: 1;
 }
-
+input{
+  max-width: 300px;
+}
+button{
+  max-width: 200px;
+  height: 55px;
+}
 #root::-webkit-scrollbar {
   display: none;
 }

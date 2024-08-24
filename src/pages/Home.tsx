@@ -12,7 +12,6 @@ import Banner from '../components/Banner'; // Import the Banner component
 import WalletConnect from '../components/WalletConnect'; // Import WalletConnect component
 import api from '../utility/api';
 import NewestAssetsCarousel from '../components/assets/NewestAssetsCarousel';
-import logo from '../images/logo.png';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -53,19 +52,6 @@ const Home: React.FC = () => {
     fetchAssets();
     fetchNewAssets();
   }, []);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const images = document.querySelectorAll('.featured-asset-image');
-      images.forEach((img: any) => {
-        if (!img.complete || img.naturalWidth === 0) {
-          img.src = logo;
-        }
-      });
-    }, 1000); // Set timeout to 1 second after page load
-
-    return () => clearTimeout(timeoutId);
-  }, [assets, newAssets]); // Re-run the effect if assets or newAssets change
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -128,7 +114,7 @@ const Home: React.FC = () => {
                   <div className="carousel-item featured-asset">
                     <img
                       className="featured-asset-image"
-                      src={`https://api.manticore.exchange:8001/ipfs/cid/${asset.ipfs_hash}`}
+                      src={`https://api.manticore.exchange:667/ipfs/cid/${asset.ipfs_hash}`}
                       alt={asset.name}
                     />
                     <p>{asset.name}</p>

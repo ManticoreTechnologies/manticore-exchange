@@ -1,58 +1,73 @@
-.random-asset-card {
-  background-color: #333;
+.assetc-card {
+  width: 250px; /* Fixed width */
+  height: 370px; /* Adjusted height */
+  border: 1px solid #2e2e2e; /* Subtle border color for a modern look */
+  padding: 20px; /* Increased padding */
+  border-radius: 8px; /* Consistent border radius */
+  background-color: #1f1f1f; /* Dark background color to match the theme */
+  color: #eaeaea; /* Light text color for better contrast */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
+  margin: 0 auto; /* Center each card */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+  overflow: hidden; /* Prevent overflow from long content */
+  text-align: center; /* Center the content */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute space evenly */
+  align-items: center; /* Center items horizontally */
+}
+
+.assetc-card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
+}
+
+.assetc-image-container {
+  width: 100px; /* Fixed width for images */
+  height: 100px; /* Fixed height for images */
+  margin-bottom: 10px;
+}
+
+.assetc-image {
+  width: 100%; /* Make sure the image fills the container */
+  height: 100%; /* Make sure the image fills the container */
+  object-fit: cover; /* Ensure the image covers the area while maintaining aspect ratio */
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  color: #ddd;
-  position: relative;
 }
 
-.random-asset-image {
-  max-width: 100%;
+.assetc-name {
+  margin-top: 10px;
+  color: #e60000; /* Red color for titles */
+  font-size: 18px; /* Larger font for titles */
+  font-weight: bold; /* Make the title bold */
+  white-space: nowrap; /* Prevent title from wrapping */
+  overflow: hidden; /* Ensure overflow is hidden */
+  text-overflow: ellipsis; /* Add ellipsis for overflow */
+  max-width: 100%; /* Ensure it doesn't overflow the card */
+}
+
+.assetc-info {
+  margin: 8px 0;
+  font-size: 14px; /* Adjusted font size for better readability */
+  line-height: 1.5; /* Increased line height for clarity */
+  color: #b0b0b0; /* Light gray for additional text */
+}
+
+.assetc-info span {
+  display: block;
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Ensure overflow is hidden */
+  text-overflow: ellipsis; /* Add ellipsis for overflow */
+  max-width: 100%; /* Ensure it doesn't overflow the card */
+}
+
+.assetc-status {
+  margin-top: 10px;
+  padding: 5px 10px;
   border-radius: 4px;
+  font-size: 14px;
+  color: #ffffff;
+  background-color: #e60000; /* Red background for listed/unlisted status */
+  text-transform: uppercase;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
-
-.random-asset-placeholder {
-  background-color: #555;
-  color: #fff;
-  padding: 20px;
-  text-align: center;
-  border-radius: 4px;
-}
-
-.random-asset-details {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.random-asset-details h2 {
-  margin: 0;
-  color: #ff0022;
-}
-
-.random-asset-details p {
-  margin: 0;
-  color: #a8a8a8;
-}
-
-.like-button {
-  background: none;
-  border: none;
-  color: #ff0022;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.5rem;
-}
-
-.like-button:focus {
-  outline: none;
-}
-
-
-  
