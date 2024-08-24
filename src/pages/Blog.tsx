@@ -5,6 +5,13 @@ import '../styles/BlogPage.css'; // Make sure to create and link this CSS file
 const BlogPage: React.FC = () => {
   const posts = [
     {
+      title: 'Intro to EVRMORE Blochchain',
+      author: 'Manticore Technologies',
+      date: 'August 24, 2024',
+      summary: 'Learn about the EVRMORE blockchain, its features, and its advantages over other blockchains.',
+      link: '/blog/evrmore-intro',
+    },
+    {
       title: 'P2SH Asset Swap Tutorial',
       author: 'John Doe',
       date: 'April 25, 2024',
