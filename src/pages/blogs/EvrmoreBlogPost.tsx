@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './BlogPost.css';
 import evrLogo from '../../images/evr_logo_blue_400.svg';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const EvrmoreBlogPost: React.FC = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -37,15 +38,15 @@ const EvrmoreBlogPost: React.FC = () => {
                     <p className="paragraph">Hey there, and welcome!</p>
                     <p className="paragraph">We’re thrilled to have you here as we introduce you to <a className="blog-link" href="https://evrmorecoin.org/">Evrmore</a>
                         —a blockchain that’s here to rewrite the rules. Whether you’re a seasoned developer, a savvy investor, or just someone curious about where technology is headed, you’re in the right place.</p>
-                    <p className="paragraph">Evrmore brings together the best of <a className="blog-link" href="https://bitcoin.org/">Bitcoin</a> and <a className="blog-link" href="https://ravencoin.org/">Ravencoin</a>, but it doesn’t stop there. It also tackles what <a className='blog-link' href="https://ethereum.org/en/">Ethereum</a> has been aiming to do, but without all the complexities. Imagine a blockchain with built-in DeFi features that don’t require convoluted smart contracts, all while keeping fees low and security high. Evrmore offers all the power and potential of Ethereum, but with a streamlined, user-friendly experience that you’ll appreciate from the get-go.</p>
+                    <p className="paragraph">Evrmore brings together the best of <a className="blog-link" href="https://bitcoin.org/">Bitcoin</a> and <a className="blog-link" href="https://ravencoin.org/">Ravencoin</a>, and then takes it a step further. It also tackles what <a className='blog-link' href="https://ethereum.org/en/">Ethereum</a> has been aiming to do, but without all the complexities. Imagine a blockchain with built-in DeFi features that don’t require convoluted <span className="blog-tooltip" data-tooltip-id="smart-contract-tooltip" data-tooltip-content="Smart contracts are self-executing contracts with the terms of the agreement directly written into code. They automate contract execution without intermediaries, but can be complex and vulnerable to bugs. Evrmore eliminates these risks by integrating DeFi features directly into the blockchain protocol, avoiding the need for complex smart contracts.">smart contracts</span>, all while keeping fees low and security high. Evrmore offers all the power and potential of Ethereum, but with a streamlined, user-friendly experience that you’ll appreciate from the get-go.</p>
                     <p className="paragraph">So, let’s dive in and explore why Evrmore might just be the blockchain you’ve been waiting for.</p>
                     <p className="paragraph">Let’s get started!</p>
+                    <ReactTooltip id="smart-contract-tooltip" place="top" effect="solid" />
                 </div>
 
                 <div id="purpose">
                     <h2 className="sub-sub-header">Purpose of the Post</h2>
                     <p className="paragraph">In this post, we’re going to give you the full scoop on Evrmore, a blockchain that’s taking the best features from existing platforms and pushing them to the next level. We’ll cover the key aspects that make Evrmore unique, how it stacks up against other blockchains like Bitcoin, Ravencoin, and Ethereum, and why we believe it’s the future of decentralized finance (DeFi) and digital assets.</p>
-                    <p className="paragraph">Whether you’re just dipping your toes into the blockchain world or you’ve been swimming in it for years, we’ll guide you through Evrmore’s standout features and show you why it’s a true game-changer. By the end of this post, you’ll understand why Evrmore isn’t just another blockchain—it’s the one that’s poised to lead the next big wave of digital innovation.</p>
                 </div>
 
                 <div className='divider'></div>
