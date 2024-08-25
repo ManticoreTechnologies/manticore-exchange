@@ -1,41 +1,70 @@
 /* AssetTypesTable.css */
 .asset-types-table {
-    font-family: 'Arial', sans-serif;
-    max-width: 960px;
-    margin: auto;
-    padding: 20px;
-    color: #000000;
+  font-family: 'Arial', sans-serif;
+  max-width: 960px;
+  margin: auto;
+  padding: 20px;
+  color: #ffffff; /* Ensure text is white for dark backgrounds */
+}
+
+.asset-types-table h1 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.asset-types-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.asset-types-table th, 
+.asset-types-table td {
+  border: 1px solid #ddd;
+  text-align: left;
+  padding: 12px 8px;
+  vertical-align: middle;
+  color: #ffffff; /* Ensure text color is consistent */
+}
+
+.asset-types-table th {
+  background-color: #444444; /* Dark header */
+  color: #ffffff;
+}
+
+.asset-types-table tr:nth-child(odd) {
+  background-color: #2a2a2a;
+}
+
+.asset-types-table tr:nth-child(even) {
+  background-color: #1a1a1a;
+}
+
+/* RTL Support */
+[dir="rtl"] .asset-types-table {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .asset-types-table th,
+[dir="rtl"] .asset-types-table td {
+  text-align: right; /* Align text to the right for RTL */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .asset-types-table {
+      padding: 10px;
   }
-  
+
+  .asset-types-table th, 
+  .asset-types-table td {
+      padding: 8px;
+      font-size: 0.9em;
+  }
+
   .asset-types-table h1 {
-    text-align: center;
-    color: #ffffff;
+      font-size: 1.5em;
   }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  table, th, td {
-    border: 1px solid #ddd;
-  }
-  
-  th, td {
-    text-align: left;
-    padding: 8px;
-  }
-  
-  th {
-    background-color: #f4f4f9;
-  }
-  tr:nth-child(odd){
-    color: #000000;
-    background-color: #222;
-  }
-  tr:nth-child(even) {
-    background-color: #1a1a1a;
-    color: #000000;
-  }
-  
+}

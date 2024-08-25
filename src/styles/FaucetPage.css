@@ -11,19 +11,21 @@ body {
     background-color: #000;
 }
 
-p {
+.faucet-page p {
     margin: 10px 0;
     font-size: 1.2em;
     color: #eee;
 }
 
-a {
+.faucet-page a {
     color: inherit;
     background-color: inherit;
     text-decoration: none; /* Ensure links don't have underlines */
 }
 
-.faucet-address-input, .asset-select, .submit-button {
+.faucet-page .faucet-address-input, 
+.faucet-page .asset-select, 
+.faucet-page .submit-button {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -35,16 +37,18 @@ a {
     box-sizing: border-box;
 }
 
-.faucet-address-input:focus, .asset-select:focus, .submit-button:focus {
+.faucet-page .faucet-address-input:focus, 
+.faucet-page .asset-select:focus, 
+.faucet-page .submit-button:focus {
     border-color: #aaa;
     outline: none;
 }
 
-.asset-select {
+.faucet-page .asset-select {
     background-color: #222;
 }
 
-.response-message {
+.faucet-page .response-message {
     margin: 10px 0;
     padding: 10px;
     border-radius: 4px;
@@ -53,24 +57,24 @@ a {
     font-size: 1em;
 }
 
-.submit-button {
+.faucet-page .submit-button {
     background-color: #e50914;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.submit-button:hover {
+.faucet-page .submit-button:hover {
     background-color: #f00;
 }
 
-h3 {
+.faucet-page h3 {
     margin: 20px 0 10px;
     color: #fff;
     font-size: 1.5em;
 }
 
-table {
+.faucet-page table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
@@ -78,7 +82,8 @@ table {
     color: #fff;
 }
 
-th, td {
+.faucet-page th, 
+.faucet-page td {
     padding: 12px;
     border: 1px solid #888;
     text-align: left;
@@ -86,29 +91,29 @@ th, td {
     vertical-align: middle;
 }
 
-th {
+.faucet-page th {
     background-color: #444;
 }
 
-td {
+.faucet-page td {
     background-color: #222;
 }
 
-thead {
+.faucet-page thead {
     background-color: #333;
 }
 
-tr:nth-child(even) td {
+.faucet-page tr:nth-child(even) td {
     background-color: #1a1a1a;
 }
 
-.asset-cell {
+.faucet-page .asset-cell {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.asset-cell img {
+.faucet-page .asset-cell img {
     margin-left: 10px;
     margin-right: 10px;
     vertical-align: middle;
@@ -120,53 +125,61 @@ tr:nth-child(even) td {
         padding: 10px;
     }
 
-    .faucet-address-input, .asset-select, .submit-button {
+    .faucet-page .faucet-address-input, 
+    .faucet-page .asset-select, 
+    .faucet-page .submit-button {
         padding: 10px;
         font-size: 0.9em;
     }
 
-    th, td {
+    .faucet-page th, 
+    .faucet-page td {
         padding: 8px;
         font-size: 0.8em; /* Reduce font size in table cells */
     }
 
-    h3 {
+    .faucet-page h3 {
         font-size: 1.2em;
     }
 
-    p {
+    .faucet-page p {
         font-size: 1em;
     }
 
-    table, thead, tbody, th, td, tr {
+    .faucet-page table, 
+    .faucet-page thead, 
+    .faucet-page tbody, 
+    .faucet-page th, 
+    .faucet-page td, 
+    .faucet-page tr {
         display: block;
     }
 
-    thead tr {
+    .faucet-page thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
     }
 
-    tr {
+    .faucet-page tr {
         border-bottom: 1px solid #444;
         display: flex;
         justify-content: space-between;
         align-items: center; /* Ensure items are centered vertically */
     }
 
-    td {
+    .faucet-page td {
         border: none;
         text-align: left;
         flex: 1;
         padding: 6px; /* Adjust padding for smaller screens */
     }
 
-    td:last-child {
+    .faucet-page td:last-child {
         text-align: right;
     }
 
-    .asset-cell img {
+    .faucet-page .asset-cell img {
         width: 30px; /* Adjust image size */
         height: auto;
     }

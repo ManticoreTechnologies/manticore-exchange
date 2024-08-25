@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
         </li>
         <li className="nav-item">
           <NavLink to="/evr" className="nav-link" onClick={handleLinkClick}>
-            EVR Chart
+            EVR Info
           </NavLink>
         </li>
         <li className="nav-item">

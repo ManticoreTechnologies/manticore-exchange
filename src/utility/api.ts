@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const coinmarketcapApiKey = import.meta.env.VITE_COINMARKETCAP_API_KEY;
-
+const xeggexApiUrl = 'https://api.xeggex.com/v2/'; // Base URL for Xeggex API
 const api = {
   get: async <T = unknown>(endpoint: string): Promise<T> => {
     try {
@@ -87,7 +87,15 @@ const api = {
       throw axiosError; // Re-throw the error to be handled by the calling function
     }
   },
-  // You can add more methods here like post, put, delete etc. as needed
+  getXeggexPrice: async <T = unknown>(pair: string): Promise<T> => {
+    try {
+      const response = await axios.get<T>(`${xeggexApiUrl}ticker/${pair}`);
+      return response.data; // Return only the JSON data
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      throw axiosError; // Re-throw the error to be handled by the calling function
+    }
+  },
 };
 
 export default api;

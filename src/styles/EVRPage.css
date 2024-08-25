@@ -1,88 +1,102 @@
-/* src/styles/EVRPage.css */
-
 .evr-page {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    color: #ddd;
-    background-color: #000; /* Black background */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    text-align: center; /* Center text */
-  }
-  
-  .evr-page h1 {
-    font-size: 3em; /* Match font size */
-    margin-bottom: 20px;
-    font-weight: bold; /* Match font weight */
-    color: #ff000c; /* Red color */
-  }
-  
-  .evr-page h2 {
-    font-size: 1.5em;
-    margin: 10px 0;
-  }
-  
-  .evr-page p {
-    margin: 5px 0;
-  }
-  
-  .evr-page .historical-chart {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 800px; /* Center the chart container and limit its width */
-  }
-  
-  .evr-page .toolbar {
-    margin-bottom: 20px;
-  }
-  
-  .evr-page .toolbar label {
-    margin-right: 10px;
-    font-weight: bold;
-  }
-  
-  .evr-page .toolbar select {
-    padding: 5px;
-    font-size: 1em;
-  }
-  
-  .evr-page .chart-container {
-    position: relative;
-    height: 400px; /* Adjust height as needed */
-    width: 100%;
-  }
-  
-  .evr-page canvas {
-    background-color: #1c1c1c; /* Dark background */
-    border: 1px solid #333;
-  }
-  
-  /* Mobile Styles */
-  @media (max-width: 768px) {
-    .evr-page {
-      padding: 10px; /* Reduce padding on smaller screens */
-    }
-  
-    .evr-page h1 {
-      font-size: 2.5em; /* Adjusted font size for smaller screens */
-    }
-  
-    .evr-page h2 {
-      font-size: 1.2em; /* Adjusted font size for smaller screens */
-    }
-  
-    .evr-page .toolbar select {
-      padding: 5px;
-      font-size: 1em;
-    }
-  
-    .evr-page .chart-container {
-      height: 300px; /* Reduce chart height on smaller screens */
-    }
-  }
-  
+  font-family: Arial, sans-serif;
+  padding: 0;
+  margin-top: 20px;
+  color: #ddd;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+.xeggex-data {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 100%; /* Full width of the parent container */
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px; /* Added margin for better spacing */
+}
 
-  
-  
+.xeggex-data h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #ff000c;
+}
+
+.xeggex-data img {
+  margin: 10px 0;
+  max-width: 80px;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.xeggex-data p {
+  margin: 5px 0;
+  font-size: 1.1em;
+}
+
+.xeggex-data .links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.xeggex-data .links a {
+  color: #ff000c;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.xeggex-data .about {
+  margin: 15px 0;
+  font-size: 1em;
+}
+
+.xeggex-data .social-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.xeggex-data .social-links a {
+  color: #ff000c;
+  text-decoration: none;
+}
+
+.xeggex-data .trade-links {
+  margin-top: 20px;
+  color: #ff000c;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.xeggex-data .trade-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.xeggex-data .trade-links li {
+  margin: 5px 0;
+}
+
+.chart-container {
+  width: 100%; /* Ensures the chart container takes full width of the parent */
+  max-width: 600px; /* Ensures the chart doesn't exceed the container's width */
+  height: 400px; /* Set a fixed height for the chart */
+}
+
+@media (max-width: 600px) {
+  .chart-container {
+    width: 100%; /* Ensures the chart container takes full width of the parent */
+    max-width: 600px; /* Ensures the chart doesn't exceed the container's width */
+    height: 300px; /* Set a fixed height for the chart */
+  }
+}

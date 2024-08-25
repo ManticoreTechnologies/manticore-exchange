@@ -1,118 +1,159 @@
-// src/pages/EVRPage.tsx
-
-import React, { useEffect, useState } from 'react';
-import api from '../utility/api';
-import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { createChart, ISeriesApi, IChartApi } from 'lightweight-charts';
 import '../styles/EVRPage.css';
 
 const EVRPage: React.FC = () => {
-  const [evrData, setEvrData] = useState<any>(null);
-  const [historicalData, setHistoricalData] = useState<any>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<string>('30d');
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const [ohlcData, setOhlcData] = useState<any[]>([]);
+  const [xeggexData, setXeggexData] = useState<any>({
+    ticker: 'EVR',
+    name: 'Evrmore',
+    network: 'Evrmore Main Chain',
+    logo: 'https://images.xeggex.com/coin/d9fd06bd-8cdf-4869-a79a-c5a75652068c.webp',
+    usdValue: '0.000685769092',
+    circulation: '8741490031.46829987',
+    explorer: 'https://evr.cryptoscope.io/',
+    website: 'https://evrmore.com/',
+    socialCommunity: {
+      Twitter: 'https://twitter.com/EvrFoundation',
+      Github: 'https://github.com/EvrmoreOrg',
+      Discord: 'https://discord.gg/4csauGuvw3',
+      Telegram: 'https://t.me/Evrmorecoin',
+      Reddit: 'https://www.reddit.com/r/EvrmoreCoin/',
+      BitcoinTalk: 'https://bitcointalk.org/index.php?topic=5416790.0;all',
+    },
+    about: 'Evrmore (EVR) is a blockchain Decentralized Finance and Commerce platform with built-in UTXO-based asset and DeFi primitives.',
+    activeMarkets: [
+      'EVR/BTC',
+      'EVR/USDT',
+    ],
+  });
+
+  const marketLinks: any = {
+    'EVR/BTC': 'https://xeggex.com/market/EVR_BTC',
+    'EVR/USDT': 'https://xeggex.com/market/EVR_USDT',
+  };
 
   useEffect(() => {
-    const getEVRData = async () => {
+    const fetchOHLCData = async () => {
       try {
-        const data = await api.getCoinMarketCapData<any>('cryptocurrency/quotes/latest');
-        const evr = data.data['31424']; // The EVR data should be in data.data['31424']
-        setEvrData(evr);
+        const response = await axios.get('https://api.xeggex.com/api/v2/market/candles', {
+          params: {
+            symbol: 'EVR/USDT',
+            resolution: 1440, // daily candles
+            countBack: 500,  // get the last 500 candles
+            firstDataRequest: 1,
+          },
+        });
+        const data = response.data.bars;
+        const formattedData = data.map((entry: any) => ({
+          time: entry.time / 1000, // Convert from milliseconds to seconds
+          open: entry.open,
+          high: entry.high,
+          low: entry.low,
+          close: entry.close,
+        }));
+        setOhlcData(formattedData);
       } catch (error) {
-        setError('Failed to fetch EVR data.');
-      } finally {
-        setLoading(false);
+        console.error('Error fetching OHLC data:', error);
       }
     };
 
-    getEVRData();
+    const getXeggexData = async () => {
+      try {
+        const response = await axios.get('https://api.xeggex.com/api/v2/asset/getbyticker/EVR');
+        setXeggexData(response.data);
+      } catch (error) {
+        console.error('Error fetching Xeggex data:', error);
+      }
+    };
+
+    fetchOHLCData();
+    getXeggexData();
   }, []);
 
   useEffect(() => {
-    const getHistoricalData = async () => {
-      try {
-        const end = new Date().toISOString().split('T')[0];
-        let start: any;
-        if (timeRange === '7d') {
-          start = new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0];
-        } else if (timeRange === '30d') {
-          start = new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0];
-        } else if (timeRange === '90d') {
-          start = new Date(new Date().setDate(new Date().getDate() - 90)).toISOString().split('T')[0];
-        } else if (timeRange === 'all') {
-          start = '2013-04-28'; // CoinMarketCap earliest available data
-        }
-        console.log(`Fetching historical data from ${start} to ${end}`); // Add logging
-        const data = await api.getHistoricalData<any>('EVR', start, end);
-        console.log('Historical Data:', data); // Add logging
-        setHistoricalData(data.data.quotes);
-      } catch (error) {
-        console.error('Failed to fetch historical data:', error); // Enhanced error logging
-        setError('Failed to fetch historical data.');
+    if (chartContainerRef.current) {
+      // Create the chart with autoSize enabled
+      if (!chartRef.current) {
+        chartRef.current = createChart(chartContainerRef.current, {
+          layout: {
+            background: {
+              color: '#1a1a1a'
+            },
+            
+            textColor: '#fff',
+          },
+          grid: {
+            vertLines: {
+              color: '#2B2B43',
+            },
+            horzLines: {
+              color: '#363C4E',
+            },
+          },
+          autoSize: true, // Enable auto-sizing
+          timeScale: {
+              borderColor: '#555',
+              timeVisible: true, // Ensure times are visible
+              secondsVisible: true, // Ensure seconds are visible if applicable
+          },
+        });
+
+        candleSeriesRef.current = chartRef.current.addCandlestickSeries({
+          upColor: '#4CAF50',
+          downColor: '#FF5252',
+          borderDownColor: '#FF5252',
+          borderUpColor: '#4CAF50',
+          wickDownColor: '#FF5252',
+          wickUpColor: '#4CAF50',
+          priceFormat: {
+            type: 'price',
+            precision: 8, // Number of decimal places to show
+            minMove: 0.00000001, // Smallest unit of price movement
+          },
+        });
       }
-    };
 
-    getHistoricalData();
-  }, [timeRange]);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  const chartData = {
-    labels: historicalData.map((entry: any) => new Date(entry.timestamp).toLocaleDateString()),
-    datasets: [
-      {
-        label: 'Price (USD)',
-        data: historicalData.map((entry: any) => entry.quote.USD.price),
-        borderColor: 'rgba(255, 255, 255, 1)', // Set line color to white
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      },
-    ],
-  };
-
-  console.log('Chart Data:', chartData); // Add logging
+      // Update the data in the series
+      if (candleSeriesRef.current) {
+        candleSeriesRef.current.setData(ohlcData);
+      }
+    }
+  }, [ohlcData]);
 
   return (
     <div className="evr-page">
-      <h1>EVR Chart</h1>
-      {evrData ? (
-        <div>
-          <h2>{evrData.name} ({evrData.symbol})</h2>
-          <p>Market Cap: ${evrData.quote.USD.market_cap?.toFixed(2)}</p>
-          <p>Price: ${evrData.quote.USD.price?.toFixed(6)}</p>
-          <p>24h Volume: ${evrData.quote.USD.volume_24h?.toFixed(2)}</p>
-          <p>Circulating Supply: {evrData.circulating_supply}</p>
-          <p>Total Supply: {evrData.total_supply}</p>
-          <p>Max Supply: {evrData.max_supply}</p>
-          <p>Self Reported Circulating Supply: {evrData.self_reported_circulating_supply}</p>
-          <p>Self Reported Market Cap: ${evrData.self_reported_market_cap?.toFixed(2)}</p>
-          <p>CMC Rank: {evrData.cmc_rank}</p>
-          <p>Tags: {evrData.tags.join(', ')}</p>
-          <p>Date Added: {new Date(evrData.date_added).toLocaleDateString()}</p>
-          <p>Last Updated: {new Date(evrData.last_updated).toLocaleString()}</p>
+      <div className="xeggex-data">
+        <h1><strong>{xeggexData.name} ({xeggexData.ticker})</strong></h1>
+        <img src={xeggexData.logo} alt={`${xeggexData.name} logo`} />
+        <p>${xeggexData.usdValue}</p>
+        <p>{xeggexData.circulation} circulating</p>
+        <div className="links">
+          <a href={xeggexData.explorer} target="_blank" rel="noopener noreferrer">Explorer</a>
+          <a href='https://evrmore.com' target="_blank" rel="noopener noreferrer">Website</a>
         </div>
-      ) : (
-        <p>No EVR data found.</p>
-      )}
-      <div className="historical-chart">
-        <h3>Historical Price Chart</h3>
-        <div className="toolbar">
-          <label>Time Range: </label>
-          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            {/* <option value="90d">Last 90 days</option>
-            <option value="all">All Time</option> */}
-          </select>
+        <div className="about">{xeggexData.about}</div>
+        <div className="social-links">
+          {Object.keys(xeggexData.socialCommunity).map((key) => (
+            <a key={key} href={xeggexData.socialCommunity[key]} target="_blank" rel="noopener noreferrer">{key}</a>
+          ))}
         </div>
-        <div className="chart-container">
-          {historicalData.length > 0 && <Line data={chartData} />}
+        <div ref={chartContainerRef} className="chart-container" style={{ marginLeft: 'auto', marginRight: 'auto' }} />
+        <div className="trade-links">
+          <p>Trade on Xeggex</p>
+          <ul>
+            {xeggexData.activeMarkets.map((market: string) => (
+              <li key={market}>
+                <a href={marketLinks[market] || '#'} target="_blank" rel="noopener noreferrer">
+                  {market}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
@@ -120,28 +161,3 @@ const EVRPage: React.FC = () => {
 };
 
 export default EVRPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
