@@ -113,3 +113,15 @@
     border-bottom: 2px solid #cccccc;
     margin: 40px 0;
 }
+
+.blog-link {
+    color: #ff0022; /* Red color for the link */
+    text-decoration: none; /* Remove the underline */
+    font-weight: bold; /* Make the link text bold */
+    transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+.blog-link:hover {
+    color: #cc001e; /* Darker red on hover */
+    text-decoration: underline; /* Underline on hover */
+}
