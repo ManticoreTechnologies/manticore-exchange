@@ -12,9 +12,9 @@ const EvrmoreBlogPost: React.FC = () => {
 
     return (
         <div className='page-container'>
-            <button onClick={toggleMenu} className='menu-button'>
+            {/* <button onClick={toggleMenu} className='menu-button'>
                 {menuOpen ? '▲' : '▼'}
-            </button>
+            </button> */}
 
             {menuOpen && (
                 <div className='nav-menu'>

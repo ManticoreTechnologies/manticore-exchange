@@ -59,7 +59,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     line-height: 1.6;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: 80px;
+    margin-top: 20px;
     /* Adjust for spacing below the menu button */
 }
 
@@ -74,9 +74,7 @@
 
 .header .logo {
     width: 60px;
-    /* Adjust the size as needed */
     height: auto;
-    /* Space between the logo and the text */
 }
 
 /* Sub-headers within the content */

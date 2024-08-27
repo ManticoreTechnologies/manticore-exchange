@@ -50,7 +50,8 @@ const App: React.FC = () => {
         <Route path="/mint" element={<AssetMinter />} />
         <Route path="/evr" element={<EVRPage />} />
         <Route path="/explorer" element={<Explorer />} />
-        <Route path="/blog/evrmore-intro" element={<EvrmoreBlogPost />} /> 
+        <Route path="/blog/evrmore-intro" element={<EvrmoreBlogPost />} />
+      </Routes>
       <Footer />
     </div>
   );
