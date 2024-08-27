@@ -23,7 +23,7 @@ import EVRPage from "./pages/EVRPage";
 import FaucetPage from "./pages/assets/FaucetPage";
 import Explorer from "./pages/Explorer/Explorer";
 import Trading from "./pages/Trading/Trading";
-import EvrmoreBlogPost from "./pages/blogs/EvrmoreBlogPost"; // Import the new blog post component
+import EvrmoreBlogPost from "./pages/blogs/EvrmoreBlogPost";
 
 const App: React.FC = () => {
   return (
@@ -50,8 +50,7 @@ const App: React.FC = () => {
         <Route path="/mint" element={<AssetMinter />} />
         <Route path="/evr" element={<EVRPage />} />
         <Route path="/explorer" element={<Explorer />} />
-        <Route path="/blog/evrmore-intro" element={<EvrmoreBlogPost />} /> {/* Add the new route for Evrmore blog post */}
-      </Routes>
+        <Route path="/blog/evrmore-intro" element={<EvrmoreBlogPost />} /> 
       <Footer />
     </div>
   );
