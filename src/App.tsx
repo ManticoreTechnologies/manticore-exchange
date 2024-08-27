@@ -19,10 +19,11 @@ import BankPage from "./pages/BankPage";
 import ExplorePage from "./pages/ExplorePage";
 import Roadmap from "./pages/Roadmap";
 import AssetMinter from "./pages/assets/AssetMinter";
-import EVRPage from "./pages/EVRPage"; // Import the EVRPage component
+import EVRPage from "./pages/EVRPage";
 import FaucetPage from "./pages/assets/FaucetPage";
 import Explorer from "./pages/Explorer/Explorer";
 import Trading from "./pages/Trading/Trading";
+import EvrmoreBlogPost from "./pages/blogs/EvrmoreBlogPost"; // Import the new blog post component
 
 const App: React.FC = () => {
   return (
@@ -47,8 +48,9 @@ const App: React.FC = () => {
         <Route path="/trade" element={<Trading />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/mint" element={<AssetMinter />} />
-        <Route path="/evr" element={<EVRPage />} /> {/* Add the new route for EVRPage */}
-        <Route path="/explorer" element={<Explorer />} /> {/* Add the new route for EVRPage */}
+        <Route path="/evr" element={<EVRPage />} />
+        <Route path="/explorer" element={<Explorer />} />
+        <Route path="/blog/evrmore-intro" element={<EvrmoreBlogPost />} /> {/* Add the new route for Evrmore blog post */}
       </Routes>
       <Footer />
     </div>
@@ -62,4 +64,5 @@ const AppWrapper: React.FC = () => (
 );
 
 export default AppWrapper;
+
 
