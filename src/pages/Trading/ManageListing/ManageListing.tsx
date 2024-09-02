@@ -8,12 +8,12 @@ const ManageListing: React.FC = () => {
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const [listingId, setListingId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>(''); // New state for confirmation password
+    const [confirmPassword, setConfirmPassword] = useState<string>(''); 
     const [listingData, setListingData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null); // New state for success messages
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState<boolean>(false); // New state for showing confirmation
+    const [successMessage, setSuccessMessage] = useState<string | null>(null); 
+    const [showCancelConfirmation, setShowCancelConfirmation] = useState<boolean>(false); 
 
     const handleFetchListing = async () => {
         setIsLoading(true);
@@ -25,7 +25,12 @@ const ManageListing: React.FC = () => {
                 password,
                 action: 'fetch',
             });
-            setListingData(response.data);
+            const fetchedListingData = response.data;
+
+            // Convert unit price from satoshis to EVR for display
+            fetchedListingData.unit_price = (fetchedListingData.unit_price / 100000000).toFixed(8);
+
+            setListingData(fetchedListingData);
         } catch (error: any) {
             console.error('Error fetching listing:', error);
             if (error.response && error.response.data && error.response.data.message) {
@@ -43,11 +48,14 @@ const ManageListing: React.FC = () => {
         setError(null);
         setSuccessMessage(null);
         try {
+            // Convert the unit price from EVR back to satoshis before sending
+            const unitPriceInSatoshis = Math.floor(Number(listingData.unit_price) * 100000000);
+
             const response = await axios.post(`http://0.0.0.0:668/manage`, {
                 listing_id: listingId,
                 password,
                 action: 'update',
-                unit_price: listingData.unit_price,
+                unit_price: unitPriceInSatoshis, 
                 description: listingData.description,
             });
             setSuccessMessage(response.data.message);
@@ -78,8 +86,8 @@ const ManageListing: React.FC = () => {
                 action: 'cancel',
             });
             setSuccessMessage(response.data.message);
-            setShowCancelConfirmation(false); // Close confirmation after successful cancellation
-            setListingData(null); // Clear listing data after cancellation
+            setShowCancelConfirmation(false); 
+            setListingData(null); 
         } catch (error: any) {
             console.error('Error canceling listing:', error);
             if (error.response && error.response.data && error.response.data.message) {
@@ -132,9 +140,9 @@ const ManageListing: React.FC = () => {
         setIsClosing(true);
         setTimeout(() => {
             setIsManagingListing(false);
-            setShowCancelConfirmation(false); // Reset confirmation dialog
-            setError(null); // Clear error on close
-            setSuccessMessage(null); // Clear success message on close
+            setShowCancelConfirmation(false); 
+            setError(null); 
+            setSuccessMessage(null); 
         }, 300); 
     };
 

@@ -114,7 +114,7 @@ const Home: React.FC = () => {
                   <div className="carousel-item featured-asset">
                     <img
                       className="featured-asset-image"
-                      src={`https://api.manticore.exchange:667/ipfs/cid/${asset.ipfs_hash}`}
+                      src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${asset.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`}
                       alt={asset.name}
                     />
                     <p>{asset.name}</p>

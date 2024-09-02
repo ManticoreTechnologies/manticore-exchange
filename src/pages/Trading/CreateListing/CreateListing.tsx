@@ -14,16 +14,14 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     const [listingDetails, setListingDetails] = useState({
         assetName: '',
         description: '',
-        unitPrice: '',
-        quantity: '',
+        unitPrice: '', // EVR as string input
+        tags: '',
         password: '',
         payoutAddress: '',
     });
     const [listingResponse, setListingResponse] = useState<any>(null);
-    //const [isSending, setIsSending] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderStatus, setOrderStatus] = useState<string | null>(null);
-    //const [isChecking, setIsChecking] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [confirmPassword, setConfirmPassword] = useState<string>(''); // New state for confirmation password
@@ -50,15 +48,18 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
 
             setIsSubmitting(true);
             setErrorMessage(null); // Clear any previous error messages
-
+            const tagsArray = listingDetails.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
             try {
+                // Convert the unit price from EVR to satoshis
+                const unitPriceInSatoshis = Math.floor(Number(listingDetails.unitPrice) * 100000000);
+
                 const response = await axios.post('http://0.0.0.0:668/list', {
                     name: listingDetails.assetName,
                     description: listingDetails.description,
-                    price: Number(listingDetails.unitPrice),
+                    price: unitPriceInSatoshis, // Send the price in satoshis
                     payout_address: listingDetails.payoutAddress,
                     password: listingDetails.password,
-                    tags: []
+                    tags: tagsArray
                 });
                 console.log(response.data);
                 setListingResponse(response.data);
@@ -80,19 +81,16 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
 
     const checkListingStatus = async () => {
         if (!listingResponse) return;
-        //setIsChecking(true);
         try {
             const response = await axios.get(`http://0.0.0.0:668/listing/${listingResponse.listing_id}`);
             const { listing_status } = response.data;
             setOrderStatus(listing_status);
 
             if (listing_status === 'ACTIVE') {
-    //            setIsChecking(false); // Stop the loading spinner when the status is ACTIVE
+                // Stop the loading spinner when the status is ACTIVE
             }
         } catch (error) {
             console.error('Error fetching listing status:', error);
-        } finally {
-   //         setIsChecking(false);
         }
     };
 
@@ -157,9 +155,9 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                         />
                         <input
                             type="text"
-                            name="quantity"
-                            placeholder="Quantity"
-                            value={listingDetails.quantity}
+                            name="tags"
+                            placeholder="Tags (comma separated)"
+                            value={listingDetails.tags}
                             onChange={handleInputChange}
                         />
                         <input

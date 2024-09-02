@@ -13,8 +13,9 @@ interface AssetCardProps {
 
 const AssetCard: React.FC<AssetCardProps> = ({ asset, page, query, showIPFSOnly }) => {
   const imageUrl = asset.has_ipfs && asset.ipfs_hash ? 
-    `http://0.0.0.0:667/ipfs/cid/${asset.ipfs_hash}` : 
+    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${asset.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : 
     logo;
+
 
   return (
     <Link to={`/asset/${encodeURIComponent(asset.name)}?query=${query}&page=${page}&showIPFSOnly=${showIPFSOnly}`} className="assetc-card-link">

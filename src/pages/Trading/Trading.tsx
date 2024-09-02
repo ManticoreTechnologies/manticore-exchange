@@ -17,8 +17,8 @@ const Trading: React.FC = () => {
     const [quantityPopupVisible, setQuantityPopupVisible] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [totalCost, setTotalCost] = useState<string>('0'); // Updated state for formatted total cost
-    const [quantityError, setQuantityError] = useState<string | null>(null); // State for error message
+    const [totalCost, setTotalCost] = useState<string>('0');
+    const [quantityError, setQuantityError] = useState<string | null>(null);
 
     const cartRef = useRef<HTMLDivElement>(null);
     
@@ -38,22 +38,8 @@ const Trading: React.FC = () => {
         if (savedCart) {
             setCart(JSON.parse(savedCart));
         }
-
         fetchListings();
     }, []);
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (cartVisible && cartRef.current && !cartRef.current.contains(event.target as Node)) {
-                setCartVisible(false);
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [cartVisible]);
 
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
@@ -79,23 +65,31 @@ const Trading: React.FC = () => {
     };
 
     const createListing = () => {
-        setIsCreatingListing(true); // Show the CreateListing popup
+        setIsCreatingListing(true);
     };
 
     const handleBuyNow = (item: any) => {
-        setCheckoutItems([item]);
-        setIsCheckingOut(true);
+        setSelectedItem(item);
+        setQuantity(1);
+        setQuantityError(null);
+        calculateTotalCost(parseFloat(item.unitPrice), 1);
+        setQuantityPopupVisible(true);
     };
 
-    //const handleBuyCart = () => {
-    //    setCheckoutItems(cart);
-    //    setIsCheckingOut(true);
-    //};
+    const handleCheckout = () => {
+        if (selectedItem) {
+            selectedItem.quantity = quantity;  // Set the selected quantity
+            selectedItem.totalPrice = (selectedItem.unitPrice * quantity) / 100000000;
+            setCheckoutItems([selectedItem]);
+            setQuantityPopupVisible(false);
+            setIsCheckingOut(true);
+        }
+    };
 
     const handleCheckoutComplete = () => {
         setIsCheckingOut(false);
         setCheckoutItems([]);
-        clearCart(); // Clear the cart after checkout
+        clearCart();
     };
 
     const handleBack = () => {
@@ -103,15 +97,14 @@ const Trading: React.FC = () => {
     };
 
     const handleListingComplete = () => {
-        setIsCreatingListing(false); // Hide the CreateListing popup after listing is completed
-        // Optionally, you can refresh listings here if needed
+        setIsCreatingListing(false);
     };
 
     const promptQuantity = (listing: any) => {
         setSelectedItem(listing);
-        setQuantity(1); // Reset the quantity to 1
-        setQuantityError(null); // Clear any previous error
-        calculateTotalCost(parseFloat(listing.unitPrice), 1); // Convert to number and calculate the total cost for 1 item initially
+        setQuantity(1);
+        setQuantityError(null);
+        calculateTotalCost(parseFloat(listing.unitPrice), 1);
         setQuantityPopupVisible(true);
     };
 
@@ -123,23 +116,20 @@ const Trading: React.FC = () => {
     };
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const qty = Math.max(1, parseInt(e.target.value, 10)); // Convert input to number, remove leading zeros, and ensure a minimum of 1
+        const qty = Math.max(1, parseInt(e.target.value, 10));
         if (selectedItem && qty > selectedItem.quantity) {
-            setQuantity(qty)
             setQuantityError(`Maximum available quantity is ${selectedItem.quantity}.`);
         } else {
-            if(qty)setQuantityError(null);
+            setQuantityError(null);
             setQuantity(qty);
-            calculateTotalCost(parseFloat(selectedItem.unitPrice), qty); // Convert to number and recalculate the total cost
+            calculateTotalCost(parseFloat(selectedItem.unitPrice), qty);
         }
     };
 
     const calculateTotalCost = (unitPrice: number, qty: number) => {
-        if (Number.isNaN(qty))qty=0
-        const subtotal = unitPrice * qty;
-        const fee = subtotal * 0.05; // Calculate 5% fee
+        const subtotal = (unitPrice * qty) / 100000000;
+        const fee = subtotal * 0.05;
         const total = subtotal + fee;
-        // Format the total cost by removing unnecessary trailing zeros
         const formattedTotal = total.toFixed(8).replace(/\.?0+$/, '');
         setTotalCost(formattedTotal);
     };
@@ -149,7 +139,7 @@ const Trading: React.FC = () => {
             if (quantity > selectedItem.availableQuantity) {
                 setQuantityError(`Cannot add more than the available quantity of ${selectedItem.availableQuantity}.`);
                 return;
-            } 
+            }
             addToCart(selectedItem, quantity);
         }
     };
@@ -180,7 +170,7 @@ const Trading: React.FC = () => {
                                 removeFromCart={removeFromCart} 
                                 clearCart={clearCart}
                                 closeCart={() => setCartVisible(false)}
-                                updateQuantity={updateQuantity}  // Pass down the new prop
+                                updateQuantity={updateQuantity}
                             />
                         )}
                     </div>
@@ -200,10 +190,10 @@ const Trading: React.FC = () => {
                             value={quantity} 
                             onChange={handleQuantityChange} 
                         />
-                        {quantityError && <p className="error-message">{quantityError}</p>} {/* Display error message */}
-                        <p>Total Cost: {totalCost} EVR</p> {/* Display formatted total cost */}
+                        {quantityError && <p className="error-message">{quantityError}</p>}
+                        <p>Total Cost: {totalCost} EVR</p>
                         <p>(Including 5% fee)</p>
-                        <button onClick={confirmAddToCart} disabled={!!quantityError}>Add to Cart</button>
+                        <button onClick={handleCheckout} disabled={!!quantityError}>Proceed to Checkout</button>
                         <button onClick={() => setQuantityPopupVisible(false)}>Cancel</button>
                     </div>
                 </div>

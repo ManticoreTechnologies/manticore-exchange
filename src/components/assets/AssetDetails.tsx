@@ -61,7 +61,7 @@ const AssetDetails: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  const imageUrl = asset && asset.has_ipfs && asset.ipfs_hash ? `https://api.manticore.exchange:667/ipfs/cid/${asset.ipfs_hash}` : logo;
+  const imageUrl = asset && asset.has_ipfs && asset.ipfs_hash ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${asset.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : logo;
 
   return (
     <div className="asset-detail-container">

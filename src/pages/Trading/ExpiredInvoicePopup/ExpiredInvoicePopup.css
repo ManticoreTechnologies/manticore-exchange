@@ -1,0 +1,32 @@
+.expired-invoice-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2b2b2b; /* Match background color with the rest of the interface */
+    color: #ffffff; /* White text color to match the interface */
+    padding: 20px;
+    border-radius: 8px; /* Match the border radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
+    z-index: 1000;
+    text-align: center;
+    width: 400px; /* Width to match other elements */
+}
+
+.expired-invoice-popup .popup-content {
+    text-align: center;
+}
+
+.expired-invoice-popup button {
+    background-color: #e74c3c; /* Red button color similar to the complete purchase button */
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.expired-invoice-popup button:hover {
+    background-color: #c0392b; /* Darker red on hover for consistency */
+}

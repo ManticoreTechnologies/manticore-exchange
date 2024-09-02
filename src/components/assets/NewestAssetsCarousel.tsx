@@ -57,7 +57,7 @@ const NewestAssetsCarousel: React.FC<NewestAssetsCarouselProps> = ({ newAssets, 
             >
               <div className="asset-content">
                 <img
-                  src={asset[2] !== undefined ? `https://api.manticore.exchange:667/ipfs/cid/${asset[2]}` : logo}
+                  src={asset[2] !== undefined ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${asset[2]}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : logo}
                   className="newest-asset-image"
                   onDragStart={handleDragStart}
                   onError={handleImageError} // Handle image load error
