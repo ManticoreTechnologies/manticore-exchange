@@ -28,7 +28,7 @@ const Trading: React.FC = () => {
     
     const trading_api_host = 'localhost';//'api.manticore.exchange';
     const trading_api_port = 668;
-    const trading_api_url = `https://${trading_api_host}:${trading_api_port}`;
+    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
 
     useEffect(() => {
         const fetchListings = async () => {

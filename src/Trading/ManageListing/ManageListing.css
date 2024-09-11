@@ -1,17 +1,4 @@
-.manage-listing-button {
-    background-color: transparent;
-    border: none;
-    color: var(--color);
-    cursor: pointer;
-    padding: 5px;
-    transition: transform 0.2s;
-}
-
-.manage-listing-button:hover {
-    transform: scale(1.1);
-    background-color: transparent;
-}
-
+/* Popup container */
 .manage-listing-popup {
     width: 100%;
     position: fixed;
@@ -22,107 +9,191 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    transition: opacity 0.3s;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker semi-transparent background */
+    transition: opacity 0.3s ease-in-out;
 }
 
-.manage-listing-popup.closing {
-    opacity: 0;
-}
-
+/* Popup content */
 .manage-listing-content {
     background-color: var(--background-color); /* Dark background */
-    padding: 20px;
-    border-radius: 10px;
+    padding: 30px;
+    border-radius: 12px;
     width: 500px;
     max-width: 90%;
-    box-shadow: var(--box-shadow);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(0);
 }
 
+/* Closing animation for popup */
+.manage-listing-popup.closing {
+    opacity: 0;
+    transform: translateY(-20px); /* Slide up effect */
+}
+
+/* Headings */
 h2 {
     margin-top: 0;
-    font-size: 1.5em;
+    font-size: 1.75em; /* Slightly larger font */
     color: var(--color);
     text-align: left;
+    letter-spacing: 0.5px; /* Spacing between letters for elegance */
+    margin-bottom: 15px;
 }
 
+/* Form labels */
 label {
     color: var(--color);
     display: block;
-    margin: 10px 0 5px;
+    margin: 15px 0 7px;
+    font-weight: 600;
 }
 
+/* Inputs and Textareas */
 input,
 textarea {
     width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
     background-color: transparent;
     border: none;
-    border-bottom: 2px solid red;
+    border-bottom: 2px solid #ccc; /* Soft initial underline */
     color: var(--color);
-    font-size: 1em;
+    font-size: 1.1em;
     outline: none;
     box-sizing: border-box;
+    transition: border-bottom 0.3s ease; /* Smooth underline change */
 }
 
 input:focus,
 textarea:focus {
-    border-bottom: var(--search-bar-underline); /* Red underline when focused */
+    border-bottom: var(--search-bar-underline); /* Highlight on focus */
 }
 
+/* Buttons */
+.manage-listing-content button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.manage-listing-content button {
+    background-color: #e74c3c; /* Red button color */
+    color: #ffffff;
+    margin-top: 25px;
+}
+
+button:hover {
+    transform: scale(1.05); /* Slight zoom effect */
+    background-color: #c0392b; /* Darker red on hover */
+}
 
 button:disabled {
     background-color: #666;
     cursor: not-allowed;
 }
 
-
-
+/* Refund button */
 .refund-button {
     background-color: #28a745; /* Green for refund button */
 }
 
-.error-message {
-    color: red;
-    font-size: 0.9em;
-    margin-top: 10px;
+.refund-button:hover {
+    background-color: #218838; /* Darker green on hover */
 }
 
+/* Error message styling */
+.error-message {
+    color: #e74c3c; /* Red color for error messages */
+    font-size: 0.9em;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(231, 76, 60, 0.1); /* Light red background */
+    border-left: 4px solid #e74c3c;
+    border-radius: 4px;
+}
+
+/* Listing address styling */
 .listing-address h3 {
-    color: white;
-    margin-bottom: 5px;
+    color: var(--color);
+    margin-bottom: 8px;
+    font-size: 1.2em;
 }
 
 .listing-address p {
-    color: white;
+    color: var(--color);
     word-break: break-all;
+    font-size: 1.05em;
 }
+
+/* Close button */
 .close-button {
     position: absolute;
     width: auto;
-    right: 0px; /* Adjust positioning */
-    top: 0px; /* Adjust positioning */
+    right: 15px; /* Adjust positioning */
+    top: 15px; /* Adjust positioning */
     background-color: transparent; /* Remove background */
     border: none;
-    font-size: 1.3em; /* Increase the size of the 'X' */
+    font-size: 1.4em; /* Increase size */
     cursor: pointer;
     color: var(--color);
-    transition: transform 0.2s, color 0.2s; /* Add smooth transition for hover effects */
+    transition: transform 0.2s ease, color 0.2s ease; /* Smooth transition */
     outline: none; /* Remove focus outline */
-    background-color: rgba(0,0,0,0);
 }
 
 .close-button:hover {
     transform: scale(1.2); /* Increase size on hover */
-    color: #dc3545; /* Change color on hover */
-    background-color: rgba(0,0,0,0);
+    color: #dc3545; /* Change to red on hover */
 }
 
-.close-button:focus {
-    outline: none; /* Remove the default focus outline */
-    box-shadow: none; /* Remove any box-shadow that may appear on focus */
-    background-color: rgba(0,0,0,0);
+/* Manage listing button */
+.manage-listing-button {
+    background-color: transparent;
+    border: none;
+    color: var(--color);
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.05em;
+    transition: transform 0.2s, color 0.3s; /* Smooth hover effect */
+}
+
+.manage-listing-button:hover {
+    transform: scale(1.1); /* Enlarge slightly on hover */
+    color: #e74c3c; /* Change to red on hover */
+}
+
+/* Popup confirmation buttons */
+.manage-listing-content .confirm-button, .cancel-button {
+    margin: 10px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+}
+
+.manage-listing-content .confirm-button {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.manage-listing-content .cancel-button {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.manage-listing-content .confirm-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.manage-listing-content .cancel-button:hover {
+    background-color: #c0392b; /* Darker red on hover */
 }

@@ -17,7 +17,7 @@ const ManageListing: React.FC = () => {
 
     const trading_api_host = 'localhost';//'api.manticore.exchange';
     const trading_api_port = 668;
-    const trading_api_url = `https://${trading_api_host}:${trading_api_port}`;
+    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
     const handleFetchListing = async () => {
         setIsLoading(true);
         setError(null);
@@ -83,7 +83,7 @@ const ManageListing: React.FC = () => {
         setError(null);
         setSuccessMessage(null);
         try {
-            const response = await axios.post(`${trading_api_url}manage`, {
+            const response = await axios.post(`${trading_api_url}/manage`, {
                 listing_id: listingId,
                 password,
                 action: 'cancel',

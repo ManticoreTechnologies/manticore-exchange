@@ -24,7 +24,6 @@
     overflow: hidden; /* Ensure content doesn't overflow the popup */
 }
 
-
 /* Titles */
 .step-title {
     margin-top: 0;
@@ -101,20 +100,39 @@
     box-sizing: border-box; /* Ensure padding and border are included in element's width */
 }
 
-.status-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
+/* Status message and spinner alignment */
+.listing-status {
+    font-size: 1.2em;
+    margin-top: 20px;
+    font-weight: bold;
+    color: var(--color);
+    text-align: center; /* Ensure text is centered */
 }
 
+.status-container {
+    display: flex;
+    flex-direction: column; /* Stack the status and spinner vertically */
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px; /* Adjust spacing from the top */
+}
+/* Warning message styling */
+.warning-message {
+    font-size: 1em;
+    color: red;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Loading spinner */
 .loading-spinner {
     border: 4px solid rgba(255, 255, 255, 0.2);
     border-top: 4px solid #ffffff;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     animation: spin 1s linear infinite;
+    margin-top: 10px; /* Space between status and spinner */
 }
 
 .checkmark {
@@ -129,7 +147,7 @@
     100% { transform: rotate(360deg); }
 }
 
-
+/* Close button */
 .close-button-create {
     position: absolute;
     width: auto;
@@ -156,6 +174,7 @@
     box-shadow: none; /* Remove any box-shadow that may appear on focus */
     background-color: rgba(0,0,0,0);
 }
+
 /* Tags styling */
 .tags-container .tag {
     display: inline-block;
@@ -174,3 +193,73 @@
     background-color: #ff4d4d; /* Change the background color on hover */
     color: #fff; /* Change text color on hover */
 }
+
+/* Step 2: QR Code Step */
+.step-qr {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.qr-code-container {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-listing-content .qr-code-container strong {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.create-listing-content .listing-address {
+    font-size: 1.1em;
+    word-break: break-all; /* Ensure long addresses wrap properly */
+    margin: 10px 0;
+}
+
+.create-listing-content .listing-message {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: var(--color);
+}
+/* Confirmation Popup */
+.create-listing-content .confirmation-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.create-listing-content .popup-content {
+    background-color: var(--background-color);
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.create-listing-content .confirm-button, .create-listing-content .cancel-button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-listing-content .confirm-button {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.create-listing-content .cancel-button {
+    background-color: #dc3545;
+    color: #fff;
+}
+

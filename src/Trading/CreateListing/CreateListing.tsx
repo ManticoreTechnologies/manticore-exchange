@@ -27,10 +27,13 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     const [passwordStrength, setPasswordStrength] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [confirmPassword, setConfirmPassword] = useState<string>(''); // New state for confirmation password
+    const [confirmPasswordClose, setConfirmPasswordClose] = useState<string>(''); // New state for confirmation password 
+    const [confirmPasswordComplete, setConfirmPasswordComplete] = useState<string>(''); // New state for confirmation password
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false); // For showing the confirmation popup
 
     const trading_api_host = 'localhost'; //'api.manticore.exchange';
     const trading_api_port = 668;
-    const trading_api_url = `https://${trading_api_host}:${trading_api_port}`;
+    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
 
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
@@ -49,6 +52,11 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         if (step === 1) {
             if (passwordStrength < 3) {
                 alert('Please enter a stronger password.');
+                return;
+            }
+
+            if (confirmPassword !== listingDetails.password) {
+                alert('Passwords do not match. Please confirm the password.');
                 return;
             }
 
@@ -159,12 +167,35 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         setConfirmPassword(e.target.value);
     };
 
+    const handleConfirmPasswordCloseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPasswordClose(e.target.value);
+    };
+    const handleConfirmPasswordCompleteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmPasswordComplete(e.target.value);
+    };
     const handleFinalClose = () => {
-        if (confirmPassword === listingDetails.password) {
-            onClose();
+        setShowConfirmationPopup(true); // Show confirmation popup on close attempt
+    };
+    const handleCompleteClose = () => {
+        if (confirmPasswordComplete === listingDetails.password) {
+            onClose(); // Close if password matches
         } else {
-            alert('Passwords do not match. Please try again.');
+            alert('Password does not match. Please try again.');
         }
+    };
+    const handlePopupConfirm = () => {
+        if (confirmPasswordClose === listingDetails.password) {
+            onClose(); // Close if password matches
+        } else {
+            alert('Password does not match. Please try again.');
+        }
+    };
+
+    const handlePopupCancel = async() => {
+        // Close the confirmation popup and cancel the listing process
+        const response = await axios.get(`${trading_api_url}/delete/${listingResponse.listing_id}`);
+        alert(response);
+        onClose();
     };
 
     const getPasswordFeedback = () => {
@@ -225,6 +256,14 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                         />
                         {getPasswordFeedback()}
                         <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={handleConfirmPasswordChange}
+                        />
+                        {confirmPassword !== listingDetails.password && confirmPassword.length > 0 && <p className="password-feedback" style={{ color: 'red' }}>Passwords don't match</p>}
+                        <input
                             type="text"
                             name="payoutAddress"
                             placeholder="Payout Address"
@@ -232,27 +271,37 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                             onChange={handleInputChange}
                         />
                         {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
-                        <button className="next-button" onClick={handleNextStep} disabled={isSubmitting || passwordStrength < 3 || listingDetails.payoutAddress.length !== 34 || listingDetails.payoutAddress[0].toUpperCase() !== "E"}>
+                        <button 
+                            className="next-button" 
+                            onClick={handleNextStep} 
+                            disabled={isSubmitting || passwordStrength < 3 || confirmPassword !== listingDetails.password || listingDetails.payoutAddress.length !== 34 || listingDetails.payoutAddress[0].toUpperCase() !== "E"}
+                        >
                             {isSubmitting ? 'Submitting...' : 'Next'}
                         </button>
                     </div>
                 );
             case 2:
                 return (
-                    <div className="step-content">
+                    <div className="step-content step-qr">
                         <h2 className="step-title">Step 2: Send Assets to Address</h2>
-                        <p>{listingResponse?.message}</p>
-                        <p><strong>Listing Address:</strong> {listingResponse?.listing_address}</p>
-                        {listingResponse?.listing_address && (
-                            <QRCode
-                                value={listingResponse.listing_address}
-                                size={128}
-                                fgColor="#000000"
-                                bgColor="#ffffff"
-                            />
-                        )}
+                        <p className="warning-message"><strong>Important:</strong> Please save your <strong>Listing ID</strong> and <strong>Password</strong>. You will need them to manage this listing. Failure to do so will result in losing access to the listing.</p>
+                        <p className="listing-message">{listingResponse?.message}</p>
+                        <div className="qr-code-container">
+                            <strong>Listing Address:</strong>
+                            <p className="listing-address">{listingResponse?.listing_address}</p>
+                            {listingResponse?.listing_address && (
+                                <QRCode
+                                    value={listingResponse.listing_address}
+                                    size={160}
+                                    fgColor="#000000"
+                                    bgColor="#ffffff"
+                                />
+                            )}
+                        </div>
                         <p><strong>Listing ID:</strong> {listingResponse?.listing_id}</p>
-                        <p><strong>Status:</strong> {orderStatus || 'PENDING'}</p>
+                        <p className="listing-status">
+                            <strong>Status:</strong> {orderStatus || 'PENDING'}
+                        </p>
                         <div className="status-container">
                             {orderStatus === 'ACTIVE' ? (
                                 <>
@@ -260,10 +309,10 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                                         type="password"
                                         name="confirmPassword"
                                         placeholder="Confirm Password"
-                                        value={confirmPassword}
-                                        onChange={handleConfirmPasswordChange}
+                                        value={confirmPasswordComplete}
+                                        onChange={handleConfirmPasswordCompleteChange}
                                     />
-                                    <div className="checkmark" onClick={handleFinalClose}>&#10004;</div> {/* Clickable Green checkmark */}
+                                    <div className="checkmark" onClick={handleCompleteClose}>&#10004;</div> {/* Clickable Green checkmark */}
                                 </>
                             ) : (
                                 <div className="loading-spinner"></div> // Loading spinner
@@ -279,8 +328,28 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     return (
         <div className="create-listing-popup">
             <div className="create-listing-content">
-                <div className="close-button-create" onClick={onClose}>✕</div>
+                <div className="close-button-create" onClick={handleFinalClose}>✕</div>
                 {renderStepContent()}
+
+                {/* Confirmation Popup */}
+                {showConfirmationPopup && (
+                    <div className="confirmation-popup">
+                        <div className="popup-content">
+                            <h3>Confirm Close</h3>
+                            <p>Are you sure you want to close? You will lose access to the listing if you haven't saved the password and listing ID.</p>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Enter Password to Confirm"
+                                value={confirmPasswordClose}
+                                onChange={handleConfirmPasswordCloseChange}
+                            />
+                            <button className="confirm-button" onClick={handlePopupConfirm}>Confirm</button>
+                            <button className="cancel-button" onClick={handlePopupCancel}>Cancel Listing</button>
+                            <button className="cancel-button" onClick={() => setShowConfirmationPopup(false)}>Back</button>
+                            </div>
+                    </div>
+                )}
             </div>
         </div>
     );

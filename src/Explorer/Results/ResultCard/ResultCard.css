@@ -100,7 +100,7 @@
 }
 
 /* Spinner */
-.loading-spinner {
+.result-card .loading-spinner {
     position: absolute;
     top: 25%;
     left: 45%;
