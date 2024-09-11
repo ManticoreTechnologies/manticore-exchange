@@ -1,0 +1,136 @@
+/* General Card Styling */
+.result-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    width: 100%; /* Ensure link covers the entire card */
+}
+
+.result-card {
+    position: relative;
+    width: 100%;
+    max-width: 300px; /* Adjust the max width as needed */
+    height: 350px; /* Height for the card */
+    background-color: #000; /* Fallback color */
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    padding-bottom: 100px;
+    color: #eaeaea; /* Light text color */
+    margin: 0 auto; /* Center the card */
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #2e2e2e; /* Subtle border for modern look */
+}
+
+/* Hover Effects */
+.result-card:hover {
+    transform: scale(1.05); /* Slight zoom */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Darker shadow on hover */
+}
+
+.result-card:hover .result-overlay {
+    background: rgba(0, 0, 0, 0.85); /* Darken overlay on hover */
+}
+
+/* Overlay Content */
+.result-card .result-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7); /* Dark overlay for readability */
+    color: #fff;
+    text-align: left;
+    z-index: 2;
+}
+
+/* Content in the Card */
+.result-card h3 {
+    font-size: 18px;
+    margin: 0 0 10px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for readability */
+}
+
+.result-card p {
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #ddd;
+    text-align: left;
+}
+
+.result-card strong {
+    font-weight: 600;
+    color: #e60000; /* Highlight important information */
+}
+
+/* Image (as a background) */
+.result-card img.result-image {
+    display: none; /* Hide img tag, use background instead */
+}
+.result-card img,
+.result-card video {
+    width: 100%;
+    height: auto; /* Ensure the media maintains its aspect ratio */
+    object-fit: cover; /* Cover the container without stretching */
+    border-radius: 10px 10px 0 0; /* Keep border radius for top part */
+}
+.result-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3); /* Slight background darkening */
+    z-index: 1;
+    border-radius: 10px;
+}
+
+/* Spinner */
+.loading-spinner {
+    position: absolute;
+    top: 25%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    z-index: 3; /* Ensure spinner is on top */
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #ffffff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .result-card {
+        max-width: 200px;
+        height: 300px; /* Adjusted height for smaller screens */
+    }
+
+    .result-card h3 {
+        font-size: 16px; /* Adjusted font size */
+    }
+
+    .result-card p {
+        font-size: 12px; /* Smaller text for mobile */
+    }
+}

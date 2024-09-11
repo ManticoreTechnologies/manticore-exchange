@@ -1,0 +1,176 @@
+/* Popup container */
+.create-listing-popup {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+/* Popup content */
+.create-listing-content {
+    background-color: var(--background-color); /* Black background */
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: var(--box-shadow); /* More prominent shadow */
+    position: relative;
+    overflow: hidden; /* Ensure content doesn't overflow the popup */
+}
+
+
+/* Titles */
+.step-title {
+    margin-top: 0;
+    font-size: 1.5em;
+    text-align: left;
+    color: var(--color);
+    background-color: inherit;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+}
+
+.password-feedback {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.password-feedback.insecure {
+    color: red;
+}
+
+.password-feedback.secure {
+    color: green;
+}
+
+/* Form inputs */
+.create-listing-content input,
+.create-listing-content textarea {
+    width: calc(100% - 20px); /* Adjust width to ensure padding doesn't cause overflow */
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: transparent; /* Darker background for inputs */
+    border: none;
+    border-bottom: 2px solid red; /* White underline */
+    color: var(--color);
+    font-size: 1em;
+    outline: none;
+    box-sizing: border-box; /* Ensure padding and border are included in element's width */
+}
+
+.create-listing-content input:focus,
+.create-listing-content textarea:focus {
+    border-bottom: var(--search-bar-underline); /* Red underline when focused */
+}
+
+/* Buttons */
+.create-listing-content button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: var(--color);
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+    background-color: var(--button-background-color);
+}
+
+.create-listing-content button:disabled {
+    background-color: #ff4d4d;
+    cursor: not-allowed;
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    text-align: left;
+    width: calc(100% - 20px); /* Ensure the error message has the same width as the input fields */
+    padding: 10px;
+    background-color: #333; /* Match the background color to the input fields */
+    border-radius: 5px;
+    border: 2px solid #dc3545; /* Red border to highlight the error */
+    box-sizing: border-box; /* Ensure padding and border are included in element's width */
+}
+
+.status-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid #ffffff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+.checkmark {
+    font-size: 36px; /* Increased font size for larger checkmark */
+    color: #28a745; /* Green color */
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.close-button-create {
+    position: absolute;
+    width: auto;
+    right: 20px; /* Adjust positioning */
+    top: 20px; /* Adjust positioning */
+    background-color: transparent; /* Remove background */
+    border: none;
+    font-size: 1.3em; /* Increase the size of the 'X' */
+    cursor: pointer;
+    color: var(--color);
+    transition: transform 0.2s, color 0.2s; /* Add smooth transition for hover effects */
+    outline: none; /* Remove focus outline */
+    background-color: transparent;
+}
+
+.close-button-create:hover {
+    transform: scale(1.2); /* Increase size on hover */
+    color: #ff1e34; /* Change color on hover */
+    background-color: rgba(0,0,0,0);
+}
+
+.close-button-create:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: none; /* Remove any box-shadow that may appear on focus */
+    background-color: rgba(0,0,0,0);
+}
+/* Tags styling */
+.tags-container .tag {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: var(--button-background-color);
+    color: var(--color);
+    border-radius: 5px;
+    cursor: pointer; /* Add this to make the cursor a pointer */
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.2s ease; /* Add smooth hover transition */
+}
+
+.tags-container .tag:hover {
+    background-color: #ff4d4d; /* Change the background color on hover */
+    color: #fff; /* Change text color on hover */
+}

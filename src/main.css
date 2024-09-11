@@ -1,0 +1,51 @@
+:root {
+    --background-color: black;
+    --text-color: white;
+    --navbar-bg-color: black;
+    --navbar-text-color: white;
+    --button-background-color: red;
+    --button-text-color: rgb(255, 255, 255);
+    --search-bar-color: white;
+    --search-bar-bg-color: transparent;
+    --search-filters-color: white;
+    --search-filters-bg-color: transparent;
+    --search-bar-underline: 2px solid #fff;
+    --pagination-background: black;
+    --pagination-color: white;
+    --blog-outline: 1px solid rgb(255, 255, 255);
+    --link-color: red; /* Gold color for links in dark mode */
+    --link-hover-color: white; /* Lighter gold color on hover in dark mode */
+    --box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    --modal-border: 2px solid white;
+    --nth-child-color: rgb(50,50,50);
+}
+
+[data-theme="light"] {
+    --background-color: white;
+    --text-color: black;
+    --navbar-background-color: transparent;
+    --navbar-text-color: white;
+    --button-background-color: red;
+    --button-text-color: rgb(0, 0, 0);
+    --navbar-bg-color: transparent;
+    --navbar-text-color: black;
+    --search-bar-color: black;
+    --search-bar-bg-color: transparent;
+    --search-filters-color: black;
+    --search-filters-bg-color: transparent;
+    --search-bar-underline: 2px solid #000;
+    --pagination-background: white;
+    --pagination-color: black;
+    --blog-outline: 1px solid rgb(0, 0, 0);
+    --link-color: red; /* Blue color for links in light mode */
+    --link-hover-color: black; /* Darker blue on hover in light mode */
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Added smooth transition */
+}

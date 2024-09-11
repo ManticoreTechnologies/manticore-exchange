@@ -1,0 +1,59 @@
+.roadmap-container {
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--background-color); /* Use background color variable */
+  border-radius: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for background and text color */
+}
+
+.roadmap-container h1 {
+  color: var(--color); /* Use variable for the title color */
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+  font-weight: 700;
+  border-bottom: 2px solid red; /* Use variable for border color */
+  padding-bottom: 10px;
+  transition: color 0.3s ease, border-color 0.3s ease; /* Smooth transition for color and border */
+}
+
+.roadmap-container h2 {
+  color: var(--color); /* Use variable for section headers */
+  margin-top: 30px;
+  font-size: 2em;
+  border-bottom: 1px solid var(--pagination-background); /* Use variable for border color */
+  padding-bottom: 5px;
+  transition: color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+}
+
+.roadmap-container ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.roadmap-container li {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: var(--color); /* Use variable for list text */
+  position: relative;
+  padding-left: 25px;
+  transition: color 0.3s ease; /* Smooth transition for list text */
+}
+
+.roadmap-container li::before {
+  content: '•';
+  color: red; /* Use variable for bullet points */
+  font-size: 1.5em;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: color 0.3s ease; /* Smooth transition for bullet color */
+}
+
+.roadmap-container p {
+  margin-bottom: 15px;
+  color: var(--search-filters-color); /* Use variable for paragraph text */
+  font-size: 1.2em;
+  transition: color 0.3s ease; /* Smooth transition for paragraph text */
+}

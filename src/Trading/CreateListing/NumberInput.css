@@ -1,0 +1,38 @@
+/* For WebKit browsers (Chrome, Safari, etc.) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Removes default margin to prevent overflow */
+}
+
+/* For Firefox */
+input[type="number"] {
+    -moz-appearance: textfield; /* Disables the default arrow in Firefox */
+}
+
+/* Custom styling for up/down arrows (WebKit browsers only) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    width: 16px;
+    height: 16px;
+    background-color: var(--button-background-color); /* Customize the background color */
+    border-radius: 50%;
+    border: 1px solid var(--color); /* Customize border color */
+    color: var(--color); /* Customize arrow color */
+}
+
+/* Add a hover effect */
+input[type="number"]::-webkit-inner-spin-button:hover,
+input[type="number"]::-webkit-outer-spin-button:hover {
+    background-color: var(--hover-background-color); /* Customize hover background color */
+    border-color: var(--hover-border-color); /* Customize hover border color */
+}
+
+/* Style the input itself */
+input[type="number"] {
+    appearance: none; /* Hides the arrows across different browsers */
+    -webkit-appearance: none; /* Webkit-based browsers */
+    -moz-appearance: textfield; /* Firefox */
+    padding-right: 30px; /* Prevent content overflow when arrows are hidden */
+    background-color: transparent; /* Match the input's background color */
+}

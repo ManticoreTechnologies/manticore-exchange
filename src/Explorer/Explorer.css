@@ -1,0 +1,18 @@
+.explorer-container{
+    text-align: center;
+    min-height: 85vh;
+}
+.no-results {
+    text-align: center;
+    color: var(--search-bar-color);
+    font-size: 18px;
+    margin: 20px;
+}
+@media (max-width: 768px) {
+    .no-results {
+        text-align: center;
+        color: #666;
+        font-size: 18px;
+        margin: 150px 0px 50px;
+    }
+}

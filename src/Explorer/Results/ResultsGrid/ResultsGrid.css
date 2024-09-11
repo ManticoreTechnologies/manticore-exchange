@@ -1,0 +1,17 @@
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjusted min width for better layout */
+    gap: 10px; /* Increased gap between cards */
+    padding: 70px; /* Padding around the grid */
+    justify-items: center; /* Center the cards horizontally */
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+    .results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust the min width for mobile */
+        gap: 0px; /* Reduce the gap between cards */
+        padding: 0px; /* Add more space at the top and adjust padding */
+        margin-top: 150px;
+    }
+}

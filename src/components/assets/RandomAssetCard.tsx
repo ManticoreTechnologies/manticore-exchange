@@ -10,7 +10,7 @@ interface RandomAssetCardProps {
 
 const RandomAssetCard: React.FC<RandomAssetCardProps> = ({ asset }) => {
   const imageUrl = asset.has_ipfs && asset.ipfs_hash ? 
-    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : 
+    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${asset.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : 
     logo;
 
 

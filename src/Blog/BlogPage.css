@@ -1,0 +1,116 @@
+.blog-container {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 80vh;
+  background-color: var(--background-color); /* Black background */
+}
+
+.blog-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.blog-button {
+  background-color: transparent;
+  color: var(--color); /* White text color for buttons */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.blog-button:hover {
+  color: var(--color); /* Keep text color white on hover */
+  transform: scale(1.05);
+  text-decoration: none;
+  border-bottom: 2px solid white; /* White underline on hover */
+}
+
+.blog-card {
+  width: 60%;
+  background: var(--background-color); /* Keep background black */
+  border-bottom: 2px solid #cc001b; /* Red underline by default */
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+  color: var(--color); /* White text color */
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  border-bottom: 2px solid white; /* White underline on hover */
+}
+
+.blog-card h2 {
+  font-size: 24px;
+  color: var(--color); /* White text for titles */
+  margin-bottom: 10px;
+  border-bottom: 2px solid #cc001b; /* Red underline for title */
+  display: inline-block; /* Keep underline close to text */
+  transition: border-bottom 0.3s ease;
+}
+
+.blog-card h2:hover {
+  border-bottom: 2px solid white; /* White underline on hover */
+}
+
+.blog-card .author {
+  font-size: 14px;
+  color: var(--color); /* White text for author */
+  margin-bottom: 10px;
+}
+
+.blog-card .summary {
+  font-size: 16px;
+  color: var(--color); /* White text for summary */
+  margin-bottom: 10px;
+}
+
+input[type="search"] {
+  background-color: transparent; /* Transparent background */
+  border: none;
+  border-bottom: 2px solid #cc001b; /* Red underline */
+  color: var(--color); /* White text color */
+  font-size: 1em;
+  padding: 10px;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+input[type="search"]::placeholder {
+  color: var(--color); /* White placeholder text */
+}
+
+input[type="search"]:focus {
+  border-bottom: 2px solid white; /* Keep white underline on focus */
+}
+
+@media (max-width: 768px) {
+  .blog-card {
+    width: 90%;
+  }
+
+  .blog-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .blog-button {
+    width: 80%;
+    text-align: center;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+}

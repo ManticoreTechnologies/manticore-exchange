@@ -1,0 +1,72 @@
+:root {
+    --background-color: var(--background-color);
+    --text-color: var(--text-color);
+    --button-background-color: var(--button-background-color);
+    --button-text-color: var(--button-text-color);
+    --link-color: var(--link-color);
+    --link-hover-color: var(--link-hover-color);
+    --box-shadow: var(--box-shadow);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.ipfs-uploader-container {
+    padding: 20px;
+    background-color: var(--background-color);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--text-color);
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.ipfs-uploader-title {
+    color: var(--text-color);
+    text-align: center;
+}
+
+.file-input {
+    display: block;
+    margin: 20px auto;
+    background-color: var(--search-bar-bg-color);
+    color: var(--search-bar-color);
+    border: none;
+    border-bottom: var(--search-bar-underline);
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.upload-button {
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button:disabled {
+    background-color: grey;
+}
+
+.upload-success a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.upload-success a:hover {
+    color: var(--link-hover-color);
+}
+
+.upload-success {
+    margin-top: 20px;
+    text-align: center;
+}

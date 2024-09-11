@@ -1,0 +1,41 @@
+html, body {
+  height: 100%; /* Ensure that the body takes up the full window height */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color); /* Use your background color */
+}
+
+.main-content {
+  flex: 1; /* Ensure the content grows to fill the space, pushing the footer to the bottom */
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
+  background-color: var(--background-color); /* Make sure the footer uses the same background */
+  padding: 20px 0; /* Add padding to the footer for spacing */
+}
+
+.footer p {
+  margin: 0;
+  padding: 0; 
+  font-size: 14px; /* Smaller font size for less prominent text */
+  color: var(--text-color); /* Use your CSS variable for text color */
+}
+
+.footer a {
+  color: #ff000c; /* Red color to match your links */
+  text-decoration: none; /* No underline */
+  padding: 0 10px; /* Space between text buttons */
+  font-size: 15px; /* Visible and clickable size */
+  transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.footer a:hover {
+  color: var(--color); /* White color on hover for contrast */
+}

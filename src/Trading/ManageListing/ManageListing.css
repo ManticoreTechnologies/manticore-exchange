@@ -1,0 +1,128 @@
+.manage-listing-button {
+    background-color: transparent;
+    border: none;
+    color: var(--color);
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.manage-listing-button:hover {
+    transform: scale(1.1);
+    background-color: transparent;
+}
+
+.manage-listing-popup {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    transition: opacity 0.3s;
+}
+
+.manage-listing-popup.closing {
+    opacity: 0;
+}
+
+.manage-listing-content {
+    background-color: var(--background-color); /* Dark background */
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: var(--box-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: var(--color);
+    text-align: left;
+}
+
+label {
+    color: var(--color);
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input,
+textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid red;
+    color: var(--color);
+    font-size: 1em;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus {
+    border-bottom: var(--search-bar-underline); /* Red underline when focused */
+}
+
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+
+
+.refund-button {
+    background-color: #28a745; /* Green for refund button */
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.listing-address h3 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+.listing-address p {
+    color: white;
+    word-break: break-all;
+}
+.close-button {
+    position: absolute;
+    width: auto;
+    right: 0px; /* Adjust positioning */
+    top: 0px; /* Adjust positioning */
+    background-color: transparent; /* Remove background */
+    border: none;
+    font-size: 1.3em; /* Increase the size of the 'X' */
+    cursor: pointer;
+    color: var(--color);
+    transition: transform 0.2s, color 0.2s; /* Add smooth transition for hover effects */
+    outline: none; /* Remove focus outline */
+    background-color: rgba(0,0,0,0);
+}
+
+.close-button:hover {
+    transform: scale(1.2); /* Increase size on hover */
+    color: #dc3545; /* Change color on hover */
+    background-color: rgba(0,0,0,0);
+}
+
+.close-button:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: none; /* Remove any box-shadow that may appear on focus */
+    background-color: rgba(0,0,0,0);
+}

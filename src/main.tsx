@@ -1,15 +1,18 @@
+// src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';  // Ensure path is correct
-import './index.css';
-import './styles/Buttons.css'
+import App from './App';
+import { ThemeProvider } from './context/ThemeContext';
+import './main.css'
 
-const root = document.getElementById('root');
-if (root) {
-  ReactDOM.createRoot(root).render(
+const rootElement = document.getElementById('root');
+
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </React.StrictMode>,
   );
 }
-
