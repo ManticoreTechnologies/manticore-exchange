@@ -3,21 +3,29 @@ import axios from 'axios';
 import { FiTool } from 'react-icons/fi';
 import './ManageListing.css';
 
-const ManageListing: React.FC = () => {
+interface ManageListingProps {
+    initialListingId?: string; // Optional prop for initial listing ID
+}
+
+const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) => {
     const [isManagingListing, setIsManagingListing] = useState<boolean>(false); 
     const [isClosing, setIsClosing] = useState<boolean>(false);
-    const [listingId, setListingId] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [listingId, setListingId] = useState<string>(initialListingId); // Use initialListingId if provided
+    const [password, setPassword] = useState<string>(''); // Always prompt for password
     const [confirmPassword, setConfirmPassword] = useState<string>(''); 
+    const [refundConfirmPassword, setRefundConfirmPassword] = useState<string>(''); // New state for refund confirmation password
     const [listingData, setListingData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null); 
     const [showCancelConfirmation, setShowCancelConfirmation] = useState<boolean>(false); 
+    const [showRefundConfirmation, setShowRefundConfirmation] = useState<boolean>(false); // New state for refund confirmation
 
-    const trading_api_host = 'localhost';//'api.manticore.exchange';
-    const trading_api_port = 668;
-    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
+    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
+    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
+    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
+    const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
+
     const handleFetchListing = async () => {
         setIsLoading(true);
         setError(null);
@@ -29,18 +37,11 @@ const ManageListing: React.FC = () => {
                 action: 'fetch',
             });
             const fetchedListingData = response.data;
-
-            // Convert unit price from satoshis to EVR for display
-            fetchedListingData.unit_price = (fetchedListingData.unit_price / 100000000).toFixed(8);
-
+            fetchedListingData.unit_price = (fetchedListingData.unit_price / 100000000).toFixed(8); // Convert unit price from satoshis to EVR
             setListingData(fetchedListingData);
         } catch (error: any) {
             console.error('Error fetching listing:', error);
-            if (error.response && error.response.data && error.response.data.message) {
-                setError(error.response.data.message);
-            } else {
-                setError('Failed to fetch listing.');
-            }
+            setError(error.response?.data?.message || 'Failed to fetch listing.');
         } finally {
             setIsLoading(false);
         }
@@ -51,24 +52,18 @@ const ManageListing: React.FC = () => {
         setError(null);
         setSuccessMessage(null);
         try {
-            // Convert the unit price from EVR back to satoshis before sending
-            const unitPriceInSatoshis = Math.floor(Number(listingData.unit_price) * 100000000);
-
+            const unitPriceInSatoshis = Math.floor(Number(listingData.unit_price) * 100000000); // Convert the unit price to satoshis
             const response = await axios.post(`${trading_api_url}/manage`, {
                 listing_id: listingId,
                 password,
                 action: 'update',
-                unit_price: unitPriceInSatoshis, 
+                unit_price: unitPriceInSatoshis,
                 description: listingData.description,
             });
             setSuccessMessage(response.data.message);
         } catch (error: any) {
             console.error('Error updating listing:', error);
-            if (error.response && error.response.data && error.response.data.message) {
-                setError(error.response.data.message);
-            } else {
-                setError('Failed to update listing.');
-            }
+            setError(error.response?.data?.message || 'Failed to update listing.');
         } finally {
             setIsLoading(false);
         }
@@ -89,21 +84,21 @@ const ManageListing: React.FC = () => {
                 action: 'cancel',
             });
             setSuccessMessage(response.data.message);
-            setShowCancelConfirmation(false); 
-            setListingData(null); 
+            setShowCancelConfirmation(false);
+            setListingData(null);
         } catch (error: any) {
             console.error('Error canceling listing:', error);
-            if (error.response && error.response.data && error.response.data.message) {
-                setError(error.response.data.message);
-            } else {
-                setError('Failed to cancel listing.');
-            }
+            setError(error.response?.data?.message || 'Failed to cancel listing.');
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleRefundSurplus = async () => {
+        if (password !== refundConfirmPassword) {
+            setError('Passwords do not match for refund. Please confirm your password.');
+            return;
+        }
         setIsLoading(true);
         setError(null);
         setSuccessMessage(null);
@@ -114,13 +109,10 @@ const ManageListing: React.FC = () => {
                 action: 'refund',
             });
             setSuccessMessage(`Surplus refunded successfully! TXID: ${response.data.refund_txid}`);
+            setShowRefundConfirmation(false); // Close refund confirmation modal
         } catch (error: any) {
             console.error('Error refunding surplus:', error);
-            if (error.response && error.response.data && error.response.data.message) {
-                setError(error.response.data.message);
-            } else {
-                setError('Failed to refund surplus.');
-            }
+            setError(error.response?.data?.message || 'Failed to refund surplus.');
         } finally {
             setIsLoading(false);
         }
@@ -143,14 +135,18 @@ const ManageListing: React.FC = () => {
         setIsClosing(true);
         setTimeout(() => {
             setIsManagingListing(false);
-            setShowCancelConfirmation(false); 
-            setError(null); 
-            setSuccessMessage(null); 
-        }, 300); 
+            setShowCancelConfirmation(false);
+            setError(null);
+            setSuccessMessage(null);
+        }, 300);
     };
 
     const openCancelConfirmation = () => {
         setShowCancelConfirmation(true);
+    };
+
+    const openRefundConfirmation = () => {
+        setShowRefundConfirmation(true);
     };
 
     return (
@@ -185,12 +181,13 @@ const ManageListing: React.FC = () => {
                                 <button onClick={handleUpdateListing} disabled={isLoading}>
                                     {isLoading ? 'Updating...' : 'Update Listing'}
                                 </button>
-                                <button onClick={openCancelConfirmation} className="cancel-button" disabled={isLoading}>
+                                <button onClick={openCancelConfirmation} className="cancel-button" disabled={isLoading || listingData.listing_status === 'ACTIVE'}>
                                     {isLoading ? 'Canceling...' : 'Cancel Listing'}
                                 </button>
-                                <button onClick={handleRefundSurplus} className="refund-button" disabled={isLoading}>
+                                <button onClick={openRefundConfirmation} className="refund-button" disabled={isLoading}>
                                     {isLoading ? 'Refunding...' : 'Refund Assets'}
                                 </button>
+                                {listingData.listing_status==='ACTIVE' && <p className="error-message">Active listings cannot be cancelled. Refund this listing to cancel it.</p>}
                                 <div className="listing-address">
                                     <h3>Refill Address</h3>
                                     <p>{listingData.listing_address}</p>
@@ -209,6 +206,7 @@ const ManageListing: React.FC = () => {
                                     placeholder="Listing ID"
                                     value={listingId}
                                     onChange={(e) => setListingId(e.target.value)}
+                                    disabled={Boolean(initialListingId)} // Disable input if initial ID is provided
                                 />
                                 <label htmlFor="password">Password</label>
                                 <input
@@ -219,7 +217,7 @@ const ManageListing: React.FC = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
-                                <button onClick={handleFetchListing} disabled={isLoading}>
+                                <button onClick={handleFetchListing} disabled={isLoading || !listingId || !password}>
                                     {isLoading ? 'Loading...' : 'Fetch Listing'}
                                 </button>
                                 {successMessage && <p className="success-message">{successMessage}</p>}
@@ -230,6 +228,7 @@ const ManageListing: React.FC = () => {
                 </div>
             )}
 
+            {/* Cancel Confirmation */}
             {showCancelConfirmation && (
                 <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
                     <div className="manage-listing-content">
@@ -248,6 +247,33 @@ const ManageListing: React.FC = () => {
                             {isLoading ? 'Canceling...' : 'Confirm Cancelation'}
                         </button>
                         <button onClick={() => setShowCancelConfirmation(false)} className="cancel-button">
+                            Back
+                        </button>
+                        {successMessage && <p className="success-message">{successMessage}</p>}
+                        {error && <p className="error-message">{error}</p>}
+                    </div>
+                </div>
+            )}
+
+            {/* Refund Confirmation */}
+            {showRefundConfirmation && (
+                <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
+                    <div className="manage-listing-content">
+                        <h2>Confirm Refund</h2>
+                        <p>Please confirm your password to refund the assets to the payout address.</p>
+                        <label htmlFor="refundConfirmPassword">Confirm Password</label>
+                        <input
+                            id="refundConfirmPassword"
+                            type="password"
+                            name="refundConfirmPassword"
+                            placeholder="Confirm Password"
+                            value={refundConfirmPassword}
+                            onChange={(e) => setRefundConfirmPassword(e.target.value)}
+                        />
+                        <button onClick={handleRefundSurplus} disabled={isLoading}>
+                            {isLoading ? 'Refunding...' : 'Confirm Refund'}
+                        </button>
+                        <button onClick={() => setShowRefundConfirmation(false)} className="cancel-button">
                             Back
                         </button>
                         {successMessage && <p className="success-message">{successMessage}</p>}

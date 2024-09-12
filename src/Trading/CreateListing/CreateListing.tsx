@@ -31,9 +31,10 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     const [confirmPasswordComplete, setConfirmPasswordComplete] = useState<string>(''); // New state for confirmation password
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false); // For showing the confirmation popup
 
-    const trading_api_host = 'localhost'; //'api.manticore.exchange';
-    const trading_api_port = 668;
-    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
+    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
+    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
+    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
+    const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
@@ -174,6 +175,9 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         setConfirmPasswordComplete(e.target.value);
     };
     const handleFinalClose = () => {
+        if(step==1){
+            onClose();
+        }
         setShowConfirmationPopup(true); // Show confirmation popup on close attempt
     };
     const handleCompleteClose = () => {
@@ -192,9 +196,12 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     };
 
     const handlePopupCancel = async() => {
-        // Close the confirmation popup and cancel the listing process
-        const response = await axios.get(`${trading_api_url}/delete/${listingResponse.listing_id}`);
-        alert(response);
+        const response = await axios.post(`${trading_api_url}/manage`, {
+            listing_id: listingResponse.listing_id,
+            password: listingDetails.password,
+            action: 'cancel',
+        });
+        alert(response.data.message)
         onClose();
     };
 
@@ -284,7 +291,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                 return (
                     <div className="step-content step-qr">
                         <h2 className="step-title">Step 2: Send Assets to Address</h2>
-                        <p className="warning-message"><strong>Important:</strong> Please save your <strong>Listing ID</strong> and <strong>Password</strong>. You will need them to manage this listing. Failure to do so will result in losing access to the listing.</p>
+                        <p className="warning-message"><strong>Important:</strong> Please save your <strong>Listing Password</strong>. You will need it to manage this listing. Failure to do so will result in losing access to the listing.</p>
                         <p className="listing-message">{listingResponse?.message}</p>
                         <div className="qr-code-container">
                             <strong>Listing Address:</strong>
@@ -336,7 +343,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                     <div className="confirmation-popup">
                         <div className="popup-content">
                             <h3>Confirm Close</h3>
-                            <p>Are you sure you want to close? You will lose access to the listing if you haven't saved the password and listing ID.</p>
+                            <p>Are you sure you want to close? You will lose access to the listing if you haven't saved the password.</p>
                             <input
                                 type="password"
                                 name="confirmPassword"

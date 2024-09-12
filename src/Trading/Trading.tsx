@@ -25,10 +25,11 @@ const Trading: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>(''); // New state for search
 
     const cartRef = useRef<HTMLDivElement>(null);
-    
-    const trading_api_host = 'localhost';//'api.manticore.exchange';
-    const trading_api_port = 668;
-    const trading_api_url = `http://${trading_api_host}:${trading_api_port}`;
+
+    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
+    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
+    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
+    const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
     useEffect(() => {
         const fetchListings = async () => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import './ResultPopup.css';
+import ManageListing from '../../ManageListing/ManageListing';
 
 interface ResultPopupProps {
     assetName: string;
@@ -75,6 +76,7 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
                                 </div>
                             </>
                         )}
+                        <ManageListing initialListingId={listingID} />
                     </div>
                 </div>
             </div>
