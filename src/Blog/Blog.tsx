@@ -11,6 +11,13 @@ const BlogPage: React.FC = () => {
       summary: 'Learn about the EVRMORE blockchain, its features, and its advantages over other blockchains.',
       link: '/blog/WelcomeToEvrmore',
     },
+    {
+      title: 'EVRMORE and the Future of Social Commerce',
+      author: 'Manticore Technologies',
+      date: 'August 27, 2024',
+      summary: 'Discover how the EVRMORE Blockchain will revolutionize the f  uture of social commerce',
+      link: '/blog/EvrmoreSocialCommerce',
+    }
     // Add more posts as needed
   ];
 
