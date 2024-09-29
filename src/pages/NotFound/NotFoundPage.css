@@ -1,0 +1,45 @@
+.not-found-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Stacks elements vertically */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--background-color); /* Ensure it fits the dark theme */
+    color: var(--text-color); /* Updated to a less intense color for better readability */
+    font-family: 'Arial', sans-serif; /* Consider a more professional typeface like 'Helvetica' */
+    overflow: hidden;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out;
+}
+
+.glow {
+    font-size: 10rem;
+    text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); /* Simplified for a cleaner glow */
+    background: none; /* Removed background gradient for a more professional look */
+    color: var(--glow-color); /* Keeps the glowing effect */
+    animation: pulseGlow 2s infinite ease-in-out; /* Soft pulse animation */
+}
+
+.message {
+    font-size: 1.75rem; /* Slightly larger for better readability */
+    margin-top: 20px;
+    color: var(--text-color); /* Ensures text is legible */
+    text-shadow: 0 0 2px var(--glow-color); /* Reduced glow for text clarity */
+    animation: fadeIn 4s ease-in-out; /* Kept as is */
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+    }
+    50% {
+        text-shadow: 0 0 30px var(--glow-color), 0 0 40px var(--glow-color);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

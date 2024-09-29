@@ -1,0 +1,109 @@
+:root { /* Default dark mode */
+    --button-text-color: white;
+    --button-background-color: rgb(200, 0, 0); /* Lighter red for better contrast */
+    --button-hover-background-color: rgb(219, 0, 0);
+    --button-shadow-color: rgba(255, 0, 0, 0.7); /* Red glow */
+    --button-border-color: rgb(255, 255, 255); /* Light border */
+    --text-shadow-color: rgba(0, 0, 0, 0.4); /* Dark shadow to make text pop */
+}
+[data-theme="light"] { /* Optional light mode */
+    --button-text-color: black;
+    --button-background-color: rgb(200, 0, 0); /* Slightly lighter red */
+    --button-hover-background-color: rgb(219, 0, 0);
+    --button-shadow-color: rgba(255, 0, 0, 0.5); /* Red glow */
+    --button-border-color: black;
+    --text-shadow-color: rgba(255, 255, 255, 0.4); /* Light shadow for contrast */
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.main{
+    min-height: 84vh;
+    max-width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Button Styles */
+
+button {
+    /* Base button styles */
+    border: 1px solid red;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1.8vh;
+    font-weight: 1000;
+    color: var(--button-text-color);
+    background-color: transparent;
+    text-shadow: 1px 1px 2px var(--text-shadow-color); /* Add text shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 15px var(--button-shadow-color); /* Subtle shadow effect */
+}
+
+button:hover {
+    /* Hover effects */
+    transform: scale(1.1); /* More noticeable scale */
+    border: 2px solid var(--button-border-color); /* Solid border on hover */
+    background-color: var(--button-hover-background-color); /* Darker red */
+    box-shadow: 0 6px 20px var(--button-shadow-color), 0 0 10px var(--button-border-color); /* Stronger shadow and glow effect */
+}
+
+button:active {
+    /* When button is clicked */
+    transform: scale(1.05); /* Slightly smaller on click */
+    box-shadow: 0 2px 8px var(--button-shadow-color); /* Less shadow on click */
+}
+
+
+
+/* Input Styles */
+input {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    outline: none;
+    color: var(--search-bar-color); /* White text for contrast */
+    background-color: transparent; /* No background */
+    border-bottom: var(--search-bar-underline); /* Red underline to match the site's accent color */
+    font-size: 18px;
+    transition: font-size 0.3s ease, border-color 0.3s ease; 
+}
+
+input:focus {
+    border-bottom: var(--search-bar-underline-focus); /* Change underline to white on focus */
+}
+
+input::placeholder {
+    color: var(--search-bar-color); /* Lighter placeholder text */
+}
+
+/* Select Styles */
+select{
+    border: none;
+    background-color: transparent;
+    color: var(--text-color);
+    border-bottom: var(--search-bar-underline); /* Change underline to white on focus */
+}
+
+
+select:focus{
+    outline: none;
+    border-bottom: var(--search-bar-underline-focus);
+}
+
+option{
+    background-color: var(--search-filters-bg-color);
+    color: var(--text-color);
+}
+
+
+@media (max-width: 768px) {
+    .main{
+        padding-top: 80px; /* Add padding to the top to avoid overlap with the navbar */
+    }
+}

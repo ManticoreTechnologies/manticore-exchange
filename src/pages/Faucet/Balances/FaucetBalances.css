@@ -1,0 +1,96 @@
+/* Style for the assets-list container */
+.assets-list {
+    margin: 1rem auto; /* Reduced margin */
+    padding: 0.5rem; /* Reduced padding */
+    max-width: 1000px;
+    text-align: center;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--background-color); /* Use variable for background color */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); /* Red glow effect */
+    margin: 0 auto;
+}
+
+/* Table Header Styling */
+th {
+    font-size: 1.2rem;
+    color: var(--text-color); /* Use variable for text color */
+    background-color: var(--background-color); /* Use variable for background color */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.5rem; /* Reduced padding */
+    border-bottom: 2px solid #ff000c;
+}
+
+/* Row Styling */
+tbody tr {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: white; /* Use variable for text color */
+}
+
+/* Hover effect on rows */
+tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.9); /* Darker background on hover */
+}
+
+/* Light background for text when hovering over the row */
+tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.2); /* Light semi-transparent background for better contrast */
+    color: #ff000c; /* Aggressive red text color */
+}
+
+/* Cell Styling */
+td {
+    padding: 0.5rem; /* Reduced padding */
+    text-align: left;
+    border-bottom: 1px solid #ff000c; /* Aggressive red for borders */
+    background-color: rgba(0, 0, 0, 0.5); /* Fallback dark background */
+}
+
+td.balance-cell {
+    text-align: center; /* Center text in balance cells */
+}
+
+td img {
+    display: block;
+    max-height: 45px;
+    margin: 0.25rem auto; /* Reduced margin */
+    background-color: rgba(255, 255, 255, 0.8); /* Light background for better contrast */
+    padding: 0.25rem; /* Add padding around the image */
+    border-radius: 5px; /* Optional: Add rounded corners */
+}
+
+/* Clickable rows */
+tr a {
+    display: block;
+    color: inherit; /* Inherit color from row */
+    text-decoration: none;
+    padding: 0.5rem; /* Reduced padding */
+}
+
+tr a:hover {
+    color: #ff000c; /* Red text on hover */
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .assets-list {
+        padding: 0.25rem; /* Adjust padding for smaller screens */
+    }
+
+    th, td {
+        font-size: 0.9rem; /* Adjust font size for smaller screens */
+        padding: 0.25rem; /* Adjust padding for smaller screens */
+    }
+
+    td img {
+        max-height: 30px; /* Adjust image size for smaller screens */
+    }
+}

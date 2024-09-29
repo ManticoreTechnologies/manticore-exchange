@@ -1,0 +1,44 @@
+.faucet-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Wrap elements if they overflow */
+    gap: 10px; /* Add spacing between the form elements */
+    width: 100%;
+    z-index: 1;
+}
+
+/* Input field styling */
+.faucet-form input {
+    display: inline-block;
+    width: 50%;
+    max-width: 400px; /* Restrict max width */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+/* Select dropdown styling */
+.faucet-form select {
+    display: inline-block;
+    width: auto;
+    padding: 8px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    width: 10%;
+}
+
+/* Mobile styling */
+@media (max-width: 600px) {
+    .faucet-form input,
+    .faucet-form select {
+        width: 100%; /* Full width on mobile */
+        max-width: none; /* Remove max width restriction */
+    }
+
+}
+
+

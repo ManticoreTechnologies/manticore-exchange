@@ -1,0 +1,42 @@
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 50px; /* Adjust padding for better spacing */
+    margin: 15px;
+    border-radius: 10px;
+    background-color: transparent; /* Use your color variables */
+    color: var(--text-color);
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 250px; /* Adjust width for a more compact look */
+}
+
+.icon-item:hover {
+    transform: scale(1.08); /* Increased hover effect for better interaction */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+}
+
+.icon-item h3 {
+    margin-top: 10px;
+    font-size: 1.6em; /* Slightly increased size for titles */
+    color: var(--link-color); /* Match the link color for headings */
+}
+
+.icon-item p {
+    margin-top: 10px;
+    font-size: 1em;
+    color: var(--text-color);
+}
+
+.icon-item span {
+    margin-top: 15px; /* Increased spacing for better separation */
+    color: var(--link-color);
+}
+
+.icon-item:hover span {
+    color: var(--link-hover-color);
+}

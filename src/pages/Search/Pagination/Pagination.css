@@ -1,0 +1,79 @@
+.pagination-container {
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Add padding to create space on the sides */
+    box-sizing: border-box; /* Ensure padding doesn't affect total width */
+}
+
+.pagination-container button,
+.pagination-container span {
+    margin: 0 3px;
+    padding: 6px 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    min-width: 36px;
+    max-width: 45px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 4px;
+    background-color: transparent;
+    color: var(--pagination-color);
+}
+
+.pagination-container button.active {
+    background-color: #e60000;
+}
+
+.pagination-container button:disabled {
+    cursor: not-allowed;
+    background-color: transparent;
+    color: red;
+}
+
+.pagination-container button:disabled:hover {
+    transform: none;
+}
+
+.pagination-container button:hover {
+    transform: translateY(-2px);
+}
+
+.pagination-container span {
+    padding: 4px 6px; /* Reduce padding for ellipsis */
+    font-size: 14px;
+    cursor: default;
+    min-width: 24px; /* Reduce width for ellipsis */
+    display: inline-block;
+    text-align: center;
+    border-radius: 4px;
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+    .pagination-container {
+        padding: 0 10px; /* Reduce padding on mobile for more space */
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    .pagination-container button,
+    .pagination-container span {
+        margin: 0 2px;
+        padding: 5px 8px;
+        font-size: 12px;
+        min-width: 32px; /* Adjust for mobile */
+    }
+
+    .pagination-container span {
+        padding: 3px 5px; /* Reduce ellipsis padding on mobile */
+        min-width: 20px; /* Smaller width for ellipsis on mobile */
+    }
+
+    .pagination-container button:hover {
+        transform: translateY(-1px);
+    }
+}

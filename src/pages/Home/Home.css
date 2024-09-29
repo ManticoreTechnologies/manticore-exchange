@@ -1,0 +1,15 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+    overflow: hidden;
+    background-color: transparent; /* Use CSS variable */
+}
+
+.home .infocards{
+    background-color: transparent;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 50px 20px;
+}
