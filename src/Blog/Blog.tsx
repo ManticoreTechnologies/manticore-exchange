@@ -17,6 +17,13 @@ const BlogPage: React.FC = () => {
       date: 'August 27, 2024',
       summary: 'Discover how the EVRMORE Blockchain will revolutionize the f  uture of social commerce',
       link: '/blog/EvrmoreSocialCommerce',
+    },
+    {
+      title: 'Wallet-Based Authentication on EVRMORE',
+      author: 'Manticore Technologies',
+      date: 'August 28, 2024',
+      summary: 'Learn how to implement wallet-based authentication on the EVRMORE blockchain',
+      link: '/blog/WalletBasedAuthEvrmore',
     }
     // Add more posts as needed
   ];

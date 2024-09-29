@@ -11,6 +11,7 @@ import Trading from "./Trading/Trading";
 import { ThemeProvider } from "./context/ThemeContext";
 import WelcomeToEvrmore from "./Blog/posts/WelcomeToEvrmore";
 import EvrmoreSocialCommerce from "./Blog/posts/EvmoreSocialCommerce";
+import WalletBasedAuthEvrmore from "./Blog/posts/WalletBasedAuthEvrmore";
 import Faucet from "./Faucet/Faucet";
 import Home from "./Home/Home";
 import AssetDetails from "./components/assets/AssetDetails";
@@ -30,6 +31,7 @@ const App: React.FC = () => {
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
       <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
+      <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/asset/:name" element={<AssetDetails />}/>
       <Route path="/ipfs" element={<IPFSUploader/>}/>
