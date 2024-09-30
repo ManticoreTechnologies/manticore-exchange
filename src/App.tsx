@@ -18,12 +18,14 @@ import AssetDetails from "./____components/assets/AssetDetails";
 import IPFSUploader from "./pages/Ipfs/Ipfs";
 import EVRPage from "./pages/Chart/EVRPage";
 import NotFoundPage from "./pages/NotFound/NotFound";
+import MantiLink from "./components/MantiLink/MantiLink";
 
 const App: React.FC = () => {
 
   return (
     <div className="App">
       <Navbar />
+      <MantiLink port={1000}/>
       <div className="main">
       <Routes>
       <Route path="/" element={<Home />} />

@@ -4,11 +4,9 @@ import evrLogo from '../../../images/evr_logo_blue_400.svg';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const WalletBasedAuthEvrmore: React.FC = () => {
+    //@ts-ignore
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
 
     return (
         <div className='page-container'>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import './BlogPage.css'; // Make sure to create and link this CSS file
-import MarkdownLoader from './MarkdownLoader';
+import './BlogPage.css'; // Make sure to cr
 
 const BlogPage: React.FC = () => {
   const posts = [
