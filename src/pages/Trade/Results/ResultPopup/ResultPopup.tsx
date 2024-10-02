@@ -1,6 +1,7 @@
 import React from 'react';
 import './ResultPopup.css';
 import ManageListing from '../../ManageListing/ManageListing';
+import { useNavigate } from "react-router-dom";
 
 interface ResultPopupProps {
     assetName: string;
@@ -31,6 +32,15 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
     addToCart,
     buyNow
 }) => {
+
+    const navigate = useNavigate();
+
+    const handleViewListing = () => {
+        navigate(`/trade/asset/${listingID}`, {
+            state: { assetDetails: listing }
+        });
+    };
+
     // Helper function to convert satoshis to EVR
     const convertToEVR = (satoshis: number): string => {
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, ''); // Removes trailing zeros
@@ -66,10 +76,17 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
                         <p><strong>Status:</strong> {orderStatus}</p>
                         {orderStatus === 'ACTIVE' && (
                             <>
+                                {/* View Listing Button */}
+                                <div className="popup-view-listing">
+                                    <button onClick={handleViewListing}>View Listing</button>
+                                </div>
+
+                                {/* Buy Now and Add to Cart Buttons */}
                                 <div className="popup-action-buttons">
                                     <button onClick={() => buyNow(listing)} disabled={quantity === 0}>Buy Now</button>
                                     <button onClick={() => addToCart(listing)}>Add to Cart</button>
                                 </div>
+
                                 <div className="popup-price-quantity">
                                     <p><strong>Price:</strong> {convertToEVR(unitPrice)} EVR</p>
                                     <p><strong>Available:</strong> {convertToEVR(quantity)} {assetName}</p>
@@ -85,3 +102,4 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
 };
 
 export default ResultPopup;
+

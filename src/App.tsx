@@ -18,6 +18,7 @@ import AssetDetails from "./____components/assets/AssetDetails";
 import IPFSUploader from "./pages/Ipfs/Ipfs";
 import EVRPage from "./pages/Chart/EVRPage";
 import NotFoundPage from "./pages/NotFound/NotFound";
+import TradeAsset from "./pages/Trade/TradeAsset";
 
 const App: React.FC = () => {
 
@@ -29,6 +30,7 @@ const App: React.FC = () => {
       <Route path="/" element={<Home />} />
       <Route path="/search" element={<Explorer />} />
       <Route path="/trade" element={<Trading />} />
+      <Route path="/trade/asset/:listingId" element={<TradeAsset />} />
       <Route path="/faucet" element={<Faucet />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
