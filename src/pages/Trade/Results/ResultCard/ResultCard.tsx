@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './ResultCard.css';
 import placeholderImage from '../../../../images/Placeholder.png'
 import ResultPopup from '../ResultPopup/ResultPopup';
+import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner'; // Import the loading spinner
 
 interface ResultCardProps {
     assetName: string;
@@ -31,6 +32,8 @@ const ResultCard: React.FC<ResultCardProps> = ({
     buyNow
 }) => {
     const [showPopup, setShowPopup] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false); // Track loading state
+    const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
     const popupRef = useRef<HTMLDivElement>(null); // To reference the popup container
 
     // Helper function to convert satoshis to EVR
@@ -50,34 +53,56 @@ const ResultCard: React.FC<ResultCardProps> = ({
     };
 
     // IPFS image source handling
-    const backgroundImage = ipfsHash 
+    const mediaSrc = ipfsHash 
         ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
         : placeholderImage;
 
-    // Close popup if clicking outside of it
+    // Fetch the content type to determine if the file is a video or image
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-                setShowPopup(false);
-            }
-        };
-
-        if (showPopup) {
-            document.addEventListener('mousedown', handleClickOutside);
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
+        if (ipfsHash) {
+            fetch(mediaSrc, { method: 'HEAD' })
+                .then((response) => {
+                    const contentType = response.headers.get('Content-Type');
+                    if (contentType && contentType.startsWith('video')) {
+                        setIsVideo(true);
+                    }
+                })
+                .catch(() => setIsLoaded(true)); // In case of error, mark as loaded
         }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showPopup]);
+    }, [ipfsHash, mediaSrc]);
 
     return (
         <>
-            <div className="result-card" style={{ backgroundImage: `url(${backgroundImage})` }} onClick={() => setShowPopup(true)}>
-                <h3 className="asset-name" title={assetName}>{assetName}</h3>
+            <div className="result-card" onClick={() => setShowPopup(true)}>
+                {!isLoaded && (
+                    <div className="loading-spinner-container"><LoadingSpinner/></div> // Display spinner while loading
+                )}
+
+                {/* Render video if it's a video file, otherwise render an image */}
+                {isVideo ? (
+                    <video
+                        width="100%"
+                        height="auto"
+                        autoPlay
+                        muted
+                        loop
+                        onCanPlayThrough={() => setIsLoaded(true)} // Remove spinner when video is ready
+                        onError={() => setIsLoaded(true)} // Remove spinner on error
+                    >
+                        <source src={mediaSrc} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                ) : (
+                    <img
+                        src={mediaSrc}
+                        alt={assetName}
+                        onLoad={() => setIsLoaded(true)} // Remove spinner when image loads
+                        onError={() => setIsLoaded(true)} // Remove spinner even on error
+                    />
+                )}
+
                 <div className="content-container">
+                    <h3 className="asset-name" title={assetName}>{assetName}</h3>
                     <p className="description">{description}</p>
                     {orderStatus === 'ACTIVE' ? (
                         <>

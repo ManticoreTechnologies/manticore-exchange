@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './ResultPopup.css';
 import ManageListing from '../../ManageListing/ManageListing';
 
@@ -31,6 +31,8 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
     addToCart,
     buyNow
 }) => {
+    const [isVideo, setIsVideo] = useState(false);
+
     // Helper function to convert satoshis to EVR
     const convertToEVR = (satoshis: number): string => {
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, ''); // Removes trailing zeros
@@ -47,21 +49,50 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
         listingID
     };
 
-    // IPFS image source handling
-    const backgroundImage = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+    // IPFS media source handling
+    const mediaSrc = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+
+    // Fetch the content type to determine if the file is a video or image
+    useEffect(() => {
+        if (ipfsHash) {
+            fetch(mediaSrc, { method: 'HEAD' })
+                .then((response) => {
+                    const contentType = response.headers.get('Content-Type');
+                    if (contentType && contentType.startsWith('video')) {
+                        setIsVideo(true);
+                    }
+                });
+        }
+    }, [ipfsHash, mediaSrc]);
 
     return (
         <div className="result-popup-overlay">
             <div className="result-popup">
-                <ManageListing initialListingId={listingID} /> {/* Moved to the top */}
+                {isVideo ? (
+                    <video
+                        width="100%"
+                        height="auto"
+                        autoPlay
+                        muted
+                        loop
+                        style={{ borderRadius: '10px' }}
+                    >
+                        <source src={mediaSrc} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                ) : (
+                    <div style={{ backgroundImage: `url(${mediaSrc})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '10px', height: '200px' }} />
+                )}
+                <ManageListing initialListingId={listingID} />
                 <div className="popup-header">
                     <h3 className="popup-asset-name">{assetName}</h3>
                     <button className="close-button" onClick={closePopup}>X</button>
                 </div>
                 <div className="popup-content">
-                    <div className="popup-image" style={{ backgroundImage: `url(${backgroundImage})` }}></div>
+                    <div className="popup-description">
+                        <p><strong>Description:</strong> {description}</p>
+                    </div>
                     <div className="popup-details">
-                        <p className="description"><strong>Description:</strong> {description}</p>
                         <p><strong>Listing Address:</strong> {listingAddress}</p>
                         <p><strong>Status:</strong> {orderStatus}</p>
                         {orderStatus === 'ACTIVE' && (

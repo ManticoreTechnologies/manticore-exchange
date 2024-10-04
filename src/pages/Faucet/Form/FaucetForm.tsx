@@ -10,7 +10,7 @@ const faucet_api_url = `${faucet_api_proto}://${faucet_api_host}:${faucet_api_po
 
 const FaucetForm: React.FC = () => {
     const [faucetAddress, setFaucetAddress] = useState("");
-    const manticoreFaucetAddress = "EaHp99kaAWKde7osRT69pRSyKR2QdCptVe"; // CHANGE BEFORE DEPLOYMENT
+    const manticoreFaucetAddress = "ETG4nTmZJx1ruP9RbcGnc9Bpm635PZVx7n"; // CHANGE BEFORE DEPLOYMENT
     const [assets, setAssets] = useState<{ [key: string]: any[] }>({ "Loading...": [0, logo] });
     const [responseMessage, setResponseMessage] = useState("");
     const [selectedAsset, setSelectedAsset] = useState("example");

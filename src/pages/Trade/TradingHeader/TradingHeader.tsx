@@ -1,3 +1,4 @@
+// @ts-ignore
 import { FiPlus, FiShoppingCart } from 'react-icons/fi';
 import React from 'react';
 import './TradingHeader.css';
@@ -12,11 +13,12 @@ const TradingHeader: React.FC<any> = ({createListing, toggleCartVisibility, cart
             <div className="list-icon-container" onClick={createListing}>
                 <FiPlus className="list-icon" />
             </div>
-            
+            {
             <div className="cart-icon-container" onClick={toggleCartVisibility}>
-                <FiShoppingCart className="cart-icon" />
+                {/* <FiShoppingCart className="cart-icon" /> */}
                 {cart.length > 0 && <span className="cart-count">{cart.length}</span>}
             </div>
+            }
             
         </div>
 

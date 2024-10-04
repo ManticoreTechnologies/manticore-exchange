@@ -4,7 +4,7 @@ import manticore_logo from '../../../images/enhanced_logo.png'; // Import the lo
 
 interface homeheroprops{
     title?: string;
-    body?: string;
+    body?: React.ReactNode;
     logo?: string;
 }
 

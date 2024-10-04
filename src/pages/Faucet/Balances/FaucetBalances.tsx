@@ -4,8 +4,8 @@ import axios, { AxiosError } from 'axios';
 import logo from '../../../images/Placeholder.webp'; // Default logo
 import evr_logo from '../../../images/evr_logo.svg'; // EVR logo
 
-const faucet_api_host = import.meta.env.VITE_FAUCET_API_HOST || 'api.manticore.exchange';
-const faucet_api_port = import.meta.env.VITE_FAUCET_API_PORT || '669';
+const faucet_api_host = import.meta.env.VITE_FAUCET_API_HOST || 'faucet.manticore.exchange';
+const faucet_api_port = import.meta.env.VITE_FAUCET_API_PORT || '443';
 const faucet_api_proto = import.meta.env.VITE_FAUCET_API_PROTO || 'https';
 const faucet_api_url = `${faucet_api_proto}://${faucet_api_host}:${faucet_api_port}`;
 
@@ -62,6 +62,7 @@ const FaucetBalances: React.FC = () => {
 
 const faucet_balances = async<T = unknown>() => {
     const url = `${faucet_api_url}/balance`;
+    console.log(url);
     try {
         const response = await axios.get<T>(url);
         return response.data;

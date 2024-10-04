@@ -6,7 +6,7 @@ import logo from '../../images/Placeholder.webp';
 import evr_logo from '../../images/evr_logo.svg';
 const FaucetPage: React.FC = () => {
     const [faucetAddress, setFaucetAddress] = useState("");
-    const manticoreFaucetAddress = "EaHp99kaAWKde7osRT69pRSyKR2QdCptVe"; //CHANGE BEFORE DEPLOYMENT
+    const manticoreFaucetAddress = "ETG4nTmZJx1ruP9RbcGnc9Bpm635PZVx7n"; //CHANGE BEFORE DEPLOYMENT
     const [currentEVRBalance, setCurrentEVRBalance] = useState(0);
     const [assets, setAssets] = useState<{ [key: string]: any[]}>({"Loading...": [0,logo]});
     const [responseMessage, setResponseMessage] = useState("");

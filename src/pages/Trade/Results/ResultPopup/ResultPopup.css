@@ -18,6 +18,8 @@
     border-radius: 10px;
     position: relative;
     box-shadow: var(--box-shadow);
+    background-size: cover; /* Add this line */
+    background-position: center; /* Add this line */
 }
 
 .popup-header {
@@ -34,17 +36,29 @@
 }
 
 .popup-image {
-    width: 100%;
-    height: 200px;
-    background-size: cover;
-    background-position: center;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    display: none; /* Hide the popup-image div as it's no longer needed */
 }
 
 .popup-content {
     display: flex;
     flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8); /* Black background for the entire content */
+    color: white; /* White text for contrast */
+}
+
+.popup-description {
+    padding: 10px;
+    border-radius: 10px;
+    max-height: 150px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-bottom: 10px; /* Space between description and other content */
+}
+
+.popup-details {
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .popup-action-buttons button {

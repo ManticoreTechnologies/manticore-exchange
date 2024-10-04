@@ -11,9 +11,18 @@ const Faucet: React.FC = () => {
         <div className="faucet-page">
 
             {/* Hero */}
-            <HomeHero title="Manticore Faucet" body="Welcome to the Manticore Faucet! Claim your free EVR and explore the power of decentralized assets." />
-
-            {/* Form */}
+            <HomeHero 
+                title="Manticore Faucet" 
+                body={
+                    <>
+                        Welcome to the Manticore Faucet! Claim your free EVR and explore the power of decentralized assets.
+                        <div style={{ fontSize: '0.8em', marginTop: '10px' }}>
+                            Send EVR or assets to this address ETG4nTmZJx1ruP9RbcGnc9Bpm635PZVx7n and they will be added to the faucet.
+                        </div>
+                    </>
+                } 
+            />
+           {/* Form */}
             <FaucetForm />
 
             {/* Table */}

@@ -11,6 +11,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, closeCart, updateQuantity }) => {
+    return (<></>)
     closeCart();
 
     const cartRef = useRef<HTMLDivElement>(null);

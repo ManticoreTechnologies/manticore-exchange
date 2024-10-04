@@ -7,6 +7,7 @@ interface MantiLinkProps {
 }
 
 const MantiLink: React.FC<MantiLinkProps> = ({ port }) => {
+  // @ts-ignore
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
