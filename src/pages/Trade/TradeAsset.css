@@ -1,62 +1,93 @@
 /* TradeAsset.css */
 
 .trade-asset-page {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-  }
-  
-  .back-button {
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .back-button:hover {
-    background-color: #2980b9;
-  }
-  
-  .asset-details-container {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-  }
-  
-  .asset-image-container {
-    flex: 1;
-  }
-  
-  .asset-image {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  
-  .asset-info {
-    flex: 2;
-  }
-  
-  .asset-info p {
-    font-size: 18px;
-    margin: 10px 0;
-  }
-  
-  .buy-button {
-    background-color: #2ecc71;
-    color: white;
-    padding: 10px 20px;
-    font-size: 18px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .buy-button:hover {
-    background-color: #27ae60;
-  }
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #131722; /* Dark background */
+  color: #D9D9D9; /* Light text */
+}
+
+.back-button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.back-button:hover {
+  background-color: #2980b9;
+}
+
+.asset-details-container {
+  margin-bottom: 20px;
+}
+
+.asset-info p {
+  margin: 5px 0;
+}
+
+.trading-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.chart-container {
+  flex: 2;
+}
+
+.order-book-container, .place-order-container {
+  flex: 1;
+  background-color: #1E222D;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.order-book-container h2, .place-order-container h2 {
+  font-size: 16px;
+  color: #D9D9D9;
+  margin-bottom: 10px;
+}
+
+.place-order-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.place-order-container label {
+  margin-bottom: 10px;
+}
+
+.place-order-container input {
+  padding: 8px;
+  margin-bottom: 10px;
+  background-color: #2C2F38;
+  border: none;
+  color: white;
+}
+
+.place-order-container button {
+  padding: 10px;
+  background-color: #4AFA9A;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.place-order-container button:hover {
+  background-color: #3AFA89;
+}
+
+.active-orders-container {
+  margin-top: 20px;
+  background-color: #1E222D;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+
+
   
