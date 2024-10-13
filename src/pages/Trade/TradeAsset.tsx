@@ -65,12 +65,15 @@ const TradeAsset: React.FC = () => {
   }, [listingId, fetchAssetDetails]);
 
   useEffect(() => {
-
-    const ipfsHash = JSON.parse(assetDetails.asset_data).has_ipfs ? JSON.parse(assetDetails.asset_data).ipfs_hash : undefined;
-    const newUrl = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
-    setUrl(newUrl);
-    console.log(newUrl);
-
+    if (assetDetails && assetDetails.asset_data) {
+      const assetDataParsed = JSON.parse(assetDetails.asset_data);
+      if (assetDataParsed?.has_ipfs) {
+        const ipfsHash = assetDataParsed.ipfs_hash;
+        const newUrl = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+        setUrl(newUrl);
+        console.log(newUrl);
+      }
+    }
   }, [assetDetails]);
 
   const handlePlaceOrder = (order: { type: string; price: number; quantity: number }) => {
@@ -97,7 +100,7 @@ const TradeAsset: React.FC = () => {
       {assetDetails ? (
         <div className="asset-details-container">
           <div className="asset-info">
-            {url && <img src={url} alt="Asset" />}
+            {url && <img src={url} alt="Asset" className="asset-image" />}
             <p><strong>Asset Name:</strong> {assetDetails.asset_name}</p>
             <p><strong>Description:</strong> {assetDetails.description}</p>
             <p><strong>Price:</strong> {assetDetails.price} EVR</p>

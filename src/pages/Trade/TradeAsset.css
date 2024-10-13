@@ -1,21 +1,22 @@
-/* TradeAsset.css */
-
 .trade-asset-page {
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   background-color: #131722; /* Dark background */
   color: #D9D9D9; /* Light text */
+  display: flex;
+  flex-direction: column;
 }
 
 .back-button {
   background-color: #3498db;
   color: white;
-  padding: 10px;
+  padding: 8px 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .back-button:hover {
@@ -23,33 +24,65 @@
 }
 
 .asset-details-container {
+  display: flex;
+  align-items: center; /* Vertically center the content */
+  justify-content: flex-start; /* Align everything to the left */
   margin-bottom: 20px;
 }
 
+.asset-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1; /* Ensure it takes the remaining space */
+}
+
 .asset-info p {
-  margin: 5px 0;
+  margin: 0;
 }
 
 .trading-layout {
   display: flex;
-  gap: 20px;
+  gap: 15px;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .chart-container {
-  flex: 2;
+  flex: 3; /* Increased flex ratio for wider chart */
+  background-color: #1E222D;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .order-book-container, .place-order-container {
   flex: 1;
   background-color: #1E222D;
-  padding: 15px;
+  padding: 10px 15px;
   border-radius: 5px;
+  min-width: 220px;
 }
 
 .order-book-container h2, .place-order-container h2 {
-  font-size: 16px;
+  font-size: 14px;
   color: #D9D9D9;
   margin-bottom: 10px;
+}
+
+.order-book-container table,
+.place-order-container form {
+  width: 100%;
+  font-size: 14px;
 }
 
 .place-order-container form {
@@ -58,7 +91,7 @@
 }
 
 .place-order-container label {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .place-order-container input {
@@ -67,13 +100,15 @@
   background-color: #2C2F38;
   border: none;
   color: white;
+  border-radius: 3px;
 }
 
 .place-order-container button {
-  padding: 10px;
+  padding: 8px 0;
   background-color: #4AFA9A;
   color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
@@ -82,12 +117,172 @@
 }
 
 .active-orders-container {
-  margin-top: 20px;
-  background-color: #1E222D;
-  padding: 15px;
-  border-radius: 5px;
-}
-
-
-
+  .trade-asset-page {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: #131722; /* Dark background */
+    color: #D9D9D9; /* Light text */
+  }
   
+  .back-button {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  
+  .back-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .asset-details-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+  }
+  
+  .asset-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
+  .asset-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1; /* Ensures it takes up the remaining space */
+  }
+  
+  .asset-info p {
+    margin: 0;
+  }
+  
+  /* Main trading layout */
+  .trading-layout {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 15px;
+  }
+  
+  .chart-container {
+    background-color: #1E222D;
+    padding: 15px;
+    border-radius: 5px;
+    height: 450px; /* Increase height for more visibility */
+  }
+  
+  .order-book-container, .place-order-container {
+    background-color: #1E222D;
+    padding: 15px;
+    border-radius: 5px;
+    min-width: 250px;
+  }
+  
+  .order-book-container {
+    margin-bottom: 15px;
+  }
+  
+  .order-book-container h2, .place-order-container h2 {
+    font-size: 16px;
+    color: #D9D9D9;
+    margin-bottom: 10px;
+  }
+  
+  /* Order book table */
+  .order-book-container table {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .order-book-container td, .order-book-container th {
+    padding: 6px 10px;
+    border-bottom: 1px solid #2C2F38;
+  }
+  
+  .order-book-container th {
+    background-color: #2C2F38;
+  }
+  
+  .order-book-container td {
+    font-size: 13px;
+    color: #d9d9d9;
+  }
+  
+  .place-order-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .place-order-container input {
+    padding: 8px;
+    margin-bottom: 10px;
+    background-color: #2C2F38;
+    border: none;
+    color: white;
+    border-radius: 3px;
+  }
+  
+  .place-order-container button {
+    padding: 10px;
+    background-color: #4AFA9A;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .place-order-container button:hover {
+    background-color: #3AFA89;
+  }
+  
+  .active-orders-container {
+    margin-top: 20px;
+    background-color: #1E222D;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+  }
+  
+  .active-orders-container table {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .active-orders-container td, .active-orders-container th {
+    padding: 6px 10px;
+    border-bottom: 1px solid #2C2F38;
+  }
+  
+  .active-orders-container th {
+    background-color: #2C2F38;
+    font-size: 14px;
+  }
+  
+  .active-orders-container td {
+    font-size: 13px;
+    color: #d9d9d9;
+  }
+  
+  @media (max-width: 1024px) {
+    .trading-layout {
+      grid-template-columns: 1fr;
+    }
+  
+    .chart-container {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  
+
+
