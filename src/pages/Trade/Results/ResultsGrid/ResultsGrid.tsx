@@ -1,6 +1,6 @@
 import React from 'react';
-import ResultCard from '../ResultCard/ResultCard';
-import './ResultsGrid.css';
+import './ResultsGrid.css'; // New CSS for XeggeX-style grid
+import ResultRow from '../ResultRow/ResultRow';
 
 interface ResultsGridProps {
     results: any[];
@@ -12,29 +12,36 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow })
     if (!results || results.length === 0) {
         return <div className="no-results">No results found</div>;
     }
+
     return (
-        <div className="results-grid">
-            {results.map((result: any) => {
-                const sold = result.sold !== undefined ? result.sold : 0;
-                return (
-                    <ResultCard
-                        key={result.listing_id}
-                        assetName={result.asset_name}
-                        description={result.description}
-                        unitPrice={result.unit_price}
-                        listingAddress={result.listing_address}
-                        orderStatus={result.listing_status}
-                        quantity={result.remaining_quantity}
-                        sold={sold}
-                        listingID={result.listing_id}
-                        ipfsHash={JSON.parse(result.asset_data).has_ipfs ? JSON.parse(result.asset_data).ipfs_hash : undefined}
-                        addToCart={addToCart}
-                        buyNow={buyNow}
-                    />
-                );
-            })}
+        <div className="results-table-container">
+            <table className="results-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {results.map((result) => (
+                        <ResultRow
+                            key={result.listing_id}
+                            result={result}
+                            addToCart={addToCart}
+                            buyNow={buyNow}
+                        />
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
 
 export default ResultsGrid;
+
+
+
