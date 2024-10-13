@@ -12,25 +12,6 @@ const OrderBook: React.FC<OrderBookProps> = ({ bids, asks }) => {
       <h2>Order Book</h2>
       <div className="order-book">
         <div className="order-book-side">
-          <h3>Bids</h3>
-          <table className="order-book-table">
-            <thead>
-              <tr>
-                <th>Price</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bids.map((bid, index) => (
-                <tr key={index}>
-                  <td>{bid.price}</td>
-                  <td>{bid.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="order-book-side">
           <h3>Asks</h3>
           <table className="order-book-table">
             <thead>
@@ -44,6 +25,25 @@ const OrderBook: React.FC<OrderBookProps> = ({ bids, asks }) => {
                 <tr key={index}>
                   <td>{ask.price}</td>
                   <td>{ask.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+         <div className="order-book-side">
+          <h3>Bids</h3>
+          <table className="order-book-table">
+            <thead>
+              <tr>
+                <th>Price</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bids.map((bid, index) => (
+                <tr key={index}>
+                  <td>{bid.price}</td>
+                  <td>{bid.quantity}</td>
                 </tr>
               ))}
             </tbody>

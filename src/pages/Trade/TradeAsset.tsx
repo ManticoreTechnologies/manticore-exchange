@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import TradingChart from "./TradingChart"; // Candlestick chart
@@ -17,51 +17,61 @@ const TradeAsset: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);  // Active buy/sell orders
   const [bids, setBids] = useState<any[]>([]);      // Bid orders
   const [asks, setAsks] = useState<any[]>([]);      // Ask orders
-
+  const [url, setUrl] = useState<string | null>(null);
   const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
   const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
   const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
   const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
+  const fetchAssetDetails = useCallback(async () => {
+    try {
+      const response = await axios.get(`${trading_api_url}/listing/${listingId}`);
+      setAssetDetails(response.data);
+      console.log(response.data);
+      setLoading(false);
+
+      // Mocked candlestick data (time, open, high, low, close)
+      setCandlestickData([
+        { time: '2023-10-01', open: 75.32, high: 77.22, low: 74.11, close: 76.18 },
+        { time: '2023-10-02', open: 77.41, high: 78.24, low: 75.22, close: 76.35 },
+        { time: '2023-10-03', open: 79.22, high: 80.41, low: 77.91, close: 78.52 },
+        { time: '2023-10-04', open: 78.92, high: 80.44, low: 78.01, close: 79.65 },
+      ]);
+
+      setOrders([
+        { id: 1, type: 'buy', price: 75.5, quantity: 10, status: 'open' },
+        { id: 2, type: 'sell', price: 78.0, quantity: 5, status: 'open' },
+      ]);
+
+      setBids([
+        { price: 75.0, quantity: 10 },
+        { price: 74.5, quantity: 20 },
+      ]);
+
+      setAsks([
+        { price: 78.0, quantity: 5 },
+        { price: 79.0, quantity: 10 },
+      ]);
+    } catch (err) {
+      setError("Error fetching asset details");
+      setLoading(false);
+    }
+  }, [listingId, trading_api_url]);
+
   useEffect(() => {
-    const fetchAssetDetails = async () => {
-      try {
-        const response = await axios.get(`${trading_api_url}/listing/${listingId}`);
-        setAssetDetails(response.data);
-        setLoading(false);
-
-        // Mocked candlestick data (time, open, high, low, close)
-        setCandlestickData([
-          { time: '2023-10-01', open: 75.32, high: 77.22, low: 74.11, close: 76.18 },
-          { time: '2023-10-02', open: 77.41, high: 78.24, low: 75.22, close: 76.35 },
-          { time: '2023-10-03', open: 79.22, high: 80.41, low: 77.91, close: 78.52 },
-          { time: '2023-10-04', open: 78.92, high: 80.44, low: 78.01, close: 79.65 },
-        ]);
-
-        setOrders([
-          { id: 1, type: 'buy', price: 75.5, quantity: 10, status: 'open' },
-          { id: 2, type: 'sell', price: 78.0, quantity: 5, status: 'open' },
-        ]);
-
-        setBids([
-          { price: 75.0, quantity: 10 },
-          { price: 74.5, quantity: 20 },
-        ]);
-
-        setAsks([
-          { price: 78.0, quantity: 5 },
-          { price: 79.0, quantity: 10 },
-        ]);
-      } catch (err) {
-        setError("Error fetching asset details");
-        setLoading(false);
-      }
-    };
-
     if (listingId) {
       fetchAssetDetails();
     }
-  }, [listingId]);
+  }, [listingId, fetchAssetDetails]);
+
+  useEffect(() => {
+
+    const ipfsHash = JSON.parse(assetDetails.asset_data).has_ipfs ? JSON.parse(assetDetails.asset_data).ipfs_hash : undefined;
+    const newUrl = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+    setUrl(newUrl);
+    console.log(newUrl);
+
+  }, [assetDetails]);
 
   const handlePlaceOrder = (order: { type: string; price: number; quantity: number }) => {
     console.log("Placing order:", order);
@@ -87,6 +97,7 @@ const TradeAsset: React.FC = () => {
       {assetDetails ? (
         <div className="asset-details-container">
           <div className="asset-info">
+            {url && <img src={url} alt="Asset" />}
             <p><strong>Asset Name:</strong> {assetDetails.asset_name}</p>
             <p><strong>Description:</strong> {assetDetails.description}</p>
             <p><strong>Price:</strong> {assetDetails.price} EVR</p>
