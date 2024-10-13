@@ -3,6 +3,7 @@ import './ResultCard.css';
 import placeholderImage from '../../../../images/Placeholder.png'
 import ResultPopup from '../ResultPopup/ResultPopup';
 import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner'; // Import the loading spinner
+import GraphemeSplitter from 'grapheme-splitter'; // Import the library
 
 interface ResultCardProps {
     assetName: string;
@@ -71,6 +72,13 @@ const ResultCard: React.FC<ResultCardProps> = ({
         }
     }, [ipfsHash, mediaSrc]);
 
+    const truncateDescription = (text: string, maxLength: number): string => {
+        const splitter = new GraphemeSplitter();
+        const graphemes = splitter.splitGraphemes(text);
+        if (graphemes.length <= maxLength) return text;
+        return graphemes.slice(0, maxLength).join('') + '...';
+    };
+
     return (
         <>
             <div className="result-card" onClick={() => setShowPopup(true)}>
@@ -103,7 +111,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
 
                 <div className="content-container">
                     <h3 className="asset-name" title={assetName}>{assetName}</h3>
-                    <p className="description">{description}</p>
+                    <p dangerouslySetInnerHTML={{ __html: truncateDescription(description, 100).replace(/\n/g, '<br />') }} />
                     {orderStatus === 'ACTIVE' ? (
                         <>
                             <div className="action-buttons">
@@ -119,7 +127,10 @@ const ResultCard: React.FC<ResultCardProps> = ({
                             </div>
                         </>
                     ) : (
-                        <p className="listing-status"><strong>Status:</strong> {orderStatus}</p>
+                        <>
+                            <p className="listing-status"><strong>Status:</strong> {orderStatus}</p>
+                            <p className="quantity-sold"><strong>Sold:</strong> {convertToEVR(sold)} {assetName}</p>
+                        </>
                     )}
                 </div>
             </div>

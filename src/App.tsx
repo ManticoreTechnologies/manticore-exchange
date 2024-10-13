@@ -2,7 +2,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Static/Navbar/Navbar";
-import "./App.css";
 import BlogPage from "./pages/Blog/Blog";
 import Footer from "./components/Static/Footer/Footer";
 import Roadmap from "./pages/Roadmap/Roadmap";
@@ -16,8 +15,10 @@ import Faucet from "./pages/Faucet/Faucet";
 import Home from "./pages/Home/Home";
 import AssetDetails from "./____components/assets/AssetDetails";
 import IPFSUploader from "./pages/Ipfs/Ipfs";
-import EVRPage from "./pages/Chart/EVRPage";
+import EVRPage from "./pages/InfoChart/EVRPage";
 import NotFoundPage from "./pages/NotFound/NotFound";
+import Chart from "./pages/Chart/Chart";
+import "./App.css";
 
 const App: React.FC = () => {
 
@@ -38,6 +39,7 @@ const App: React.FC = () => {
       <Route path="/asset/:name" element={<AssetDetails />}/>
       <Route path="/ipfs" element={<IPFSUploader/>}/>
       <Route path="/chart" element={<EVRPage />}/>
+      <Route path="/trading-chart" element={<Chart data={[]} />}/>
       <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </div>

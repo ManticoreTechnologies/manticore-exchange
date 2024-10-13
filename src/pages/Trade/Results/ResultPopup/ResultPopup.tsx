@@ -38,6 +38,8 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, ''); // Removes trailing zeros
     };
 
+
+
     const listing = {
         assetName,
         description,
@@ -67,21 +69,27 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
 
     return (
         <div className="result-popup-overlay">
-            <div className="result-popup">
-                {isVideo ? (
+            <div
+                className="result-popup"
+                style={{
+                    backgroundImage: isVideo ? 'none' : `url(${mediaSrc})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    borderRadius: '10px',
+                    color: 'white', // Ensure text is visible on the background
+                    padding: '20px', // Add padding for content
+                }}
+            >
+                {isVideo && (
                     <video
-                        width="100%"
-                        height="auto"
+                        className="popup-video" // Apply the new class here
                         autoPlay
                         muted
                         loop
-                        style={{ borderRadius: '10px' }}
                     >
                         <source src={mediaSrc} type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
-                ) : (
-                    <div style={{ backgroundImage: `url(${mediaSrc})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '10px', height: '200px' }} />
                 )}
                 <ManageListing initialListingId={listingID} />
                 <div className="popup-header">
@@ -90,7 +98,9 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
                 </div>
                 <div className="popup-content">
                     <div className="popup-description">
-                        <p><strong>Description:</strong> {description}</p>
+                        <div className="description-scrollable">
+                            <p dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, '<br />') }} />
+                        </div>
                     </div>
                     <div className="popup-details">
                         <p><strong>Listing Address:</strong> {listingAddress}</p>

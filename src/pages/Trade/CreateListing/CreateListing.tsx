@@ -121,9 +121,9 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                 }));
             }
         } else if (name === 'assetName') {
-            // Allow lowercase but convert them to uppercase and ensure only A-Z 0-9 . _
+            // Allow lowercase but convert them to uppercase and ensure only A-Z 0-9 . _ /
             const uppercasedValue = value.toUpperCase();
-            if (/^[A-Z0-9._]*$/.test(uppercasedValue)) {
+            if (/^[A-Z0-9._/]*$/.test(uppercasedValue)) { // Updated regex to include /
                 setListingDetails(prevDetails => ({
                     ...prevDetails,
                     [name]: uppercasedValue, // Automatically convert to uppercase
