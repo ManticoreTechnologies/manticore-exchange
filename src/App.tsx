@@ -19,7 +19,7 @@ import EVRPage from "./pages/InfoChart/EVRPage";
 import NotFoundPage from "./pages/NotFound/NotFound";
 import Chart from "./pages/Chart/Chart";
 import "./App.css";
-
+import TradeX from "./pages/TradeX/TradeX";
 const App: React.FC = () => {
 
   return (
@@ -36,6 +36,7 @@ const App: React.FC = () => {
       <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
       <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/tradeX" element={<TradeX />} />
       <Route path="/asset/:name" element={<AssetDetails />}/>
       <Route path="/ipfs" element={<IPFSUploader/>}/>
       <Route path="/chart" element={<EVRPage />}/>
