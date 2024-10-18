@@ -27,6 +27,7 @@ const TradeX: React.FC = () => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
     const lineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+    const [activeOrders, setActiveOrders] = useState<Order[]>([]);
 
     useEffect(() => {
         const connectWebSocket = () => {
@@ -143,6 +144,10 @@ const TradeX: React.FC = () => {
             const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice}`;
             wsRef.current.send(orderMessage);
             console.log('Order Placed:', orderMessage);
+            setActiveOrders(prevOrders => [
+                ...prevOrders,
+                { type: orderType, id: Date.now().toString(), price: orderPrice, qty: orderQty }
+            ]);
         } else {
             console.error('WebSocket is not open. Cannot send message.');
         }
@@ -153,12 +158,34 @@ const TradeX: React.FC = () => {
 
     return (
         <div className="orderbook-container">
-            <div ref={chartContainerRef} className="chart-container" style={{ width: '50%', height: '400px' }}></div>
+            <div ref={chartContainerRef} className="chart-container"></div>
+            <div className="order-form">
+                <h3>Place Order</h3>
+                <form onSubmit={(e) => { e.preventDefault(); handlePlaceOrder(); }}>
+                    <label>
+                        Order Type:
+                        <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </label>
+                    <label>
+                        Price:
+                        <input type="number" value={orderPrice} onChange={(e) => setOrderPrice(parseFloat(e.target.value))} />
+                    </label>
+                    <label>
+                        Quantity:
+                        <input type="number" value={orderQty} onChange={(e) => setOrderQty(parseFloat(e.target.value))} />
+                    </label>
+                    <button type="submit">Place Order</button>
+                </form>
+            </div>
+            <TradeLog tradeLog={tradeLog} />
             <div className="orderbook">
                 <OrderTable title="Asks" orders={aggregatedAsks} getBackgroundColor={getBackgroundColor} />
                 <OrderTable title="Bids" orders={aggregatedBids} getBackgroundColor={getBackgroundColor} />
             </div>
-            <TradeLog tradeLog={tradeLog} />
+            <ActiveOrders activeOrders={activeOrders} />
         </div>
     );
 }
@@ -192,6 +219,19 @@ const TradeLog: React.FC<{ tradeLog: string[] }> = ({ tradeLog }) => (
         <ul>
             {tradeLog.map((trade, index) => (
                 <li key={index} dangerouslySetInnerHTML={{ __html: trade }} />
+            ))}
+        </ul>
+    </div>
+);
+
+const ActiveOrders: React.FC<{ activeOrders: Order[] }> = ({ activeOrders }) => (
+    <div className="active-orders">
+        <h3>Active Orders</h3>
+        <ul>
+            {activeOrders.map((order, index) => (
+                <li key={index}>
+                    {order.type} {order.qty} @ {order.price}
+                </li>
             ))}
         </ul>
     </div>
