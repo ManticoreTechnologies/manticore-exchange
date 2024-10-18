@@ -41,6 +41,7 @@ const TradeX: React.FC = () => {
 
             ws.onmessage = (event) => {
                 const message = event.data;
+                
                 if (message.includes('Current Asks')) {
                     setAsks(parseOrders(message, 'Current Asks:'));
                 } else if (message.includes('Current Bids')) {
@@ -49,16 +50,21 @@ const TradeX: React.FC = () => {
                     handleFilledMessage(message);
                 } else if (message.includes('Tickers: ')) {
                     updateTickerHistory(message);
+                } else if (message.includes('Order cancelled:')) {
+                    const orderId = message.split('Order cancelled:')[1].trim();
+                    setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+                    console.log(`Order ${orderId} removed from active orders.`);
                 }
             };
 
-            ws.onclose = () => {
-                console.log('Disconnected from WebSocket');
+            ws.onclose = (event) => {
+                console.log(`Disconnected from WebSocket: Code ${event.code}, Reason: ${event.reason}`);
                 setTimeout(connectWebSocket, 3000);
             };
 
             ws.onerror = (error) => {
                 console.error('WebSocket error: ', error);
+                // Optionally, you can add more logic here to handle specific error scenarios
             };
         };
 
@@ -144,10 +150,18 @@ const TradeX: React.FC = () => {
             const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice}`;
             wsRef.current.send(orderMessage);
             console.log('Order Placed:', orderMessage);
-            setActiveOrders(prevOrders => [
-                ...prevOrders,
-                { type: orderType, id: Date.now().toString(), price: orderPrice, qty: orderQty }
-            ]);
+
+            // Listen for the server response to capture the Order ID
+            wsRef.current.onmessage = (event) => {
+                const message = event.data;
+                if (message.includes('Order ID:')) {
+                    const orderId = message.split('Order ID:')[1].trim();
+                    setActiveOrders(prevOrders => [
+                        ...prevOrders,
+                        { type: orderType, id: orderId, price: orderPrice, qty: orderQty }
+                    ]);
+                }
+            };
         } else {
             console.error('WebSocket is not open. Cannot send message.');
         }
@@ -155,6 +169,26 @@ const TradeX: React.FC = () => {
 
     const aggregatedAsks = aggregateOrders(asks);
     const aggregatedBids = aggregateOrders(bids);
+
+    const cancelOrder = (orderId: string) => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const cancelMessage = `Cancel Order: ${orderId}`;
+            wsRef.current.send(cancelMessage);
+            console.log('Order Cancelled:', cancelMessage);
+
+            // Listen for the server response to confirm the cancellation
+            wsRef.current.onmessage = (event) => {
+                const message = event.data;
+                if (message.includes(`Cancelled Order ID: ${orderId}`)) {
+                    // Remove the order from active orders
+                    setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+                    console.log(`Order ${orderId} removed from active orders.`);
+                }
+            };
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
+        }
+    };
 
     return (
         <div className="orderbook-container">
@@ -185,7 +219,7 @@ const TradeX: React.FC = () => {
                 <OrderTable title="Asks" orders={aggregatedAsks} getBackgroundColor={getBackgroundColor} />
                 <OrderTable title="Bids" orders={aggregatedBids} getBackgroundColor={getBackgroundColor} />
             </div>
-            <ActiveOrders activeOrders={activeOrders} />
+            <ActiveOrders activeOrders={activeOrders} cancelOrder={cancelOrder} />
         </div>
     );
 }
@@ -224,13 +258,14 @@ const TradeLog: React.FC<{ tradeLog: string[] }> = ({ tradeLog }) => (
     </div>
 );
 
-const ActiveOrders: React.FC<{ activeOrders: Order[] }> = ({ activeOrders }) => (
+const ActiveOrders: React.FC<{ activeOrders: Order[], cancelOrder: (orderId: string) => void }> = ({ activeOrders, cancelOrder }) => (
     <div className="active-orders">
         <h3>Active Orders</h3>
         <ul>
             {activeOrders.map((order, index) => (
                 <li key={index}>
-                    {order.type} {order.qty} @ {order.price}
+                    {order.type} {order.qty} @ {order.price} (ID: {order.id})
+                    <button onClick={() => cancelOrder(order.id)}>Cancel</button>
                 </li>
             ))}
         </ul>

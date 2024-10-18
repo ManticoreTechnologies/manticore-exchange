@@ -1,24 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Tint&family=Gruppo&display=swap');
+
+
 .navbar {
   background-color: var(--navbar-bg-color);
-  padding: 10px 20px;
+  padding-bottom: 10px;
+  max-height: 50px;
   position: relative;
 }
 
 .navbar-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Center the links */
   align-items: center;
+  position: relative;
 }
 
 .navbar-logo {
-  position: relative; /* Needed for the ::after pseudo-element */
-  display: inline-block;
-  z-index: 12;
+  position: absolute;
+  left: 20px; /* Adjust as needed */
+  display: flex;
+  align-items: center; /* Vertically center the logo and text */
+  top: 50%; /* Position from the top */
+  text-decoration: none !important;
+  transform: translateY(-50%); /* Center vertically */
 }
 
 .navbar-logo img {
   width: 40px;
-  height: 40px;
   transition: transform 0.3s ease; /* Optional: Smooth scaling on hover */
 }
 
@@ -45,7 +53,9 @@
 }
 
 .navbar-links {
+  padding-top: 10px;  
   display: flex;
+  justify-content: center; /* Center the links */
   align-items: center;
 }
 
@@ -83,8 +93,8 @@
 }
 
 .navbar-actions {
-  display: flex;
-  align-items: center;
+  position: absolute;
+  right: 20px; /* Adjust as needed */
 }
 
 .theme-toggle {
@@ -163,5 +173,45 @@
   .navbar-logo img {
     width: 50px;
     height: 50px;
+  }
+}
+.navbar-brand-text {
+  font-size: 1.5rem;
+  font-family: "Gruppo", sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  color: rgb(255, 255, 255); /* Initial color */
+  margin-left: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: transform 0.5s ease; /* Only transform transition */
+  display: inline-block;
+  text-decoration: none !important; /* Ensure no underline */
+  line-height: 1;
+  background: linear-gradient(90deg, red, black, white, red); /* Seamless gradient */
+  background-size: 2000% auto; /* Increase size for smoother transition */
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-animation 8s linear infinite; /* Slower animation for smoothness */
+  position: relative;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+
+@keyframes particle-animation {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
   }
 }

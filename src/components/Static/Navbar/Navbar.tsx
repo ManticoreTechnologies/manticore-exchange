@@ -40,6 +40,7 @@ const Navbar: React.FC = () => {
       <div className="navbar-content">
         <NavLink to="/" className="navbar-logo" onClick={handleLinkClick}>
           <img src={logo} alt="Logo" />
+          <span className="navbar-brand-text">MANTICORE</span>
         </NavLink>
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
           <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
