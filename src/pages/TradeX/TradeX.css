@@ -1,20 +1,33 @@
+/* General container for the page */
 .orderbook-container {
     display: flex;
-    justify-content: flex-start; /* Align order book and trade log closely */
+    flex-direction: row;
+    justify-content: space-between;
     align-items: flex-start;
     padding: 20px;
-    background-color: #121212;
+    background-color: #0a0a0a; /* Darker background for a more modern look */
     color: #ffffff;
+    min-height: 100vh; /* Full screen height */
 }
 
-.orderbook {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+/* Chart container */
+.chart-container {
+    width: 100%; /* Take up more space for the chart */
+    height: 600px; /* Increase height for a more detailed view */
     background-color: #1e1e1e;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Softer shadow for a modern look */
+    padding: 20px;
+}
+
+/* Orderbook container */
+.orderbook {
+    width: 35%; /* Reduced width for the orderbook */
+    margin-left: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    padding: 20px;
 }
 
 .orderbook .asks, .orderbook .bids {
@@ -24,55 +37,54 @@
 .orderbook table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 0.9rem; /* Smaller font for a denser look */
 }
 
 .orderbook th, .orderbook td {
-    border: 1px solid #333;
-    padding: 12px;
+    border-bottom: 1px solid #333;
+    padding: 10px;
     text-align: right;
 }
 
 .orderbook th {
-    background-color: #333;
-    color: #f2f2f2;
+    background-color: #262626;
+    color: #b0b0b0;
     font-weight: bold;
 }
 
 .orderbook .asks td {
-    background-color: #2a1a1a;
-    color: #ff4d4d; /* Red for asks */
+    background-color: #2d1a1a;
+    color: #ff6b6b; /* More vibrant red for ask orders */
 }
 
 .orderbook .bids td {
-    background-color: #1a2a1a;
-    color: #4dff4d; /* Green for bids */
+    background-color: #1a2d1a;
+    color: #6bff6b; /* More vibrant green for bid orders */
 }
 
-.orderbook tr:nth-child(even) td {
-    background-color: #2a2a2a;
+.orderbook tr:hover td {
+    background-color: #2a2a2a; /* Highlight hovered rows */
 }
 
-.orderbook h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #f2f2f2;
+.orderbook th {
+    background-color: #333;
 }
 
 .trade-log {
-    width: 300px;
-    max-height: 400px; /* Set a max height for scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 20px;
     margin-left: 20px;
-    padding: 20px;
+    max-width: 50%;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
     background-color: #1e1e1e;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .trade-log h3 {
-    text-align: center;
+    color: #ffffff;
     margin-bottom: 10px;
-    color: #f2f2f2;
 }
 
 .trade-log ul {
@@ -81,36 +93,32 @@
 }
 
 .trade-log li {
-    padding: 10px;
+    padding: 8px;
     border-bottom: 1px solid #333;
-    color: #f2f2f2;
     display: flex;
     justify-content: space-between;
+    color: #cccccc;
 }
 
 .trade-log li:nth-child(even) {
     background-color: #2a2a2a;
 }
 
+/* Styling for the order form */
 .order-form {
     margin-top: 20px;
     padding: 20px;
     background-color: #1e1e1e;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     color: #f2f2f2;
-}
-
-.order-form h3 {
-    text-align: center;
-    margin-bottom: 10px;
 }
 
 .order-form select,
 .order-form input {
     width: 100%;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #333;
     border-radius: 4px;
     background-color: #2a2a2a;
@@ -119,15 +127,34 @@
 
 .order-form button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 4px;
     background-color: #4dff4d;
     color: #1e1e1e;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .order-form button:hover {
     background-color: #3de03d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .orderbook-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-container,
+    .orderbook {
+        width: 100%;
+        margin: 0;
+    }
+
+    .trade-log {
+        width: 50%;
+    }
 }
