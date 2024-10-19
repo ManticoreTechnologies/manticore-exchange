@@ -1,156 +1,120 @@
-/* General container for the page */
 .orderbook-container {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto 1fr; /* Adjust rows to fill space */
-    gap: 0; /* Remove gaps between grid items */
-    padding: 0; /* Remove padding if you want no space around the container */
-    background-color: #0a0a0a;
+    flex: 1;
+    max-width: 600px;
+    height: 400px;
+    background-color: #1e1e1e;
     color: #ffffff;
-    min-height: 100vh;
+    text-align: center;
 }
 
-/* Chart container */
+.flex-element {
+    border: 1px solid #ccc;
+    margin: 5px;
+}
+
+.fixed-height {
+    height: 100px; /* Set a fixed height for this element */
+}
+
+.grow {
+    flex-grow: 1; /* Allow these elements to grow to match the height of the fixed-height element */
+}
+
+.trade-log-container {
+    flex: 1;
+    max-width: 600px;
+    height: 400px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    text-align: center;
+}
+
 .chart-container {
-    grid-column: span 8;
-    grid-row: 1;
-    height: 100%; /* Ensure it fills the grid row */
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    padding: 0; /* Remove padding if you want no space inside the container */
-}
-
-/* Orderbook container */
-.orderbook {
-    grid-column: span 4;
-    grid-row: 1;
-    height: 100%; /* Ensure it fills the grid row */
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    padding: 0; /* Remove padding if you want no space inside the container */
-}
-
-.orderbook .asks, .orderbook .bids {
-    margin-bottom: 0; /* Remove margin between asks and bids */
-}
-
-.orderbook table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-.orderbook th, .orderbook td {
-    border-bottom: 1px solid #333;
-    padding: 0; /* Remove padding inside table cells */
-    text-align: right;
-}
-
-.orderbook th {
+    flex: 1;
+    max-width: 600px;
+    height: 400px;
     background-color: #262626;
     color: #b0b0b0;
-    font-weight: bold;
+    text-align: center;
 }
 
-.orderbook .asks td {
-    background-color: #2d1a1a;
-    color: #ff6b6b;
+.orderbook {
+    flex: 1;
+    max-width: 600px;
+    height: 100%; /* Ensure it takes full height */
 }
 
-.orderbook .bids td {
-    background-color: #1a2d1a;
-    color: #6bff6b;
-}
-
-.orderbook tr:hover td {
-    background-color: #2a2a2a;
-}
-
-.trade-log {
-    grid-column: span 6;
-    grid-row: 2;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 0; /* Remove padding if you want no space inside the container */
+.place-order-container {
+    flex: 1;
+    max-width: 600px;
+    height: 400px;
     background-color: #1e1e1e;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
-.trade-log h3 {
     color: #ffffff;
-    margin-bottom: 0; /* Remove margin below the heading */
+    text-align: center;
 }
 
-.trade-log ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.trade-log li {
-    padding: 0; /* Remove padding inside list items */
-    border-bottom: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    color: #cccccc;
-}
-
-.trade-log li:nth-child(even) {
-    background-color: #2a2a2a;
-}
-
-/* Styling for the order form */
-.order-form {
-    grid-column: span 6;
-    grid-row: 2;
-    padding: 0; /* Remove padding if you want no space inside the container */
+.active-orders-container {
+    flex: 1;
+    max-width: 100%;
+    height: 200px;
     background-color: #1e1e1e;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    color: #f2f2f2;
+    color: #ffffff;
+    text-align: center;
 }
 
-.order-form select,
-.order-form input {
-    width: 100%;
-    margin-bottom: 0; /* Remove margin between form elements */
-    padding: 0; /* Remove padding inside form elements */
-    border: 1px solid #333;
-    border-radius: 4px;
-    background-color: #2a2a2a;
-    color: #f2f2f2;
-}
-
-.order-form button {
-    width: 100%;
-    padding: 0; /* Remove padding inside the button */
-    border: none;
-    border-radius: 4px;
-    background-color: #4dff4d;
-    color: #1e1e1e;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.order-form button:hover {
-    background-color: #3de03d;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .orderbook-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
+        flex-direction: column;
     }
 
     .chart-container,
-    .orderbook,
-    .trade-log,
-    .order-form {
-        grid-column: span 1;
+    .orderbook {
         width: 100%;
     }
+}
+
+.trading-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Three columns */
+    grid-template-rows: 1fr 1fr; /* Two rows to allow for more content */
+    gap: 1.5px;
+    height: calc(100vh - 60px); /* Adjust height to account for footer */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.chart-container {
+    grid-column: 1; /* First column */
+    grid-row: 1; /* First row */
+}
+
+.orderbook-container {
+    grid-column: 2; /* Second column */
+    grid-row: 1; /* First row */
+}
+
+.trade-log-container {
+    grid-column: 4; /* Third column */
+    grid-row: 1; /* First row */
+}
+
+.active-orders-container {
+    grid-column: 1 / 5; /* Span the entire width of the grid */
+    grid-row: 2; /* Second row */
+}
+
+.place-order-container {
+    grid-column: 3; /* Span second and third columns */
+    grid-row: 1; /* Second row */
+}
+
+.footer {
+    grid-column: 1 / -1; /* Span the entire width of the grid */
+    background-color: #1e1e1e;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }

@@ -1,0 +1,7 @@
+.chart-container {
+    flex: 1;
+    background-color: #262626;
+    color: #b0b0b0;
+    text-align: center;
+    height: 400px;
+}

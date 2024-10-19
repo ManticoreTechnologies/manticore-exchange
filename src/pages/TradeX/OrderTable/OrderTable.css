@@ -1,0 +1,37 @@
+.order-table-container {
+    /* Add styles for the container */
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table-header {
+    background-color: #262626;
+    color: #b0b0b0;
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 10px;
+    text-align: right; /* Default alignment for headers */
+}
+
+.order-table-header:first-child {
+    text-align: left; /* Align "Price" header to the left */
+}
+
+.order-table-row:hover {
+    background-color: #2a2a2a;
+}
+
+.order-table-cell {
+    border-bottom: 1px solid #333;
+    padding: 10px;
+    /* Align price to the left and qty to the right */
+    text-align: right; /* Default alignment for qty */
+}
+
+.order-table-cell:first-child {
+    text-align: left; /* Align price to the left */
+}
