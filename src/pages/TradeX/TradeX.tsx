@@ -109,9 +109,9 @@ const TradeX: React.FC = () => {
         try {
             console.log('Filled: ', message);
             const formattedMessage = formatFilledMessage(message);
-
+            console.log('Formatted: ', formattedMessage);
             // Extract times and messages from the formatted message
-            const regex = /<span style="color: [^>]+">[^<]+ at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)<\/span>/g;
+            const regex = /<span style="color: hsl\(-\d+,\s70%,\s50%\)">[^<]+ at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?) by [^<]+<\/span>/g;
             let match;
             let latestTime = 0;
             let latestOrder = '';
@@ -124,10 +124,12 @@ const TradeX: React.FC = () => {
                 }
             }
 
-            // Add the latest order to the trade log
-            setTradeLog(prevLog => [latestOrder, ...prevLog]);
+            if (latestOrder) {
+                // Add the latest order to the trade log
+                setTradeLog(prevLog => [latestOrder, ...prevLog]);
+                console.log('Latest Filled Order: ', latestOrder);
+            }
 
-            console.log('Filled: ', latestOrder);
             wsRef.current?.send('get_tickers');
         } catch (error) {
             console.error('Error handling filled order message:', error);
@@ -147,14 +149,15 @@ const TradeX: React.FC = () => {
     };
     const formatFilledMessage = (message: string): string => {
         try {
-            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+), time=([^)]+)\)/g;
+            // Adjusted regex to handle the message format with square brackets
+            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+), time=([^)]+), user_id=([^)]+)\)/g;
             let match;
             const formattedOrders = [];
 
             while ((match = regex.exec(message)) !== null) {
-                const [_, type, id, price, qty, time] = match;
+                const [_, type, id, price, qty, time, userId] = match;
                 const color = generateColor(id);
-                formattedOrders.push(`<span style="color: ${color}">${type} ${qty} @ ${price} at ${time}</span>`);
+                formattedOrders.push(`<span style="color: ${color}">${type} ${qty} @ ${price} at ${time} by ${userId}</span>`);
             }
 
             return formattedOrders.join('<br/>');
