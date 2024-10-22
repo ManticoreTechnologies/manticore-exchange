@@ -35,3 +35,7 @@
 .order-form button:hover {
     background-color: #3de03d;
 }
+
+.order-form button:focus {
+    outline: 2px solid #3de03d;
+}

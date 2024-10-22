@@ -40,6 +40,7 @@ const TradeX: React.FC = () => {
                 ws.onopen = () => {
                     console.log('Connected to WebSocket');
                     ws.send('get_tickers'); // Initial request after connection
+                    ws.send('get_trade_history'); // Request trade history
                     checkUserBalance('user3'); // Check balance on page load
                 };
 
@@ -122,6 +123,9 @@ const TradeX: React.FC = () => {
                 setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
             } else if (message.includes('Balance for user')) {
                 setUserBalance(message);
+            } else if (message.includes('Trade History:')) {
+                const tradeHistory = JSON.parse(message.split('Trade History:')[1].trim());
+                setTradeLog(tradeHistory);
             }
         } catch (error) {
             console.error('Error processing WebSocket message:', error);
@@ -130,24 +134,24 @@ const TradeX: React.FC = () => {
 
     const handleFilledMessage = (message: string) => {
         try {
-            const formattedMessage = formatFilledMessage(message);
-            // Extract times and messages from the formatted message
-            const regex = /<span style="color: hsl\(-\d+,\s70%,\s50%\)">[^<]+ at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?) by [^<]+<\/span>/g;
+            // [Order(buy, id=edc1adfb-2ac7-400a-89a2-c79045347c9c, price=99.0, qty=1, time=2024-10-22 10:40:43.488161, user_id=user1), Order(sell, id=b8190051-106c-4f3d-8a88-e7cc65927de3, price=95, qty=5, time=2024-10-22 10:55:52.730407, user_id=user2)]
+            // use the second order in the message
+            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+\.?\d*), time=([^)]+), user_id=([^)]+)\)/g;
             let match;
-            let latestTime = 0;
-            let latestOrder = '';
-
-            while ((match = regex.exec(formattedMessage)) !== null) {
-                const time = new Date(match[1]).getTime();
-                if (time > latestTime) {
-                    latestTime = time;
-                    latestOrder = match[0];
+            let secondMatch = null;
+            let count = 0;
+            while ((match = regex.exec(message)) !== null) {
+                if (count === 1) {
+                    secondMatch = match;
+                    break;
                 }
+                count++;
             }
-
-            if (latestOrder) {
-                // Add the latest order to the trade log
-                setTradeLog(prevLog => [latestOrder, ...prevLog]);
+            if (secondMatch) {
+                const [_, type, id, price, qty, time, userId] = secondMatch;
+                const tradeTime = new Date(time).getTime();
+                const latestTrade = { price: parseFloat(price), qty: parseFloat(qty), time, type };
+                //setTradeLog(prevLog => [latestTrade, ...prevLog]);
             }
 
             wsRef.current?.send('get_tickers');
@@ -170,17 +174,23 @@ const TradeX: React.FC = () => {
     const formatFilledMessage = (message: string): string => {
         try {
             // Adjusted regex to handle the message format with square brackets
-            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+), time=([^)]+), user_id=([^)]+)\)/g;
+            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+\.?\d*), time=([^)]+), user_id=([^)]+)\)/g;
             let match;
             const formattedOrders = [];
 
             while ((match = regex.exec(message)) !== null) {
                 const [_, type, id, price, qty, time, userId] = match;
-                const color = generateColor(id);
-                formattedOrders.push(`<span style="color: ${color}">${type} ${qty} @ ${price} at ${time} by ${userId}</span>`);
+                const color = type === 'buy' ? 'green' : 'red'; // Use green for buy, red for sell
+                formattedOrders.push(
+                    `<tr>
+                        <td style="color: ${color}">${price}</td>
+                        <td>${qty}</td>
+                        <td>${new Date(time).toLocaleTimeString()}</td>
+                    </tr>`
+                );
             }
 
-            return formattedOrders.join('<br/>');
+            return `<table>${formattedOrders.join('')}</table>`;
         } catch (error) {
             console.error('Error formatting filled message:', error);
             return 'Error formatting message';
@@ -201,12 +211,12 @@ const TradeX: React.FC = () => {
         return `rgba(255, 0, 0, ${intensity})`;
     };
 
-    const handlePlaceOrder = (orderType: string, orderPrice: number, orderQty: number, userId: string) => {
+    const handlePlaceOrder = (orderType: string, orderPrice: number, orderQty: number) => {
         try {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by ${userId}`;
+                const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by user3`;
                 wsRef.current.send(orderMessage);
-                checkUserBalance(userId); // Check balance after placing an order
+                checkUserBalance('user3'); // Check balance after placing an order
             } else {
                 console.error('WebSocket is not open. Cannot send message.');
             }

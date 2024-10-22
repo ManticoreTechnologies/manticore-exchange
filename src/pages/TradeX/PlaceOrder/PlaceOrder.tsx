@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import './PlaceOrder.css';
 interface PlaceOrderProps {
-    onPlaceOrder: (orderType: string, orderPrice: number, orderQty: number, userId: string) => void;
+    onPlaceOrder: (orderType: string, orderPrice: number, orderQty: number) => void;
 }
 
 const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
     const [orderType, setOrderType] = useState<string>('buy');
     const [orderPrice, setOrderPrice] = useState<number>(0);
     const [orderQty, setOrderQty] = useState<number>(0);
-    const userId = 'user3'; // Hardcoded user ID
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onPlaceOrder(orderType, orderPrice, orderQty, userId); // Pass userId
+        onPlaceOrder(orderType, orderPrice, orderQty);
     };
 
     return (
