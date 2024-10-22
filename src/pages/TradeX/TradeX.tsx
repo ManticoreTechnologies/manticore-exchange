@@ -35,54 +35,34 @@ const TradeX: React.FC = () => {
             try {
                 const ws = new WebSocket("ws://localhost:8765");
                 wsRef.current = ws;
-    
+
                 ws.onopen = () => {
                     console.log('Connected to WebSocket');
                     ws.send('get_tickers'); // Initial request after connection
                 };
-    
+
                 ws.onmessage = (event) => {
-                    try {
-                        const message = event.data;
-    
-                        // Handle different messages
-                        if (message.includes('Current Asks')) {
-                            setAsks(parseOrders(message, 'Current Asks:'));
-                        } else if (message.includes('Current Bids')) {
-                            setBids(parseOrders(message, 'Current Bids:'));
-                        } else if (message.includes('Filled')) {
-                            handleFilledMessage(message);
-                        } else if (message.includes('Tickers: ')) {
-                            updateTickerHistory(message);
-                        } else if (message.includes('Order cancelled:')) {
-                            const orderId = message.split('Order cancelled:')[1].trim();
-                            setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-                            console.log(`Order ${orderId} removed from active orders.`);
-                        }
-                    } catch (error) {
-                        console.error('Error processing WebSocket message:', error);
-                    }
+                    handleWebSocketMessage(event.data);
                 };
-    
+
                 ws.onclose = (event) => {
                     console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
                     console.log("Reconnecting in 3 seconds...");
                     setTimeout(connectWebSocket, 3000); // Reconnect after a delay
                 };
-    
+
                 ws.onerror = (event) => {
                     console.error('WebSocket encountered an error:', event);
                     console.log("Attempting to reconnect...");
-                    // Optional: you could add additional retry logic here if needed
                 };
-    
+
             } catch (error) {
                 console.error('Failed to establish WebSocket connection:', error);
             }
         };
-    
+
         connectWebSocket();
-    
+
         // Close WebSocket when component unmounts
         return () => {
             if (wsRef.current) {
@@ -105,11 +85,39 @@ const TradeX: React.FC = () => {
         }
     };
 
+    const handleWebSocketMessage = (message: string) => {
+        try {
+            console.log(message);
+            if (message.includes('Current Asks')) {
+                setAsks(parseOrders(message, 'Current Asks:'));
+            } else if (message.includes('Current Bids')) {
+                setBids(parseOrders(message, 'Current Bids:'));
+            } else if (message.includes('Filled')) {
+                handleFilledMessage(message);
+            } else if (message.includes('Tickers: ')) {
+                updateTickerHistory(message);
+            } else if (message.includes('Order ID:')) {
+                const orderId = message.split('Order ID:')[1].trim();
+                setActiveOrders(prevOrders => [
+                    ...prevOrders,
+                    { type: orderType, id: orderId, price: orderPrice, qty: orderQty }
+                ]);
+            } else if (message.includes('Order cancelled:')) {
+                const orderId = message.split('Order cancelled:')[1].trim();
+                setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+                console.log(`Order ${orderId} removed from active orders.`);
+            } else if (message.includes('Cancel Order:')) {
+                const orderId = message.split('Cancel Order:')[1].trim();
+                setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+            }
+        } catch (error) {
+            console.error('Error processing WebSocket message:', error);
+        }
+    };
+
     const handleFilledMessage = (message: string) => {
         try {
-            console.log('Filled: ', message);
             const formattedMessage = formatFilledMessage(message);
-            console.log('Formatted: ', formattedMessage);
             // Extract times and messages from the formatted message
             const regex = /<span style="color: hsl\(-\d+,\s70%,\s50%\)">[^<]+ at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?) by [^<]+<\/span>/g;
             let match;
@@ -127,7 +135,6 @@ const TradeX: React.FC = () => {
             if (latestOrder) {
                 // Add the latest order to the trade log
                 setTradeLog(prevLog => [latestOrder, ...prevLog]);
-                console.log('Latest Filled Order: ', latestOrder);
             }
 
             wsRef.current?.send('get_tickers');
@@ -181,32 +188,11 @@ const TradeX: React.FC = () => {
         return `rgba(255, 0, 0, ${intensity})`;
     };
 
-    const handlePlaceOrder = (orderType: string, orderPrice: number, orderQty: number) => {
+    const handlePlaceOrder = (orderType: string, orderPrice: number, orderQty: number, userId: string) => {
         try {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice}`;
+                const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by ${userId}`;
                 wsRef.current.send(orderMessage);
-                console.log('Order Placed:', orderMessage);
-
-                // Ensure the onmessage handler is set up to handle ticker updates
-                wsRef.current.onmessage = (event) => {
-                    try {
-                        const message = event.data;
-                        console.log('WebSocket Message Received:', message); // Debugging log
-
-                        if (message.includes('Order ID:')) {
-                            const orderId = message.split('Order ID:')[1].trim();
-                            setActiveOrders(prevOrders => [
-                                ...prevOrders,
-                                { type: orderType, id: orderId, price: orderPrice, qty: orderQty }
-                            ]);
-                        } else if (message.includes('Tickers: ')) {
-                            updateTickerHistory(message);
-                        }
-                    } catch (error) {
-                        console.error('Error handling order response:', error);
-                    }
-                };
             } else {
                 console.error('WebSocket is not open. Cannot send message.');
             }
@@ -220,19 +206,6 @@ const TradeX: React.FC = () => {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
                 const cancelMessage = `Cancel Order: ${orderId}`;
                 wsRef.current.send(cancelMessage);
-                console.log('Order Cancelled:', cancelMessage);
-
-                wsRef.current.onmessage = (event) => {
-                    try {
-                        const message = event.data;
-                        if (message.includes(`Cancelled Order ID: ${orderId}`)) {
-                            setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-                            console.log(`Order ${orderId} removed from active orders.`);
-                        }
-                    } catch (error) {
-                        console.error('Error handling cancel order response:', error);
-                    }
-                };
             } else {
                 console.error('WebSocket is not open. Cannot send message.');
             }

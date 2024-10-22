@@ -189,11 +189,11 @@
   text-decoration: none !important; /* Ensure no underline */
   line-height: 1;
   background: linear-gradient(90deg, red, black, white, red); /* Seamless gradient */
-  background-size: 2000% auto; /* Increase size for smoother transition */
+  background-size: 200% auto; /* Increase size for smoother transition */
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  animation: gradient-animation 8s linear infinite; /* Slower animation for smoothness */
+  animation: gradient-animation 3s linear infinite; /* Slower animation for smoothness */
   position: relative;
 }
 
@@ -202,7 +202,7 @@
     background-position: 0% 50%;
   }
   100% {
-    background-position: 100% 50%;
+    background-position: 200% 50%; /* Ensure the gradient moves fully across */
   }
 }
 
