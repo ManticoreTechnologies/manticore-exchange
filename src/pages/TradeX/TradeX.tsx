@@ -29,6 +29,7 @@ const TradeX: React.FC = () => {
     const tickerHistoryRef = useRef<{ time: string, price: number }[]>([]);
     const wsRef = useRef<WebSocket | null>(null);
     const [activeOrders, setActiveOrders] = useState<Order[]>([]);
+    const [userBalance, setUserBalance] = useState<string | null>(null);
 
     useEffect(() => {
         const connectWebSocket = () => {
@@ -39,6 +40,7 @@ const TradeX: React.FC = () => {
                 ws.onopen = () => {
                     console.log('Connected to WebSocket');
                     ws.send('get_tickers'); // Initial request after connection
+                    checkUserBalance('user3'); // Check balance on page load
                 };
 
                 ws.onmessage = (event) => {
@@ -69,6 +71,15 @@ const TradeX: React.FC = () => {
                 wsRef.current.close();
             }
         };
+    }, []);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            checkUserBalance('user3');
+        }, 10000); // 10 seconds
+
+        // Clear interval on component unmount
+        return () => clearInterval(intervalId);
     }, []);
 
     const parseOrders = (message: string, type: string) => {
@@ -109,6 +120,8 @@ const TradeX: React.FC = () => {
             } else if (message.includes('Cancel Order:')) {
                 const orderId = message.split('Cancel Order:')[1].trim();
                 setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+            } else if (message.includes('Balance for user')) {
+                setUserBalance(message);
             }
         } catch (error) {
             console.error('Error processing WebSocket message:', error);
@@ -193,6 +206,7 @@ const TradeX: React.FC = () => {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
                 const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by ${userId}`;
                 wsRef.current.send(orderMessage);
+                checkUserBalance(userId); // Check balance after placing an order
             } else {
                 console.error('WebSocket is not open. Cannot send message.');
             }
@@ -214,6 +228,19 @@ const TradeX: React.FC = () => {
         }
     };
 
+    const checkUserBalance = (userId: string) => {
+        try {
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                const balanceMessage = `Check Balance: ${userId}`;
+                wsRef.current.send(balanceMessage);
+            } else {
+                console.error('WebSocket is not open. Cannot send message.');
+            }
+        } catch (error) {
+            console.error('Error checking user balance:', error);
+        }
+    };
+
     const aggregatedAsks = aggregateOrders(asks);
     const aggregatedBids = aggregateOrders(bids);
 
@@ -231,6 +258,9 @@ const TradeX: React.FC = () => {
             </div>
             <div className="place-order-container">
                 <PlaceOrder onPlaceOrder={handlePlaceOrder} />
+                <div>
+                    {userBalance && <p>{userBalance}</p>}
+                </div>
             </div>
             <div className="trade-log-container">  
                 <TradeLog tradeLog={tradeLog} />
