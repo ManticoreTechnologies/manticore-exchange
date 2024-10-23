@@ -2,47 +2,84 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Ensure it takes full height */
+    height: 100%;
     background-color: #1e1e1e;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     padding: 0;
-}
+}   
 
-.orderbook .asks, .orderbook .bids {
-    margin-bottom: 0;
+.order-table-container.asks {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Aligns the content to the bottom */
     flex: 1;
     overflow-y: auto;
 }
 
-.orderbook table {
+.order-table-container.bids {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.order-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
 
-.orderbook th, .orderbook td {
+.order-table th, .order-table td {
     border-bottom: 1px solid #333;
-    padding: 0;
     text-align: right;
+    height: 24px;
+    max-height: 24px;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.orderbook th {
+.order-table th {
     background-color: #262626;
     color: #b0b0b0;
     font-weight: bold;
 }
 
-.orderbook .asks td {
+.order-table.asks td {
     background-color: #2d1a1a;
     color: #ff6b6b;
 }
 
-.orderbook .bids td {
+.order-table.bids td {
     background-color: #1a2d1a;
     color: #6bff6b;
 }
 
-.orderbook tr:hover td {
+.order-table tr:hover td {
     background-color: #2a2a2a;
+}
+
+.last-traded-price {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff9900;
+    text-align: center;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+    position: relative;
+    z-index: 1;
+    background-color: #1e1e1e;
+}
+
+.orderbook-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #262626;
+    color: #b0b0b0;
+    font-weight: bold;
+    border-bottom: 1px solid #333;
 }

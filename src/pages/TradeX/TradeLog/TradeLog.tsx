@@ -12,12 +12,14 @@ const TradeLog: React.FC<TradeLogProps> = ({ tradeLog }) => {
         const price = trade[3];
         const id = trade[2]
         const qty = trade[4]
-        const timestamp = trade[6]
+        const taker = trade[6]
+        const timestamp = trade[7]
         const color = trade[5] === 'buy' ? 'green' : 'red';
         return (
             `<tr>
                 <td style="color: ${color}">${price}</td>
                 <td>${qty}</td>
+                <td>${taker ? "taker" : "maker"}</td>
                 <td>${new Date(timestamp).toLocaleTimeString()}</td>
             </tr>`
         );

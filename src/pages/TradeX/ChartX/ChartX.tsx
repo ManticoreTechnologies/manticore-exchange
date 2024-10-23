@@ -5,17 +5,18 @@ import { useTheme } from '../../../context/ThemeContext';
 
 interface ChartXProps {
     tickerHistory: { time: string, price: number }[];
+    ohlcData?: { time: string, open: number, high: number, low: number, close: number }[];
 }
 
-const ChartX: React.FC<ChartXProps> = ({ tickerHistory }) => {
+const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
-    const lineSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
+    const seriesRef = useRef<ISeriesApi<'Line' | 'Candlestick'> | null>(null);
     const { theme } = useTheme();
+
     useEffect(() => {
         try {
             if (chartContainerRef.current) {
-                // Save the current time range (includes both zoom and pan)
                 const currentRange = chartRef.current?.timeScale().getVisibleLogicalRange();
 
                 chartRef.current = createChart(chartContainerRef.current, {
@@ -25,15 +26,27 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory }) => {
                     grid: { vertLines: { color: 'transparent' }, horzLines: { color: 'transparent' } },
                 });
 
-                lineSeriesRef.current = chartRef.current.addLineSeries({ color: '#8884d8' });
-                lineSeriesRef.current.setData(
-                    tickerHistory.map(ticker => ({
-                        time: new Date(ticker.time).getTime() / 1000,
-                        value: ticker.price,
-                    }))
-                );
+                if (ohlcData && ohlcData.length > 0) {
+                    seriesRef.current = chartRef.current.addCandlestickSeries();
+                    seriesRef.current.setData(
+                        ohlcData.map(candle => ({
+                            time: new Date(candle.timestamp).getTime() / 1000,
+                            open: candle.open,
+                            high: candle.high,
+                            low: candle.low,
+                            close: candle.close,
+                        }))
+                    );
+                } else {
+                    seriesRef.current = chartRef.current.addLineSeries({ color: '#8884d8' });
+                    seriesRef.current.setData(
+                        tickerHistory.map(ticker => ({
+                            time: new Date(ticker.time).getTime() / 1000,
+                            value: ticker.price,
+                        }))
+                    );
+                }
 
-                // Restore the saved time range
                 if (currentRange) {
                     chartRef.current.timeScale().setVisibleLogicalRange(currentRange);
                 }
@@ -43,7 +56,7 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory }) => {
         }
 
         return () => chartRef.current?.remove();
-    }, [tickerHistory, theme]); // Added theme to dependencies
+    }, [tickerHistory, ohlcData, theme]);
 
     return <div ref={chartContainerRef} className="chart-container"></div>;
 };

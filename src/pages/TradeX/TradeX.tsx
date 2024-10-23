@@ -30,7 +30,8 @@ const TradeX: React.FC = () => {
     const wsRef = useRef<WebSocket | null>(null);
     const [activeOrders, setActiveOrders] = useState<Order[]>([]);
     const [userBalance, setUserBalance] = useState<string | null>(null);
-
+    const [ohlcData, setOhlcData] = useState<{ time: string, open: number, high: number, low: number, close: number }[]>([]);
+    const [resolution, setResolution] = useState<string>("15 second");
     useEffect(() => {
         const connectWebSocket = () => {
             try {
@@ -38,10 +39,8 @@ const TradeX: React.FC = () => {
                 wsRef.current = ws;
 
                 ws.onopen = () => {
+                    ws.send(`get_ohlc_data:${resolution}`); // Send get_ohlc_data on load
                     console.log('Connected to WebSocket');
-                    ws.send('get_tickers'); // Initial request after connection
-                    ws.send('get_trade_history'); // Request trade history
-                    checkUserBalance('user3'); // Check balance on page load
                 };
 
                 ws.onmessage = (event) => {
@@ -74,10 +73,13 @@ const TradeX: React.FC = () => {
         };
     }, []);
 
+    // Add this useEffect to update OHLC data every 15 seconds
     useEffect(() => {
         const intervalId = setInterval(() => {
-            checkUserBalance('user3');
-        }, 10000); // 10 seconds
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                wsRef.current.send(`get_ohlc_data:${resolution}`);
+            }
+        }, 15000); // 15 seconds
 
         // Clear interval on component unmount
         return () => clearInterval(intervalId);
@@ -99,7 +101,12 @@ const TradeX: React.FC = () => {
 
     const handleWebSocketMessage = (message: string) => {
         try {
-            console.log(message);
+            if (message.includes('OHLC Data')) {
+                let list = message.split(`OHLC Data for ${resolution}: `)[1].trim();
+                let ohlcData = JSON.parse(list);
+                setOhlcData(ohlcData);
+            }
+            // OHLC Data for {resolution}:
             if (message.includes('Current Asks')) {
                 setAsks(parseOrders(message, 'Current Asks:'));
             } else if (message.includes('Current Bids')) {
@@ -257,7 +264,7 @@ const TradeX: React.FC = () => {
     return (
         <div className="trading-grid">
             <div className="chart-container">
-                <ChartX tickerHistory={tickerHistoryRef.current} />
+                <ChartX tickerHistory={tickerHistoryRef.current} ohlcData={ohlcData.slice().reverse()} />
             </div>
             <div className="orderbook-container">
                 <OrderBook 

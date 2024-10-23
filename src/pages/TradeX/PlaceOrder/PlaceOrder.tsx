@@ -22,6 +22,21 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
         onPlaceOrder('sell', sellOrderPrice, sellOrderQty);
     };
 
+    const handleLoginOrSignup = () => {
+        const evermoreAddress = prompt("Please enter your Evermore address:");
+        const nonce = Math.random().toString(36).substring(2); // Example nonce generation
+        const signedMessage = prompt(`Please sign this message with your Evermore wallet: ${nonce}`);
+
+        if (evermoreAddress && signedMessage) {
+            // Here you would typically verify the signed message with the nonce
+            console.log("Evermore Address:", evermoreAddress);
+            console.log("Signed Message:", signedMessage);
+            // Proceed with the order placement or authentication
+        } else {
+            alert("Both Evermore address and signed message are required.");
+        }
+    };
+
     return (
         <div className="order-container">
             <div className="order-form">
@@ -41,7 +56,7 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
                     <div className="total">
                         Total: {(buyOrderPrice * buyOrderQty).toFixed(2)} USDT
                     </div>
-                    <button type="submit">Log in or Sign up to trade</button>
+                    <button type="button" onClick={handleLoginOrSignup}>Log in or Sign up to trade</button>
                 </form>
             </div>
             <div className="order-form">
@@ -61,7 +76,7 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
                     <div className="total">
                         Total: {(sellOrderPrice * sellOrderQty).toFixed(2)} BTC
                     </div>
-                    <button type="submit">Log in or Sign up to trade</button>
+                    <button type="button" onClick={handleLoginOrSignup}>Log in or Sign up to trade</button>
                 </form>
             </div>
         </div>
