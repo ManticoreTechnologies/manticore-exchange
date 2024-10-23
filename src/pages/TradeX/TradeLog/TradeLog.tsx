@@ -2,18 +2,23 @@ import React from 'react';
 import './TradeLog.css';
 
 interface TradeLogProps {
-    tradeLog: { price: number, qty: number, time: string, type: string }[];
+    tradeLog: [];
 }
 
 const TradeLog: React.FC<TradeLogProps> = ({ tradeLog }) => {
     const formatTrade = (trade: any[]) => {
         // trade is a list of order data
-        const color = trade[1] === 'buy' ? 'green' : 'red';
+        const side = trade[5];
+        const price = trade[3];
+        const id = trade[2]
+        const qty = trade[4]
+        const timestamp = trade[6]
+        const color = trade[5] === 'buy' ? 'green' : 'red';
         return (
             `<tr>
-                <td style="color: ${color}">${trade[2]}</td>
-                <td>${trade[3]}</td>
-                <td>${new Date(trade[4]).toLocaleTimeString()}</td>
+                <td style="color: ${color}">${price}</td>
+                <td>${qty}</td>
+                <td>${new Date(timestamp).toLocaleTimeString()}</td>
             </tr>`
         );
     };

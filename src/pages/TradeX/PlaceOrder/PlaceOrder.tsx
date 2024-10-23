@@ -1,40 +1,69 @@
 import React, { useState } from 'react';
 import './PlaceOrder.css';
+
 interface PlaceOrderProps {
     onPlaceOrder: (orderType: string, orderPrice: number, orderQty: number) => void;
 }
 
 const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
-    const [orderType, setOrderType] = useState<string>('buy');
-    const [orderPrice, setOrderPrice] = useState<number>(0);
-    const [orderQty, setOrderQty] = useState<number>(0);
+    const [buyOrderPrice, setBuyOrderPrice] = useState<number>(0);
+    const [buyOrderQty, setBuyOrderQty] = useState<number>(0);
+    const [sellOrderPrice, setSellOrderPrice] = useState<number>(0);
+    const [sellOrderQty, setSellOrderQty] = useState<number>(0);
+    const [available, setAvailable] = useState<number>(0); // Example available amount
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleBuySubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onPlaceOrder(orderType, orderPrice, orderQty);
+        onPlaceOrder('buy', buyOrderPrice, buyOrderQty);
+    };
+
+    const handleSellSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onPlaceOrder('sell', sellOrderPrice, sellOrderQty);
     };
 
     return (
-        <div className="order-form">
-            <h3>Place Order</h3>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Order Type:
-                    <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
-                        <option value="buy">Buy</option>
-                        <option value="sell">Sell</option>
-                    </select>
-                </label>
-                <label>
-                    Price:
-                    <input type="number" value={orderPrice} onChange={(e) => setOrderPrice(parseFloat(e.target.value))} />
-                </label>
-                <label>
-                    Quantity:
-                    <input type="number" value={orderQty} onChange={(e) => setOrderQty(parseFloat(e.target.value))} />
-                </label>
-                <button type="submit">Place Order</button>
-            </form>
+        <div className="order-container">
+            <div className="order-form">
+                <h3>Buy Order</h3>
+                <form onSubmit={handleBuySubmit}>
+                    <div className="available">
+                        Available: {available.toFixed(2)} USDT
+                    </div>
+                    <label>
+                        Price:
+                        <input type="number" value={buyOrderPrice} onChange={(e) => setBuyOrderPrice(parseFloat(e.target.value))} />
+                    </label>
+                    <label>
+                        Quantity:
+                        <input type="number" value={buyOrderQty} onChange={(e) => setBuyOrderQty(parseFloat(e.target.value))} />
+                    </label>
+                    <div className="total">
+                        Total: {(buyOrderPrice * buyOrderQty).toFixed(2)} USDT
+                    </div>
+                    <button type="submit">Log in or Sign up to trade</button>
+                </form>
+            </div>
+            <div className="order-form">
+                <h3>Sell Order</h3>
+                <form onSubmit={handleSellSubmit}>
+                    <div className="available">
+                        Available: {available.toFixed(2)} BTC
+                    </div>
+                    <label>
+                        Price:
+                        <input type="number" value={sellOrderPrice} onChange={(e) => setSellOrderPrice(parseFloat(e.target.value))} />
+                    </label>
+                    <label>
+                        Quantity:
+                        <input type="number" value={sellOrderQty} onChange={(e) => setSellOrderQty(parseFloat(e.target.value))} />
+                    </label>
+                    <div className="total">
+                        Total: {(sellOrderPrice * sellOrderQty).toFixed(2)} BTC
+                    </div>
+                    <button type="submit">Log in or Sign up to trade</button>
+                </form>
+            </div>
         </div>
     );
 };

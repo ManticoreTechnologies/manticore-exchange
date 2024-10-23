@@ -272,11 +272,11 @@ const TradeX: React.FC = () => {
                     {userBalance && <p>{userBalance}</p>}
                 </div>
             </div>
-            <div className="trade-log-container">  
-                <TradeLog tradeLog={tradeLog} />
-            </div>
             <div className="active-orders-container">
                 <ActiveOrders activeOrders={activeOrders} cancelOrder={cancelOrder} />
+            </div>
+            <div className="trade-log-container">  
+                <TradeLog tradeLog={tradeLog} />
             </div>
         </div>
     );

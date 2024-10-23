@@ -20,7 +20,7 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory }) => {
 
                 chartRef.current = createChart(chartContainerRef.current, {
                     width: chartContainerRef.current.clientWidth,
-                    height: 400,
+                    height: 550,
                     layout: { background: { color: theme === 'light' ? '#0a0a0a' : '#ffffff' }, textColor: '#ffffff' },
                     grid: { vertLines: { color: 'transparent' }, horzLines: { color: 'transparent' } },
                 });

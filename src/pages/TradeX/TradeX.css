@@ -1,66 +1,40 @@
+.chart-container {
+    flex: 1;
+    grid-row: 1; 
+    grid-column: 1;
+}
 .orderbook-container {
     flex: 1;
-    max-width: 600px;
-    height: 400px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    text-align: center;
-}
-
-.flex-element {
-    border: 1px solid #ccc;
-    margin: 5px;
-}
-
-.fixed-height {
-    height: 100px; /* Set a fixed height for this element */
-}
-
-.grow {
-    flex-grow: 1; /* Allow these elements to grow to match the height of the fixed-height element */
+    height: 550px;
+    grid-column: 2; 
+    grid-row: 1; 
 }
 
 .trade-log-container {
     flex: 1;
-    max-width: 600px;
-    height: 400px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    text-align: center;
-}
-
-.chart-container {
-    flex: 1;
-    max-width: 600px;
-    height: 400px;
-    background-color: #262626;
-    color: #b0b0b0;
-    text-align: center;
-}
-
-.orderbook {
-    flex: 1;
-    max-width: 600px;
-    height: 100%; /* Ensure it takes full height */
-}
-
-.place-order-container {
-    flex: 1;
-    max-width: 600px;
-    height: 400px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    text-align: center;
+    min-width: 100px;   
+    grid-column: 3; 
+    grid-row: 1;
 }
 
 .active-orders-container {
     flex: 1;
-    max-width: 100%;
-    height: 200px;
+    grid-column: 1;
+    grid-row: 2;
     background-color: #1e1e1e;
     color: #ffffff;
     text-align: center;
 }
+
+.place-order-container {
+    flex: 1;
+    grid-column: 2 / -1;
+    grid-row: 2;
+    color: #ffffff;
+    text-align: center;
+    background-color: #1e1e1e;
+}
+
 
 @media (max-width: 768px) {
     .orderbook-container {
@@ -83,30 +57,12 @@
     box-sizing: border-box;
 }
 
-.chart-container {
-    grid-column: 1; /* First column */
-    grid-row: 1; /* First row */
-}
 
-.orderbook-container {
-    grid-column: 2; /* Second column */
-    grid-row: 1; /* First row */
-}
 
-.trade-log-container {
-    grid-column: 4; /* Third column */
-    grid-row: 1; /* First row */
-}
 
-.active-orders-container {
-    grid-column: 1 / 5; /* Span the entire width of the grid */
-    grid-row: 2; /* Second row */
-}
 
-.place-order-container {
-    grid-column: 3; /* Span second and third columns */
-    grid-row: 1; /* Second row */
-}
+
+
 
 .footer {
     grid-column: 1 / -1; /* Span the entire width of the grid */
