@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './PlaceOrder.css';
 
 interface PlaceOrderProps {
@@ -11,6 +11,27 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
     const [sellOrderPrice, setSellOrderPrice] = useState<number>(0);
     const [sellOrderQty, setSellOrderQty] = useState<number>(0);
     const [available, setAvailable] = useState<number>(0); // Example available amount
+    const wsRef = useRef<WebSocket | null>(null);
+    const [nonce, setNonce] = useState<string | null>(null);
+
+    useEffect(() => {
+        const ws = new WebSocket("ws://localhost:8765");
+        wsRef.current = ws;
+
+        ws.onmessage = (event) => {
+            if (event.data.startsWith("Nonce:")) {
+                setNonce(event.data.split("Nonce: ")[1]);
+            } else if (event.data === "Authentication successful") {
+                console.log("Authenticated successfully");
+            }
+        };
+
+        return () => {
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
+        };
+    }, []);
 
     const handleBuySubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,15 +44,17 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder }) => {
     };
 
     const handleLoginOrSignup = () => {
+        if (!nonce) {
+            alert("Nonce not received from server. Please try again.");
+            return;
+        }
+
         const evermoreAddress = prompt("Please enter your Evermore address:");
-        const nonce = Math.random().toString(36).substring(2); // Example nonce generation
         const signedMessage = prompt(`Please sign this message with your Evermore wallet: ${nonce}`);
 
         if (evermoreAddress && signedMessage) {
-            // Here you would typically verify the signed message with the nonce
-            console.log("Evermore Address:", evermoreAddress);
-            console.log("Signed Message:", signedMessage);
-            // Proceed with the order placement or authentication
+            const authData = JSON.stringify({ address: evermoreAddress, signature: signedMessage });
+            wsRef.current?.send(`Authenticate:${authData}`);
         } else {
             alert("Both Evermore address and signed message are required.");
         }
