@@ -32,6 +32,14 @@ const TradeX: React.FC = () => {
     const [userBalance, setUserBalance] = useState<string | null>(null);
     const [ohlcData, setOhlcData] = useState<{ time: string, open: number, high: number, low: number, close: number }[]>([]);
     const [resolution, setResolution] = useState<string>("15 second");
+    const [address, setAddress] = useState<string>('');
+    const [nonce, setNonce] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const appendError = (newError: string) => {
+        setError(newError);
+    };
+
     useEffect(() => {
         const connectWebSocket = () => {
             try {
@@ -40,6 +48,7 @@ const TradeX: React.FC = () => {
 
                 ws.onopen = () => {
                     ws.send(`get_ohlc_data:${resolution}`); // Send get_ohlc_data on load
+                    getNonce();
                     console.log('Connected to WebSocket');
                 };
 
@@ -106,6 +115,12 @@ const TradeX: React.FC = () => {
                 let ohlcData = JSON.parse(list);
                 setOhlcData(ohlcData);
             }
+            if (message.startsWith('Error: ')) {
+                console.log(`Error: ${message}`);
+                let errorMessage = message.split('Error: ')[1].trim();
+                setError(errorMessage);
+                return;
+            }
             // OHLC Data for {resolution}:
             if (message.includes('Current Asks')) {
                 setAsks(parseOrders(message, 'Current Asks:'));
@@ -133,6 +148,12 @@ const TradeX: React.FC = () => {
             } else if (message.includes('Trade History:')) {
                 const tradeHistory = JSON.parse(message.split('Trade History:')[1].trim());
                 setTradeLog(tradeHistory);
+            }
+            
+            if (message.startsWith('Nonce')) {
+                const nonceValue = message.split('Nonce: ')[1].trim();
+                setNonce(nonceValue);
+                console.log(`Received nonce: ${nonceValue}`);
             }
         } catch (error) {
             console.error('Error processing WebSocket message:', error);
@@ -261,6 +282,29 @@ const TradeX: React.FC = () => {
     const aggregatedAsks = aggregateOrders(asks);
     const aggregatedBids = aggregateOrders(bids);
 
+    // Function to handle address input and perform GetNonce request
+    const handleAddressInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAddress(event.target.value);
+    };
+
+    const handleLoginOrSignup = (evermoreAddress: string, signedMessage: string) => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const authData = JSON.stringify({ address: evermoreAddress, signature: signedMessage });
+            wsRef.current.send(`Authenticate:${authData}`);
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
+        }
+    };
+
+    const getNonce = () => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const nonceMessage = `GetNonce: ${address}`;
+            wsRef.current.send(nonceMessage);
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
+        }
+    };
+
     return (
         <div className="trading-grid">
             <div className="chart-container">
@@ -274,7 +318,14 @@ const TradeX: React.FC = () => {
                 />
             </div>
             <div className="place-order-container">
-                <PlaceOrder onPlaceOrder={handlePlaceOrder} />
+                <PlaceOrder 
+                    onPlaceOrder={handlePlaceOrder} 
+                    getNonce={getNonce}
+                    nonce={nonce}
+                    onLoginOrSignup={handleLoginOrSignup} 
+                    error={error}
+                    appendError={appendError} // Pass the appendError function
+                />
                 <div>
                     {userBalance && <p>{userBalance}</p>}
                 </div>
@@ -284,7 +335,7 @@ const TradeX: React.FC = () => {
             </div>
             <div className="trade-log-container">  
                 <TradeLog tradeLog={tradeLog} />
-            </div>
+            </div>                
         </div>
     );
 };
