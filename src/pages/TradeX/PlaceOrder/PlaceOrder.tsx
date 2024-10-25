@@ -24,7 +24,7 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
 
     useEffect(() => {
         if (error) {
-            setErrors(prevErrors => [...prevErrors, error]);
+            setErrors(prevErrors => [error, ...prevErrors]);
         }
     }, [error]);
 
@@ -52,7 +52,7 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
             onLoginOrSignup(evermoreAddress, signedMessage);
             setShowPopup(false);
         } else {
-            setErrors(prevErrors => [...prevErrors, "Both Evermore address and signed message are required."]);
+            setErrors(prevErrors => ["Both Evermore address and signed message are required.", ...prevErrors]);
         }
     };
 
@@ -63,7 +63,11 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
 
     return (
         <div className="order-container">
-            <Notification messages={errors} onClose={removeError} />
+            <ul className="notification-list">
+                {errors.map((error, index) => (
+                    <Notification key={errors.length - 1 - index} message={error} index={errors.length - 1 - index} onClose={removeError} />
+                ))}
+            </ul>
             <div className="order-form">
                 <h3>Buy Order</h3>
                 <form onSubmit={handleBuySubmit}>

@@ -1,26 +1,21 @@
 import React, { useEffect } from 'react';
 
 interface NotificationProps {
-    messages: string[];
+    message: string;
+    index: number;
     onClose: (index: number) => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ messages, onClose }) => {
+const Notification: React.FC<NotificationProps> = ({ message, index, onClose }) => {
     useEffect(() => {
-        const timers = messages.map((_, index) =>
-            setTimeout(() => onClose(index), 5000)
-        );
-        return () => timers.forEach(timer => clearTimeout(timer));
-    }, [messages]);
+        const timer = setTimeout(() => onClose(index), 5000);
+        return () => clearTimeout(timer);
+    }, [index, onClose]);
 
     return (
-        <ul className="notification-list">
-            {messages.map((message, index) => (
-                <li key={index} className="notification">
-                    {message}
-                </li>
-            ))}
-        </ul>
+        <li className="notification">
+            {index}: {message}
+        </li>
     );
 };
 
