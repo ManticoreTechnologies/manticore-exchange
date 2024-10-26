@@ -56,6 +56,10 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
         }
     };
 
+    const handleClosePopup = () => {
+        setShowPopup(false);
+    };
+
     const removeError = (index: number) => {
         console.log("Removing error at index: " + index);
         setErrors(prevErrors => prevErrors.filter((_, i) => i !== index));
@@ -108,24 +112,12 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
                     <button type="button" onClick={handleLoginOrSignup}>Log in or Sign up to trade</button>
                 </form>
             </div>
-            <div className="login-container">
-                <input 
-                    type="text" 
-                    value={evermoreAddress} 
-                    onChange={(e) => setEvermoreAddress(e.target.value)} 
-                    placeholder="Enter Evermore address" 
-                />
-                <input 
-                    type="text" 
-                    value={signedMessage} 
-                    onChange={(e) => setSignedMessage(e.target.value)} 
-                    placeholder={`Sign this message: ${nonce}`} 
-                />
-                <button type="button" onClick={handleLoginOrSignup}>Log in or Sign up to trade</button>
-            </div>
             {showPopup && (
                 <div className="popup-container">
-                    <div className="popup-header">Nonce: {nonce}</div>
+                    <div className="popup-header">
+                        Nonce: {nonce}
+                        <button className="close-button" onClick={handleClosePopup}>×</button>
+                    </div>
                     <input 
                         type="text" 
                         className="popup-input"
@@ -148,3 +140,4 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
 };
 
 export default PlaceOrder;
+
