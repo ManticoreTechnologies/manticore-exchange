@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from '../../../hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const Wallet = () => {
     const { message, sendMessage } = useWebSocket('ws://localhost:8765');
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
+    const navigate = useNavigate();
+    const [depositAsset, setDepositAsset] = useState('USD');
+    const [depositAmount, setDepositAmount] = useState(100);
 
     useEffect(() => {
         if (message) {
@@ -29,8 +33,12 @@ const Wallet = () => {
         }
     }, [userSession, sendMessage]);
 
-    const handleDepositAsset = () => {
-        sendMessage('deposit_asset USD 100');
+    const handleDepositAsset = (asset: string, amount: number) => {
+        sendMessage(`deposit_asset ${asset} ${amount}`);
+    };
+
+    const handleSignIn = () => {
+        navigate('/tradex/signin');
     };
 
     return (
@@ -56,12 +64,28 @@ const Wallet = () => {
                             </tbody>
                         </table>
                     </div>
-                    <button onClick={handleDepositAsset}>Deposit USD</button>
+                    <div>
+                        <input
+                            type="text"
+                            value={depositAsset}
+                            onChange={(e) => setDepositAsset(e.target.value)}
+                            placeholder="Asset"
+                        />
+                        <input
+                            type="number"
+                            value={depositAmount}
+                            onChange={(e) => setDepositAmount(Number(e.target.value))}
+                            placeholder="Amount"
+                        />
+                        <button onClick={() => handleDepositAsset(depositAsset, depositAmount)}>
+                            Deposit
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div>
                     <p className={styles.signInMessage}>🚫 Not authenticated. Please sign in. 🚫</p>
-                    <button className={styles.signInButton}>Sign In</button>
+                    <button className={styles.signInButton} onClick={handleSignIn}>Sign In</button>
                 </div>
             )}
         </div>
