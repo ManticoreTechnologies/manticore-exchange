@@ -50,8 +50,6 @@ const Trading: React.FC = () => {
         fetchListings();
     }, []);
 
-
-
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
         const updatedCart = [...cart, itemWithQuantity];

@@ -20,6 +20,8 @@ import NotFoundPage from "./pages/NotFound/NotFound";
 import Chart from "./pages/Chart/Chart";
 import "./App.css";
 import TradeX from "./pages/TradeX/TradeX";
+import SignIn from "./pages/TradeX/SignIn/SignIn";
+import Wallet from "./pages/TradeX/Wallet/Wallet";
 const App: React.FC = () => {
 
   return (
@@ -37,6 +39,8 @@ const App: React.FC = () => {
       <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/tradeX" element={<TradeX />} />
+      <Route path="/tradeX/signin" element={<SignIn />} />
+      <Route path="/tradeX/wallet" element={<Wallet />} />
       <Route path="/asset/:name" element={<AssetDetails />}/>
       <Route path="/ipfs" element={<IPFSUploader/>}/>
       <Route path="/chart" element={<EVRPage />}/>

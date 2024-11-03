@@ -6,7 +6,12 @@
   padding: 20px 0; /* Add padding to the footer for spacing */
   margin-top: auto; /* Pushes footer to the bottom */
 }
-
+.footer .ping-indicator {
+  position: absolute;
+  right: 30px;
+  top: 25%;
+  height: 50%;
+}
 .footer p {
   margin: 0;
   padding: 0; 

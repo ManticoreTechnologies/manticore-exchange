@@ -1,0 +1,50 @@
+.walletContainer {
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.walletHeader {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ff0000;
+}
+
+.tableContainer {
+    margin-top: 20px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2a2a2a;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+    color: #f2f2f2;
+}
+
+.signInMessage {
+    color: #ff0000;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signInButton {
+    display: block;
+    margin: 0 auto;
+}

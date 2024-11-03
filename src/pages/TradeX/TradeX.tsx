@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './TradeX.css';
-import ChartX from './ChartX/ChartX'; // Import the new ChartX component
-import OrderBook from './OrderBook/OrderBook'; // Import the new OrderBook component
-import ActiveOrders from './ActiveOrders/ActiveOrders'; // Import the new ActiveOrders component
-import TradeLog from './TradeLog/TradeLog'; // Import the new TradeLog component
-import PlaceOrder from './PlaceOrder/PlaceOrder'; // Import the new PlaceOrder component
+import ChartX from './ChartX/ChartX';
+import OrderBook from './OrderBook/OrderBook';
+import ActiveOrders from './ActiveOrders/ActiveOrders';
+import TradeLog from './TradeLog/TradeLog';
+import PlaceOrder from './PlaceOrder/PlaceOrder';
 
 interface Order {
     type: string;
@@ -13,88 +13,91 @@ interface Order {
     qty: number;
 }
 
-const aggregateOrders = (orders: Order[]): { [price: number]: number } =>
-    orders.reduce((acc, order) => {
-        acc[order.price] = (acc[order.price] || 0) + order.qty;
-        return acc;
-    }, {} as { [price: number]: number });
+interface OHLCData {
+    time: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+}
 
 const TradeX: React.FC = () => {
     const [bids, setBids] = useState<Order[]>([]);
     const [asks, setAsks] = useState<Order[]>([]);
     const [tradeLog, setTradeLog] = useState<string[]>([]);
-    const [orderType, setOrderType] = useState<string>('buy');
-    const [orderPrice, setOrderPrice] = useState<number>(0);
-    const [orderQty, setOrderQty] = useState<number>(0);
-    const tickerHistoryRef = useRef<{ time: string, price: number }[]>([]);
-    const wsRef = useRef<WebSocket | null>(null);
     const [activeOrders, setActiveOrders] = useState<Order[]>([]);
     const [userBalance, setUserBalance] = useState<string | null>(null);
-    const [ohlcData, setOhlcData] = useState<{ time: string, open: number, high: number, low: number, close: number }[]>([]);
+    const [ohlcData, setOhlcData] = useState<OHLCData[]>([]);
     const [resolution, setResolution] = useState<string>("15 second");
     const [address, setAddress] = useState<string>('');
     const [nonce, setNonce] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const appendError = (newError: string) => {
-        setError(newError);
-    };
+    const tickerHistoryRef = useRef<{ time: string, price: number }[]>([]);
+    const wsRef = useRef<WebSocket | null>(null);
 
     useEffect(() => {
         const connectWebSocket = () => {
-            try {
-                const ws = new WebSocket("ws://localhost:8765");
-                wsRef.current = ws;
+            const ws = new WebSocket("ws://localhost:8765");
+            wsRef.current = ws;
 
-                ws.onopen = () => {
-                    ws.send(`get_ohlc_data:${resolution}`); // Send get_ohlc_data on load
-                    getNonce();
-                    console.log('Connected to WebSocket');
-                };
+            ws.onopen = () => {
+                ws.send(`get_ohlc_data:${resolution}`);
+                getNonce();
+                console.log('Connected to WebSocket');
+            };
 
-                ws.onmessage = (event) => {
-                    handleWebSocketMessage(event.data);
-                };
-
-                ws.onclose = (event) => {
-                    console.log(`WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`);
-                    console.log("Reconnecting in 3 seconds...");
-                    setTimeout(connectWebSocket, 3000); // Reconnect after a delay
-                };
-
-                ws.onerror = (event) => {
-                    console.error('WebSocket encountered an error:', event);
-                    console.log("Attempting to reconnect...");
-                };
-
-            } catch (error) {
-                console.error('Failed to establish WebSocket connection:', error);
-            }
+            ws.onmessage = (event) => handleWebSocketMessage(event.data);
+            ws.onclose = () => setTimeout(connectWebSocket, 3000);
+            ws.onerror = () => console.log("Attempting to reconnect...");
         };
 
         connectWebSocket();
 
-        // Close WebSocket when component unmounts
-        return () => {
-            if (wsRef.current) {
-                wsRef.current.close();
-            }
-        };
-    }, []);
+        return () => wsRef.current?.close();
+    }, [resolution]);
 
-    // Add this useEffect to update OHLC data every 15 seconds
     useEffect(() => {
         const intervalId = setInterval(() => {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
                 wsRef.current.send(`get_ohlc_data:${resolution}`);
             }
-        }, 15000); // 15 seconds
+        }, 15000);
 
-        // Clear interval on component unmount
         return () => clearInterval(intervalId);
-    }, []);
+    }, [resolution]);
 
-    const parseOrders = (message: string, type: string) => {
+    const handleWebSocketMessage = (message: string) => {
+        if (message.includes('OHLC Data')) {
+            const data = JSON.parse(message.split(`OHLC Data for ${resolution}: `)[1].trim());
+            setOhlcData(data);
+        } else if (message.startsWith('Error: ')) {
+            setError(message.split('Error: ')[1].trim());
+        } else if (message.includes('Current Asks')) {
+            setAsks(parseOrders(message, 'Current Asks:'));
+        } else if (message.includes('Current Bids')) {
+            setBids(parseOrders(message, 'Current Bids:'));
+        } else if (message.includes('Filled')) {
+            handleFilledMessage(message);
+        } else if (message.includes('Tickers: ')) {
+            updateTickerHistory(message);
+        } else if (message.includes('Order ID:')) {
+            const orderId = message.split('Order ID:')[1].trim();
+            setActiveOrders(prev => [...prev, { type: 'buy', id: orderId, price: 0, qty: 0 }]);
+        } else if (message.includes('Order cancelled:')) {
+            const orderId = message.split('Order cancelled:')[1].trim();
+            setActiveOrders(prev => prev.filter(order => order.id !== orderId));
+        } else if (message.includes('Balance for user')) {
+            setUserBalance(message);
+        } else if (message.includes('Trade History:')) {
+            const tradeHistory = JSON.parse(message.split('Trade History:')[1].trim());
+            setTradeLog(tradeHistory);
+        } else if (message.startsWith('Nonce')) {
+            setNonce(message.split('Nonce: ')[1].trim());
+        }
+    };
+
+    const parseOrders = (message: string, type: string): Order[] => {
         try {
             return JSON.parse(message.split(type)[1]).map((order: any) => ({
                 type: type.includes('Asks') ? 'sell' : 'buy',
@@ -108,84 +111,19 @@ const TradeX: React.FC = () => {
         }
     };
 
-    const handleWebSocketMessage = (message: string) => {
-        try {
-            if (message.includes('OHLC Data')) {
-                let list = message.split(`OHLC Data for ${resolution}: `)[1].trim();
-                let ohlcData = JSON.parse(list);
-                setOhlcData(ohlcData);
-            }
-            if (message.startsWith('Error: ')) {
-                console.log(`Error: ${message}`);
-                let errorMessage = message.split('Error: ')[1].trim();
-                setError(errorMessage);
-                return;
-            }
-            // OHLC Data for {resolution}:
-            if (message.includes('Current Asks')) {
-                setAsks(parseOrders(message, 'Current Asks:'));
-            } else if (message.includes('Current Bids')) {
-                setBids(parseOrders(message, 'Current Bids:'));
-            } else if (message.includes('Filled')) {
-                handleFilledMessage(message);
-            } else if (message.includes('Tickers: ')) {
-                updateTickerHistory(message);
-            } else if (message.includes('Order ID:')) {
-                const orderId = message.split('Order ID:')[1].trim();
-                setActiveOrders(prevOrders => [
-                    ...prevOrders,
-                    { type: orderType, id: orderId, price: orderPrice, qty: orderQty }
-                ]);
-            } else if (message.includes('Order cancelled:')) {
-                const orderId = message.split('Order cancelled:')[1].trim();
-                setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-                console.log(`Order ${orderId} removed from active orders.`);
-            } else if (message.includes('Cancel Order:')) {
-                const orderId = message.split('Cancel Order:')[1].trim();
-                setActiveOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-            } else if (message.includes('Balance for user')) {
-                setUserBalance(message);
-            } else if (message.includes('Trade History:')) {
-                const tradeHistory = JSON.parse(message.split('Trade History:')[1].trim());
-                setTradeLog(tradeHistory);
-            }
-            
-            if (message.startsWith('Nonce')) {
-                const nonceValue = message.split('Nonce: ')[1].trim();
-                setNonce(nonceValue);
-                console.log(`Received nonce: ${nonceValue}`);
-            }
-        } catch (error) {
-            console.error('Error processing WebSocket message:', error);
-        }
-    };
-
     const handleFilledMessage = (message: string) => {
-        try {
-            // [Order(buy, id=edc1adfb-2ac7-400a-89a2-c79045347c9c, price=99.0, qty=1, time=2024-10-22 10:40:43.488161, user_id=user1), Order(sell, id=b8190051-106c-4f3d-8a88-e7cc65927de3, price=95, qty=5, time=2024-10-22 10:55:52.730407, user_id=user2)]
-            // use the second order in the message
-            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+\.?\d*), time=([^)]+), user_id=([^)]+)\)/g;
-            let match;
-            let secondMatch = null;
-            let count = 0;
-            while ((match = regex.exec(message)) !== null) {
-                if (count === 1) {
-                    secondMatch = match;
-                    break;
-                }
-                count++;
-            }
-            if (secondMatch) {
-                const [_, type, id, price, qty, time, userId] = secondMatch;
-                const tradeTime = new Date(time).getTime();
+        const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+\.?\d*), time=([^)]+), user_id=([^)]+)\)/g;
+        let match;
+        let count = 0;
+        while ((match = regex.exec(message)) !== null) {
+            if (count === 1) {
+                const [_, type, id, price, qty, time, userId] = match;
                 const latestTrade = { price: parseFloat(price), qty: parseFloat(qty), time, type };
-                //setTradeLog(prevLog => [latestTrade, ...prevLog]);
+                // Update trade log or other state as needed
             }
-
-            wsRef.current?.send('get_tickers');
-        } catch (error) {
-            console.error('Error handling filled order message:', error);
+            count++;
         }
+        wsRef.current?.send('get_tickers');
     };
 
     const updateTickerHistory = (message: string) => {
@@ -199,90 +137,35 @@ const TradeX: React.FC = () => {
             console.error('Error updating ticker history:', error);
         }
     };
-    const formatFilledMessage = (message: string): string => {
-        try {
-            // Adjusted regex to handle the message format with square brackets
-            const regex = /Order\((buy|sell), id=([^,]+), price=(\d+\.?\d*), qty=(\d+\.?\d*), time=([^)]+), user_id=([^)]+)\)/g;
-            let match;
-            const formattedOrders = [];
-
-            while ((match = regex.exec(message)) !== null) {
-                const [_, type, id, price, qty, time, userId] = match;
-                const color = type === 'buy' ? 'green' : 'red'; // Use green for buy, red for sell
-                formattedOrders.push(
-                    `<tr>
-                        <td style="color: ${color}">${price}</td>
-                        <td>${qty}</td>
-                        <td>${new Date(time).toLocaleTimeString()}</td>
-                    </tr>`
-                );
-            }
-
-            return `<table>${formattedOrders.join('')}</table>`;
-        } catch (error) {
-            console.error('Error formatting filled message:', error);
-            return 'Error formatting message';
-        }
-    };
-
-    const generateColor = (id: string): string => {
-        let hash = 0;
-        for (let i = 0; i < id.length; i++) {
-            hash = id.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return `hsl(${hash % 360}, 70%, 50%)`;
-    };
-
-    const getBackgroundColor = (qty: number): string => {
-        const maxQty = 100;
-        const intensity = Math.min(qty / maxQty, 1);
-        return `rgba(255, 0, 0, ${intensity})`;
-    };
 
     const handlePlaceOrder = (orderType: string, orderPrice: number, orderQty: number) => {
-        try {
-            if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by user3`;
-                wsRef.current.send(orderMessage);
-                checkUserBalance('user3'); // Check balance after placing an order
-            } else {
-                console.error('WebSocket is not open. Cannot send message.');
-            }
-        } catch (error) {
-            console.error('Error placing order:', error);
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const orderMessage = `Place Order: ${orderType} ${orderQty} @ ${orderPrice} by user3`;
+            wsRef.current.send(orderMessage);
+            checkUserBalance('user3');
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
         }
     };
 
     const cancelOrder = (orderId: string) => {
-        try {
-            if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const cancelMessage = `Cancel Order: ${orderId}`;
-                wsRef.current.send(cancelMessage);
-            } else {
-                console.error('WebSocket is not open. Cannot send message.');
-            }
-        } catch (error) {
-            console.error('Error cancelling order:', error);
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const cancelMessage = `Cancel Order: ${orderId}`;
+            wsRef.current.send(cancelMessage);
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
         }
     };
 
     const checkUserBalance = (userId: string) => {
-        try {
-            if (wsRef.current?.readyState === WebSocket.OPEN) {
-                const balanceMessage = `Check Balance: ${userId}`;
-                wsRef.current.send(balanceMessage);
-            } else {
-                console.error('WebSocket is not open. Cannot send message.');
-            }
-        } catch (error) {
-            console.error('Error checking user balance:', error);
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const balanceMessage = `Check Balance: ${userId}`;
+            wsRef.current.send(balanceMessage);
+        } else {
+            console.error('WebSocket is not open. Cannot send message.');
         }
     };
 
-    const aggregatedAsks = aggregateOrders(asks);
-    const aggregatedBids = aggregateOrders(bids);
-
-    // Function to handle address input and perform GetNonce request
     const handleAddressInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAddress(event.target.value);
     };
@@ -312,8 +195,8 @@ const TradeX: React.FC = () => {
             </div>
             <div className="orderbook-container">
                 <OrderBook 
-                    aggregatedAsks={aggregatedAsks} 
-                    aggregatedBids={aggregatedBids} 
+                    aggregatedAsks={aggregateOrders(asks)} 
+                    aggregatedBids={aggregateOrders(bids)} 
                     getBackgroundColor={getBackgroundColor} 
                 />
             </div>
@@ -324,7 +207,7 @@ const TradeX: React.FC = () => {
                     nonce={nonce}
                     onLoginOrSignup={handleLoginOrSignup} 
                     error={error}
-                    appendError={appendError} // Pass the appendError function
+                    appendError={setError} 
                 />
                 <div>
                     {userBalance && <p>{userBalance}</p>}
@@ -338,6 +221,18 @@ const TradeX: React.FC = () => {
             </div>                
         </div>
     );
+};
+
+const aggregateOrders = (orders: Order[]): { [price: number]: number } =>
+    orders.reduce((acc, order) => {
+        acc[order.price] = (acc[order.price] || 0) + order.qty;
+        return acc;
+    }, {} as { [price: number]: number });
+
+const getBackgroundColor = (qty: number): string => {
+    const maxQty = 100;
+    const intensity = Math.min(qty / maxQty, 1);
+    return `rgba(255, 0, 0, ${intensity})`;
 };
 
 export default TradeX;

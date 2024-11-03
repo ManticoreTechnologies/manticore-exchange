@@ -1,71 +1,65 @@
 .chart-container {
-    flex: 1;
-    grid-row: 1; 
-    grid-column: 1;
+    grid-column: span 2;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
 }
+
 .orderbook-container {
-    flex: 1;
-    height: 550px;
-    grid-column: 2; 
-    grid-row: 1; 
+    grid-column: span 1;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
 }
 
 .trade-log-container {
-    flex: 1;
-    min-width: 100px;   
-    grid-column: 3; 
-    grid-row: 1;
+    grid-column: span 1;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
 }
 
 .active-orders-container {
-    flex: 1;
-    grid-column: 1;
-    grid-row: 2;
+    grid-column: span 1;
+    padding: 10px;
     background-color: #1e1e1e;
     color: #ffffff;
     text-align: center;
+    border-radius: 8px;
 }
 
 .place-order-container {
-    flex: 1;
-    grid-column: 2 / -1;
-    grid-row: 2;
+    grid-column: span 2;
+    padding: 10px;
+    background-color: #1e1e1e;
     color: #ffffff;
     text-align: center;
-    background-color: #1e1e1e;
+    border-radius: 8px;
 }
 
-
 @media (max-width: 768px) {
-    .orderbook-container {
-        flex-direction: column;
-    }
-
     .chart-container,
-    .orderbook {
-        width: 100%;
+    .orderbook-container,
+    .trade-log-container,
+    .active-orders-container,
+    .place-order-container {
+        grid-column: span 1;
     }
 }
 
 .trading-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Three columns */
-    grid-template-rows: 1fr 1fr; /* Two rows to allow for more content */
-    gap: 1.5px;
-    height: calc(100vh - 60px); /* Adjust height to account for footer */
-    padding: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-rows: auto;
+    gap: 20px;
+    height: auto;
+    padding: 20px;
     box-sizing: border-box;
+    background-color: #121212;
 }
 
-
-
-
-
-
-
-
 .footer {
-    grid-column: 1 / -1; /* Span the entire width of the grid */
+    grid-column: 1 / -1;
     background-color: #1e1e1e;
     color: #ffffff;
     text-align: center;
@@ -73,4 +67,5 @@
     position: fixed;
     bottom: 0;
     width: 100%;
+    border-top: 1px solid #333;
 }
