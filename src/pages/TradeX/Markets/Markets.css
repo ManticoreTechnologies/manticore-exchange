@@ -1,0 +1,132 @@
+.marketsContainer {
+    padding: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 100vh;
+}
+
+.marketsContainer h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--link-color);
+}
+
+.marketsContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--search-filters-bg-color);
+}
+
+.marketsContainer table th, .marketsContainer table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--blog-outline);
+    color: var(--text-color);
+}
+
+.marketsContainer table th {
+    font-weight: bold;
+    color: var(--link-hover-color);
+}
+
+.searchBar {
+    margin-left: auto;
+    width: 200px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--card-border);
+    background-color: var(--search-filters-bg-color);
+    color: var(--text-color);
+}
+
+.tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--link-hover-color);
+}
+
+.tabs .tabContainer {
+    display: flex;
+}
+
+.tab {
+    margin-right: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: var(--search-filters-bg-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab:hover, .tab.active {
+    background-color: var(--link-hover-color);
+    color: var(--background-color);
+}
+
+.marketIcon {
+    vertical-align: middle;
+    margin-right: 8px;
+    display: inline-block;
+    height: 20px;
+    cursor: pointer;
+}
+
+.marketName {
+    cursor: pointer;
+}
+
+.featuredAssets {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.highlightedAssets, .topGainers, .topVolume {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.highlightedAssets h2, .topGainers h2, .topVolume h2 {
+    font-size: 14px;
+}
+
+.marketsContainer th {
+    font-size: 14px;
+}
+
+.asset, .gainer, .volume {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.assetIcon, .gainerIcon, .volumeIcon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.rentLink {
+    color: #f39c12;
+    text-decoration: none;
+}
+
+.gainerChange, .volumeAmount {
+    color: #27ae60;
+    margin-left: auto;
+}
+
+.gainerVolume, .volumeValue {
+    margin-left: 10px;
+}
+

@@ -43,6 +43,9 @@ const Navbar: React.FC = () => {
           <span className="navbar-brand-text">MANTICORE</span>
         </NavLink>
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
+          <NavLink to="/tradeX/markets" className="nav-link" onClick={handleLinkClick}>
+            Markets
+          </NavLink>
           <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
             Search
           </NavLink>

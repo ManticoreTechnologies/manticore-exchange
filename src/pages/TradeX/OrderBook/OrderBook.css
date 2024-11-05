@@ -7,21 +7,17 @@
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     padding: 0;
-}   
+}
 
-.order-table-container.asks {
+.order-table-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Aligns the content to the bottom */
     flex: 1;
     overflow-y: auto;
 }
 
-.order-table-container.bids {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow-y: auto;
+.order-table-container.asks {
+    justify-content: flex-end;
 }
 
 .order-table {
@@ -32,9 +28,8 @@
 
 .order-table th, .order-table td {
     border-bottom: 1px solid #333;
-    text-align: right;
+    text-align: left;
     height: 24px;
-    max-height: 24px;
     vertical-align: middle;
     overflow: hidden;
     white-space: nowrap;
@@ -69,8 +64,6 @@
     border-top: 1px solid #333;
     border-bottom: 1px solid #333;
     padding: 10px 0;
-    position: relative;
-    z-index: 1;
     background-color: #1e1e1e;
 }
 
@@ -82,4 +75,53 @@
     color: #b0b0b0;
     font-weight: bold;
     border-bottom: 1px solid #333;
+}
+
+.percentage-bar {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+    position: relative;
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    transition: width 0.5s ease;
+}
+
+.bar.bids {
+    background-color: #1a2d1a;
+    margin-right: 2px;
+}
+
+.bar.asks {
+    background-color: #2d1a1a;
+    margin-left: 2px;
+}
+
+.label {
+    padding: 0 10px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+}
+
+.label.bids {
+    background-color: #1a2d1a;
+    color: #6bff6b;
+    position: absolute;
+    left: 0;
+}
+
+.label.asks {
+    background-color: #2d1a1a;
+    color: #ff6b6b;
+    position: absolute;
+    right: 0;
 }
