@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './OrderBook.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 
 interface OrderBookProps {
     aggregatedAsks: { [price: number]: number };
@@ -14,28 +13,9 @@ const OrderBook: React.FC<OrderBookProps> = ({ aggregatedAsks, aggregatedBids, g
     const [bids, setBids] = useState(aggregatedBids);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            const isUnbalanced = Math.random() < 0.2; // 20% chance to unbalance
-
-            setAsks(prevAsks => {
-                const newAsks = { ...prevAsks };
-                const randomPrice = Object.keys(newAsks)[Math.floor(Math.random() * Object.keys(newAsks).length)];
-                const change = isUnbalanced ? Math.random() * 50 - 25 : Math.random() * 10 - 5;
-                newAsks[randomPrice] = newAsks[randomPrice] + change;
-                return newAsks;
-            });
-
-            setBids(prevBids => {
-                const newBids = { ...prevBids };
-                const randomPrice = Object.keys(newBids)[Math.floor(Math.random() * Object.keys(newBids).length)];
-                const change = isUnbalanced ? Math.random() * 50 - 25 : Math.random() * 10 - 5;
-                newBids[randomPrice] = newBids[randomPrice] + change;
-                return newBids;
-            });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+        setAsks(aggregatedAsks);
+        setBids(aggregatedBids);
+    }, [aggregatedAsks, aggregatedBids]);
 
     const totalAsks = Object.values(asks).reduce((acc, qty) => acc + qty, 0);
     const totalBids = Object.values(bids).reduce((acc, qty) => acc + qty, 0);
@@ -50,7 +30,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ aggregatedAsks, aggregatedBids, g
             </div>
             <OrderTable 
                 title="Asks" 
-                orders={asks} 
+                orders={Object.fromEntries(Object.entries(aggregatedAsks).reverse())} 
                 getBackgroundColor={getBackgroundColor} 
             />
             <div className="last-traded-price">
@@ -58,7 +38,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ aggregatedAsks, aggregatedBids, g
             </div>
             <OrderTable 
                 title="Bids" 
-                orders={bids} 
+                orders={aggregatedBids} 
                 getBackgroundColor={getBackgroundColor} 
             />
             <PercentageBar bidPercentage={calculatedBidPercentage} />
@@ -73,34 +53,17 @@ interface OrderTableProps {
 }
 
 const OrderTable: React.FC<OrderTableProps> = ({ title, orders, getBackgroundColor }) => {
-    let cumulativeQty = 0;
     return (
         <div className={`order-table-container ${title.toLowerCase()}`}>
             <table className={`order-table ${title.toLowerCase()}`}>
                 <tbody>
-                    {title.toLowerCase() === "asks" ? Object.entries(orders)
-                        .sort(([priceA], [priceB]) => parseFloat(priceA) - parseFloat(priceB))
-                        .map(([price, qty]) => {
-                            cumulativeQty += qty;
-                            return (
-                                <tr key={price} className="order-table-row" style={{ backgroundColor: getBackgroundColor(qty) }}>
-                                    <td className="order-table-cell">{parseFloat(price).toFixed(2)}</td>
-                                    <td className="order-table-cell">{qty.toFixed(6)}</td>
-                                    <td className="order-table-cell">{cumulativeQty.toFixed(2)}</td>
-                                </tr>
-                            );
-                        }).reverse() : Object.entries(orders)
-                        .sort(([priceA], [priceB]) => parseFloat(priceB) - parseFloat(priceA))
-                        .map(([price, qty]) => {
-                            cumulativeQty += qty;
-                            return (
-                                <tr key={price} className="order-table-row" style={{ backgroundColor: getBackgroundColor(qty) }}>
-                                    <td className="order-table-cell">{parseFloat(price).toFixed(2)}</td>
-                                    <td className="order-table-cell">{qty.toFixed(6)}</td>
-                                    <td className="order-table-cell">{cumulativeQty.toFixed(2)}</td>
-                                </tr>
-                            );
-                        })}
+                    {Object.entries(orders).map(([price, { qty, total, side }]) => (
+                        <tr key={price} className="order-table-row" style={{ backgroundColor: getBackgroundColor(qty) }}>
+                            <td className="order-table-cell">{price}</td>
+                            <td className="order-table-cell">{qty}</td>
+                            <td className="order-table-cell">{total}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
@@ -110,23 +73,12 @@ const OrderTable: React.FC<OrderTableProps> = ({ title, orders, getBackgroundCol
 const PercentageBar: React.FC<{ bidPercentage: number }> = ({ bidPercentage }) => {
     return (
         <div className="percentage-bar">
-            <span className="label bids">B</span>
             <div className="bar bids" style={{ width: `${bidPercentage}%` }}>
-                <span>{bidPercentage.toFixed(0)}%</span>
+                <span className="label">B</span>
             </div>
-            <i className="fas fa-balance-scale" 
-               style={{ 
-                   position: 'absolute', 
-                   left: `${bidPercentage}%`,
-                   transform: 'translateX(-50%)', 
-                   color: '#fff', 
-                   zIndex: 1, 
-                   transition: 'left 0.5s ease'
-               }}></i>
             <div className="bar asks" style={{ width: `${100 - bidPercentage}%` }}>
-                <span>{(100 - bidPercentage).toFixed(0)}%</span>
+                <span className="label">S</span>
             </div>
-            <span className="label asks">S</span>
         </div>
     );
 };

@@ -25,6 +25,10 @@ import Wallet from "./pages/TradeX/Wallet/Wallet";
 import Markets from "./pages/TradeX/Markets/Markets";
 import Market from "./pages/TradeX/Market/Market";
 import Deposit from "./pages/TradeX/Deposit/Deposit";
+import Profile from "./pages/TradeX/Profile/Profile";
+
+
+
 const App: React.FC = () => {
 
   return (
@@ -43,9 +47,9 @@ const App: React.FC = () => {
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/tradeX" element={<TradeX />} />
       <Route path="/tradeX/markets" element={<Markets />} />
-      <Route path="/tradeX/market/:marketName" element={<Market />} />
+      <Route path="/tradeX/market" element={<Market />} />
       <Route path="/tradeX/deposit/:asset" element={<Deposit />} />
-      
+      <Route path="/tradeX/profile" element={<Profile />} />
       <Route path="/tradeX/signin" element={<SignIn />} />
       <Route path="/tradeX/wallet" element={<Wallet />} />
       <Route path="/asset/:name" element={<AssetDetails />}/>

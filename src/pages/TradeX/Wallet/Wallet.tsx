@@ -113,3 +113,16 @@ const Wallet = () => {
 };
 
 export default Wallet;
+
+
+/*
+
+To add a checkout button using coinbase commerce we can use the following code:
+
+import { Checkout, CheckoutButton, CheckoutStatus } from '@coinbase/onchainkit/checkout';
+
+<Checkout productId='ab1fd09e-de80-441c-9e05-16d192f01067' > 
+<CheckoutButton coinbaseBranded/>
+<CheckoutStatus />
+</Checkout>
+*/

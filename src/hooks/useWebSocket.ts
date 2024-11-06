@@ -6,38 +6,45 @@ const useWebSocket = (url: string) => {
     const [message, setMessage] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
     useEffect(() => {
         const websocket = new WebSocket(url);
         setWs(websocket);
 
         websocket.onopen = () => {
             setIsConnected(true);
-            const userSession = Cookies.get('userSession');
-            const storedAddress = Cookies.get('address');
-            if (userSession && storedAddress) {
-                console.log("Attempting to restore session");
-                websocket.send(`restore_session ${storedAddress} ${userSession}`);
-            }
+            authenticateWebSocket(websocket);
         };
 
         websocket.onmessage = (event) => {
-            if (event.data.startsWith('authenticated ')) {
-                setIsAuthenticated(true);
-            } 
-            if (event.data.startsWith('session_restored')) {
-                setIsAuthenticated(true);
-            }
-            setMessage(event.data);
+            handleWebSocketMessage(event.data);
         };
 
         websocket.onclose = () => {
             setIsConnected(false);
+            setIsAuthenticated(false); // Reset authentication status on close
         };
 
         return () => {
             websocket.close();
         };
     }, [url]);
+
+    const authenticateWebSocket = (websocket: WebSocket) => {
+        const userSession = Cookies.get('userSession');
+        const storedAddress = Cookies.get('address');
+        if (userSession && storedAddress) {
+            console.log("Attempting to restore session");
+            websocket.send(`restore_session ${storedAddress} ${userSession}`);
+        }
+    };
+
+    const handleWebSocketMessage = (data: string) => {
+        if (data.startsWith('authenticated ') || data.startsWith('session_restored')) {
+            setIsAuthenticated(true);
+        }
+        setMessage(data);
+    };
 
     const sendMessage = (msg: string) => {
         if (ws && ws.readyState === WebSocket.OPEN) {

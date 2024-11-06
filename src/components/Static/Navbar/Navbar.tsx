@@ -46,9 +46,12 @@ const Navbar: React.FC = () => {
           <NavLink to="/tradeX/markets" className="nav-link" onClick={handleLinkClick}>
             Markets
           </NavLink>
+          <NavLink to="/tradeX/profile" className="nav-link" onClick={handleLinkClick}>
+            Profile
+          </NavLink>
           <NavLink to="/tradeX/wallet" className="nav-link" onClick={handleLinkClick}>
             Wallet
-          </NavLink>
+          </NavLink>  
           <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
             Search
           </NavLink>

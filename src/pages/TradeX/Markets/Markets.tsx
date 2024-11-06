@@ -39,7 +39,8 @@ const Markets = () => {
   };
 
   const handleMarketClick = (marketName: string) => {
-    navigate(`/tradex/market/${marketName}`);
+    const formattedMarketName = marketName.replace(/\//g, '_'); // Replace '/' with '_'
+    navigate(`/tradex/market?name=${formattedMarketName}`); // Use query parameter
   };
 
   const filteredMarkets = Object.values(markets).filter((market) => {
