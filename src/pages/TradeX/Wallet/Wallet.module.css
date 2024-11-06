@@ -63,12 +63,15 @@
 .depositButton, .withdrawButton, .tradeButton {
     padding: 8px 16px;
     font-size: 14px;
+    line-height: 1; /* Ensures consistent line height */
     cursor: pointer;
     background-color: #444444;
     color: #ffffff;
     border: none;
     border-radius: 4px;
     display: inline-block;
+    text-decoration: none; /* Ensures no underline */
+    transition: background-color 0.3s; /* Smooth transition for background color */
 }
 
 .depositButton:hover, .withdrawButton:hover, .tradeButton:hover {

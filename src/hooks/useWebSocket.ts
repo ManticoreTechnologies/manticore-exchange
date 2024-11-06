@@ -5,7 +5,7 @@ const useWebSocket = (url: string) => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
-
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     useEffect(() => {
         const websocket = new WebSocket(url);
         setWs(websocket);
@@ -21,6 +21,12 @@ const useWebSocket = (url: string) => {
         };
 
         websocket.onmessage = (event) => {
+            if (event.data.startsWith('authenticated ')) {
+                setIsAuthenticated(true);
+            } 
+            if (event.data.startsWith('session_restored')) {
+                setIsAuthenticated(true);
+            }
             setMessage(event.data);
         };
 
@@ -39,7 +45,7 @@ const useWebSocket = (url: string) => {
         }
     };
 
-    return { message, sendMessage, isConnected };
+    return { message, sendMessage, isConnected, isAuthenticated };
 };
 
 export default useWebSocket; 

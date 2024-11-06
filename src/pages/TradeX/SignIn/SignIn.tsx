@@ -39,7 +39,7 @@ const SignIn: React.FC = () => {
                 const hours = parseInt(timeParts[0], 10);
                 const minutes = parseInt(timeParts[1], 10);
                 const seconds = parseFloat(timeParts[2]);
-                const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
                 setRemainingTime(totalSeconds); // Set remaining time as a number
                 setSessionRestored(true); // Set sessionRestored to true
                 console.log("Session restored");

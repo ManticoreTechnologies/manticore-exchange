@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from '../../../hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 const Wallet = () => {
-    const { message, sendMessage } = useWebSocket('ws://localhost:8765');
+    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
-    const [depositAddresses, setDepositAddresses] = useState<{ [key: string]: string }>({});
     const [loadingBalances, setLoadingBalances] = useState(true);
-    const [loadingAddresses, setLoadingAddresses] = useState(true);
     const navigate = useNavigate();
     const [depositAsset, setDepositAsset] = useState('usdc');
     const [depositAmount, setDepositAmount] = useState(100);
@@ -27,15 +25,6 @@ const Wallet = () => {
                 } catch (error) {
                     console.error('Error parsing balances:', error);
                 }
-            } else if (message.startsWith('deposit_addresses ')) {
-                const jsonString = message.replace('deposit_addresses ', '').replace(/'/g, '"');
-                try {
-                    const addressesData = JSON.parse(jsonString);
-                    setDepositAddresses(addressesData);
-                    setLoadingAddresses(false);
-                } catch (error) {
-                    console.error('Error parsing deposit addresses:', error);
-                }
             }
         }
     }, [message]);
@@ -44,9 +33,6 @@ const Wallet = () => {
         if (userSession) {
             if (Object.keys(balances).length === 0) {
                 sendMessage('get_all_balances');
-            }
-            if (Object.keys(depositAddresses).length === 0) {
-                sendMessage('get_deposit_addresses');
             }
         }
     }, [userSession, sendMessage]);
@@ -63,14 +49,22 @@ const Wallet = () => {
         navigate('/tradex/signin');
     };
 
+    const handleNavigateToDeposit = (asset: string) => {
+        navigate(`/tradex/deposit/${asset}`);
+    };
+
+    const handleNavigateToWithdraw = (asset: string) => {
+        navigate(`/tradex/withdraw/${asset}`);
+    };
+
     return (
         <div className={styles.walletContainer}>
             <h1 className={styles.walletHeader}>Your Wallet</h1>
-            {userSession ? (
+            {isAuthenticated ? (
                 <div>
                     <div>
-                        <Link to="#" className={styles.depositButton}>Deposit</Link>
-                        <Link to="#" className={styles.withdrawButton}>Withdraw</Link>
+                        <button className={styles.depositButton} onClick={() => handleNavigateToDeposit(depositAsset)}>Deposit</button>
+                        <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw(depositAsset)}>Withdraw</button>
                     </div>
 
                     {loadingBalances ? (
@@ -97,9 +91,9 @@ const Wallet = () => {
                                             <td>0</td>
                                             <td>≈${(amount * 1).toFixed(2)}</td>
                                             <td>
-                                                <Link to="#" className={styles.depositButton} onClick={() => handleDepositAsset(asset, depositAmount)}>Deposit</Link>
-                                                <Link to="#" className={styles.withdrawButton} onClick={() => handleWithdrawAsset(asset, withdrawAmount)}>Withdraw</Link>
-                                                <Link to="#" className={styles.tradeButton}>Trade</Link>
+                                                <button className={styles.depositButton} onClick={() => handleNavigateToDeposit(asset)}>Deposit</button>
+                                                <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw(asset)}>Withdraw</button>
+                                                <NavLink to="#" className={styles.tradeButton}>Trade</NavLink>
                                             </td>
                                         </tr>
                                     ))}
@@ -107,26 +101,11 @@ const Wallet = () => {
                             </table>
                         </div>
                     )}
-
-                    {loadingAddresses ? (
-                        <p>Loading deposit addresses...</p>
-                    ) : (
-                        <div className={styles.depositAddresses}>
-                            <h3>Deposit Addresses</h3>
-                            {Object.entries(depositAddresses).map(([asset, address]) => (
-                                <div key={asset}>
-                                    <strong>{asset.toUpperCase()}: </strong>
-                                    <span>{address}</span>
-                                    <button onClick={() => navigator.clipboard.writeText(address)}>Copy</button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             ) : (
                 <div>
                     <p className={styles.signInMessage}>🚫 Not authenticated. Please sign in. 🚫</p>
-                    <Link to="/tradex/signin" className={styles.signInButton}>Sign In</Link>
+                    <NavLink to="/tradex/signin" className={styles.signInButton}>Sign In</NavLink>
                 </div>
             )}
         </div>
