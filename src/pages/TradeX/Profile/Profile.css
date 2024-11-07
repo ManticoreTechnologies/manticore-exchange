@@ -2,16 +2,15 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--background-color);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
-    color: #fff;
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 100vh;
     animation: fadeIn 1s ease-in-out;
+    max-height: 80vh;
 }
 
 @keyframes fadeIn {
@@ -34,7 +33,7 @@
     height: 100px;
     border-radius: 50%;
     margin-right: 20px;
-    border: 2px solid #ff0000;
+    border: 2px solid var(--link-color);
 }
 
 .profile-info {
@@ -44,11 +43,11 @@
 .profile-info div {
     margin-bottom: 10px;
     font-size: 16px;
-    color: #ff0000;
+    color: var(--link-color);
 }
 
 .profile-info strong {
-    color: #fff;
+    color: var(--text-color);
 }
 
 .profile-actions {
@@ -58,8 +57,8 @@
 
 .profile-actions button {
     padding: 10px 20px;
-    background-color: #ff0000;
-    color: white;
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -67,5 +66,5 @@
 }
 
 .profile-actions button:hover {
-    background-color: #cc0000;
+    background-color: var(--button-hover-background-color);
 }

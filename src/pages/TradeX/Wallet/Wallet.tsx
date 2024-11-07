@@ -3,6 +3,7 @@ import useWebSocket from '../../../hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
 import { useNavigate, NavLink } from 'react-router-dom';
+import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 
 const Wallet = () => {
     const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
@@ -59,7 +60,6 @@ const Wallet = () => {
 
     return (
         <div className={styles.walletContainer}>
-            <h1 className={styles.walletHeader}>Your Wallet</h1>
             {isAuthenticated ? (
                 <div>
                     <div>
@@ -103,10 +103,7 @@ const Wallet = () => {
                     )}
                 </div>
             ) : (
-                <div>
-                    <p className={styles.signInMessage}>🚫 Not authenticated. Please sign in. 🚫</p>
-                    <NavLink to="/tradex/signin" className={styles.signInButton}>Sign In</NavLink>
-                </div>
+                <UnAuthenticated />
             )}
         </div>
     );

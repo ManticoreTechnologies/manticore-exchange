@@ -9,6 +9,7 @@ import useWebSocket from '../../../hooks/useWebSocket';
 import logo from '../../../images/Placeholder.webp';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
+import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 
 const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
@@ -40,10 +41,7 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-page">
             {!isAuthenticated ? (
-                <div className="sign-in-prompt">
-                    <h2>Please sign in to view your profile</h2>
-                    <button onClick={() => navigate('/tradex/signin')}>Sign In</button>
-                </div>
+                <UnAuthenticated />
             ) : (
                 <>
                     <div className="profile-header">

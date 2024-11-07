@@ -1,26 +1,37 @@
 .walletContainer {
     padding: 20px;
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
-    background-color: transparent;
+    background-color: var(--background-color);
     border-radius: 8px;
+    font-family: 'Arial', sans-serif;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    max-height: 80vh;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .walletHeader {
-    font-size: 28px;
+    font-size: 24px;
     margin-bottom: 20px;
-    color: #ffffff;
+    color: var(--text-color);
     text-align: center;
 }
 
 .portfolioValue, .dailyChange {
-    font-size: 18px;
-    color: #cccccc;
+    font-size: 16px;
+    color: var(--link-color);
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
@@ -47,33 +58,33 @@
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #444444;
-    color: #ffffff;
+    color: var(--text-color);
 }
 
 .table th {
     font-weight: bold;
-    color: #cccccc;
+    color: var(--link-color);
 }
 
 .buttonContainer {
     display: flex;
-    gap: 5px; /* Space between buttons */
+    gap: 10px;
 }
 
 .depositButton, .withdrawButton, .tradeButton {
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 14px;
-    line-height: 1; /* Ensures consistent line height */
+    line-height: 1;
     cursor: pointer;
-    background-color: #444444;
-    color: #ffffff;
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     display: inline-block;
-    text-decoration: none; /* Ensures no underline */
-    transition: background-color 0.3s; /* Smooth transition for background color */
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
 .depositButton:hover, .withdrawButton:hover, .tradeButton:hover {
-    background-color: #555555;
+    background-color: var(--button-hover-background-color);
 }
