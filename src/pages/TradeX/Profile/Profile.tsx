@@ -8,10 +8,13 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from '../../../hooks/useWebSocket';
 import logo from '../../../images/Placeholder.webp';
 import './Profile.css';
+import { useNavigate } from 'react-router-dom';
+
 const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
     const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("ws://localhost:8765");
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (message) {
@@ -36,22 +39,31 @@ const Profile: React.FC = () => {
 
     return (
         <div className="profile-page">
-            <div className="profile-header">
-                <img src={imageUrl} alt="Profile" className="profile-image" />
-                <h1>User Profile</h1>
-            </div>
-            <div className="profile-info">
-                <div><strong>Address:</strong> {accountInfo?.address}</div>
-                <div><strong>Birthday:</strong> {accountInfo?.created}</div>
-                {/* Placeholder for additional profile information */}
-                <div><strong>Trading Volume:</strong> [Placeholder]</div>
-                <div><strong>Account Status:</strong> [Placeholder]</div>
-            </div>
-            <div className="profile-actions">
-                <button onClick={() => alert('Edit Profile clicked')}>Edit Profile</button>
-                <button onClick={() => alert('View Trading History clicked')}>View Trading History</button>
-                <button onClick={() => alert('Logout clicked')}>Logout</button>
-            </div>
+            {!isAuthenticated ? (
+                <div className="sign-in-prompt">
+                    <h2>Please sign in to view your profile</h2>
+                    <button onClick={() => navigate('/tradex/signin')}>Sign In</button>
+                </div>
+            ) : (
+                <>
+                    <div className="profile-header">
+                        <img src={imageUrl} alt="Profile" className="profile-image" />
+                        <h1>User Profile</h1>
+                    </div>
+                    <div className="profile-info">
+                        <div><strong>Address:</strong> {accountInfo?.address}</div>
+                        <div><strong>Birthday:</strong> {accountInfo?.created}</div>
+                        {/* Placeholder for additional profile information */}
+                        <div><strong>Trading Volume:</strong> [Placeholder]</div>
+                        <div><strong>Account Status:</strong> [Placeholder]</div>
+                    </div>
+                    <div className="profile-actions">
+                        <button onClick={() => alert('Edit Profile clicked')}>Edit Profile</button>
+                        <button onClick={() => alert('View Trading History clicked')}>View Trading History</button>
+                        <button onClick={() => alert('Logout clicked')}>Logout</button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };
