@@ -62,6 +62,14 @@ const Deposit = () => {
     navigate(-1);
   };
 
+  const handleTestDeposit = () => {
+    if (asset) {
+      const testQuantity = 1; // You can change this to any test quantity you want
+      console.log(`Testing deposit for ${asset} with quantity ${testQuantity}`);
+      sendMessage(`deposit_asset ${asset} ${testQuantity}`);
+    }
+  };
+
   return (
     <div className="deposit-container">
       <button className="back-button" onClick={handleBack}>
@@ -101,6 +109,9 @@ const Deposit = () => {
       </div>
       <button className="rescan-button" onClick={handleRescan}>
         Missing Deposit? Self Service Rescan
+      </button>
+      <button className="test-deposit-button" onClick={handleTestDeposit}>
+        Test Deposit
       </button>
     </div>
   );
