@@ -18,7 +18,7 @@ const Wallet = () => {
     useEffect(() => {
         if (message) {
             if (message.startsWith('all_balances ')) {
-                const jsonString = message.replace('all_balances ', '').replace(/'/g, '"');
+                const jsonString = message.replace('all_balances ', '').replace(/'/g, '"').replace("None", "0");
                 try {
                     const balancesData = JSON.parse(jsonString);
                     setBalances(balancesData);
