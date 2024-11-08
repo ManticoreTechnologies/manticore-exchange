@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './Markets.css';
-import useWebSocket from '../../../hooks/useWebSocket'; // Adjust the path as necessary
+import useWebSocket from '../../../hooks/useWebSocket';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 
 const Markets = () => {
   const [markets, setMarkets] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
-  const [activeFilter, setActiveFilter] = useState<string>('All Markets'); // State for active filter
-  const { message, sendMessage, isConnected } = useWebSocket('ws://localhost:8765');
-  const navigate = useNavigate(); // Initialize navigate
+  const [favoriteMarkets, setFavoriteMarkets] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeFilter, setActiveFilter] = useState<string>('All Markets');
+  const [showFavorites, setShowFavorites] = useState<boolean>(false);
+  const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Markets");
@@ -17,9 +22,21 @@ const Markets = () => {
   useEffect(() => {
     console.log("message received");
     if (message) {
+      try {
         if (message.includes("all_markets")) {
-            setMarkets(JSON.parse(message.split("all_markets ")[1].replace(/'/g, '"')));
+          const marketsString = message.split("all_markets ")[1].replace(/'/g, '"');
+          const marketsData = marketsString === "None" ? [] : JSON.parse(marketsString);
+          setMarkets(marketsData);
         }
+        if (message.includes("favorite_markets")) {
+          const favoritesString = message.split("favorite_markets ")[1].replace(/'/g, '"');
+          const favoritesData = favoritesString === "None" ? [] : JSON.parse(favoritesString);
+          setFavoriteMarkets(favoritesData);
+          console.log("Favorite markets received:", favoritesData);
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
     }
   }, [message]);
 
@@ -27,8 +44,12 @@ const Markets = () => {
     if (isConnected) {
       console.log("WebSocket connected, sending get_all_markets");
       sendMessage('get_all_markets');
+      if (isAuthenticated) {
+        console.log("User is authenticated, sending get_favorite_markets");
+        sendMessage('get_favorite_markets');
+      }
     }
-  }, [isConnected]);
+  }, [isConnected, isAuthenticated]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -39,14 +60,27 @@ const Markets = () => {
   };
 
   const handleMarketClick = (marketName: string) => {
-    const formattedMarketName = marketName.replace(/\//g, '_'); // Replace '/' with '_'
-    navigate(`/tradex/market?name=${formattedMarketName}`); // Use query parameter
+    const formattedMarketName = marketName.replace(/\//g, '_');
+    navigate(`/tradex/market?name=${formattedMarketName}`);
+  };
+
+  const handleFavoriteClick = (marketName: string) => {
+    if (favoriteMarkets.includes(marketName)) {
+      sendMessage(`unfavorite_market ${marketName}`);
+    } else {
+      sendMessage(`favorite_market ${marketName}`);
+    }
+  };
+
+  const handleShowFavoritesToggle = () => {
+    setShowFavorites(!showFavorites);
   };
 
   const filteredMarkets = Object.values(markets).filter((market) => {
     const matchesSearch = market.market_name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = activeFilter === 'All Markets' || market.market_name.includes(activeFilter);
-    return matchesSearch && matchesFilter;
+    const isFavorite = favoriteMarkets.includes(market.market_name);
+    return matchesSearch && matchesFilter && (!showFavorites || isFavorite);
   });
 
   return (
@@ -112,10 +146,12 @@ const Markets = () => {
       </div>
       <div className="tabs">
         <div className="tabContainer">
+          <button className="showFavoritesButton" onClick={handleShowFavoritesToggle}>
+            <FontAwesomeIcon icon={showFavorites ? faStar : faStarRegular} />
+          </button>
           <div className={`tab ${activeFilter === 'All Markets' ? 'active' : ''}`} onClick={() => handleFilterChange('All Markets')}>All Markets</div>
           <div className={`tab ${activeFilter === 'USDC' ? 'active' : ''}`} onClick={() => handleFilterChange('USDC')}>USDC</div>
           <div className={`tab ${activeFilter === 'EVR' ? 'active' : ''}`} onClick={() => handleFilterChange('EVR')}>EVR</div>
-          {/* Add more tabs as needed */}
         </div>
         <input type="text" className="searchBar" placeholder="Search Assets" value={searchQuery} onChange={handleSearchChange} />
       </div>
@@ -129,12 +165,18 @@ const Markets = () => {
             <th>24h Low</th>
             <th>24h Volume</th>
             <th>Market Cap</th>
+            <th>Favorite</th>
           </tr>
         </thead>
         <tbody>
           {filteredMarkets.map((market) => (
             <tr key={market.market_id}>
               <td>
+                <FontAwesomeIcon 
+                  icon={favoriteMarkets.includes(market.market_name) ? faStar : faStarRegular} 
+                  className="favoriteIcon" 
+                  onClick={() => handleFavoriteClick(market.market_name)} 
+                />
                 <img 
                   src="/favicon.ico" 
                   alt={`${market.market_name} Icon`} 
