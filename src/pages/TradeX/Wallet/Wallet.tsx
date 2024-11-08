@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import useWebSocket from '../../../hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
 import { useNavigate, NavLink } from 'react-router-dom';
 import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
+
+// Registering the components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Wallet = () => {
     const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
@@ -38,11 +43,11 @@ const Wallet = () => {
         }
     }, [userSession, sendMessage]);
 
-    const handleDepositAsset = (asset: string, amount: number) => {
+    const handleDepositAsset = (asset, amount) => {
         sendMessage(`deposit_asset ${asset} ${amount}`);
     };
 
-    const handleWithdrawAsset = (asset: string, amount: number) => {
+    const handleWithdrawAsset = (asset, amount) => {
         sendMessage(`withdraw_asset ${asset} ${amount}`);
     };
 
@@ -50,16 +55,35 @@ const Wallet = () => {
         navigate('/tradex/signin');
     };
 
-    const handleNavigateToDeposit = (asset: string) => {
+    const handleNavigateToDeposit = (asset) => {
         navigate(`/tradex/deposit/${asset}`);
     };
 
-    const handleNavigateToWithdraw = (asset: string) => {
+    const handleNavigateToWithdraw = (asset) => {
         navigate(`/tradex/withdraw/${asset}`);
+    };
+
+    // Prepare data for Pie chart
+    const pieData = {
+        labels: Object.keys(balances),
+        datasets: [
+            {
+                data: Object.values(balances),
+                backgroundColor: ['#FF0000', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'],
+                hoverBackgroundColor: ['#FF0000', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'],
+            },
+        ],
     };
 
     return (
         <div className={styles.walletContainer}>
+            {/* Pie Chart displaying balances */}
+            <div className={styles.pieChartContainer}>
+                <h3>Asset Distribution</h3>
+                <div style={{ width: '50%', height: '50%' }}> {/* Set fixed width and height */}
+                    <Pie data={pieData} />
+                </div>
+            </div>
             {isAuthenticated ? (
                 <div>
                     <div>
@@ -70,36 +94,40 @@ const Wallet = () => {
                     {loadingBalances ? (
                         <p>Loading balances...</p>
                     ) : (
-                        <div className={styles.tableContainer}>
-                            <table className={styles.table}>
-                                <thead>
-                                    <tr>
-                                        <th>Asset</th>
-                                        <th>Available</th>
-                                        <th>Pending</th>
-                                        <th>In Open Orders</th>
-                                        <th>Value</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.entries(balances).map(([asset, amount], index) => (
-                                        <tr key={index}>
-                                            <td>{asset}</td>
-                                            <td>{amount}</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>≈${(amount * 1).toFixed(2)}</td>
-                                            <td>
-                                                <button className={styles.depositButton} onClick={() => handleNavigateToDeposit(asset)}>Deposit</button>
-                                                <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw(asset)}>Withdraw</button>
-                                                <NavLink to="#" className={styles.tradeButton}>Trade</NavLink>
-                                            </td>
+                        <>
+                            <div className={styles.tableContainer}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            <th>Asset</th>
+                                            <th>Available</th>
+                                            <th>Pending</th>
+                                            <th>In Open Orders</th>
+                                            <th>Value</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {Object.entries(balances).map(([asset, amount], index) => (
+                                            <tr key={index}>
+                                                <td>{asset}</td>
+                                                <td>{amount}</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>≈${(amount * 1).toFixed(2)}</td>
+                                                <td>
+                                                    <button className={styles.depositButton} onClick={() => handleNavigateToDeposit(asset)}>Deposit</button>
+                                                    <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw(asset)}>Withdraw</button>
+                                                    <NavLink to="#" className={styles.tradeButton}>Trade</NavLink>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </>
                     )}
                 </div>
             ) : (
@@ -110,6 +138,8 @@ const Wallet = () => {
 };
 
 export default Wallet;
+
+
 
 
 /*
