@@ -10,7 +10,6 @@ interface CheckoutProps {
 }
 
 const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, onBack }) => {
-    return (<></>)
     const [processing, setProcessing] = useState(false);
     const [invoiceData, setInvoiceData] = useState<any>(null);
     const [payoutAddress, setPayoutAddress] = useState<string>(''); 
