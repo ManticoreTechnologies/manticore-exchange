@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import './EditProfileModal.css';
 
 const EditProfileModal = ({ accountInfo, onSave, onClose }) => {
-    const [username, setUsername] = useState(accountInfo.friendlyUsername || '');
+    const [username, setUsername] = useState(accountInfo.friendly_name || '');
     const [bio, setBio] = useState(accountInfo.bio || '');
     const [ipfsHash, setIpfsHash] = useState(accountInfo.profile_ipfs || '');
 
     const handleSave = () => {
-        const updatedInfo = { friendlyUsername: username, bio, profile_ipfs: ipfsHash };
+        const updatedInfo = {
+            friendlyUsername: username,
+            bio,
+            profile_ipfs: ipfsHash
+        };
         onSave(updatedInfo);
         onClose();
     };
@@ -34,3 +38,4 @@ const EditProfileModal = ({ accountInfo, onSave, onClose }) => {
 };
 
 export default EditProfileModal;
+

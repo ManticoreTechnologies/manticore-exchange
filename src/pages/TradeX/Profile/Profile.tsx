@@ -20,7 +20,6 @@ const Profile: React.FC = () => {
         if (message) {
             console.log("Received message:", message);
 
-            // Process account info
             if (message.startsWith('account_info')) {
                 try {
                     const jsonString = message.replace('account_info ', '').replace(/'/g, '"');
@@ -37,18 +36,25 @@ const Profile: React.FC = () => {
                 }
             }
 
-            // Process balances
             else if (message.startsWith('all_balances')) {
                 const balanceString = message.replace('all_balances ', '').trim()
-                    .replace(/'/g, '"'); // Convert single quotes to double quotes
+                    .replace(/'/g, '"')  // Replace single quotes with double quotes
+                    .replace(/([{,]\s*)(\w+):/g, '$1"$2":');  // Add quotes around keys
                 try {
-                    // Ensure the balances are valid JSON
                     const balancesData = JSON.parse(balanceString);
                     setBalances(balancesData);
                 } catch (error) {
                     console.error("Failed to parse balances JSON:", error);
                     console.error("Received balances data:", balanceString);
                 }
+            }
+
+            else if (message.startsWith('favorite_added')) {
+                const asset = message.replace('favorite_added ', '').trim();
+                setAccountInfo((prevInfo) => ({
+                    ...prevInfo,
+                    favorite_assets: [...(prevInfo.favorite_assets || []), asset],
+                }));
             }
         }
     }, [message]);
@@ -64,12 +70,18 @@ const Profile: React.FC = () => {
     const handleSave = (updatedInfo) => {
         setAccountInfo({ ...accountInfo, ...updatedInfo });
         const updatedImageUrl = updatedInfo.profile_ipfs 
-            ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${updatedInfo.profile_ipfs}?pinataGatewayToken=YOUR_TOKEN_HERE` 
+            ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${accountInfo.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
             : logo;
         setImageUrl(updatedImageUrl);
 
         // Send updated profile data to the backend
-        sendMessage(`update_account_info ${JSON.stringify(updatedInfo)}`);
+        sendMessage(`set_friendly_name ${updatedInfo.friendlyUsername}`);
+        sendMessage(`set_bio ${updatedInfo.bio}`);
+        sendMessage(`set_profile_ipfs ${updatedInfo.profile_ipfs}`);
+    };
+
+    const handleAddToFavorites = (asset: string) => {
+        sendMessage(`favorite_market ${asset}`);
     };
 
     return (
@@ -101,7 +113,15 @@ const Profile: React.FC = () => {
                         {balances ? (
                             <ul>
                                 {Object.entries(balances).map(([asset, balance], index) => (
-                                    <li key={index}><strong>{asset.toUpperCase()}:</strong> {balance}</li>
+                                    <li key={index} className="asset-item">
+                                        <span><strong>{asset.toUpperCase()}:</strong> {balance}</span>
+                                        <button 
+                                            className="add-favorite-button" 
+                                            onClick={() => handleAddToFavorites(asset)}
+                                        >
+                                            Add to Favorites
+                                        </button>
+                                    </li>
                                 ))}
                             </ul>
                         ) : (
@@ -129,6 +149,8 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+
+
 
 
 

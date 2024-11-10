@@ -100,23 +100,36 @@
     padding: 0;
     max-height: 200px;
     overflow-y: auto;
+    background: #1e1e1e;
+    padding: 10px;
+    border-radius: 8px;
 }
 
-.all-assets li {
+.asset-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 8px 5px;
     border-bottom: 1px solid #333;
 }
 
-.all-assets li:last-child {
+.asset-item:last-child {
     border-bottom: none;
 }
 
-.all-assets li strong {
-    color: #ffffff;
-    font-weight: 500;
+.add-favorite-button {
+    padding: 5px 10px;
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-.all-assets li span {
-    color: #c2c2c2;
+.add-favorite-button:hover {
+    background-color: var(--button-hover-background-color);
 }
+
 
