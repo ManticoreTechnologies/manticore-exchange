@@ -1,0 +1,45 @@
+.assets-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-content {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.carousel-button {
+    background: none;
+    border: none;
+    color: #f5f5f5;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.carousel-button:hover {
+    color: #d32f2f;
+}
+
+.asset-card {
+    padding: 10px;
+}
+
+.asset-card h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.asset-card p {
+    font-size: 14px;
+    color: #ccc;
+}
