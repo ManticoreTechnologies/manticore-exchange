@@ -9,6 +9,7 @@
   display: flex;
   align-items: center; /* Center content vertically */
   justify-content: center; /* Center content horizontally */
+  z-index: 100;
 }
 .footer .ping-indicator {
   position: absolute;
