@@ -75,8 +75,8 @@ const TradeChart: React.FC<ChartProps> = ({ data }) => {
   };
 
   return (
-    <div ref={chartContainerRef} style={{ width: '100%', height: '400px', position: 'relative' }}>
-        
+    <div ref={chartContainerRef} className="chart-container">
+      {/* Add any additional elements here if needed */}
     </div>
   );
 };

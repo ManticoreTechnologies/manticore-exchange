@@ -1,34 +1,34 @@
-.sidebar {
+.chart-sidebar {
   width: 100px;
-  background-color: #2a2a2a; /* Darker gray for a more subtle look */
-  color: #ff4d4d; /* Softer red for sidebar text */
+  background-color: #2a2a2a;
+  color: #ff4d4d;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  padding: 10px; /* Add padding for better readability */
-  border-right: 1px solid #444; /* Add a border for separation */
+  padding: 10px;
+  border-right: 1px solid #444;
 }
 
 .chart-container {
   width: calc(100% - 100px);
   height: 400px;
   position: relative;
-  background-color: #1a1a1a; /* Match the chart background */
+  background-color: #1a1a1a;
 }
 
-.toolbar {
+.chart-toolbar {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #444; /* Slightly lighter gray for contrast */
+  background-color: #444;
   padding: 5px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.toolbar-button {
-  background-color: #ff4d4d; /* Softer red for button */
+.chart-toolbar-button {
+  background-color: #ff4d4d;
   color: #fff;
   border: none;
   padding: 5px 10px;
@@ -37,7 +37,7 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.toolbar-button:hover {
-  background-color: #e63939; /* Darker red on hover */
-  transform: scale(1.05); /* Slightly enlarge on hover */
+.chart-toolbar-button:hover {
+  background-color: #e63939;
+  transform: scale(1.05);
 }

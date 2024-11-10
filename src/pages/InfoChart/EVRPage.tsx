@@ -142,7 +142,7 @@ const EVRPage: React.FC = () => {
             <a key={key} href={xeggexData.socialCommunity[key]} target="_blank" rel="noopener noreferrer">{key}</a>
           ))}
         </div>
-        <div ref={chartContainerRef} className="chart-container" style={{ marginLeft: 'auto', marginRight: 'auto' }} />
+        <div ref={chartContainerRef} className="info-chart-container" style={{ marginLeft: 'auto', marginRight: 'auto' }} />
         <div className="trade-links">
           <p>Trade on Xeggex</p>
           <ul>
