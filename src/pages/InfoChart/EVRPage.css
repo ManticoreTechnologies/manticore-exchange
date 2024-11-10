@@ -87,16 +87,17 @@
   margin: 5px 0;
 }
 
-.chart-container {
+.info-chart-container {
   width: 100%; /* Ensures the chart container takes full width of the parent */
-  max-width: 600px; /* Ensures the chart doesn't exceed the container's width */
+  max-width: 100%; /* Ensures the chart doesn't exceed the container's width */
   height: 400px; /* Set a fixed height for the chart */
+  margin: 0 auto; /* Center the chart container */
 }
 
 @media (max-width: 600px) {
-  .chart-container {
+  .info-chart-container {
     width: 100%; /* Ensures the chart container takes full width of the parent */
-    max-width: 600px; /* Ensures the chart doesn't exceed the container's width */
+    max-width: 100%; /* Ensures the chart doesn't exceed the container's width */
     height: 300px; /* Set a fixed height for the chart */
   }
 }
