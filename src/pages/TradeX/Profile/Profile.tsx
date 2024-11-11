@@ -70,16 +70,22 @@ const Profile: React.FC = () => {
     const handleSave = (updatedInfo) => {
         setAccountInfo({ ...accountInfo, ...updatedInfo });
         const updatedImageUrl = updatedInfo.profile_ipfs 
-            ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${accountInfo.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
+            ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${updatedInfo.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
             : logo;
         setImageUrl(updatedImageUrl);
-
+    
         // Send updated profile data to the backend
-        sendMessage(`set_friendly_name ${updatedInfo.friendlyUsername}`);
-        sendMessage(`set_bio ${updatedInfo.bio}`);
-        sendMessage(`set_profile_ipfs ${updatedInfo.profile_ipfs}`);
+        if (updatedInfo.friendlyUsername) {
+            sendMessage(`set_friendly_name ${updatedInfo.friendlyUsername}`);
+        }
+        if (updatedInfo.bio) {
+            sendMessage(`set_bio ${updatedInfo.bio}`);
+        }
+        if (updatedInfo.profile_ipfs) {
+            sendMessage(`set_profile_ipfs ${updatedInfo.profile_ipfs}`);
+        }
     };
-
+    
     const handleAddToFavorites = (asset: string) => {
         sendMessage(`favorite_market ${asset}`);
     };
