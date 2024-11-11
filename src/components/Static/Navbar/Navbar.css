@@ -195,6 +195,7 @@
     top: 10px; /* Adjust the top position */
     left: 10px; /* Position the logo all the way to the left */
     transform: translateY(0); /* Remove horizontal centering */
+    z-index: 11;
   }
 
   .navbar-logo img {
