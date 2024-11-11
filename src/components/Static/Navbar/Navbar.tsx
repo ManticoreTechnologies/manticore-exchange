@@ -70,6 +70,9 @@ const Navbar: React.FC = () => {
           <NavLink to="/chart" className="nav-link" onClick={handleLinkClick}>
             Chart
           </NavLink>
+          <NavLink to="/ipfs" className="nav-link" onClick={handleLinkClick}>
+            IPFS
+          </NavLink>
           <ThemeToggleButton />
         </div>
         <div className="navbar-actions">
