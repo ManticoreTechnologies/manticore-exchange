@@ -3,7 +3,7 @@
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjusted min width for better layout */
     gap: 10px; /* Increased gap between cards */
     padding: 70px;
-    padding-bottom: 10px; /* Padding around the grid */
+    padding-bottom: 0px; /* Padding around the grid */
     justify-items: center; /* Center the cards horizontally */
     margin-top: 4rem;
 }
