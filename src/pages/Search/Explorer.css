@@ -14,6 +14,9 @@
     font-size: 18px;
     margin: 20px;
 }
+.results-container {
+    margin-top: 1rem;
+}
 .search-input {
     width: 100%;
     max-width: 400px;
@@ -40,6 +43,9 @@
         color: #666;
         font-size: 18px;
         margin: 150px 0px 50px;
+    }
+    .results-container {
+        margin-top: 6rem;
     }
 }
 .search-button {

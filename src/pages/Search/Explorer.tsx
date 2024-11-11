@@ -48,7 +48,7 @@ const Explorer: React.FC = () => {
             {isSearching && <div className="spinner-container"><LoadingSpinner /></div>}
             {!isCleared && !isSearching && !results && <div className="no-results">No results found</div>}
             {results && (
-                <div>
+                <div className="results-container">
                     <ResultsGrid results={results.results} />
                     <Pagination
                         totalPages={results.total_pages}

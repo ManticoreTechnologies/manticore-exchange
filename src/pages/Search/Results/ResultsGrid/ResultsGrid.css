@@ -5,7 +5,7 @@
     padding: 70px;
     padding-bottom: 10px; /* Padding around the grid */
     justify-items: center; /* Center the cards horizontally */
-    margin-top: 1rem;
+    margin-top: 4rem;
 }
 
 /* Media Query for Mobile Devices */
@@ -15,6 +15,6 @@
         gap: 0px; /* Reduce the gap between cards */
         padding: 0px; /* Add more space at the top and adjust padding */
         padding-bottom: 10px;
-        margin-top: 200px;
+        margin-top: 4rem;
     }
 }
