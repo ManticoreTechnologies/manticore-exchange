@@ -1,57 +1,93 @@
 :root {
+    /* General Colors */
     --background-color: black;
     --text-color: white;
+    --link-color: red;
+    --link-hover-color: white;
+    --box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    --glow-color: #ff0000;
+    --glow-outline: rgba(25, 25, 25, 0.2);
+
+    /* Navbar Colors */
     --navbar-bg-color: transparent;
     --navbar-text-color: white;
-    --button-background-color: red;
-    --button-text-color: rgb(255, 255, 255);
+
+    /* Button Colors */
+    --button-text-color: white;
+    --button-background-color: rgb(200, 0, 0);
+    --button-hover-background-color: rgb(219, 0, 0);
+    --button-shadow-color: rgba(255, 0, 0, 0.7);
+    --button-border-color: rgb(255, 255, 255);
+
+    /* Text Shadow */
+    --text-shadow-color: rgba(0, 0, 0, 0.4);
+
+    /* Search Bar Colors */
     --search-bar-color: white;
     --search-bar-bg-color: transparent;
     --search-filters-color: white;
     --search-filters-bg-color: black;
     --search-bar-underline: 2px solid #ff0000;
+    --search-bar-underline-focus: 2px solid #fff;
+
+    /* Pagination Colors */
     --pagination-background: black;
     --pagination-color: white;
+
+    /* Blog Outline */
     --blog-outline: 1px solid rgb(255, 255, 255);
-    --link-color: red; /* Gold color for links in dark mode */
-    --link-hover-color: white; /* Lighter gold color on hover in dark mode */
-    --box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+
+    /* Miscellaneous */
     --modal-border: 2px solid white;
     --nth-child-color: rgb(50,50,50);
     --spinner-color: gray;
     --card-border: 1px solid white;
-    --card-shadow: 0 4px 10px rgba(255, 255, 255, 0.1); /* Added card shadow variable */
-    --search-bar-underline-focus: 2px solid #fff;
-    --glow-color: #ff0000; /* Added glow color variable */
-    --glow-outline: rgba(25, 25, 25, 0.2);
+    --card-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="light"] {
-    --background-color: #ffffff; /* White background for better contrast */
-    --text-color: #000000; /* Black text for better contrast */
-    --navbar-background-color: transparent;
-    --navbar-text-color: black;
-    --button-background-color: red;
-    --button-text-color: rgb(0, 0, 0);
+    /* General Colors */
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --link-color: red;
+    --link-hover-color: black;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --glow-color: #ff0000;
+    --glow-outline: rgba(25, 25, 25, 0.2);
+
+    /* Navbar Colors */
     --navbar-bg-color: transparent;
     --navbar-text-color: black;
+
+    /* Button Colors */
+    --button-text-color: black;
+    --button-background-color: rgb(200, 0, 0);
+    --button-hover-background-color: rgb(219, 0, 0);
+    --button-shadow-color: rgba(255, 0, 0, 0.5);
+    --button-border-color: black;
+
+    /* Text Shadow */
+    --text-shadow-color: rgba(255, 255, 255, 0.4);
+
+    /* Search Bar Colors */
     --search-bar-color: black;
     --search-bar-bg-color: transparent;
     --search-filters-color: black;
     --search-filters-bg-color: transparent;
     --search-bar-underline: 2px solid #ff0000;
+    --search-bar-underline-focus: 2px solid black;
+
+    /* Pagination Colors */
     --pagination-background: white;
     --pagination-color: black;
+
+    /* Blog Outline */
     --blog-outline: 1px solid rgb(0, 0, 0);
-    --link-color: red; /* Blue color for links in light mode */
-    --link-hover-color: black; /* Darker blue on hover in light mode */
-    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    /* Miscellaneous */
     --spinner-color: gray;
     --card-border: 1px solid black;
-    --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added card shadow variable */
-    --search-bar-underline-focus: 2px solid black;
-    --glow-color: #ff0000; /* Added glow color variable */
-    --glow-outline: rgba(25, 25, 25, 0.2);
+    --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -59,7 +95,7 @@ body {
     color: var(--text-color);
     font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
     margin: 0;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Added smooth transition */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 

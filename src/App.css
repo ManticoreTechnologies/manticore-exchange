@@ -1,31 +1,15 @@
-:root { /* Default dark mode */
-    --button-text-color: white;
-    --button-background-color: rgb(200, 0, 0); /* Lighter red for better contrast */
-    --button-hover-background-color: rgb(219, 0, 0);
-    --button-shadow-color: rgba(255, 0, 0, 0.7); /* Red glow */
-    --button-border-color: rgb(255, 255, 255); /* Light border */
-    --text-shadow-color: rgba(0, 0, 0, 0.4); /* Dark shadow to make text pop */
-}
-[data-theme="light"] { /* Optional light mode */
-    --button-text-color: black;
-    --button-background-color: rgb(200, 0, 0); /* Slightly lighter red */
-    --button-hover-background-color: rgb(219, 0, 0);
-    --button-shadow-color: rgba(255, 0, 0, 0.5); /* Red glow */
-    --button-border-color: black;
-    --text-shadow-color: rgba(255, 255, 255, 0.4); /* Light shadow for contrast */
-}
-
 .app {
     display: flex;
     flex-direction: column;
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-.main{
+.main {
     min-height: 84vh;
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }
+
 /* Button Styles */
 button.custom-button {
     /* Base button styles */
@@ -79,25 +63,25 @@ input.custom-input::placeholder {
 }
 
 /* Select Styles */
-select.custom-select{
+select.custom-select {
     border: none;
     background-color: transparent;
     color: var(--text-color);
     border-bottom: var(--search-bar-underline); /* Change underline to white on focus */
 }
 
-select.custom-select:focus{
+select.custom-select:focus {
     outline: none;
     border-bottom: var(--search-bar-underline-focus);
 }
 
-option.custom-option{
+option.custom-option {
     background-color: var(--search-filters-bg-color);
     color: var(--text-color);
 }
 
 @media (max-width: 768px) {
-    .main{
+    .main {
         padding-top: 80px; /* Add padding to the top to avoid overlap with the navbar */
     }
 }
