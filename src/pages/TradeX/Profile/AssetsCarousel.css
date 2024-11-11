@@ -1,0 +1,36 @@
+.assets-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.carousel-button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.carousel-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    text-align: center;
+    margin: 0 10px;
+}
+
+.asset-card {
+    padding: 10px;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.asset-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+

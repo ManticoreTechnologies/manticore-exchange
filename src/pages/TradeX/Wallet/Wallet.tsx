@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import useWebSocket from '../../../hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
 import { useNavigate, NavLink } from 'react-router-dom';
 import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 const Wallet = () => {
     const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
     const [loadingBalances, setLoadingBalances] = useState(true);
+    const [accountInfo, setAccountInfo] = useState<{ address: string; friendlyName: string } | null>(null);
     const navigate = useNavigate();
-    const [depositAsset, setDepositAsset] = useState('usdc');
-    const [depositAmount, setDepositAmount] = useState(100);
-    const [withdrawAmount, setWithdrawAmount] = useState(100);
 
     useEffect(() => {
         if (message) {
@@ -26,6 +28,17 @@ const Wallet = () => {
                 } catch (error) {
                     console.error('Error parsing balances:', error);
                 }
+            } else if (message.startsWith('account_info')) {
+                const jsonString = message.replace('account_info ', '').replace(/'/g, '"');
+                try {
+                    const accountData = JSON.parse(jsonString);
+                    setAccountInfo({
+                        address: accountData.address || "Unknown",
+                        friendlyName: accountData.friendly_name || "User"
+                    });
+                } catch (error) {
+                    console.error("Error parsing account info:", error);
+                }
             }
         }
     }, [message]);
@@ -35,36 +48,56 @@ const Wallet = () => {
             if (Object.keys(balances).length === 0) {
                 sendMessage('get_all_balances');
             }
+            if (!accountInfo) {
+                sendMessage("get_account_info");
+            }
         }
     }, [userSession, sendMessage]);
 
-    const handleDepositAsset = (asset: string, amount: number) => {
-        sendMessage(`deposit_asset ${asset} ${amount}`);
-    };
-
-    const handleWithdrawAsset = (asset: string, amount: number) => {
-        sendMessage(`withdraw_asset ${asset} ${amount}`);
-    };
-
-    const handleSignIn = () => {
-        navigate('/tradex/signin');
-    };
-
-    const handleNavigateToDeposit = (asset: string) => {
+    const handleNavigateToDeposit = (asset) => {
         navigate(`/tradex/deposit/${asset}`);
     };
 
-    const handleNavigateToWithdraw = (asset: string) => {
+    const handleNavigateToWithdraw = (asset) => {
         navigate(`/tradex/withdraw/${asset}`);
+    };
+
+    const pieData = {
+        labels: Object.keys(balances),
+        datasets: [
+            {
+                data: Object.values(balances),
+                backgroundColor: ['#FF0000', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'],
+                hoverBackgroundColor: ['#FF0000', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'],
+            },
+        ],
     };
 
     return (
         <div className={styles.walletContainer}>
             {isAuthenticated ? (
-                <div>
+                <>
+                    {/* Display user address and friendly name */}
+                    <div className={styles.walletHeader}>
+                        <h1>Wallet</h1>
+                        {accountInfo && (
+                            <div className={styles.userInfo}>
+                                <p><strong>Address:</strong> {accountInfo.address}</p>
+                                <p><strong>Username:</strong> {accountInfo.friendlyName}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.pieChartContainer}>
+                        <h3>Asset Distribution</h3>
+                        <div style={{ width: '50%', height: '50%' }}>
+                            <Pie data={pieData} />
+                        </div>
+                    </div>
+
                     <div>
-                        <button className={styles.depositButton} onClick={() => handleNavigateToDeposit(depositAsset)}>Deposit</button>
-                        <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw(depositAsset)}>Withdraw</button>
+                        <button className={styles.depositButton} onClick={() => handleNavigateToDeposit("usdc")}>Deposit</button>
+                        <button className={styles.withdrawButton} onClick={() => handleNavigateToWithdraw("usdc")}>Withdraw</button>
                     </div>
 
                     {loadingBalances ? (
@@ -101,7 +134,7 @@ const Wallet = () => {
                             </table>
                         </div>
                     )}
-                </div>
+                </>
             ) : (
                 <UnAuthenticated />
             )}
@@ -110,6 +143,9 @@ const Wallet = () => {
 };
 
 export default Wallet;
+
+
+
 
 
 /*

@@ -50,7 +50,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
     }, [ipfsHash, mediaSrc]);
 
     return (
-        <a href={`https://manticore.exchange/asset/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer" className="result-card-link">
+        <a href={`/asset/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer" className="result-card-link">
             <div className="result-card">
                 {!isLoaded && (
                     <div className="loading-spinner-container"><LoadingSpinner/></div> // Display spinner while loading

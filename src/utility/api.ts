@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
+const apiUrl = 'https://rpc.manticore.exchange';
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const coinmarketcapApiKey = import.meta.env.VITE_COINMARKETCAP_API_KEY;
 const xeggexApiUrl = 'https://api.xeggex.com/v2/'; // Base URL for Xeggex API

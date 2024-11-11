@@ -27,9 +27,9 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
     const totalAmountWithoutFeeEVR = (totalAmountWithoutFeeSats / 100000000).toFixed(8);
     const feeEVR = (feeSats / 100000000).toFixed(8);
     const totalAmountWithFeeEVR = (totalAmountWithFeeSats / 100000000).toFixed(8);
-    const trading_api_host = 'api.manticore.exchange'//'api.manticore.exchange';
-    const trading_api_port = 668;
-    const trading_api_url = `https://${trading_api_host}:${trading_api_port}`;
+    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
+    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || 443;
+    const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${trading_api_host}:${trading_api_port}`;
     useEffect(() => {
         let interval: NodeJS.Timeout;
 
