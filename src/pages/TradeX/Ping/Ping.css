@@ -18,7 +18,7 @@
 }
 
 .ping-indicator .signal-strength .bar {
-    width: 3px;
+    width: 2px;
     margin-right: 2px;
     background-color: #ccc;
     transition: background-color 0.3s ease, height 0.3s ease;
@@ -34,3 +34,11 @@
     color: #fff;
 }
 
+@media (max-width: 768px) {
+    .ping-indicator .signal-strength .bar {
+        width: 1px; /* Reduce bar width for mobile */
+    }
+    .ping-indicator .ping-time {
+        font-size: 10px; /* Reduce font size for mobile */
+    }
+}

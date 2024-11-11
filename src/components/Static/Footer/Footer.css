@@ -35,3 +35,13 @@
 .footer a:hover {
   color: var(--color); /* White color on hover for contrast */
 }
+
+@media (max-width: 768px) {
+  .footer p {
+    font-size: 10px; /* Further reduce font size for mobile */
+  }
+  .footer .ping-indicator {
+    right: 10px; /* Adjust the right position */
+    top: 25%; /* Adjust the top position */
+  }
+}
