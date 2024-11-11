@@ -76,17 +76,21 @@ const Profile: React.FC = () => {
     
         // Send updated profile data to the backend
         if (updatedInfo.friendlyUsername) {
+            console.log(`Sending friendly name update: ${updatedInfo.friendlyUsername}`);
             sendMessage(`set_friendly_name ${updatedInfo.friendlyUsername}`);
         }
         if (updatedInfo.bio) {
+            console.log(`Sending bio update: ${updatedInfo.bio}`);
             sendMessage(`set_bio ${updatedInfo.bio}`);
         }
         if (updatedInfo.profile_ipfs) {
+            console.log(`Sending profile IPFS hash update: ${updatedInfo.profile_ipfs}`);
             sendMessage(`set_profile_ipfs ${updatedInfo.profile_ipfs}`);
         }
     };
     
     const handleAddToFavorites = (asset: string) => {
+        console.log(`Adding asset to favorites: ${asset}`);
         sendMessage(`favorite_market ${asset}`);
     };
 
