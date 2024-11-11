@@ -36,7 +36,7 @@ const useSearch = (cardsPerPage: number) => {
         if (reissuable !== 'all') params["reissuable"] = reissuable;
 
         try {
-            const response = await axios.get('https://api.manticore.exchange:666/search', { params });
+            const response = await axios.get('https://api.manticore.exchange/search', { params });
             setResults(response.data);
             setCurrentPage(page);
         } catch (error) {
