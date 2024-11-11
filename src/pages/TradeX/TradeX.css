@@ -57,15 +57,3 @@
     box-sizing: border-box;
     background-color: #121212;
 }
-
-.footer {
-    grid-column: 1 / -1;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    border-top: 1px solid #333;
-}
