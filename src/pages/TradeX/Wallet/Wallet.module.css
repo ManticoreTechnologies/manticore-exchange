@@ -45,8 +45,10 @@
     margin-top: 20px;
     border: 1px solid #333333;
     border-radius: 4px;
-    overflow: hidden;
+    overflow-y: auto; /* Enables vertical scrolling */
+    max-height: 300px; /* Adjust height as needed */
 }
+
 
 .table {
     width: 100%;
@@ -99,3 +101,15 @@
     width: 100%;
 }
 
+.walletHeader {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.userInfo {
+    font-size: 16px;
+    color: var(--link-color);
+    margin-top: 10px;
+}
