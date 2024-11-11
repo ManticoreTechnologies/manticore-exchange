@@ -5,6 +5,7 @@
     background: transparent;
     color: var(--text-color);
     flex-shrink: 0;
+    
 }
 
 .hero-logo {
@@ -31,4 +32,10 @@
     z-index: -3;
     font-size: 1.6em; /* Slightly increase size for better readability */
     margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .hero-logo {
+        top: 70%; /* Adjust positioning to move the logo up */
+    }
 }
