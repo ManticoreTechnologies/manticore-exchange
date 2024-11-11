@@ -47,16 +47,16 @@ const Navbar: React.FC = () => {
         </NavLink>
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
           <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaSearch /> </center>
+            Search
           </NavLink>
           <NavLink to="/trade" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaExchangeAlt /> </center>
+            Trade
           </NavLink>
           <NavLink to="/faucet" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaFaucetDrip /> </center>
+            Faucet
           </NavLink>
           <NavLink to="/blog" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaBlog /> </center>
+            Blog
           </NavLink>
           <NavLink to="/roadmap" className="nav-link" onClick={handleLinkClick}>
             <center> <FaRoad /> </center>
