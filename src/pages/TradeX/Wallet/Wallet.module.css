@@ -88,3 +88,14 @@
 .depositButton:hover, .withdrawButton:hover, .tradeButton:hover {
     background-color: var(--button-hover-background-color);
 }
+
+/* Add a container style for the pie chart */
+.pieChartContainer {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
