@@ -7,13 +7,54 @@ import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 import EditProfileModal from './EditProfileModal';
 import AssetsCarousel from './AssetsCarousel';
 
+interface Asset {
+    name: string;
+    description: string;
+}
+
 const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
-    const [balances, setBalances] = useState<any>(null); // State to store balances (all assets)
+    const [balances, setBalances] = useState<any>(null); 
     const [isEditing, setIsEditing] = useState(false);
     const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("ws://localhost:8765");
-    const [imageUrl, setImageUrl] = useState<string | null>(logo); // Set default image initially
+    const [imageUrl, setImageUrl] = useState<string | null>(logo); 
     const navigate = useNavigate();
+
+    // Function to parse favorite assets, with enhanced checking for stringified JSON
+    const parseFavoriteAssets = (assetsArray: string[] | string | undefined | null): Asset[] => {
+        if (!assetsArray) {
+            console.error("Invalid or missing assets array");
+            return []; 
+        }
+        
+        // If assetsArray is a string, parse it as JSON
+        if (typeof assetsArray === 'string') {
+            try {
+                assetsArray = JSON.parse(assetsArray);
+            } catch (error) {
+                console.error("Failed to parse assets array as JSON:", assetsArray);
+                return [];
+            }
+        }
+
+        if (!Array.isArray(assetsArray)) {
+            console.error("Expected an array for assetsArray but got:", assetsArray);
+            return [];
+        }
+
+        const descriptions: Record<string, string> = {
+            evr: "EVR - Evrmore Coin",
+            btc: "BTC - Bitcoin",
+            usdm: "USDM - USD Mirror Coin",
+            inferna: "INFERNA - Inferna Token"
+        };
+        
+        return assetsArray.map((asset) => ({
+            name: asset.toUpperCase(),
+            description: descriptions[asset.toLowerCase()] || "No description available",
+        }));
+    };
+    
 
     // Handle received messages from WebSocket
     useEffect(() => {
@@ -38,8 +79,8 @@ const Profile: React.FC = () => {
 
             else if (message.startsWith('all_balances')) {
                 const balanceString = message.replace('all_balances ', '').trim()
-                    .replace(/'/g, '"')  // Replace single quotes with double quotes
-                    .replace(/([{,]\s*)(\w+):/g, '$1"$2":');  // Add quotes around keys
+                    .replace(/'/g, '"')  
+                    .replace(/([{,]\s*)(\w+):/g, '$1"$2":');  
                 try {
                     const balancesData = JSON.parse(balanceString);
                     setBalances(balancesData);
@@ -63,7 +104,7 @@ const Profile: React.FC = () => {
     useEffect(() => {
         if (isConnected && isAuthenticated) {
             sendMessage("get_account_info");
-            sendMessage("get_all_balances"); // Request balances data (all assets)
+            sendMessage("get_all_balances"); 
         }
     }, [isConnected, isAuthenticated]);
 
@@ -74,7 +115,6 @@ const Profile: React.FC = () => {
             : logo;
         setImageUrl(updatedImageUrl);
     
-        // Send updated profile data to the backend
         if (updatedInfo.friendlyUsername) {
             console.log(`Sending friendly name update: ${updatedInfo.friendlyUsername}`);
             sendMessage(`set_friendly_name ${updatedInfo.friendlyUsername}`);
@@ -114,8 +154,8 @@ const Profile: React.FC = () => {
                         <div><strong>Favorite Markets:</strong> {accountInfo?.favorite_markets || 'No favorite markets'}</div>
                     </div>
 
-                    {/* Featured Assets Carousel */}
-                    <AssetsCarousel featuredAssets={accountInfo?.favorite_assets || []} />
+                    {/* Favorite Assets Carousel */}
+                    <AssetsCarousel favoriteAssets={parseFavoriteAssets(accountInfo?.favorite_assets || [])} />
 
                     {/* All Assets List and Balances */}
                     <div className="all-assets">
@@ -159,6 +199,9 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+
+
+
 
 
 
