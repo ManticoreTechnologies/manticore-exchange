@@ -15,18 +15,25 @@ const BlogPage: React.FC = () => {
       title: 'EVRMORE and the Future of Social Commerce',
       author: 'Manticore Technologies',
       date: 'August 27, 2024',
-      summary: 'Discover how the EVRMORE Blockchain will revolutionize the f  uture of social commerce',
+      summary: 'Discover how the EVRMORE Blockchain will revolutionize the future of social commerce.',
       link: '/blog/EvrmoreSocialCommerce',
     },
     {
       title: 'Wallet-Based Authentication on EVRMORE',
       author: 'Manticore Technologies',
       date: 'September 29, 2024',
-      summary: 'Learn how EVRMORE implements wallet-based authentication for secure transactions',
+      summary: 'Learn how EVRMORE implements wallet-based authentication for secure transactions.',
       link: '/blog/WalletBasedAuthEvrmore',
     },
-    // Add more posts as needed
+    {
+      title: 'Exploring Evrmore Assets',
+      author: 'Manticore Technologies',
+      date: 'November 13, 2024',
+      summary: 'Uncover the potential of Evrmore assets and how they redefine digital value and social commerce.',
+      link: '/blog/ExploringEvrmoreAssets',
+    },
   ];
+  
 
   return (
     <div className="blog-container">
