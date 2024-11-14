@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FaSearch, FaExchangeAlt, FaFaucet, FaBlog } from 'react-icons/fa'; 
+import { FaSearch, FaExchangeAlt, FaBlog } from 'react-icons/fa'; 
 import HomeHero from '../../components/Heros/HomeHero/HomeHero';
 import InfoCard from '../../components/Cards/InfoCard';
 

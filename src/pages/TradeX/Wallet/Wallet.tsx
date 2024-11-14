@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import useWebSocket from '../../../hooks/useWebSocket';
@@ -10,7 +10,8 @@ import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Wallet = () => {
-    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
+    //@ts-ignore
+    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('wss://ws.manticore.exchange');
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
     const [loadingBalances, setLoadingBalances] = useState(true);
@@ -54,11 +55,11 @@ const Wallet = () => {
         }
     }, [userSession, sendMessage]);
 
-    const handleNavigateToDeposit = (asset) => {
+    const handleNavigateToDeposit = (asset: any) => {
         navigate(`/tradex/deposit/${asset}`);
     };
 
-    const handleNavigateToWithdraw = (asset) => {
+    const handleNavigateToWithdraw = (asset: any) => {
         navigate(`/tradex/withdraw/${asset}`);
     };
 

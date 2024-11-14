@@ -17,7 +17,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
     loading
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isExpiredPopupOpen, setIsExpiredPopupOpen] = useState<boolean>(false); // State for expired invoice popup
-
+    const [orderId, setOrderId] = useState<string | null>(null);
     // Calculate total amount and include the 5% fee (working in satoshis)
     const totalAmountWithoutFeeSats = selectedItems.reduce((total, item) => total + item.unitPrice * item.quantity, 0);
     const feeSats = Math.floor(totalAmountWithoutFeeSats * 0.005); // 5% fee
@@ -37,16 +37,16 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
             setLoading(true);
 
             interval = setInterval(async () => {
+                const response = await fetch(`${trading_api_url}/get_invoice/${invoiceData.id}`);
                 try {
-                    const response = await fetch(`${trading_api_url}/get_invoice/${invoiceData.order_id}`);
                     const updatedInvoice = await response.json();
-
-                    if (updatedInvoice.invoice.status === 'COMPLETE' || updatedInvoice.invoice.status === 'FAILED') {
-                        setInvoiceData(updatedInvoice.invoice);
-                        setLoading(false);
-                        clearInterval(interval);
-                    } else {
-                        setInvoiceData(updatedInvoice.invoice);
+                    if (updatedInvoice.status === "FAILED") {
+                        console.log("Order failed to place or invoice does not exist.");
+                    }
+                    else {
+                        console.log("Updating invoice data");
+                        console.log(updatedInvoice);
+                        setInvoiceData(updatedInvoice);
                     }
                 } catch (error) {
                     console.error('Error fetching invoice status:', error);
@@ -58,27 +58,25 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
         return () => clearInterval(interval);
     }, [invoiceData]);
 
-    const saveOrderLocally = (orderNumber: string) => {
-        const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        savedOrders.push({ orderNumber, status: 'PENDING' });
-        localStorage.setItem('orders', JSON.stringify(savedOrders));
-    };
-
     const checkOrderStatuses = async () => {
-        const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        const updatedOrders = await Promise.all(savedOrders.map(async (order: any) => {
-            try {
-                const response = await fetch(`${trading_api_url}/get_invoice/${order.orderNumber}`);
-                const updatedInvoice = await response.json();
-                return { ...order, status: updatedInvoice.invoice.status };
-            } catch (error) {
-                console.error('Error fetching invoice status for order:', order.orderNumber);
-                return { ...order, status: 'ERROR' };
-            }
-        }));
+        if (!orderId) {
+            console.error('No order ID found.');
+            return;
+        }
 
-        localStorage.setItem('orders', JSON.stringify(updatedOrders));
-        showToasterForOrders(updatedOrders);
+        try {
+            const response = await fetch(`${trading_api_url}/get_invoice/${orderId}`);
+            const updatedInvoice = await response.json();
+            const updatedOrder = { orderNumber: orderId, status: updatedInvoice.invoice.status };
+
+            localStorage.setItem('orders', JSON.stringify([updatedOrder]));
+            showToasterForOrders([updatedOrder]);
+        } catch (error) {
+            console.error('Error fetching invoice status for order:', orderId);
+            const errorOrder = { orderNumber: orderId, status: 'ERROR' };
+            localStorage.setItem('orders', JSON.stringify([errorOrder]));
+            showToasterForOrders([errorOrder]);
+        }
     };
 
     const showToasterForOrders = (orders: any[]) => {
@@ -106,8 +104,8 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    listing_id: selectedItems[0].listingID, 
-                    quantity: selectedItems[0].quantity * 100000000, // Send quantity in satoshis
+                    listing_id: [selectedItems[0].listingID], 
+                    quantity: [selectedItems[0].quantity * 100000000], // Send quantity in satoshis
                     payout_address: payoutAddress
                 }),
             });
@@ -115,8 +113,9 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
             const data = await response.json();
 
             if (response.ok) {
+                console.log(data);
                 setInvoiceData(data);
-                saveOrderLocally(data.order_id); // Save order number locally
+                setOrderId(data.id); // Save order number locally
                 setErrorMessage(null);
             } else {
                 setErrorMessage(data.message || 'An error occurred while placing the order.');

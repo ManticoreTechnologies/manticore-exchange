@@ -1,6 +1,6 @@
-    import React, { useEffect, useState } from 'react';
-    import { FaWifi, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa'; // Import icons
-    import './Ping.css'; // Import the CSS file
+import { useEffect, useState } from 'react';
+import { FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa'; // Import icons
+import './Ping.css'; // Import the CSS file
 
     interface PingProps {
         wsUrl: string;
@@ -13,7 +13,7 @@
 
         useEffect(() => {
             const ws = new WebSocket(wsUrl);
-            ws.onopen = (event) => {
+            ws.onopen = () => {
                 console.log("WebSocket opened");
                 setConnectionStatus('Connected');
                 ping(ws);
@@ -31,7 +31,7 @@
         const ping = (ws: WebSocket) => {
             const startTime = performance.now();
             ws.send("ping");
-            ws.onmessage = (event) => {
+            ws.onmessage = () => {
                 const endTime = performance.now();
                 const pingTime = endTime - startTime;
                 setPingTime(pingTime);

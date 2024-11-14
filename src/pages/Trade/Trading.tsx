@@ -35,7 +35,6 @@ const Trading: React.FC = () => {
         const fetchListings = async () => {
             try {
                 const response = await axios.get(`${trading_api_url}/listings`);
-                console.log(response.data);
                 setListings(response.data);
             } catch (error) {
                 console.error('Error fetching listings:', error);

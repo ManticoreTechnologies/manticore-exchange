@@ -2,15 +2,15 @@ import React from 'react';
 import './TradeLog.css';
 
 interface TradeLogProps {
-    tradeLog: [];
+    tradeLog: any[];
 }
 
 const TradeLog: React.FC<TradeLogProps> = ({ tradeLog }) => {
     const formatTrade = (trade: any[]) => {
         // trade is a list of order data
-        const side = trade[5];
+        //const side = trade[5];
         const price = trade[3];
-        const id = trade[2]
+        //const id = trade[2]
         const qty = trade[4]
         const taker = trade[6]
         const timestamp = trade[7]

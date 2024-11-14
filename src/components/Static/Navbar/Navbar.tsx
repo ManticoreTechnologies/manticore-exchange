@@ -3,8 +3,8 @@ import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
 import { FiUser } from "react-icons/fi";
-import { FaBlog, FaChartLine, FaFile, FaRoad, FaExchangeAlt, FaSearch, FaFaucet } from "react-icons/fa";
-import { FaFaucetDrip, FaHandHoldingDollar } from "react-icons/fa6";
+import { FaChartLine, FaFile, FaRoad } from "react-icons/fa";
+//import { FaFaucetDrip, FaHandHoldingDollar } from "react-icons/fa6";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {

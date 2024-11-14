@@ -7,8 +7,7 @@ interface InvoiceStatusPopupProps {
 }
 
 const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, onClose }) => {
-    console.log(invoiceData)
-    const { fulfillment_txid, order_id, payment_address, payment_amount, status, expiration_time } = invoiceData;
+    const { fulfillment_txid, id, payment_address, payment_amount, status, expiration_time } = invoiceData;
 
     const [timeLeft, setTimeLeft] = useState<number>(expiration_time - Math.floor(Date.now() / 1000));
     const [percentage, setPercentage] = useState<number>(100);
@@ -20,8 +19,8 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
 
     // Calculate the total duration of the invoice (from creation to expiration)
     const totalDuration = expiration_time - (invoiceData.created_at || (expiration_time - 900)); // Default to 15 minutes if created_at is not provided
-    console.log()
     useEffect(() => {
+
         if (status === 'CONFIRMED') {
             setConfirmationMessage('Your payment has been confirmed.');
             return;
@@ -82,7 +81,7 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
         <div className="invoice-status-popup">
             <div className="popup-content">
                 <h3>Invoice Status</h3>
-                <p><strong>Order ID:</strong> {order_id}</p>
+                <p><strong>Order ID:</strong> {id}</p>
                 <p><strong>Payment Address:</strong> {payment_address}</p>
                 <p><strong>Amount:</strong> {paymentAmountEVR} $EVR</p>
                 <p><strong>Status:</strong> {status}</p>

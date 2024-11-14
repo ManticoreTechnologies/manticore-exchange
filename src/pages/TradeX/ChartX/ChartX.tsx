@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
 import './ChartX.css';
 import { useTheme } from '../../../context/ThemeContext';
 
 interface ChartXProps {
-    tickerHistory: { time: string, price: number }[];
-    ohlcData?: { time: string, open: number, high: number, low: number, close: number }[];
+    tickerHistory: any;
+    ohlcData?: any;
 }
 
 const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
@@ -14,6 +14,26 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
     const seriesRef = useRef<ISeriesApi<'Line' | 'Candlestick'> | null>(null);
     const { theme } = useTheme();
 
+    const resizeChart = useCallback(() => {
+        if (chartRef.current && chartContainerRef.current) {
+            chartRef.current.resize(chartContainerRef.current.clientWidth, chartContainerRef.current.clientHeight);
+        }
+    }, []);
+
+    useEffect(() => {
+        const observer = new ResizeObserver(() => {
+            resizeChart();
+        });
+
+        if (chartContainerRef.current) {
+            observer.observe(chartContainerRef.current);
+        }
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [resizeChart]);
+
     useEffect(() => {
         try {
             if (chartContainerRef.current) {
@@ -21,7 +41,7 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
 
                 chartRef.current = createChart(chartContainerRef.current, {
                     width: chartContainerRef.current.clientWidth,
-                    height: 550,
+                    height: chartContainerRef.current.clientHeight,
                     layout: { background: { color: theme === 'light' ? '#0a0a0a' : '#ffffff' }, textColor: '#ffffff' },
                     grid: { vertLines: { color: 'transparent' }, horzLines: { color: 'transparent' } },
                 });
@@ -29,7 +49,7 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
                 if (ohlcData && ohlcData.length > 0) {
                     seriesRef.current = chartRef.current.addCandlestickSeries();
                     seriesRef.current.setData(
-                        ohlcData.map(candle => ({
+                        ohlcData.map((candle: any) => ({
                             time: new Date(candle.timestamp).getTime() / 1000,
                             open: candle.open,
                             high: candle.high,
@@ -40,7 +60,7 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
                 } else {
                     seriesRef.current = chartRef.current.addLineSeries({ color: '#8884d8' });
                     seriesRef.current.setData(
-                        tickerHistory.map(ticker => ({
+                        tickerHistory.map((ticker: any) => ({
                             time: new Date(ticker.time).getTime() / 1000,
                             value: ticker.price,
                         }))
@@ -50,15 +70,21 @@ const ChartX: React.FC<ChartXProps> = ({ tickerHistory, ohlcData }) => {
                 if (currentRange) {
                     chartRef.current.timeScale().setVisibleLogicalRange(currentRange);
                 }
+
+                window.addEventListener('resize', resizeChart);
+                resizeChart();
             }
         } catch (error) {
             console.error('Error initializing chart:', error);
         }
 
-        return () => chartRef.current?.remove();
-    }, [tickerHistory, ohlcData, theme]);
+        return () => {
+            chartRef.current?.remove();
+            window.removeEventListener('resize', resizeChart);
+        };
+    }, [tickerHistory, ohlcData, theme, resizeChart]);
 
-    return <div ref={chartContainerRef} className="chart-container"></div>;
+    return <div ref={chartContainerRef} className="chart-container" style={{ height: '100%', width: '100%' }}></div>;
 };
 
 export default ChartX;
