@@ -98,14 +98,18 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
         setProcessing(true);
 
         try {
+            const orderItems = selectedItems.map(item => item.listingID);
+
+            const quantities = selectedItems.map(item => item.quantity * 100000000); // Convert quantities to satoshis
+
             const response = await fetch(`${trading_api_url}/place_order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    listing_id: [selectedItems[0].listingID], 
-                    quantity: [selectedItems[0].quantity * 100000000], // Send quantity in satoshis
+                    listing_id: orderItems, 
+                    quantity: quantities,
                     payout_address: payoutAddress
                 }),
             });

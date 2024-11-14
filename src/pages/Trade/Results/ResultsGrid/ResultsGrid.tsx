@@ -25,6 +25,7 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow })
                         listingAddress={result.listing_address}
                         orderStatus={result.listing_status}
                         quantity={result.remaining_quantity}
+                        units={JSON.parse(result.asset_data).units}
                         sold={sold}
                         listingID={result.id}
                         ipfsHash={JSON.parse(result.asset_data).has_ipfs ? JSON.parse(result.asset_data).ipfs_hash : undefined}

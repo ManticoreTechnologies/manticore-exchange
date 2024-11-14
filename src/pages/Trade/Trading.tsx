@@ -124,13 +124,15 @@ const Trading: React.FC = () => {
     };
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const qty = Math.max(1, parseInt(e.target.value, 10));
-        if (selectedItem && qty > selectedItem.quantity) {
+        const qty = Math.max(0, parseFloat(e.target.value));
+        const cappedQty = parseFloat(qty.toFixed(selectedItem.units));
+        setQuantity(cappedQty);
+        if (selectedItem && cappedQty > selectedItem.quantity) {
             setQuantityError(`Maximum available quantity is ${selectedItem.quantity}.`);
         } else {
             setQuantityError(null);
-            setQuantity(qty);
-            calculateTotalCost(parseFloat(selectedItem.unitPrice), qty);
+            setQuantity(cappedQty);
+            calculateTotalCost(parseFloat(selectedItem.unitPrice), cappedQty);
         }
     };
 
@@ -229,7 +231,8 @@ const Trading: React.FC = () => {
                         <h3>Select Quantity</h3>
                         <input 
                             type="number" 
-                            min="1" 
+                            min={Math.pow(10, -selectedItem.units)} 
+                            step={Math.pow(10, -selectedItem.units)}
                             value={quantity} 
                             onChange={handleQuantityChange} 
                         />

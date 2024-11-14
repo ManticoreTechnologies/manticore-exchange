@@ -15,7 +15,7 @@ const TradingHeader: React.FC<any> = ({createListing, toggleCartVisibility, cart
             </div>
             {
             <div className="cart-icon-container" onClick={toggleCartVisibility}>
-                {/* <FiShoppingCart className="cart-icon" /> */}
+                { <FiShoppingCart className="cart-icon" /> }
                 {cart.length > 0 && <span className="cart-count">{cart.length}</span>}
             </div>
             }

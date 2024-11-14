@@ -11,9 +11,6 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, closeCart, updateQuantity }) => {
-    return (<></>)
-    closeCart();
-
     const cartRef = useRef<HTMLDivElement>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [showCheckout, setShowCheckout] = useState<boolean>(false);
@@ -72,7 +69,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
                                     <div>
                                         <strong>{item.assetName}</strong>
                                         <p>Description: {item.description}</p>
-                                        <p>Unit Price: {Number(item.unitPrice / 100000000).toString()} $EVR</p> {/* Convert unit price to EVR and drop trailing zeros */}
+                                        <p>Unit Price: {Number(item.unitPrice / 100000000).toString()} $EVR</p>
                                         <p>
                                             Quantity: 
                                             <input
@@ -86,17 +83,17 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
                                                 <span className="error-message">{errors[index]}</span>
                                             )}
                                         </p>
-                                        <p>Total: {Number(item.unitPrice * item.quantity / 100000000).toString()} $EVR</p> {/* Convert total to EVR and drop trailing zeros */}
+                                        <p>Total: {Number(item.unitPrice * item.quantity / 100000000).toString()} $EVR</p>
                                     </div>
                                     <button onClick={() => removeFromCart(index)}>Remove</button>
                                 </li>
                             ))}
                         </ul>
                         <div className="cart-summary">
-                            <p><strong>Total Amount: </strong>{totalAmountEVR} $EVR</p> {/* Display total in EVR */}
-                            <p><strong>Fee (0.5%): </strong>{feeEVR} $EVR</p> {/* Display fee in EVR */}
-                            <p><strong>Final Amount: </strong>{finalAmountEVR} $EVR</p> {/* Display final amount in EVR */}
-                            <button disabled={true} className="checkout-button" onClick={handleProceedToCheckout}>
+                            <p><strong>Total Amount: </strong>{totalAmountEVR} $EVR</p>
+                            <p><strong>Fee (0.5%): </strong>{feeEVR} $EVR</p>
+                            <p><strong>Final Amount: </strong>{finalAmountEVR} $EVR</p>
+                            <button className="checkout-button" onClick={handleProceedToCheckout}>
                                 Proceed to Checkout
                             </button>
                             <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
@@ -108,7 +105,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
                 <Checkout
                     selectedItems={cartItems}
                     onCheckoutComplete={handleCheckoutComplete}
-                    onBack={() => setShowCheckout(false)}  // Close the checkout only
+                    onBack={() => setShowCheckout(false)}
                 />
             )}
         </>

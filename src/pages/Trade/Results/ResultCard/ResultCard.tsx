@@ -17,6 +17,7 @@ interface ResultCardProps {
     listingID: string;
     addToCart: (listing: any) => void;
     buyNow: (listing: any) => void;
+    units: string;
 }
 
 const ResultCard: React.FC<ResultCardProps> = ({
@@ -29,6 +30,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
     quantity = 0, // Default to 0 if undefined
     sold = 0, // Default to 0 if undefined
     listingID,
+    units,
     addToCart,
     buyNow
 }) => {
@@ -50,6 +52,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
         orderStatus,
         ipfsHash,
         quantity,
+        units,
         listingID
     };
 
