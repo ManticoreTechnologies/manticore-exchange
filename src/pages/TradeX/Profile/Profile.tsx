@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from '../../../hooks/useWebSocket';
 import logo from '../../../images/Placeholder.webp'; // Default profile image
 import './Profile.css';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 import EditProfileModal from './EditProfileModal';
 import AssetsCarousel from './AssetsCarousel';
@@ -16,9 +16,9 @@ const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
     const [balances, setBalances] = useState<any>(null); 
     const [isEditing, setIsEditing] = useState(false);
-    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("ws://localhost:8765");
+    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("wss://ws.manticore.exchange");
     const [imageUrl, setImageUrl] = useState<string | null>(logo); 
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     // Function to parse favorite assets, with enhanced checking for stringified JSON
     const parseFavoriteAssets = (assetsArray: string[] | string | undefined | null): Asset[] => {
@@ -92,7 +92,7 @@ const Profile: React.FC = () => {
 
             else if (message.startsWith('favorite_added')) {
                 const asset = message.replace('favorite_added ', '').trim();
-                setAccountInfo((prevInfo) => ({
+                setAccountInfo((prevInfo: any) => ({
                     ...prevInfo,
                     favorite_assets: [...(prevInfo.favorite_assets || []), asset],
                 }));
@@ -108,7 +108,7 @@ const Profile: React.FC = () => {
         }
     }, [isConnected, isAuthenticated]);
 
-    const handleSave = (updatedInfo) => {
+    const handleSave = (updatedInfo: any) => {
         setAccountInfo({ ...accountInfo, ...updatedInfo });
         const updatedImageUrl = updatedInfo.profile_ipfs 
             ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${updatedInfo.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
         }
         if (updatedInfo.bio) {
             console.log(`Sending bio update: ${updatedInfo.bio}`);
-            sendMessage(`set_bio ${updatedInfo.bio}`);
+            sendMessage(`set_bio "${updatedInfo.bio}"`);
         }
         if (updatedInfo.profile_ipfs) {
             console.log(`Sending profile IPFS hash update: ${updatedInfo.profile_ipfs}`);
@@ -141,7 +141,7 @@ const Profile: React.FC = () => {
             ) : (
                 <>
                     <div className="profile-header">
-                        <img src={imageUrl} alt="Profile" className="profile-image" />
+                        <img src={imageUrl || ''} alt="Profile" className="profile-image" />
                         <h1>{accountInfo?.friendly_name || 'User Profile'}</h1>
                     </div>
                     <div className="profile-info">
@@ -162,7 +162,7 @@ const Profile: React.FC = () => {
                         <h2>All Assets and Balances</h2>
                         {balances ? (
                             <ul>
-                                {Object.entries(balances).map(([asset, balance], index) => (
+                                {Object.entries(balances).map(([asset, balance]: any, index) => (
                                     <li key={index} className="asset-item">
                                         <span><strong>{asset.toUpperCase()}:</strong> {balance}</span>
                                         <button 

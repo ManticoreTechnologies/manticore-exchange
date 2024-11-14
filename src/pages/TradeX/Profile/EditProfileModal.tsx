@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import './EditProfileModal.css';
 
-const EditProfileModal = ({ accountInfo, onSave, onClose }) => {
+const EditProfileModal = ({ accountInfo, onSave, onClose }: { accountInfo: any, onSave: (updatedInfo: any) => void, onClose: () => void }) => {
     const [username, setUsername] = useState(accountInfo.friendly_name || '');
     const [bio, setBio] = useState(accountInfo.bio || '');
     const [ipfsHash, setIpfsHash] = useState(accountInfo.profile_ipfs || '');

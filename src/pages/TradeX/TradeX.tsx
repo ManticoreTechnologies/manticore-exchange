@@ -28,6 +28,7 @@ const TradeX: React.FC = () => {
     const [activeOrders, setActiveOrders] = useState<Order[]>([]);
     const [userBalance, setUserBalance] = useState<string | null>(null);
     const [ohlcData, setOhlcData] = useState<OHLCData[]>([]);
+    //@ts-ignore
     const [resolution, setResolution] = useState<string>("15 second");
     const [address, setAddress] = useState<string>('');
     const [nonce, setNonce] = useState<string | null>(null);
@@ -38,7 +39,7 @@ const TradeX: React.FC = () => {
 
     useEffect(() => {
         const connectWebSocket = () => {
-            const ws = new WebSocket("ws://localhost:8765");
+            const ws = new WebSocket("wss://ws.manticore.exchange");
             wsRef.current = ws;
 
             ws.onopen = () => {
@@ -117,7 +118,9 @@ const TradeX: React.FC = () => {
         let count = 0;
         while ((match = regex.exec(message)) !== null) {
             if (count === 1) {
+                //@ts-ignore
                 const [_, type, id, price, qty, time, userId] = match;
+                //@ts-ignore
                 const latestTrade = { price: parseFloat(price), qty: parseFloat(qty), time, type };
                 // Update trade log or other state as needed
             }
@@ -165,7 +168,7 @@ const TradeX: React.FC = () => {
             console.error('WebSocket is not open. Cannot send message.');
         }
     };
-
+    //@ts-ignore
     const handleAddressInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAddress(event.target.value);
     };
@@ -198,6 +201,7 @@ const TradeX: React.FC = () => {
                     aggregatedAsks={aggregateOrders(asks)} 
                     aggregatedBids={aggregateOrders(bids)} 
                     getBackgroundColor={getBackgroundColor} 
+                    lastTradedPrice={0}
                 />
             </div>
             <div className="place-order-container">
@@ -217,7 +221,7 @@ const TradeX: React.FC = () => {
                 <ActiveOrders activeOrders={activeOrders} cancelOrder={cancelOrder} />
             </div>
             <div className="trade-log-container">  
-                <TradeLog tradeLog={tradeLog} />
+                <TradeLog tradeLog={tradeLog as any[]} />
             </div>                
         </div>
     );

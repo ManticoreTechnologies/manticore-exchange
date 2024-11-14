@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
+import { FiUser } from "react-icons/fi";
+import { FaChartLine, FaFile, FaRoad } from "react-icons/fa";
+//import { FaFaucetDrip, FaHandHoldingDollar } from "react-icons/fa6";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {
@@ -43,15 +46,6 @@ const Navbar: React.FC = () => {
           <span className="navbar-brand-text">MANTICORE</span>
         </NavLink>
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
-          <NavLink to="/tradeX/markets" className="nav-link" onClick={handleLinkClick}>
-            Markets
-          </NavLink>
-          <NavLink to="/tradeX/profile" className="nav-link" onClick={handleLinkClick}>
-            Profile
-          </NavLink>
-          <NavLink to="/tradeX/wallet" className="nav-link" onClick={handleLinkClick}>
-            Wallet
-          </NavLink>  
           <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
             Search
           </NavLink>
@@ -65,13 +59,16 @@ const Navbar: React.FC = () => {
             Blog
           </NavLink>
           <NavLink to="/roadmap" className="nav-link" onClick={handleLinkClick}>
-            Roadmap
-          </NavLink>
-          <NavLink to="/chart" className="nav-link" onClick={handleLinkClick}>
-            Chart
+            <center> <FaRoad /> </center>
           </NavLink>
           <NavLink to="/ipfs" className="nav-link" onClick={handleLinkClick}>
-            IPFS
+            <center> <FaFile /> </center>
+          </NavLink>
+          <NavLink to="/chart" className="nav-link" onClick={handleLinkClick}>
+            <center> <FaChartLine /> </center>
+          </NavLink>
+          <NavLink to="/tradeX/profile" className="nav-link" onClick={handleLinkClick}>
+            <center> <FiUser /> </center>
           </NavLink>
           <ThemeToggleButton />
         </div>
@@ -86,3 +83,13 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
+
+/**
+ *           <NavLink to="/tradeX/markets" className="nav-link" onClick={handleLinkClick}>
+            Markets
+          </NavLink>
+          <NavLink to="/tradeX/wallet" className="nav-link" onClick={handleLinkClick}>
+            Wallet
+          </NavLink>  
+ */

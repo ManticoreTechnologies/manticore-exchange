@@ -16,6 +16,7 @@ const PlaceOrder: React.FC<PlaceOrderProps> = ({ onPlaceOrder, getNonce, nonce, 
     const [buyOrderQty, setBuyOrderQty] = useState<number>(0);
     const [sellOrderPrice, setSellOrderPrice] = useState<number>(0);
     const [sellOrderQty, setSellOrderQty] = useState<number>(0);
+    //@ts-ignore
     const [available, setAvailable] = useState<number>(0); // Example available amount
     const [evermoreAddress, setEvermoreAddress] = useState<string>('');
     const [signedMessage, setSignedMessage] = useState<string>('');

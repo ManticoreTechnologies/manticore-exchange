@@ -1,42 +1,45 @@
 .market {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
   padding: 20px;
-  background-color: transparent;
-  color: #ffffff;
 }
 
-.market-chart {
-  width: 70%;
-  height: 500px;
-  background-color: transparent;
-  border: 1px solid #444;
+.market-chart-container {
+  background-color: lightblue;
+  padding: 0px;
+  border-radius: 8px;
 }
 
-.orderbook {
-  width: 30%;
-  margin-left: 20px;
-}
-
-.market-details {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid #444;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  background-color: #2b2b2b;
-}
-
-.market-details h2 {
+.market-chart-container::before {
+  display: block;
+  font-size: 1.5em;
   margin-bottom: 10px;
-  color: #ffffff;
 }
 
-.market-details p {
+.order-book-container {
+  background-color: lightgreen;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.order-book-container::before {
+  content: "Order Book";
+  display: block;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.backButton {
+  background-color: lightcoral;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
   margin-bottom: 20px;
-  color: #cccccc;
 }
 
+.backButton:hover {
+  background-color: coral;
+}

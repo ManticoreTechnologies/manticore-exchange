@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './OrderBook.css';
 
 interface OrderBookProps {
-    aggregatedAsks: { [price: number]: number };
-    aggregatedBids: { [price: number]: number };
+    aggregatedAsks: { [price: number]: any };
+    aggregatedBids: { [price: number]: any };
     getBackgroundColor: (qty: number) => string;
     lastTradedPrice: number;
 }
@@ -57,6 +57,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ title, orders, getBackgroundCol
         <div className={`order-table-container ${title.toLowerCase()}`}>
             <table className={`order-table ${title.toLowerCase()}`}>
                 <tbody>
+                    {/* @ts-ignore */}
                     {Object.entries(orders).map(([price, { qty, total, side }]) => (
                         <tr key={price} className="order-table-row" style={{ backgroundColor: getBackgroundColor(qty) }}>
                             <td className="order-table-cell">{price}</td>

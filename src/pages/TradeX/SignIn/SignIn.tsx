@@ -4,6 +4,7 @@ import './SignIn.css'; // Import CSS for styling and animations
 import Cookies from 'js-cookie'; // Import Cookies for session management
 
 const SignIn: React.FC = () => {
+    //@ts-ignore
     const [balances, setBalances] = useState<any[]>([]);
     const [address, setAddress] = useState('');
     const [signedMessage, setSignedMessage] = useState('');
@@ -12,7 +13,7 @@ const SignIn: React.FC = () => {
     const [sessionRestored, setSessionRestored] = useState(false); // New state to track session restoration
     const [remainingTime, setRemainingTime] = useState<number | null>(null); // New state for remaining time
 
-    const { message, sendMessage } = useWebSocket('ws://localhost:8765');
+    const { message, sendMessage } = useWebSocket('wss://ws.manticore.exchange');
 
     useEffect(() => {
         if (message) {

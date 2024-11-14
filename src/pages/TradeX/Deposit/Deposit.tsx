@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useWebSocket from '../../../hooks/useWebSocket';
 import QRCode from 'qrcode.react';
@@ -7,11 +7,14 @@ import './Deposit.css';
 
 const Deposit = () => {
   const { asset } = useParams();
-  const navigate = useNavigate();
-  const { message, sendMessage, isConnected } = useWebSocket('ws://localhost:8765');
+  const navigate = useNavigate(); 
+  //@ts-ignore
+  const { message, sendMessage, isConnected } = useWebSocket('wss://ws.manticore.exchange');
   const [depositAddress, setDepositAddress] = useState<string>('');
   const [loadingAddress, setLoadingAddress] = useState(true);
+  //@ts-ignore
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
+  //@ts-ignore
   const [balance, setBalance] = useState<number>(0);
   const userSession = Cookies.get('userSession');
 

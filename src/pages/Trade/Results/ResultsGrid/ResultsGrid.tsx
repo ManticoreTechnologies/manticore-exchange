@@ -18,7 +18,7 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow })
                 const sold = result.sold !== undefined ? result.sold : 0;
                 return (
                     <ResultCard
-                        key={result.listing_id}
+                        key={result.id}
                         assetName={result.asset_name}
                         description={result.description}
                         unitPrice={result.unit_price}
@@ -26,7 +26,7 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow })
                         orderStatus={result.listing_status}
                         quantity={result.remaining_quantity}
                         sold={sold}
-                        listingID={result.listing_id}
+                        listingID={result.id}
                         ipfsHash={JSON.parse(result.asset_data).has_ipfs ? JSON.parse(result.asset_data).ipfs_hash : undefined}
                         addToCart={addToCart}
                         buyNow={buyNow}

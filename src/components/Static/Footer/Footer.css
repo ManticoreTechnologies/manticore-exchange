@@ -3,14 +3,18 @@
   width: 100%;
   text-align: center;
   background-color: transparent; /* Make sure the footer uses the same background */
-  padding: 2px 0; /* Further reduce padding to fit content within smaller height */
-  margin-top: auto; /* Pushes footer to the bottom */
-  height: 30px; /* Reduce height for a smaller footer */
+  padding: 10px; /* Adjust padding for content */
+  position: fixed; /* Position footer at the bottom */
+  bottom: 0;
+  height: 30px; /* Adjust height for a smaller footer */
   display: flex;
   align-items: center; /* Center content vertically */
   justify-content: center; /* Center content horizontally */
   z-index: 100;
+  grid-column: 1 / -1; /* Ensure footer spans the entire width */
+  color: var(--text-color); /* Set text color */
 }
+
 .footer .ping-indicator {
   position: absolute;
   right: 30px;
@@ -34,4 +38,14 @@
 
 .footer a:hover {
   color: var(--color); /* White color on hover for contrast */
+}
+
+@media (max-width: 768px) {
+  .footer p {
+    font-size: 10px; /* Further reduce font size for mobile */
+  }
+  .footer .ping-indicator {
+    right: 10px; /* Adjust the right position */
+    top: 25%; /* Adjust the top position */
+  }
 }

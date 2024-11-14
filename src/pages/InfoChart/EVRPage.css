@@ -2,21 +2,20 @@
   font-family: Arial, sans-serif;
   padding: 0;
   margin-top: 20px;
-  color: #ddd;
-  background-color: #000;
+  color: var(--text-color);
+  background-color: var(--background-color);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .xeggex-data {
-  background-color: #1a1a1a;
+  background-color: transparent;
   border-radius: 10px;
   padding: 20px;
   text-align: center;
   width: 100%; /* Full width of the parent container */
   max-width: 600px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px; /* Added margin for better spacing */
 }
 

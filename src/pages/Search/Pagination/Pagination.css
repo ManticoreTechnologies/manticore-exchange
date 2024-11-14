@@ -5,6 +5,7 @@
     align-items: center;
     padding: 10px; /* Add padding to create space on the sides */
     box-sizing: border-box; /* Ensure padding doesn't affect total width */
+    margin-bottom: 3rem;
 }
 
 .pagination-container button,
