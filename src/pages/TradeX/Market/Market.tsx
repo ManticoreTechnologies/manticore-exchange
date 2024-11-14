@@ -64,7 +64,7 @@ const Market: React.FC<MarketProps> = () => {
       {notFound && <NotFoundPage />}
       {!notFound && <div className="market">
         <div className="market-chart-container">
-          <ChartX />
+          <ChartX tickerHistory={[]}/>
         </div>
         <OrderBook 
           aggregatedAsks={orderBookData.asks} 

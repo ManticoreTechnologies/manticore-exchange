@@ -14,13 +14,19 @@ const FaucetForm: React.FC = () => {
     const [assets, setAssets] = useState<{ [key: string]: any[] }>({ "Loading...": [0, logo] });
     const [responseMessage, setResponseMessage] = useState("");
     const [selectedAsset, setSelectedAsset] = useState("example");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFaucetAddress(event.target.value);
     };
 
-    const handleAssetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedAsset(event.target.value);
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleAssetSelect = (asset: string) => {
+        setSelectedAsset(asset);
+        setIsDropdownOpen(false);
     };
 
     useEffect(() => {
@@ -60,26 +66,28 @@ const FaucetForm: React.FC = () => {
 
     return (
         <div className="faucet-form">
-    
-                    <input 
-                        className="faucet-address-input" 
-                        placeholder="Enter a valid evrmore address" 
-                        value={faucetAddress}
-                        onChange={handleAddressChange}
-                    />
-                <select className="asset-select" value={selectedAsset} onChange={handleAssetChange}>
-                    {Object.keys(assets).map((asset) => (
-                        <option key={asset} value={asset}>
-                            {asset}
-                        </option>
-                    ))}
-                </select>
-    
-                   
-
-                <button className="submit-button" onClick={handleSubmit}>Submit</button>
-
-                {responseMessage && (
+            <input 
+                className="faucet-address-input" 
+                placeholder="Enter a valid evrmore address" 
+                value={faucetAddress}
+                onChange={handleAddressChange}
+            />
+            <div className="custom-dropdown">
+                <button className="dropdown-button" onClick={toggleDropdown}>
+                    {selectedAsset}
+                </button>
+                {isDropdownOpen && (
+                    <ul className="dropdown-list">
+                        {Object.keys(assets).map((asset) => (
+                            <li key={asset} onClick={() => handleAssetSelect(asset)}>
+                                {asset}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <button className="submit-button" onClick={handleSubmit}>Submit</button>
+            {responseMessage && (
                 <div className="response-message">
                     {responseMessage}
                 </div>
