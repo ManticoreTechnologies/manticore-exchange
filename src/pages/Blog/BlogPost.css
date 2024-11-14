@@ -1,159 +1,131 @@
-/* Container for the entire page */
+/* Container styles */
 .page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-    background-color: var(--background-color); /* Use background color variable */
-  }
-  
-  /* Button for toggling the navigation menu */
-  .menu-button {
-    position: fixed;
-    color: var(--text-color); /* Use text color variable */
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 24px;
-    background: var(--background-color); /* Use background color variable */
-    border: 1px solid var(--search-bar-underline); /* Use border color variable */
-    border-radius: 5px;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
-  }
-  
-  .menu-button:hover {
-    background-color: var(--background-color); /* Hover effect for button */
-    color: var(--text-color); /* Change text color on hover */
-    transform: scale(1.05); /* Slight scaling effect */
-  }
-  
-  /* The navigation menu container */
-  .nav-menu {
-    position: fixed;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 220px;
-    background-color: var(--background-color); /* Use background color variable */
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-  }
-  
-  /* List inside the navigation menu */
-  .nav-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  /* Main content container */
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+.header {
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 3px solid #f7931a; /* Bitcoin orange */
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+/* Section styles */
+.sub-header {
+  color: #2a2a2a;
+  font-size: 1.8rem;
+  margin: 2.5rem 0 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid #f7931a;
+}
+
+/* Text styles */
+.paragraph {
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+/* List styles */
+ul, ol {
+  padding-left: 2rem;
+  margin: 1rem 0;
+}
+
+li.paragraph {
+  margin-bottom: 0.5rem;
+}
+
+/* Tooltip styles */
+.blog-tooltip {
+  color: #f7931a;
+  border-bottom: 1px dashed #f7931a;
+  cursor: help;
+}
+
+.react-tooltip {
+  max-width: 300px !important;
+  font-size: 0.9rem !important;
+  line-height: 1.4 !important;
+  padding: 8px 12px !important;
+  background-color: #2a2a2a !important;
+}
+
+/* Divider */
+.divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, #f7931a, transparent);
+  margin: 3rem 0;
+}
+
+/* Strong text emphasis */
+strong {
+  color: #2a2a2a;
+  font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
   .container {
-    max-width: 800px;
-    padding: 30px;
-    background-color: var(--background-color); /* Use background color variable */
-    color: var(--text-color); /* Use text color variable */
-    line-height: 1.6;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: 20px;
+    padding: 1.5rem;
+    margin: 1rem;
   }
-  
-  /* Main header of the page */
+
   .header {
-    font-size: 3em;
-    margin-bottom: 10px;
-    text-align: center;
-    font-weight: bold;
-    color: var(--text-color); /* Use text color variable */
+    font-size: 2rem;
   }
-  
-  .header .logo {
-    width: 60px;
-    height: auto;
-  }
-  
-  /* Sub-headers within the content */
+
   .sub-header {
-    font-size: 2.4em;
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-align: center;
-    color: var(--text-color); /* Use text color variable */
-    padding-bottom: 10px;
+    font-size: 1.5rem;
   }
-  
-  /* Sub-sub headers within the content */
-  .sub-sub-header {
-    font-size: 1.4em;
-    margin-bottom: 5px;
-    font-weight: 600;
-    text-align: center;
-    color: var(--text-color); /* Use text color variable */
-    padding-bottom: 10px;
-    text-decoration: underline;
-  }
-  
-  /* Paragraph styles */
+
   .paragraph {
-    font-size: 1.2em;
-    margin-bottom: 40px;
-    text-align: left;
-    color: var(--text-color); /* Use text color variable */
+    font-size: 1rem;
   }
-  
-  /* Divider between sections */
-  .divider {
-    border-bottom: 2px solid var(--search-bar-underline); /* Use border color variable */
-    margin: 40px 0;
+}
+
+/* Hover effects */
+.sub-header:hover {
+  transform: translateX(5px);
+  transition: transform 0.3s ease;
+}
+
+/* Section transitions */
+div[id] {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .blog-link {
-    color: var(--link-color); /* Use link color variable */
-    text-decoration: none;
-    font-weight: bold; /* Make the link text bold */
-    transition: color 0.3s ease;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .blog-link:hover {
-    color: var(--link-hover-color); /* Use hover color variable */
-    text-decoration: underline; /* Underline on hover */
-  }
-  
-  /* Style for the tooltip span */
-  .blog-tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    border-bottom: 2px dotted var(--link-color); /* Link color for dotted underline */
-  }
-  
-  /* Style for the tooltip text */
-  .react-tooltip {
-    max-width: 60% !important;
-    width: auto;
-    background-color: var(--background-color); /* Tooltip background */
-    color: var(--text-color); /* Tooltip text */
-    text-align: left;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .react-tooltip::before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--background-color) transparent transparent transparent; /* Tooltip arrow color */
-  }
+}
   

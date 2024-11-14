@@ -27,6 +27,7 @@ import Market from "./pages/TradeX/Market/Market";
 import Deposit from "./pages/TradeX/Deposit/Deposit";
 import Profile from "./pages/TradeX/Profile/Profile";
 import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvmoreAssets";
+import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 
 const App: React.FC = () => {
 
@@ -44,6 +45,7 @@ const App: React.FC = () => {
       <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
       <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
       <Route path="/blog/ExploringEvrmoreAssets" element={<ExploringEvrmoreAssets />} />
+      <Route path="/blog/BitcoinExplainer" element={<BitcoinExplainer />} />
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/tradeX" element={<TradeX />} />
       <Route path="/tradeX/markets" element={<Markets />} />

@@ -32,6 +32,13 @@ const BlogPage: React.FC = () => {
       summary: 'Uncover the potential of Evrmore assets and how they redefine digital value and social commerce.',
       link: '/blog/ExploringEvrmoreAssets',
     },
+    {
+      title: 'The Greatest Bitcoin Explainer Ever Written',
+      author: 'Manticore Technologies',
+      date: 'November 13, 2024',
+      summary: 'Break down the essence of Bitcoin and explore what makes it revolutionary.',
+      link: '/blog/BitcoinExplainer',
+    },
   ];
   
 
