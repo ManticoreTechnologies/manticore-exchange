@@ -1,10 +1,10 @@
 :root {
     /* Light mode */
-    --border-color: black;
+    --border-color: white;
 }
 
-[data-theme='dark'] {
-    --border-color: white;
+[data-theme='light'] {
+    --border-color: black;
 }
 
 .app {
