@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
 import { FiUser } from "react-icons/fi";
-import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog } from "react-icons/fa";
+import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog, FaSearch, FaExchangeAlt, FaTint } from "react-icons/fa";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {
@@ -54,13 +54,13 @@ const Navbar: React.FC = () => {
 
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
           <NavLink to="/search" className="nav-link animated-link" onClick={handleLinkClick}>
-            Search
+            <FaSearch /> Search
           </NavLink>
           <NavLink to="/trade" className="nav-link animated-link" onClick={handleLinkClick}>
-            Trade
+            <FaExchangeAlt /> Trade
           </NavLink>
           <NavLink to="/faucet" className="nav-link animated-link" onClick={handleLinkClick}>
-            Faucet
+            <FaTint /> Faucet
           </NavLink>
 
           {/* Dropdown menu */}
