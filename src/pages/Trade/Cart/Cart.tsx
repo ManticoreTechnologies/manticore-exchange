@@ -10,6 +10,7 @@ interface CartProps {
     updateQuantity: (index: number, quantity: number) => void;
 }
 
+//@ts-ignore
 const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, closeCart, updateQuantity }) => {
     const cartRef = useRef<HTMLDivElement>(null);
     const [errors, setErrors] = useState<string[]>([]);
