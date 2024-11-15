@@ -1,7 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Tint&family=Gruppo&display=swap');
-
 .navbar {
-  background-color: var(--navbar-bg-color);
+
+  /* Set the background color 
+     to visualize the layout 
+     change to transparent when ready
+  */
+  background-color: rgba(35, 161, 219, 0.1);
+
+  /* Set the height of the navbar */
+  height: auto;
+
+
+}
+
+/*
+.navbar {
+  background-color: rgba(155, 42, 42, 0.5);
   padding-bottom: 10px;
   max-height: 50px;
   position: relative;
@@ -245,7 +259,7 @@
   transform-origin: left;
 }
 
-/* Mobile Styles */
+
 @media (max-width: 768px) {
   .navbar {
     position: fixed;
@@ -310,7 +324,7 @@
   }
 }
 
-/* Animations */
+
 @keyframes gradient-animation {
   0% {
     background-position: 0% 50%;
@@ -325,3 +339,4 @@
   100% { background-position: -100% 0; }
 }
 
+*/

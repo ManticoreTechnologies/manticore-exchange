@@ -22,6 +22,12 @@ export default defineConfig(({ mode }) => {
       'process.env.VITE_COINMARKETCAP_API_KEY': JSON.stringify(
         mode === 'development' ? process.env.VITE_COINMARKETCAP_API_KEY_DEV : process.env.VITE_COINMARKETCAP_API_KEY_PROD
       ),
+      'process.env.VITE_TRADING_WS_HOST': JSON.stringify(
+        mode === 'development' ? process.env.VITE_TRADING_WS_HOST : process.env.VITE_TRADING_WS_HOST
+      ),
+      'process.env.VITE_TRADING_WS_PORT': JSON.stringify(
+        mode === 'development' ? process.env.VITE_TRADING_WS_PORT : process.env.VITE_TRADING_WS_PORT
+      ),
     }
   }
 });

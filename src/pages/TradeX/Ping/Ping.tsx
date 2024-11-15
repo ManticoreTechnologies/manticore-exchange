@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa'; // Import icons
+
+const wsUrl = `ws://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
+
 import './Ping.css'; // Import the CSS file
 
     interface PingProps {
-        wsUrl: string;
     }
 
-    const Ping: React.FC<PingProps> = ({ wsUrl }) => {
+    const Ping: React.FC<PingProps> = () => {
 
         const [pingTime, setPingTime] = useState<number | null>(null);
         const [connectionStatus, setConnectionStatus] = useState<string>('Connecting...');
@@ -69,7 +71,7 @@ import './Ping.css'; // Import the CSS file
                         <div
                             key={index}
                             className={`bar ${index < bars ? 'active' : ''}`}
-                            style={{ height: `${(5 + index * 5) * (window.innerWidth < 768 ? 0.5 : 0.7)}px` }} // Adjusted height to 50% on desktop, 70% on mobile
+                            style={{ height: `${(5 + index * 5) * 0.4}px` }} // Adjusted height to 50% on desktop, 70% on mobile
                         />
                     ))}
                 </span>
@@ -78,11 +80,11 @@ import './Ping.css'; // Import the CSS file
 
         return (
             <div className="ping-indicator">
-                <span className="status-icon">
-                    {renderConnectionStatusIcon()}
-                </span>
                 <span className="signal-strength">
                     {renderSignalStrengthIcon()}
+                </span>
+                <span className="status-icon">
+                    {renderConnectionStatusIcon()}
                 </span>
                 <span className="ping-time">
                     {pingTime !== null ? `${Math.round(pingTime)} ms` : '...'}
@@ -92,3 +94,12 @@ import './Ping.css'; // Import the CSS file
     };
 
     export default Ping;
+
+    /*
+                <span className="status-icon">
+                    {renderConnectionStatusIcon()}
+                </span>
+                <span className="signal-strength">
+                    {renderSignalStrengthIcon()}
+                </span>
+    */

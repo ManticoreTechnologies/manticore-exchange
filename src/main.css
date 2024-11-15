@@ -90,12 +90,15 @@
     --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+
+/* Handle font family, main colors and transitions */
 body {
+
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
-    margin: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
+
 }
 
 

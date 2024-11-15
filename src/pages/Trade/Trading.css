@@ -1,7 +1,7 @@
 .trading-page {
     position: relative;
     padding: 20px;
-    min-height: 80vh;
+    overflow-y: auto;
 }
 
 
@@ -16,6 +16,7 @@
     position: relative;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
+    
 }
 
 .list-icon-container:hover {
@@ -84,6 +85,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     z-index: 1001;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .quantity-popup-content {

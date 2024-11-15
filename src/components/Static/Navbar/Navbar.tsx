@@ -47,6 +47,19 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar-content">
+        <img src={logo} alt="Logo" />
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+
+
+
+/*
+      <div className="navbar-content">
         <NavLink to="/" className="navbar-logo" onClick={handleLinkClick}>
           <img src={logo} alt="Logo" />
           <span className="navbar-brand-text">MANTICORE</span>
@@ -62,8 +75,6 @@ const Navbar: React.FC = () => {
           <NavLink to="/faucet" className="nav-link animated-link" onClick={handleLinkClick}>
             Faucet
           </NavLink>
-
-          {/* Dropdown menu */}
           <div 
             className="dropdown" 
             onMouseEnter={handleMouseEnter} 
@@ -102,21 +113,5 @@ const Navbar: React.FC = () => {
             ☰
           </button>
         </div>
-      </div>
-    </nav>
-  );
-};
-
-export default Navbar;
-
-
-
-
-/**
- *           <NavLink to="/tradeX/markets" className="nav-link" onClick={handleLinkClick}>
-            Markets
-          </NavLink>
-          <NavLink to="/tradeX/wallet" className="nav-link" onClick={handleLinkClick}>
-            Wallet
-          </NavLink>  
+      </div> 
  */

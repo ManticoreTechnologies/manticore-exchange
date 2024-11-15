@@ -39,7 +39,7 @@ const TradeX: React.FC = () => {
 
     useEffect(() => {
         const connectWebSocket = () => {
-            const ws = new WebSocket("wss://ws.manticore.exchange");
+            const ws = new WebSocket(`ws://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`);
             wsRef.current = ws;
 
             ws.onopen = () => {

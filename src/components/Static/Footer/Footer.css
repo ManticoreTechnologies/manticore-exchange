@@ -1,66 +1,66 @@
-.footer {
-  flex-grow: 1;
-  width: 100%;
-  text-align: center;
-  background-color: transparent;
-  padding: 10px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0;
-  min-height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  grid-column: 1 / -1;
-  color: var(--text-color);
+/* Footer.css handles the styling of the footer 
+
+   
+*/
+
+/* We will use variables to easily adjust the footer height 
+   this will be used to adjust the font size of the ping indicator
+*/
+
+:root {
+  --footer-height: 15px;
 }
 
-.footer .ping-indicator {
-  position: absolute;
-  right: 30px;
-  top: 25%;
-  height: 50%;
+/* Footer styling */
+.footer{
+
+  /* Set the position to relative so all children 
+     can be positioned relative to this container
+  */
+  position: relative;
+  
+  /* Display the footer as a flex container */
+  display: inline-flex;
+
+
+  /* Set the background color */
+  background-color: rgb(0, 174, 255, 0.1);
+  
+  /* Set the height */
+  height: var(--footer-height, 15px); 
+  
+  /* Font size based on height */
+  font-size: calc(var(--footer-height, 15px) * 0.5); 
 }
+
 .footer p {
-  margin: 0;
-  padding: 0; 
-  font-size: 12px;
-  color: var(--text-color);
+
+  /* Set the position to absolute */
+  position: absolute;
+
+  /* Center the text horizontally */
+  left: 50%;
+  transform: translateX(-50%);
+
+  margin-top: 2px;
+
 }
 
 .footer a {
+
+  /* Set the color */
   color: #ff000c;
+
+  /* Remove the underline */
   text-decoration: none;
+
+  /* Add padding */
   padding: 0 3px;
-  font-size: 10px;
+
+  /* Add transition */
   transition: color 0.3s ease;
 }
 
 .footer a:hover {
   color: var(--color);
-}
-
-@media (max-width: 768px) {
-  .footer p {
-    font-size: 10px;
-  }
-  .footer .ping-indicator {
-    right: 10px;
-    top: 25%;
-  }
-}
-
-/* Add these styles to ensure proper page structure */
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* Add padding to main content to prevent footer overlap */
-main, .content {
-  padding-bottom: 40px;
 }

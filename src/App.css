@@ -1,26 +1,79 @@
-:root {
-    /* Light mode */
-    --border-color: black;
-}
 
-[data-theme='dark'] {
-    --border-color: white;
-}
+/* App.css handles the parent container styling 
+   for the Navbar, Main and Footer
+   The navbar and footer have fixed heights 
+   The main container will grow to take up the 
+   remaining space of the viewport
+*/
 
-.app {
+
+/* App container
+    This hosts the navbar, main and footer
+*/
+.App {
+
+    /* Set position to relative to allow 
+       the footer to be absolute relative 
+       to this container   
+    */
+    position: relative;
+
+    /* Set the display to flex to allow the 
+       main container to grow and take up the 
+       remaining space
+    */
     display: flex;
     flex-direction: column;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
+
+    /* Set the background color 
+       to visualize the layout 
+       change to transparent when ready
+    */
+    background-color: rgba(155, 42, 42, 0.5);
+    
+    /* We want the app to be exactly the height of the 
+       viewport so that everything is visible correctly
+    */
+    height: 100vh;
+
+    /* Hide any overflow, this prevents scrollbars from appearing 
+       The App container should NEVER scroll
+       Scrolling should be handled locally within 
+       the main containers child components
+    */
+    overflow: hidden;
+
 }
 
+/* Main container 
+
+    This is the container that will host the dynamic content 
+    The navbar, footer and other static content 
+    should not included in this container
+*/
 .main {
-    min-height: 84vh;
-    max-width: 100%;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    border: 2px solid var(--border-color); /* Use CSS variable instead of hardcoded white */
-    border-radius: 15px; /* Add rounded corners */
-    margin: 20px; /* Add some spacing around the border */
+
+    /* Set the background color 
+       to visualize the layout 
+       change to transparent when ready
+    */
+    background-color: rgba(0, 141, 19, 0.3);
+
+    /* Grow to take up the remaining space */
+    flex-grow: 1;
+
 }
+
+
+
+
+/* Button st
+
+
+
+
+
+
 
 /* Button Styles */
 button.custom-button {
@@ -92,8 +145,4 @@ option.custom-option {
     color: var(--text-color);
 }
 
-@media (max-width: 768px) {
-    .main {
-        padding-top: 80px; /* Add padding to the top to avoid overlap with the navbar */
-    }
-}
+

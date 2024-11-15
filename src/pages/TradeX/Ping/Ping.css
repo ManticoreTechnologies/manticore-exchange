@@ -1,3 +1,102 @@
+/* Ping.css handles the styling of the ping indicator 
+    Font size is handled in the Footer.css
+    We can increase or decrease the font size by
+    using relative units instead of fixed values
+    like em or rem
+
+    for example:
+    font-size: calc(1em + 0.1 * 100%);
+    this will increase the font size by 10%
+*/
+
+.ping-indicator {
+
+    /* Set absolute position, relative to the parent */
+    position: absolute;
+
+    /* Center the ping indicator vertically */
+    top: 50%;
+    transform: translateY(-50%);
+
+    /* Set the background color */
+    background-color: transparent;
+
+    /* Display the ping indicator inline flex */
+    display: inline-flex;
+
+    
+
+}
+
+.ping-time {
+
+    /* Display the ping time inline flex */
+    display: inline-flex;
+
+    /* Align the ping time items to the center */
+    align-items: center;
+
+    /* Justify the ping time content to the flex-end */
+    justify-content: flex-end;
+
+    /* Set the color */
+    color: #fff;
+
+
+}
+
+.ping-indicator .status-icon {
+
+    /* Set the position to relative */
+    position: relative; 
+
+    /* Set the margin top */    
+    margin-top: 1px;
+
+    /* Set the margin right */
+    margin-right: 5px;
+}
+
+/* Styling for the signal strength bars */
+.ping-indicator .signal-strength {
+
+    /* Display the signal strength flex */
+    display: flex;
+
+    /* Align the signal strength items to the flex-end */
+    align-items: flex-end;
+
+    /* Set the margin left */
+    margin-left: 5px;
+
+    /* Set the margin right, keep the ping text close to the signal strength bars */
+    margin-right: 0px;
+
+    /* Align them center vertically */
+    margin-bottom: auto;
+}
+
+.ping-indicator .signal-strength .bar {
+
+    /* width of each bar */
+    width: 2px;
+
+    /* Spacing between bars */
+    margin-right: 1px;
+
+    /* Set the background color for inactive bars */
+    background-color: #ccc;
+
+    transition: background-color 0.3s ease, height 0.3s ease;
+}
+
+.ping-indicator .signal-strength .bar.active {
+
+    /* Set the background color for active bars */
+    background-color: #4caf50;
+}
+
+/*
 .ping-indicator {
     display: inline-flex;
     align-items: center;
@@ -36,9 +135,10 @@
 
 @media (max-width: 768px) {
     .ping-indicator .signal-strength .bar {
-        width: 1px; /* Reduce bar width for mobile */
+        width: 1px; 
     }
     .ping-indicator .ping-time {
-        font-size: 10px; /* Reduce font size for mobile */
+        font-size: 10px; 
     }
 }
+*/

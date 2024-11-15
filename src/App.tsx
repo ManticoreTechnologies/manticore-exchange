@@ -1,4 +1,6 @@
 // src/App.tsx
+
+/* Import the routes and components */
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Static/Navbar/Navbar";
@@ -32,36 +34,17 @@ import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 const App: React.FC = () => {
 
   return (
+
     <div className="App">
+
       <Navbar />
+
       <div className="main">
-      <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/search" element={<Explorer />} />
-      <Route path="/trade" element={<Trading />} />
-      <Route path="/faucet" element={<Faucet />} />
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
-      <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
-      <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
-      <Route path="/blog/ExploringEvrmoreAssets" element={<ExploringEvrmoreAssets />} />
-      <Route path="/blog/BitcoinExplainer" element={<BitcoinExplainer />} />
-      <Route path="/roadmap" element={<Roadmap />} />
-      <Route path="/tradeX" element={<TradeX />} />
-      <Route path="/tradeX/markets" element={<Markets />} />
-      <Route path="/tradeX/market" element={<Market />} />
-      <Route path="/tradeX/deposit/:asset" element={<Deposit />} />
-      <Route path="/tradeX/profile" element={<Profile />} />
-      <Route path="/tradeX/signin" element={<SignIn />} />
-      <Route path="/tradeX/wallet" element={<Wallet />} />
-      <Route path="/asset/:name" element={<AssetDetails />}/>
-      <Route path="/ipfs" element={<IPFSUploader/>}/>
-      <Route path="/chart" element={<EVRPage />}/>
-      <Route path="/trading-chart" element={<Chart data={[]} />}/>
-      <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+        <span>Hello</span>
       </div>
+
       <Footer />
+
     </div>
   );
 };
