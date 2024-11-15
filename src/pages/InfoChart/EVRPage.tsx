@@ -144,6 +144,12 @@ const EVRPage: React.FC = () => {
         </div>
         <div ref={chartContainerRef} className="info-chart-container" style={{ marginLeft: 'auto', marginRight: 'auto' }} />
         <div className="trade-links">
+          <button 
+            className="buy-now-button"
+            onClick={() => window.open('https://xeggex.com/market/EVR_USDT', '_blank')}
+          >
+            Buy EVR Now
+          </button>
           <p>Trade on Xeggex</p>
           <ul>
             {xeggexData.activeMarkets.map((market: string) => (
