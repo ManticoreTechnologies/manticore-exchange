@@ -3,8 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
 import { FiUser } from "react-icons/fi";
-import { FaChartLine, FaFile, FaRoad } from "react-icons/fa";
-//import { FaFaucetDrip, FaHandHoldingDollar } from "react-icons/fa6";
+import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog } from "react-icons/fa";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {
@@ -33,7 +32,14 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Function to close menu when a link is clicked
+  const handleMouseEnter = () => {
+    setIsMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMenuOpen(false);
+  };
+
   const handleLinkClick = () => {
     setIsMenuOpen(false);
   };
@@ -45,35 +51,54 @@ const Navbar: React.FC = () => {
           <img src={logo} alt="Logo" />
           <span className="navbar-brand-text">MANTICORE</span>
         </NavLink>
+
         <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
-          <NavLink to="/search" className="nav-link" onClick={handleLinkClick}>
+          <NavLink to="/search" className="nav-link animated-link" onClick={handleLinkClick}>
             Search
           </NavLink>
-          <NavLink to="/trade" className="nav-link" onClick={handleLinkClick}>
+          <NavLink to="/trade" className="nav-link animated-link" onClick={handleLinkClick}>
             Trade
           </NavLink>
-          <NavLink to="/faucet" className="nav-link" onClick={handleLinkClick}>
+          <NavLink to="/faucet" className="nav-link animated-link" onClick={handleLinkClick}>
             Faucet
           </NavLink>
-          <NavLink to="/blog" className="nav-link" onClick={handleLinkClick}>
-            Blog
+
+          {/* Dropdown menu */}
+          <div 
+            className="dropdown" 
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave}
+          >
+            <button className="nav-link dropdown-toggle animated-link" onClick={handleMenuToggle}>
+              More <FaBars />
+            </button>
+            {isMenuOpen && (
+              <div className="dropdown-menu">
+                <NavLink to="/blog" className="dropdown-item animated-link" onClick={handleLinkClick}>
+                  <FaBlog /> Blog
+                </NavLink>
+                <NavLink to="/roadmap" className="dropdown-item animated-link" onClick={handleLinkClick}>
+                  <FaRoad /> Roadmap
+                </NavLink>
+                <NavLink to="/ipfs" className="dropdown-item animated-link" onClick={handleLinkClick}>
+                  <FaFile /> IPFS
+                </NavLink>
+                <NavLink to="/chart" className="dropdown-item animated-link" onClick={handleLinkClick}>
+                  <FaChartLine /> Chart
+                </NavLink>
+              </div>
+            )}
+          </div>
+
+          <NavLink to="/tradeX/profile" className="nav-link animated-link" onClick={handleLinkClick}>
+            <FiUser />
           </NavLink>
-          <NavLink to="/roadmap" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaRoad /> </center>
-          </NavLink>
-          <NavLink to="/ipfs" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaFile /> </center>
-          </NavLink>
-          <NavLink to="/chart" className="nav-link" onClick={handleLinkClick}>
-            <center> <FaChartLine /> </center>
-          </NavLink>
-          <NavLink to="/tradeX/profile" className="nav-link" onClick={handleLinkClick}>
-            <center> <FiUser /> </center>
-          </NavLink>
+
           <ThemeToggleButton />
         </div>
+
         <div className="navbar-actions">
-          <button className="navbar-toggle" onClick={handleMenuToggle}>
+          <button className="navbar-toggle animated-link" onClick={handleMenuToggle}>
             ☰
           </button>
         </div>
@@ -83,6 +108,8 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
+
 
 
 /**

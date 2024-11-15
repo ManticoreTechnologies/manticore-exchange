@@ -2,17 +2,20 @@
   flex-grow: 1;
   width: 100%;
   text-align: center;
-  background-color: transparent; /* Make sure the footer uses the same background */
-  padding: 10px; /* Adjust padding for content */
-  position: fixed; /* Position footer at the bottom */
+  background-color: transparent;
+  padding: 10px;
+  position: fixed;
   bottom: 0;
-  height: 30px; /* Adjust height for a smaller footer */
+  left: 0;
+  right: 0;
+  margin: 0;
+  min-height: 30px;
   display: flex;
-  align-items: center; /* Center content vertically */
-  justify-content: center; /* Center content horizontally */
+  align-items: center;
+  justify-content: center;
   z-index: 100;
-  grid-column: 1 / -1; /* Ensure footer spans the entire width */
-  color: var(--text-color); /* Set text color */
+  grid-column: 1 / -1;
+  color: var(--text-color);
 }
 
 .footer .ping-indicator {
@@ -24,28 +27,40 @@
 .footer p {
   margin: 0;
   padding: 0; 
-  font-size: 12px; /* Reduce font size for less prominent text */
-  color: var(--text-color); /* Use your CSS variable for text color */
+  font-size: 12px;
+  color: var(--text-color);
 }
 
 .footer a {
-  color: #ff000c; /* Red color to match your links */
-  text-decoration: none; /* No underline */
-  padding: 0 3px; /* Further reduce space between text buttons */
-  font-size: 10px; /* Smaller font size to fit within the footer */
-  transition: color 0.3s ease; /* Smooth transition for hover effect */
+  color: #ff000c;
+  text-decoration: none;
+  padding: 0 3px;
+  font-size: 10px;
+  transition: color 0.3s ease;
 }
 
 .footer a:hover {
-  color: var(--color); /* White color on hover for contrast */
+  color: var(--color);
 }
 
 @media (max-width: 768px) {
   .footer p {
-    font-size: 10px; /* Further reduce font size for mobile */
+    font-size: 10px;
   }
   .footer .ping-indicator {
-    right: 10px; /* Adjust the right position */
-    top: 25%; /* Adjust the top position */
+    right: 10px;
+    top: 25%;
   }
+}
+
+/* Add these styles to ensure proper page structure */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Add padding to main content to prevent footer overlap */
+main, .content {
+  padding-bottom: 40px;
 }
