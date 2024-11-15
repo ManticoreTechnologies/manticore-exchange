@@ -1,3 +1,12 @@
+:root {
+    /* Light mode */
+    --border-color: black;
+}
+
+[data-theme='dark'] {
+    --border-color: white;
+}
+
 .app {
     display: flex;
     flex-direction: column;
@@ -8,6 +17,9 @@
     min-height: 84vh;
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
+    border: 2px solid var(--border-color); /* Use CSS variable instead of hardcoded white */
+    border-radius: 15px; /* Add rounded corners */
+    margin: 20px; /* Add some spacing around the border */
 }
 
 /* Button Styles */
