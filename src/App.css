@@ -17,9 +17,8 @@
     min-height: 84vh;
     max-width: 100%;
     overflow-x: hidden; /* Prevent horizontal scrolling */
-    border: 2px solid var(--border-color); /* Use CSS variable instead of hardcoded white */
-    border-radius: 15px; /* Add rounded corners */
-    margin: 20px; /* Add some spacing around the border */
+    border-top: 2px solid var(--border-color); /* Changed from full border to top-only */
+    margin: 20px;
 }
 
 /* Button Styles */
