@@ -29,7 +29,7 @@ const ThemeToggleButton: React.FC = () => {
 // Navbar component
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -81,10 +81,17 @@ const Navbar: React.FC = () => {
             </div>
           </NavLink>
 
-
+          
           <Dropdown isOpen={isMenuOpen} toggleDropdown={handleMenuToggle} />
           
-        </div>
+        <NavLink to="/profile" className="nav-link animated-link" onClick={handleLinkClick}>
+          <div className="nav-link-container">
+            <i className="fas fa-user"></i>
+            <p>Profile</p>
+          </div>
+        </NavLink>
+        
+          </div>
       </div>
     </nav>
   );

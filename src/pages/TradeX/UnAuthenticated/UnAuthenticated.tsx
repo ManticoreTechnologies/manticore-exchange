@@ -11,11 +11,23 @@ const UnAuthenticated: React.FC = () => {
 
   return (
     <div className="unauthenticated-container">
-      <h2>You are not logged in</h2>
-      <p>Please sign in to access this page.</p>
-      <button onClick={handleSignInClick} className="signin-button">
-        Go to Sign In
-      </button>
+      <div className="unauthenticated-content">
+        <h1 className="main-title">Wallet Authentication Required</h1>
+        
+        <div className="message-container">
+          <p className="main-message">
+            Connect your wallet to access full trading features
+          </p>
+          <p className="sub-message">
+            Authenticate to unlock advanced trading capabilities, portfolio tracking, 
+            and personalized market insights.
+          </p>
+        </div>
+
+        <button onClick={handleSignInClick} className="signin-button">
+          Authenticate Wallet
+        </button>
+      </div>
     </div>
   );
 };

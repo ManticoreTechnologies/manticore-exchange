@@ -56,6 +56,8 @@
 
   /* Set the padding */
   padding: 3px;
+
+  cursor: pointer;
 }
 
 /* Content of the navbar */
@@ -74,6 +76,8 @@
   font-style: normal;
   padding-bottom: 0.2rem;
   text-transform: uppercase;
+
+  cursor: pointer;
   
   /* Background gradient */
  

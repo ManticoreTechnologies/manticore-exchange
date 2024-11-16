@@ -40,7 +40,11 @@ const App: React.FC = () => {
       <Navbar />
 
       <div className="main">
-        <span>Hello</span>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </div>
 
       <Footer />

@@ -1,6 +1,6 @@
 :root {
     /* General Colors */
-    --background-color: black;
+    --background-color: linear-gradient(45deg, #ff0000, #00ffff);
     --text-color: white;
     --link-color: red;
     --link-hover-color: white;
