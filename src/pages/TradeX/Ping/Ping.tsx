@@ -71,7 +71,7 @@ import './Ping.css'; // Import the CSS file
                         <div
                             key={index}
                             className={`bar ${index < bars ? 'active' : ''}`}
-                            style={{ height: `${(5 + index * 5) * 0.4}px` }} // Adjusted height to 50% on desktop, 70% on mobile
+                            style={{ height: `calc(${(5 + index * 5) * 0.4}px + var(--footer-height, 15px) * 0.13)` }} // Adjusted height based on footer-height CSS variable
                         />
                     ))}
                 </span>

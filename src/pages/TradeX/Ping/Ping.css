@@ -45,6 +45,7 @@
 
 }
 
+/* Satus icon, only shows when disconnected */
 .ping-indicator .status-icon {
 
     /* Set the position to relative */
@@ -72,14 +73,13 @@
     /* Set the margin right, keep the ping text close to the signal strength bars */
     margin-right: 0px;
 
-    /* Align them center vertically */
-    margin-bottom: auto;
+    margin-bottom: calc(var(--footer-height, 15px) * 0.06);
 }
 
 .ping-indicator .signal-strength .bar {
 
     /* width of each bar */
-    width: 2px;
+    width: calc(var(--footer-height, 15px) * 0.13);
 
     /* Spacing between bars */
     margin-right: 1px;

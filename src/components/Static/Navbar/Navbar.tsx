@@ -4,6 +4,7 @@ import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
 import { FiUser } from "react-icons/fi";
 import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog } from "react-icons/fa";
+import Dropdown from "./Dropdown";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {
@@ -47,71 +48,41 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        <img src={logo} alt="Logo" />
+        <div className="navbar-logo">
+          <img className="navbar-logo-img" src={logo} alt="Logo" />
+          <span className="navbar-logo-text">MANTICORE</span>
+        </div>
+
+        <div className="navbar-links">
+
+          <NavLink to="/search" className="nav-link animated-link" onClick={handleLinkClick}>
+            <div className="nav-link-container">
+              <i className="fas fa-search"></i>
+              <p>Search</p>
+            </div>
+          </NavLink>
+
+          <NavLink to="/trade" className="nav-link animated-link" onClick={handleLinkClick}>
+            <div className="nav-link-container">
+              <i className="fas fa-exchange-alt"></i>
+              <p>Trade</p>
+            </div>
+          </NavLink>
+
+          <NavLink to="/faucet" className="nav-link animated-link" onClick={handleLinkClick}> 
+            <div className="nav-link-container">
+              <i className="fas fa-tint"></i>
+              <p>Faucet</p>
+            </div>
+          </NavLink>
+
+
+          <Dropdown isOpen={isMenuOpen} toggleDropdown={handleMenuToggle} />
+          
+        </div>
       </div>
     </nav>
   );
 };
 
 export default Navbar;
-
-
-
-
-/*
-      <div className="navbar-content">
-        <NavLink to="/" className="navbar-logo" onClick={handleLinkClick}>
-          <img src={logo} alt="Logo" />
-          <span className="navbar-brand-text">MANTICORE</span>
-        </NavLink>
-
-        <div className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
-          <NavLink to="/search" className="nav-link animated-link" onClick={handleLinkClick}>
-            Search
-          </NavLink>
-          <NavLink to="/trade" className="nav-link animated-link" onClick={handleLinkClick}>
-            Trade
-          </NavLink>
-          <NavLink to="/faucet" className="nav-link animated-link" onClick={handleLinkClick}>
-            Faucet
-          </NavLink>
-          <div 
-            className="dropdown" 
-            onMouseEnter={handleMouseEnter} 
-            onMouseLeave={handleMouseLeave}
-          >
-            <button className="nav-link dropdown-toggle animated-link" onClick={handleMenuToggle}>
-              More <FaBars />
-            </button>
-            {isMenuOpen && (
-              <div className="dropdown-menu">
-                <NavLink to="/blog" className="dropdown-item animated-link" onClick={handleLinkClick}>
-                  <FaBlog /> Blog
-                </NavLink>
-                <NavLink to="/roadmap" className="dropdown-item animated-link" onClick={handleLinkClick}>
-                  <FaRoad /> Roadmap
-                </NavLink>
-                <NavLink to="/ipfs" className="dropdown-item animated-link" onClick={handleLinkClick}>
-                  <FaFile /> IPFS
-                </NavLink>
-                <NavLink to="/chart" className="dropdown-item animated-link" onClick={handleLinkClick}>
-                  <FaChartLine /> Chart
-                </NavLink>
-              </div>
-            )}
-          </div>
-
-          <NavLink to="/tradeX/profile" className="nav-link animated-link" onClick={handleLinkClick}>
-            <FiUser />
-          </NavLink>
-
-          <ThemeToggleButton />
-        </div>
-
-        <div className="navbar-actions">
-          <button className="navbar-toggle animated-link" onClick={handleMenuToggle}>
-            ☰
-          </button>
-        </div>
-      </div> 
- */

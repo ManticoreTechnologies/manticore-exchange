@@ -29,7 +29,7 @@
        to visualize the layout 
        change to transparent when ready
     */
-    background-color: rgba(155, 42, 42, 0.5);
+    background-color: transparent;
     
     /* We want the app to be exactly the height of the 
        viewport so that everything is visible correctly
@@ -57,7 +57,7 @@
        to visualize the layout 
        change to transparent when ready
     */
-    background-color: rgba(0, 141, 19, 0.3);
+    background-color: transparent;
 
     /* Grow to take up the remaining space */
     flex-grow: 1;
