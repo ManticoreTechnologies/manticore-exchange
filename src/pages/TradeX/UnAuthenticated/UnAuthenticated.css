@@ -1,20 +1,24 @@
 .unauthenticated-container {
 
-  /* Center the container */
+/* Center Vertically */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  width: 100%;
 }
 
 .unauthenticated-content {
   max-width: 500px;
   width: 100%;
   text-align: center;
+  /* Center Horizontally */
+  margin: 0 auto;
 }
 
 .main-title {
-  color: #1a1a1a;
+  color: white;
   font-size: 2rem;
   margin-bottom: 24px;
 }
@@ -25,12 +29,12 @@
 
 .main-message {
   font-size: 1.2rem;
-  color: #333;
+  color: white;
   margin-bottom: 12px;
 }
 
 .sub-message {
-  color: #666;
+  color: white;
   line-height: 1.5;
 }
 

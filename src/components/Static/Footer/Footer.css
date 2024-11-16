@@ -3,14 +3,6 @@
    
 */
 
-/* We will use variables to easily adjust the footer height 
-   this will be used to adjust the font size of the ping indicator
-*/
-
-:root {
-  --footer-height: 23px;
-}
-
 /* Footer styling */
 .footer{
 
@@ -24,9 +16,12 @@
 
 
   /* Set the background color */
-  background-color: rgb(0, 174, 255, 0.1);
+  background-color: var(--footer-bg-color);
   
-  /* Set the height */
+  /* Set the min height and max height to +-10% */
+  min-height: calc(var(--footer-height, 15px) * 0.9);
+  max-height: calc(var(--footer-height, 15px) * 1.1);
+
   height: var(--footer-height, 15px); 
   
   /* Font size based on height */

@@ -9,7 +9,7 @@
   /* Some of the choices we are considering for the navbar background color */
   /* 4a2629 */
   /* 041316 */
-  background-color: #041316;
+  background-color: var(--navbar-bg-color);
 
   /* Set the height of the navbar */
   height: auto;
@@ -23,7 +23,7 @@
   height: 50px;
 
   /* Add subtle box shadow with similar color to the background */
-  box-shadow: 0 2px 8px rgba(35, 191, 219, 0.15);
+  /* box-shadow: 0 2px 8px rgba(35, 191, 219, 0.15); */
 
 }
 

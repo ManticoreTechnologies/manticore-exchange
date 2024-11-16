@@ -2,8 +2,6 @@
     position: relative;
     text-align: center;
     padding: 50px 20px;
-    background: transparent;
-    color: var(--text-color);
     flex-shrink: 0;
     
 }
@@ -16,11 +14,11 @@
     left: 50%;
     transform: translateX(-50%) scale(1); /* Subtle scale change */
     opacity: 0.1; /* Make the logo more subtle */
-    z-index: -10; /* Place it behind the text */
+    z-index: 10; /* Place it behind the text */
 }
 
 .hero h1 {
-    z-index: -5;
+    z-index: 10;
     position: relative;
     font-size: 3em;
     margin-top: 0px;
@@ -29,7 +27,7 @@
 
 .hero p {
     position: relative;
-    z-index: -3;
+    z-index: 10;
     font-size: 1.6em; /* Slightly increase size for better readability */
     margin-bottom: 30px;
 }

@@ -16,9 +16,9 @@ const HomeHero: React.FC<homeheroprops> = ({title="Home Hero", logo=manticore_lo
           src={logo} 
           alt={title}
           className="hero-logo" 
-        />
-        <h1>{title}</h1>
-        <p>{body}</p>
+          />
+          <h1>{title}</h1>
+          <p>{body}</p>
     
     </section>
 

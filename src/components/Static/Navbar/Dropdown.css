@@ -47,7 +47,6 @@
 
   display: inline-flex;
 }
-
 .dropdown[aria-expanded="true"] .dropdown-content{
   opacity: 1;
   transform: translateY(0);
@@ -55,6 +54,7 @@
 }   
 
 .dropdown-toggle:hover {
+  color: #23bfdb;
   transform: scale(1.05);
   opacity: 0.9;
 }
