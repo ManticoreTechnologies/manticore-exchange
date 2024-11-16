@@ -5,6 +5,7 @@ import logo from '../../../images/enhanced_logo_old.png';
 import { FiUser } from "react-icons/fi";
 import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog } from "react-icons/fa";
 import Dropdown from "./Dropdown";
+import { useNavigate } from "react-router-dom";
 
 // Theme toggle button
 const ThemeToggleButton: React.FC = () => {
@@ -45,10 +46,14 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(false);
   };
 
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        <div className="navbar-logo">
+        <div className="navbar-logo" onClick={handleLogoClick}>
           <img className="navbar-logo-img" src={logo} alt="Logo" />
           <span className="navbar-logo-text">MANTICORE</span>
         </div>
