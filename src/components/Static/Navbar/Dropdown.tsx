@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaBars } from 'react-icons/fa';
+import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar } from 'react-icons/fa';
+import './Dropdown.css';
 
 interface DropdownProps {
   isOpen: boolean;
@@ -20,10 +21,10 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown }) => {
       </button>
       {isOpen && (
         <div className="dropdown-content">
-          <a href="#home">Home</a>
-          <a href="#services">Services</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
+          <a href="/blog"><FaBlog /> Blog</a>
+          <a href="/roadmap"><FaRoad /> Roadmap</a>
+          <a href="/ipfs"><FaDatabase /> IPFS</a>
+          <a href="/chart"><FaChartBar /> Chart</a>
         </div>
       )}
     </div>
