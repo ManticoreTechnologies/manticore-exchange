@@ -146,7 +146,15 @@
     /* Change text color on hover */
     color: #23bfdb;
   }
-
+@media (max-width: 440px) {
+  .navbar-links {
+    /* center the links */
+    justify-content: center;
+    position: absolute;
+    right: 5%;
+    transform: translateX(-50%);
+  }
+}
 /*
 .navbar {
   background-color: rgba(155, 42, 42, 0.5);

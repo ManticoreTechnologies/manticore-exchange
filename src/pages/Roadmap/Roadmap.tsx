@@ -1,15 +1,41 @@
 // src/pages/Roadmap.tsx
 
-import React from "react";
+
+import React, { useEffect } from "react";
 import "./Roadmap.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRocket, faWallet, faChartLine, faLeaf } from '@fortawesome/free-solid-svg-icons';
 
 const Roadmap: React.FC = () => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    // Observe all sections
+    document.querySelectorAll('.roadmap-section').forEach((section) => {
+      observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="roadmap-container">
-      <h1>Crypto Exchange Project Roadmap</h1>
+      <h1>Asset Exchange Project Roadmap</h1>
 
-      <section>
-        <h2>Phase 1: Initial Launch</h2>
+      <section className="roadmap-section">
+        <h2>
+          <FontAwesomeIcon icon={faRocket} className="section-icon" />
+          Phase 1: Initial Launch
+        </h2>
         <ul>
           <li><strong>Asset Exchange (Swaps):</strong> Enable users to exchange various crypto assets. Provide a user-friendly interface for seamless asset swaps.</li>
           <li><strong>View Assets:</strong> Allow users to view their current holdings and asset balances. Include support for multiple cryptocurrencies.</li>
@@ -18,8 +44,11 @@ const Roadmap: React.FC = () => {
         </ul>
       </section>
 
-      <section>
-        <h2>Phase 2: Wallet Integration</h2>
+      <section className="roadmap-section">
+        <h2>
+          <FontAwesomeIcon icon={faWallet} className="section-icon" />
+          Phase 2: Wallet Integration
+        </h2>
         <p>Current Development Focus:</p>
         <ul>
           <li><strong>Full-Featured Wallets:</strong> Develop wallets that integrate with the Manticore asset exchange and EVRmore blockchain. Ensure compatibility and seamless integration with the exchange platform.</li>
@@ -33,8 +62,11 @@ const Roadmap: React.FC = () => {
         </ul>
       </section>
 
-      <section>
-        <h2>Phase 3: Advanced Asset Analytics</h2>
+      <section className="roadmap-section">
+        <h2>
+          <FontAwesomeIcon icon={faChartLine} className="section-icon" />
+          Phase 3: Advanced Asset Analytics
+        </h2>
         <p>Upcoming Development Focus:</p>
         <ul>
           <li><strong>Data Collection and Aggregation:</strong> Collect and aggregate data from various sources to provide comprehensive asset analytics. Ensure data accuracy and real-time updates.</li>
@@ -44,8 +76,11 @@ const Roadmap: React.FC = () => {
         </ul>
       </section>
 
-      <section>
-        <h2>Phase 4: Ecosystem Development</h2>
+      <section className="roadmap-section">
+        <h2>
+          <FontAwesomeIcon icon={faLeaf} className="section-icon" />
+          Phase 4: Ecosystem Development
+        </h2>
         <p>Final Major Milestone:</p>
         <ul>
           <li><strong>Suite of Products Built on EVR Assets:</strong> Develop a range of products and services leveraging EVR assets. Ensure these products provide significant value and utility to users.</li>

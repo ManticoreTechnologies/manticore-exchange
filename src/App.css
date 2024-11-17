@@ -61,10 +61,15 @@
 
     /* Grow to take up the remaining space */
     flex-grow: 1;
-
-
-    overflow-y: scroll;
     
+    /* Handle overflow as scroll IN THE CHILDREN 
+       so that we can use the env variables 
+       to handle the safe area insets
+       Never mind, the env variables dont fucking work
+       so we will just ignore the phone shit footer not 
+       that important
+    */
+    overflow-y: scroll;
 }
 
 

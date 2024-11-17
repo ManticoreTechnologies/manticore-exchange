@@ -1,34 +1,51 @@
+.infocard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    justify-items: center;
+    width: 100%;
+    padding: 40px;
+}
+
+@media (min-width: 768px) {
+    .infocard-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .infocard-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 .icon-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding-bottom: 50px; /* Adjust padding for better spacing */
-    margin: 100px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    padding-bottom: 50px;
+    margin: 0 auto;
     border-radius: 10px;
-    background-color: transparent; /* Use your color variables */
+    background-color: transparent;
     color: var(--text-color);
     text-decoration: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    max-width: 250px; /* Adjust width for a more compact look */
-    flex: 1 1 200px; /* Allow cards to grow and shrink, with a base width */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    max-width: 250px;
+    flex: 1 1 200px;
+    box-sizing: border-box;
 }
 
-
-
 .icon-item:hover {
-    transform: scale(1.08); /* Increased hover effect for better interaction */
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+    transform: scale(1.08);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
 .icon-item h3 {
     margin-top: 10px;
-    font-size: 1.6em; /* Slightly increased size for titles */
-    color: var(--link-color); /* Match the link color for headings */
+    font-size: 1.6em;
+    color: var(--link-color);
 }
 
 .icon-item p {
@@ -38,7 +55,7 @@
 }
 
 .icon-item span {
-    margin-top: 15px; /* Increased spacing for better separation */
+    margin-top: 15px;
     color: var(--info-card-action-button-color);
 }
 

@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
       setShowSearch(window.innerWidth >= 700);
       setShowTrade(window.innerWidth >= 600);
       setShowFaucet(window.innerWidth >= 500);
-      setShowProfile(window.innerWidth >= 400);
+      setShowProfile(window.innerWidth >= 450);
       console.log(window.innerWidth);
     };
 
