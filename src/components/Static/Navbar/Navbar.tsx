@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from '../../../images/enhanced_logo_old.png';
-import { FiUser } from "react-icons/fi";
-import { FaBars, FaChartLine, FaFile, FaRoad, FaBlog } from "react-icons/fa";
 import Dropdown from "./Dropdown";
 import { useNavigate } from "react-router-dom";
 
 // Theme toggle button
+//@ts-ignore
 const ThemeToggleButton: React.FC = () => {
   const [theme, setTheme] = useState(
     document.body.getAttribute("data-theme") || "dark"
@@ -32,8 +31,6 @@ const ThemeToggleButton: React.FC = () => {
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showSearch, setShowSearch] = useState(true);  
   const [showTrade, setShowTrade] = useState(true);
   const [showFaucet, setShowFaucet] = useState(true);
@@ -41,8 +38,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setIsMobile(window.innerWidth < 768);
       setShowSearch(window.innerWidth >= 700);
       setShowTrade(window.innerWidth >= 600);
       setShowFaucet(window.innerWidth >= 500);
@@ -62,13 +57,6 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleMouseEnter = () => {
-    setIsMenuOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsMenuOpen(false);
-  };
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
