@@ -1,4 +1,5 @@
 :root {
+
     /* Core Colors */
     --primary-color: #1BDEE4;      /* Bright cyan */
     --secondary-color: #E4211B;    /* Bright red */
@@ -39,6 +40,8 @@
     --spacing-md: 1rem;
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
+
+    --info-card-action-button-color: red;
 }
 
 [data-theme="dark"] {

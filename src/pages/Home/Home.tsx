@@ -13,7 +13,8 @@ const Home: React.FC = () => {
     <div className="home">
 
       <HomeHero 
-        title="Manticore Asset Exchange"
+        title="Manticore"
+        subtitle="Everything Evrmore"
         logo = {manticore_logo}
         body="Your premier destination for trading digital assets on the Evrmore blockchain."
       />

@@ -1,39 +1,74 @@
 .hero {
-    position: relative;
-    text-align: center;
-    padding: 50px 20px;
-    flex-shrink: 0;
-    
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(45deg, #FF0000, #000000, #0088ff);
+  background-size: 200% 200%;
+  min-height: 10vh;
+  position: relative;
+  animation: animateBackground 10s infinite;
 }
 
-.hero-logo {
-    position: absolute;
-    width: 280px; /* Adjust size slightly smaller for subtle effect */
-    height: auto;
-    top: 75%; /* Adjust positioning for better separation from title */
-    left: 50%;
-    transform: translateX(-50%) scale(1); /* Subtle scale change */
-    opacity: 0.1; /* Make the logo more subtle */
-    z-index: 10; /* Place it behind the text */
+@keyframes animateBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-logo, .hero-logo-right {
+  margin-bottom: 2rem;
+  animation: pulse 2s infinite ease-in-out;
+  width: 20vh;
+  opacity: 0.5;
 }
 
 .hero h1 {
-    z-index: 10;
-    position: relative;
-    font-size: 3em;
-    margin-top: 0px;
-    color: var(--link-color); /* Use your primary color variable */
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.hero h1:nth-of-type(2) {
+  font-size: 2rem;
+  color: #9f9f9f;
+  margin: 1rem 0;
 }
 
 .hero p {
-    position: relative;
-    z-index: 10;
-    font-size: 1.6em; /* Slightly increase size for better readability */
-    margin-bottom: 30px;
+  max-width: 600px;
+  margin: 2rem auto 0;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #e0e0e0;
 }
 
-@media (max-width: 768px) {
-    .hero-logo {
-        top: 70%; /* Adjust positioning to move the logo up */
-    }
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

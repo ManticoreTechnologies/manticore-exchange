@@ -18,7 +18,7 @@ const InfoCard: React.FC<infocardprops> = ({FaIcon=FaAirFreshener, to="/", title
             <FaIcon size={50} />
             <h3>{title}</h3>
             <p>{body}</p>
-            <span>{action}</span>
+            <span className="action-button">{action}</span>
         </NavLink>
     </div>
   );
