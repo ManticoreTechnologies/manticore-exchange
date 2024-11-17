@@ -128,6 +128,9 @@ const AssetDetails: React.FC = () => {
 
   return (
     <div className="asset-detail-container">
+      <div className="back-button-container">
+        <button onClick={() => navigate(faucet ? `/faucet` : `/search`)}>Back</button>
+      </div>
       <div className="asset-detail-card">
         <div className="asset-image-container">
           {asset && asset.has_ipfs && isVideo ? (
@@ -150,25 +153,14 @@ const AssetDetails: React.FC = () => {
           <h1 className="asset-title">{asset ? asset.name : 'Asset Name'}</h1>
           {asset && (
             <div className="asset-meta">
-              <p><strong>Amount:</strong> {asset.amount}</p>
+              <p><strong>Block Hash:</strong> <span className="copyable" onClick={() => copyToClipboard(asset.blockhash)}>{asset.blockhash.slice(0, 5)}...{asset.blockhash.slice(-5)}<span className="copy-icon">📋</span></span></p>
+              <p><strong>{asset.has_ipfs && asset.ipfs_hash ? "IPFS Hash: " : "TXID: "}</strong> <span className="copyable" onClick={() => copyToClipboard(asset.ipfs_hash || asset.txid_hash)}>{(asset.ipfs_hash || asset.txid_hash).slice(0, 5)}...{(asset.ipfs_hash || asset.txid_hash).slice(-5)}<span className="copy-icon">📋</span></span></p>
               <p><strong>Block Height:</strong> {asset.block_height}</p>
-              <p className="truncate">
-                <strong>Block Hash:</strong>
-                <span className="copyable" onClick={() => copyToClipboard(asset.blockhash)}>
-                  {asset.blockhash.slice(0, 10)}...<span className="copy-icon">📋</span>
-                </span>
-              </p>
-              <p className="truncate">
-                <strong>{asset.has_ipfs && asset.ipfs_hash ? "IPFS Hash: " : "TXID: "}</strong>
-                <span className="copyable" onClick={() => copyToClipboard(asset.ipfs_hash || asset.txid_hash)}>
-                  {(asset.ipfs_hash || asset.txid_hash).slice(0, 10)}...<span className="copy-icon">📋</span>
-                </span>
-              </p>
               <p><strong>Reissuable:</strong> {asset.reissuable ? 'Yes' : 'No'}</p>
+              <p><strong>Amount:</strong> {asset.amount}</p>
               <p><strong>Decimals:</strong> {asset.units}</p>
             </div>
           )}
-
           {/* Video Controls */}
           {asset && asset.has_ipfs && isVideo && (
             <div className="video-controls">
@@ -195,9 +187,6 @@ const AssetDetails: React.FC = () => {
               </label>
             </div>
           )}
-          <div className="asset-description">
-            <button onClick={() => navigate(faucet ? `/faucet` : `/search`)}>Back</button>
-          </div>
         </div>
       </div>
     </div>

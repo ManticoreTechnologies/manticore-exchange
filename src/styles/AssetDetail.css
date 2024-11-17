@@ -1,27 +1,27 @@
 .asset-detail-container {
-  display: flex;
+  position: relative;
   justify-content: center;
   align-items: flex-start;
   padding: 20px; /* Reduced padding for smaller screens */
-  background: #1a1a1a; /* Assuming this is your preferred background color */
-  flex-direction: column; /* Stack items vertically on smaller screens */
+  background: var(--background-primary); /* Assuming this is your preferred background color */
+  flex-direction: row; /* Stack items vertically on smaller screens */
 }
 
 .asset-detail-card {
-  display: flex;
+  position: relative;
   flex-direction: column; /* Stack image and text vertically on smaller screens */
   background: #000; /* Card background */
   color: #fff; /* Text color */
   border: 1px solid #e1e1e1; /* Card border */
-  border-radius: 8px;
-  overflow: hidden; /* Ensures that the content respects the border-radius */
+  border-radius: 8px;/* Ensures that the content respects the border-radius */
   margin: auto; /* Centers the card in the container */
-  max-width: 1200px; /* Maximum width of the card */
   width: 100%; /* Ensures that the card stretches to max-width */
 }
 
+
+
 .asset-image-container {
-  display: flex; /* Enables flexbox */
+  position: relative;
   justify-content: center; /* Centers horizontally */
   align-items: center; /* Centers vertically */
   width: 100%; /* Full width for mobile */
@@ -38,24 +38,27 @@
 }
 
 .asset-info-container {
-  flex-grow: 1; /* Allows the info container to fill the rest of the card */
-  padding: 20px; /* Padding inside the card around the text */
-  text-align: center; /* Center text on mobile */
+  position: relative;
+  /*center text*/
+  text-align: center;
 }
 
 .asset-title {
-  font-size: 2em;
-  margin-bottom: 20px;
+  font-size: 2em;* Spans across all columns */
 }
 
 .asset-meta {
-  font-size: 1em;
-  margin-bottom: 20px;
-  overflow-wrap: break-word; /* Ensures long hashes wrap and don't overflow */
+  display: flex; /* Use flexbox to arrange items inline */
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  width: 100%; /* Ensures asset meta spans the full width of the asset detail container */
 }
 
 .asset-meta p {
+  color: #fff; /* Make the labels text white */
+  padding: 5px 10px; /* Spacing between paragraphs */
   margin: 5px 0; /* Spacing between paragraphs */
+  flex: 1 1 50%; /* Each item takes up 50% of the width, adjust as needed */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
 .asset-description {
@@ -88,37 +91,20 @@
   color: #fff;
 }
 
-/* Media query for devices with a max width of 768px (mobile devices) */
-@media (max-width: 768px) {
-  .asset-detail-container {
-      padding: 10px; /* Reduce padding on mobile */
-  }
 
-  .asset-detail-card {
-      flex-direction: column; /* Stack content vertically */
-      max-width: 100%; /* Make the card full width */
-  }
-
-  .asset-image-container {
-      width: 100%; /* Full width on mobile */
-      max-width: 100%; /* Ensure the image container is full width */
-      height: auto; /* Allow height to adjust automatically */
-  }
-
-  .asset-info-container {
-      padding: 15px; /* Adjust padding for smaller screens */
-      text-align: center; /* Center text on mobile */
-  }
-
-  .asset-title {
-      font-size: 1.8em; /* Reduce font size on mobile */
-  }
-
-  .asset-meta {
-      font-size: 1em; /* Adjust font size for mobile */
-  }
-
-  .asset-description {
-      font-size: 0.9em; /* Slightly smaller text for descriptions on mobile */
-  }
+.back-button-container button{
+  padding: 5px 10px;
+  position: absolute;
+  background-color: transparent;
+  z-index: 100;
+  transition: transform 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
 }
+
+
+.back-button-container button:hover {
+  background-color: transparent;
+  transform: scale(1.05);
+  color: var(--button-background);
+}
+
