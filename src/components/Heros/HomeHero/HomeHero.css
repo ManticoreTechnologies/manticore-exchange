@@ -30,14 +30,24 @@
   align-items: center;
   position: relative;
 }
-
+.hero-left{
+    max-width: 33rem;
+}
+.hero-right{
+    max-width: 33rem;
+}
 .hero-logo, .hero-logo-right {
   margin-bottom: 2rem;
   animation: pulse 2s infinite ease-in-out;
   width: 20vh;
   opacity: 0.5;
 }
-
+.hero-text{
+    width: 100%;
+}
+.hero-text p{
+    display: inline;
+}
 .hero h1 {
   margin: 0;
   font-size: 3rem;

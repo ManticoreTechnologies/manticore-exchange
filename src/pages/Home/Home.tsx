@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FaSearch, FaExchangeAlt, FaBlog } from 'react-icons/fa'; 
+import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine } from 'react-icons/fa'; 
 import HomeHero from '../../components/Heros/HomeHero/HomeHero';
 import InfoCard from '../../components/Cards/InfoCard';
 
@@ -49,6 +49,35 @@ const Home: React.FC = () => {
           action="Read Now"
           body="Stay updated with the latest news, insights, and updates from the Manticore Asset Exchange. Learn more about the future of digital assets and our platform."
         />
+
+      <InfoCard 
+        FaIcon={FaRoad} 
+        to="/roadmap" 
+        title="Roadmap" 
+        action="View Roadmap" 
+        body="Explore our roadmap to see what's in store for the future of Manticore and the Evrmore blockchain."
+      />
+      <InfoCard 
+        FaIcon={FaRoad} 
+        to="/ipfs" 
+        title="IPFS" 
+        action="Learn More" 
+        body="Discover how we're utilizing InterPlanetary File System (IPFS) for decentralized data storage and sharing."
+      />
+      <InfoCard 
+        FaIcon={FaChartLine} 
+        to="/chart" 
+        title="Chart" 
+        action="View Chart" 
+        body="Stay up-to-date with the latest market trends and insights on the Evrmore blockchain with our interactive chart."
+      />
+      <InfoCard 
+        FaIcon={FaUser} 
+        to="/profile" 
+        title="Profile" 
+        action="View Profile" 
+        body="Manage your account, view your assets, and access exclusive features with your Manticore profile."
+      />
 
       </div>
     </div>

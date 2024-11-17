@@ -66,8 +66,9 @@ const FaucetForm: React.FC = () => {
 
     return (
         <div className="faucet-form">
-            <input 
-                className="faucet-address-input" 
+            <div className="faucet-form-inputs">
+                <input 
+                    className="faucet-address-input" 
                 placeholder="Enter a valid evrmore address" 
                 value={faucetAddress}
                 onChange={handleAddressChange}
@@ -82,11 +83,12 @@ const FaucetForm: React.FC = () => {
                             <li key={asset} onClick={() => handleAssetSelect(asset)}>
                                 {asset}
                             </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             <button className="submit-button" onClick={handleSubmit}>Submit</button>
+            </div>
             {responseMessage && (
                 <div className="response-message">
                     {responseMessage}

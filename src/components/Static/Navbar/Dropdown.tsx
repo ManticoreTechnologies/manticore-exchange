@@ -25,21 +25,21 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
       </button>
       {isOpen && (
         <div className="dropdown-content">
-          <a href="/blog"><FaBlog /> Blog</a>
-          <a href="/roadmap"><FaRoad /> Roadmap</a>
-          <a href="/ipfs"><FaDatabase /> IPFS</a>
-          <a href="/chart"><FaChartBar /> Chart</a>
+          <a href="/blog"><FaBlog className='dropdown-icon'/> Blog</a>
+          <a href="/roadmap"><FaRoad className='dropdown-icon'/> Roadmap</a>
+          <a href="/ipfs"><FaDatabase className='dropdown-icon'/> IPFS</a>
+          <a href="/chart"><FaChartBar className='dropdown-icon'/> Chart</a>
           {!showProfile && (
-            <a href="/profile"><FaUser /> Profile</a>
+            <a href="/profile"><FaUser className='dropdown-icon'/> Profile</a>
           )}
           {!showFaucet && (
-            <a href="/faucet"><FaTint /> Faucet</a>
+            <a href="/faucet"><FaTint className='dropdown-icon'/> Faucet</a>
           )}
           {!showTrade && (
-            <a href="/trade"><FaExchangeAlt /> Trade</a>
+            <a href="/trade"><FaExchangeAlt className='dropdown-icon'/> Trade</a>
           )}
           {!showSearch && (
-            <a href="/search"><FaSearch /> Search</a>
+            <a href="/search"><FaSearch className='dropdown-icon'/> Search</a>
           )}
           
         </div>

@@ -26,9 +26,12 @@
 .dropdown-content{
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   display: block;
-  background-color: rgb(7, 223, 238);
+  background-color: var(--text-secondary);
+  border: 2px solid var(--button-background);
+  /* rounded corners */ 
+  border-radius: 50p;
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -44,8 +47,15 @@
   display: block;
   margin: 5px 0;
   transition: all 0.3s ease;
-
   display: inline-flex;
+  /* center vertically */
+  align-items: center;
+}
+.dropdown-icon{
+  margin-right: 0.5rem;
+  /* center vertically */
+  align-items: center;
+
 }
 .dropdown[aria-expanded="true"] .dropdown-content{
   opacity: 1;
@@ -64,3 +74,12 @@
   opacity: 0.8;
 }
    
+
+@media (max-width: 400px) {
+  .dropdown {
+    right: 20%;
+  }
+  .dropdown-content{
+    left: -10%;
+  }
+}

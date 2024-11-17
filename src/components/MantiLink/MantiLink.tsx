@@ -14,7 +14,7 @@ const MantiLink: React.FC<MantiLinkProps> = ({ port }) => {
 
   const connectWallet = () => {
     setIsConnecting(true);
-    const ws = new WebSocket(`ws://localhost:${port}`);
+    const ws = new WebSocket(`wss://localhost:${port}`);
     setSocket(ws);
 
     ws.onopen = () => {
