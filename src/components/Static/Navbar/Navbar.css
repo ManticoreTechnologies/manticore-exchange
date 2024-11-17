@@ -24,7 +24,7 @@
 
   /* Add subtle box shadow with similar color to the background */
   /* box-shadow: 0 2px 8px rgba(35, 191, 219, 0.15); */
-
+  z-index: 20;
 }
 
 .navbar-logo {
