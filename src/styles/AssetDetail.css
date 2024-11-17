@@ -68,6 +68,26 @@
   word-break: break-all; /* Breaks the word to prevent overflow */
 }
 
+.asset-meta .copyable {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: #333;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.asset-meta .copyable:hover {
+  background-color: #555;
+}
+
+.asset-meta .copy-icon {
+  margin-left: 5px;
+  font-size: 0.8em;
+  color: #fff;
+}
+
 /* Media query for devices with a max width of 768px (mobile devices) */
 @media (max-width: 768px) {
   .asset-detail-container {

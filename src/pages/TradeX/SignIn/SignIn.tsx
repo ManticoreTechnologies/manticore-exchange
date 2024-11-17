@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from '../../../hooks/useWebSocket'; // Adjust the path as necessary
 import './SignIn.css'; // Import CSS for styling and animations
 import Cookies from 'js-cookie'; // Import Cookies for session management
+import { FaArrowRight } from 'react-icons/fa';
 
 const SignIn: React.FC = () => {
     //@ts-ignore
@@ -107,7 +108,7 @@ const SignIn: React.FC = () => {
                             <h2>Step 1: Enter Your Address</h2>
                             <label htmlFor="address">Enter Address:</label>
                             <input type="text" id="address" value={address} onChange={handleAddressChange} />
-                            <button type="submit">Submit</button>
+                            <button type="submit" className="submit-icon"> Next <FaArrowRight /></button>
                         </form>
                     )}
                     {step === 2 && (
@@ -117,7 +118,7 @@ const SignIn: React.FC = () => {
                             <p>Sign this challenge with your wallet and paste the signature below.</p>
                             <label htmlFor="signedMessage">Signed Message:</label>
                             <input type="text" id="signedMessage" value={signedMessage} onChange={handleSignedMessageChange} />
-                            <button onClick={handleSignedMessageSubmit}>Submit Signed Message</button>
+                            <button onClick={handleSignedMessageSubmit}> Sign In <FaArrowRight /></button>
                         </div>
                     )}
                     {step === 3 && (

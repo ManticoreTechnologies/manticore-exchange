@@ -6,7 +6,7 @@ const UnAuthenticated: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
-    navigate('/tradex/signin');
+    navigate('/signin');
   };
 
   return (

@@ -74,6 +74,15 @@ const AssetDetails: React.FC = () => {
     }
   }, [asset]);
 
+  // Function to copy text to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -143,9 +152,18 @@ const AssetDetails: React.FC = () => {
             <div className="asset-meta">
               <p><strong>Amount:</strong> {asset.amount}</p>
               <p><strong>Block Height:</strong> {asset.block_height}</p>
-              <p><strong>Block Hash:</strong> {asset.blockhash}</p>
-              <p><strong>{asset.has_ipfs && asset.ipfs_hash ? "IPFS Hash: " : "TXID: "}</strong>
-                {asset.ipfs_hash || asset.txid_hash}</p>
+              <p className="truncate">
+                <strong>Block Hash:</strong>
+                <span className="copyable" onClick={() => copyToClipboard(asset.blockhash)}>
+                  {asset.blockhash.slice(0, 10)}...<span className="copy-icon">📋</span>
+                </span>
+              </p>
+              <p className="truncate">
+                <strong>{asset.has_ipfs && asset.ipfs_hash ? "IPFS Hash: " : "TXID: "}</strong>
+                <span className="copyable" onClick={() => copyToClipboard(asset.ipfs_hash || asset.txid_hash)}>
+                  {(asset.ipfs_hash || asset.txid_hash).slice(0, 10)}...<span className="copy-icon">📋</span>
+                </span>
+              </p>
               <p><strong>Reissuable:</strong> {asset.reissuable ? 'Yes' : 'No'}</p>
               <p><strong>Decimals:</strong> {asset.units}</p>
             </div>
