@@ -31,6 +31,7 @@ import Profile from "./pages/TradeX/Profile/Profile";
 import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvmoreAssets";
 import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 import Contact from "./pages/Contact/Contact";
+import About from "./pages/About/About";
 
 const App: React.FC = () => {
 
@@ -65,6 +66,7 @@ const App: React.FC = () => {
       <Route path="/chart" element={<EVRPage />}/>
       <Route path="/trading-chart" element={<Chart data={[]} />}/>
       <Route path="/contact" element={<Contact />}/>
+      <Route path="/about" element={<About />} />
       <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
