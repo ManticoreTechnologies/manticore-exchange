@@ -51,6 +51,7 @@
   display: inline-flex;
   /* center vertically */
   align-items: center;
+
 }
 .dropdown-icon{
   margin-right: 0.5rem;
@@ -75,3 +76,12 @@
   opacity: 0.8;
 }
    
+@media (max-width: 450px) {
+  .dropdown {
+    padding: 0px;
+  }
+
+  .dropdown-content {
+    left: -6rem;
+  }
+}

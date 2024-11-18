@@ -14,7 +14,7 @@ const Home: React.FC = () => {
 
       <HomeHero 
         title="Manticore"
-        subtitle="Everything Evrmore"
+        subtitle="EVRything EVRmore"
         logo = {manticore_logo}
         body="Your premier destination for trading digital assets on the Evrmore blockchain."
       />

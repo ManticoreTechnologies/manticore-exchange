@@ -10,9 +10,8 @@ const Footer: React.FC = () => {
   return (
     <div className="footer">
       <Ping />
-      <p>© 2024 Manticore Trade
-        <Link to="/about">About</Link> | 
-        <Link to="/contact">Contact</Link>
+      <p className="footer-text">© 2024 Manticore Technologies
+        <Link to="/about">About</Link> | <Link to="/contact">Contact</Link>
       </p>
       
     </div>

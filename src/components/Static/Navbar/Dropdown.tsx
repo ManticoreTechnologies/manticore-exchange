@@ -9,9 +9,10 @@ interface DropdownProps {
   showTrade: boolean;
   showFaucet: boolean;
   showProfile: boolean;
+  showMore: boolean;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile }) => {
+const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile, showMore }) => {
   return (
     <div className="dropdown" aria-expanded={isOpen}>
       <button 
@@ -21,7 +22,7 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
         aria-haspopup="true"
       >
         <FaBars />
-        <p>More</p>
+        <p>{showMore ? "More" : ""}</p>
       </button>
       {isOpen && (
         <div className="dropdown-content">

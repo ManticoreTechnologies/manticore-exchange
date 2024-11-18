@@ -35,6 +35,7 @@ const Navbar: React.FC = () => {
   const [showTrade, setShowTrade] = useState(true);
   const [showFaucet, setShowFaucet] = useState(true);
   const [showProfile, setShowProfile] = useState(true);
+  const [showMore, setShowMore] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,6 +43,7 @@ const Navbar: React.FC = () => {
       setShowTrade(window.innerWidth >= 600);
       setShowFaucet(window.innerWidth >= 500);
       setShowProfile(window.innerWidth >= 450);
+      setShowMore(window.innerWidth >= 450);
       console.log(window.innerWidth);
     };
 
@@ -103,6 +105,7 @@ const Navbar: React.FC = () => {
             </span>
           
           <Dropdown 
+            showMore={showMore}
             isOpen={isMenuOpen} 
             toggleDropdown={handleMenuToggle} 
             showSearch={showSearch} 

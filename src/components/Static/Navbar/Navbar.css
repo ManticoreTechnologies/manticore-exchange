@@ -25,6 +25,13 @@
   /* Add subtle box shadow with similar color to the background */
   /* box-shadow: 0 2px 8px rgba(35, 191, 219, 0.15); */
   z-index: 20;
+
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
 }
 
 .navbar-logo {
@@ -151,7 +158,7 @@
     /* center the links */
     justify-content: center;
     position: absolute;
-    right: 5%;
+    right: 0%;
     transform: translateX(-50%);
   }
 }

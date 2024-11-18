@@ -1,4 +1,7 @@
-.explorer-container{
+.explorer-container {
+    background-color: red;
+}
+/*.explorer-container{
     text-align: center;
     min-height: 85vh;
 }
@@ -61,4 +64,4 @@
 .search-button:hover {
     background-color: var(--button-hover-background-color);
     transform: scale(1.05);
-}
+}*/
