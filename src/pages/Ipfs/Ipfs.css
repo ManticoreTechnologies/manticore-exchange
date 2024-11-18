@@ -1,72 +1,134 @@
-:root {
-    --background-color: var(--background-color);
-    --text-color: var(--text-color);
-    --button-background-color: var(--button-background-color);
-    --button-text-color: var(--button-text-color);
-    --link-color: var(--link-color);
-    --link-hover-color: var(--link-hover-color);
-    --box-shadow: var(--box-shadow);
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.ipfs-uploader-container {
-    padding: 20px;
-    background-color: var(--background-color);
-    box-shadow: var(--box-shadow);
-    border: 1px solid var(--text-color);
+.ipfs-container {
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .ipfs-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    color: #2d3748;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+  }
+  
+  .info-section {
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background: #f8fafc;
     border-radius: 8px;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.ipfs-uploader-title {
-    color: var(--text-color);
-    text-align: center;
-}
-
-.file-input {
-    display: block;
-    margin: 20px auto;
-    background-color: var(--search-bar-bg-color);
-    color: var(--search-bar-color);
-    border: none;
-    border-bottom: var(--search-bar-underline);
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.upload-button {
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    border: none;
-    padding: 10px 20px;
+  }
+  
+  .info-section h2 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .info-section p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .info-section ol {
+    padding-left: 1.5rem;
+    color: #4a5568;
+  }
+  
+  .info-section li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .file-input {
+    display: none;
+  }
+  
+  .file-label {
+    padding: 0.75rem 1.5rem;
+    background: #e2e8f0;
+    color: #2d3748;
+    border-radius: 6px;
     cursor: pointer;
-    display: block;
-    margin: 0 auto;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-.upload-button:disabled {
-    background-color: grey;
-}
-
-.upload-success a {
-    color: var(--link-color);
-    text-decoration: none;
-}
-
-.upload-success a:hover {
-    color: var(--link-hover-color);
-}
-
-.upload-success {
-    margin-top: 20px;
+    transition: background 0.3s ease;
+  }
+  
+  .file-label:hover {
+    background: #cbd5e0;
+  }
+  
+  .upload-button {
+    padding: 0.75rem 1.5rem;
+    background: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .upload-button:hover:not(:disabled) {
+    background: #3182ce;
+  }
+  
+  .upload-button:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .upload-success {
     text-align: center;
-}
+    padding: 1.5rem;
+    background: #c6f6d5;
+    border-radius: 8px;
+  }
+  
+  .upload-success h3 {
+    color: #2f855a;
+    margin-bottom: 1rem;
+  }
+  
+  .hash-link {
+    color: #2b6cb0;
+    word-break: break-all;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .hash-link:hover {
+    color: #2c5282;
+    text-decoration: underline;
+  }

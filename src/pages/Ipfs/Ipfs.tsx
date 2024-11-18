@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import './Ipfs.css'; // Create a separate CSS file for the styles
+import './Ipfs.css';
 
 const IPFSUploader = () => {
   const [file, setFile] = useState(null);
@@ -45,20 +45,69 @@ const IPFSUploader = () => {
   };
 
   return (
-    <div className="ipfs-uploader-container">
-      <h1 className="ipfs-uploader-title">Upload File to IPFS via Pinata</h1>
-      <input type="file" onChange={handleFileChange} className="file-input" />
-      <button onClick={handleUpload} disabled={uploading} className="upload-button">
-        {uploading ? 'Uploading...' : 'Upload to IPFS'}
-      </button>
-      {ipfsHash && (
-        <div className="upload-success">
-          <p>File uploaded successfully! IPFS Hash:</p>
-          <a href={`https://gateway.pinata.cloud/ipfs/${ipfsHash}`} target="_blank" rel="noopener noreferrer">
-            {ipfsHash}
-          </a>
+    <div className="ipfs-container">
+      <div className="ipfs-content">
+        <h1 className="title">IPFS File Upload</h1>
+        
+        <div className="info-section">
+          <h2>What is IPFS?</h2>
+          <p>
+            InterPlanetary File System (IPFS) is a peer-to-peer network for storing and sharing data in a distributed file system. 
+            Files uploaded to IPFS receive a unique content identifier (CID) that can be used to retrieve the file from any IPFS node.
+          </p>
+          
+          <h2>Minting with Evrmore Assets</h2>
+          <p>
+            Once you've uploaded your file to IPFS, you can use the generated hash to mint an Evrmore asset. Follow these steps:
+          </p>
+          <ol>
+            <li>Upload your file and copy the IPFS hash</li>
+            <li>Use the Evrmore wallet to create a new asset</li>
+            <li>Include the IPFS hash in the asset's metadata</li>
+            <li>The file will be permanently linked to your Evrmore asset</li>
+          </ol>
         </div>
-      )}
+
+        <div className="upload-section">
+          <input 
+            type="file" 
+            onChange={handleFileChange} 
+            className="file-input" 
+            id="file-input"
+          />
+          <label htmlFor="file-input" className="file-label">
+            Choose File
+          </label>
+          
+          <button 
+            onClick={handleUpload} 
+            disabled={uploading} 
+            className="upload-button"
+          >
+            {uploading ? (
+              <>
+                <span className="spinner"></span>
+                Uploading...
+              </>
+            ) : 'Upload to IPFS'}
+          </button>
+        </div>
+
+        {ipfsHash && (
+          <div className="upload-success">
+            <h3>File uploaded successfully! 🎉</h3>
+            <p>IPFS Hash:</p>
+            <a 
+              href={`https://gateway.pinata.cloud/ipfs/${ipfsHash}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hash-link"
+            >
+              {ipfsHash}
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
