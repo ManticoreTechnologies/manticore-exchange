@@ -52,37 +52,41 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 
     return (
         <div className="pagination-container">
-            <button
-                onClick={() => handleClick(1)}
-                disabled={currentPage === 1}
-                className="arrow-button"
-            >
-                &#171; {/* Double left arrow (<<) */}
-            </button>
-            <button
-                onClick={() => handleClick(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="arrow-button"
-            >
-                &#9664; {/* Left arrow (<) */}
-            </button>
-            {renderPageNumbers()}
-            <button
-                onClick={() => handleClick(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="arrow-button"
-            >
-                &#9654; {/* Right arrow (>) */}
-            </button>
-            <button
-                onClick={() => handleClick(totalPages)}
-                disabled={currentPage === totalPages}
-                className="arrow-button"
-            >
-                &#187; {/* Double right arrow (>>) */}
-            </button>
+             Pagination goes here
         </div>
     );
 };
 
 export default Pagination;
+
+/*
+            <button
+                onClick={() => handleClick(1)}
+                disabled={currentPage === 1}
+                className="arrow-button"
+            >
+                &#171; 
+                </button>
+                <button
+                    onClick={() => handleClick(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="arrow-button"
+                >
+                    &#9664; 
+                </button>
+                {renderPageNumbers()}
+                <button
+                    onClick={() => handleClick(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="arrow-button"
+                >
+                    &#9654; 
+                </button>
+                <button
+                    onClick={() => handleClick(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="arrow-button"
+                >
+                    &#187; 
+                </button>
+*/

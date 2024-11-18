@@ -1,20 +1,20 @@
 .ipfs-container {
     min-height: 100vh;
     padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #000000 0%, #121212 100%);
   }
   
   .ipfs-content {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
-    background: white;
+    background: #121212;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   }
   
   .title {
-    color: #2d3748;
+    color: #e2e8f0;
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2.5rem;
@@ -23,25 +23,25 @@
   .info-section {
     margin-bottom: 3rem;
     padding: 1.5rem;
-    background: #f8fafc;
+    background: #000000;
     border-radius: 8px;
   }
   
   .info-section h2 {
-    color: #2d3748;
+    color: #e2e8f0;
     margin-bottom: 1rem;
     font-size: 1.5rem;
   }
   
   .info-section p {
-    color: #4a5568;
+    color: #a0aec0;
     line-height: 1.6;
     margin-bottom: 1rem;
   }
   
   .info-section ol {
     padding-left: 1.5rem;
-    color: #4a5568;
+    color: #a0aec0;
   }
   
   .info-section li {
@@ -62,15 +62,15 @@
   
   .file-label {
     padding: 0.75rem 1.5rem;
-    background: #e2e8f0;
-    color: #2d3748;
+    background: #4a5568;
+    color: #e2e8f0;
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.3s ease;
   }
   
   .file-label:hover {
-    background: #cbd5e0;
+    background: #2d3748;
   }
   
   .upload-button {
@@ -112,23 +112,23 @@
   .upload-success {
     text-align: center;
     padding: 1.5rem;
-    background: #c6f6d5;
+    background: #234e52;
     border-radius: 8px;
   }
   
   .upload-success h3 {
-    color: #2f855a;
+    color: #4fd1c5;
     margin-bottom: 1rem;
   }
   
   .hash-link {
-    color: #2b6cb0;
+    color: #63b3ed;
     word-break: break-all;
     text-decoration: none;
     transition: color 0.3s ease;
   }
   
   .hash-link:hover {
-    color: #2c5282;
+    color: #90cdf4;
     text-decoration: underline;
   }

@@ -1,3 +1,55 @@
+/*  The searchbar container will flex to fill the screen
+    We shall have the results grid below the searchbar
+    When result grid appears it should push the searchbar up
+*/
+.searchbar-container {
+    display: flex;
+
+    /*Grow to fill the screen*/
+    flex-grow: 1;
+    flex-direction: column;
+
+    background-color: red;
+
+    /* Center the searchbar */
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*.search-button {
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: var(--search-bar-color);
+    font-size: 18px;
+    border-bottom: 2px solid red;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+.search-input:focus {
+    border-bottom: 2px solid var(--glow-color);
+    outline: none;
+}
+.search-input::placeholder {
+    color: var(--search-bar-color);
+}
+.search-button:hover {
+    background-color: var(--button-hover-background-color);
+    transform: scale(1.05);
+}
 .search-container {
     position: absolute;
     width: 80%;
@@ -111,10 +163,9 @@
     outline: none;
 }
 
-/* Media Query for Mobile Devices */
 @media (max-width: 768px) {
     .search-container {
-        top: 20%;
+        top: 50%;
         left: 50%;
         width: 80%;
         max-width: none;
@@ -122,7 +173,7 @@
     }
 
     .search-container.searching {
-        top: 15%;
+        top: 10%;
         left: 50%;
         right: auto;
         transform: translate(-50%, -50%) scale(1);
@@ -148,3 +199,4 @@
         gap: 0.375rem;
     }
 }
+*/

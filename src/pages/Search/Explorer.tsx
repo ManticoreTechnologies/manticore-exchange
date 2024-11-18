@@ -1,6 +1,6 @@
 import React from 'react';
 import './Explorer.css';
-import Searchbar from '../../components/Searchbar/Searchbar';
+import Searchbar from './Searchbar/Searchbar';
 import ResultsGrid from './Results/ResultsGrid/ResultsGrid';
 import LoadingSpinner from '../../components/Spinners/LoadingSpinner';
 import Pagination from './Pagination/Pagination';
@@ -34,6 +34,35 @@ const Explorer: React.FC = () => {
 
     return (
         <div className="explorer-container">
+            <Searchbar
+                onSearch={handleSearch}
+                onTypingStart={() => {
+                    setIsSearching(true);
+                    setResults(null);
+                } }
+                placeholder="Search assets..."
+                bubbleButtons={bubbleButtons}
+            />
+            {/* If searching show the spinner */}
+            {isSearching && <div className="spinner-container"><LoadingSpinner /></div>}
+            {/* If results are not null, show the results grid */}
+            <div className="results-container">
+                    Results go here
+            </div>
+            <Pagination
+                totalPages={100}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+            />
+        </div>
+    );
+};
+
+export default Explorer;
+
+
+/*
+
             <div className="searchbar-filters-container">
                 <Searchbar
                     onSearch={handleSearch}
@@ -57,8 +86,5 @@ const Explorer: React.FC = () => {
                     />
                 </div>
             )}
-        </div>
-    );
-};
 
-export default Explorer;
+            */

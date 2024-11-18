@@ -77,9 +77,16 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
     };
 
     return (
-        <div
-            className={`search-container ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''} ${isSearching ? 'constrained' : ''}`}
-        >
+        <div className={`searchbar-container ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''} ${isSearching ? 'constrained' : ''}`}>
+            <input type="text" placeholder={placeholder} className="search-input" value={query} onChange={handleChange} />
+        </div>
+    );
+};
+
+export default Searchbar;
+
+
+/*
             <div className="search-wrapper">
                 <input
                     type="text"
@@ -88,48 +95,44 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
                     value={query}
                     onChange={handleChange}
                 />
-                {isSearching && <FaFilter className="filter-button" onClick={toggleFilters} />} {/* Show filter button only if isSearching */}
-            </div>
-            {filtersVisible && (
-                <div className="filters-container">
-                    <div className="filter-item">
-                        <label>
-                            Sort By:
-                            <select onChange={(e) => handleSortChange(e.target.value)}>
-                                <option value="name">Name</option>
-                                <option value="height">Height</option>
-                                <option value="amount">Amount</option>
-                                <option value="units">Units</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div className="filter-item">
-                        <label>
-                            Reissuable:
-                            <select onChange={(e) => handleReissuableChange(e.target.value)}>
-                                <option value="all">All</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </label>
-                    </div>
+                {isSearching && <FaFilter className="filter-button" onClick={toggleFilters} />} 
                 </div>
-            )}
-            {!isSearching && bubbleButtons.length > 0 && (
-                <div className="bubble-buttons">
-                    {bubbleButtons.map((button, index) => (
-                        <button
-                            key={index}
-                            className="bubble-button"
-                            onClick={() => handleBubbleClick(button.query)}
-                        >
-                            {button.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default Searchbar;
+                {filtersVisible && (
+                    <div className="filters-container">
+                        <div className="filter-item">
+                            <label>
+                                Sort By:
+                                <select onChange={(e) => handleSortChange(e.target.value)}>
+                                    <option value="name">Name</option>
+                                    <option value="height">Height</option>
+                                    <option value="amount">Amount</option>
+                                    <option value="units">Units</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div className="filter-item">
+                            <label>
+                                Reissuable:
+                                <select onChange={(e) => handleReissuableChange(e.target.value)}>
+                                    <option value="all">All</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                )}
+                {!isSearching && bubbleButtons.length > 0 && (
+                    <div className="bubble-buttons">
+                        {bubbleButtons.map((button, index) => (
+                            <button
+                                key={index}
+                                className="bubble-button"
+                                onClick={() => handleBubbleClick(button.query)}
+                            >
+                                {button.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
+*/
