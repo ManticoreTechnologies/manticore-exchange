@@ -80,7 +80,6 @@ const Home: React.FC = () => {
         body="Manage your account, view your assets, and access exclusive features with your Manticore profile."
       />
       </div>
-      <Townhall />
     </div>
   );
 };

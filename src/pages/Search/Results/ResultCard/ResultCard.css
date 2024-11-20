@@ -13,32 +13,136 @@
     align-items: center;
     cursor: pointer;
     /* Added glow effect to the gradient */
-    background: linear-gradient(45deg, #0088ff,#FF0000);
+    background: linear-gradient(45deg, #0088ff, #FF0000);
     background-size: var(--card-gradient-size) auto; /* Adjusted size for smooth animation */
-    box-shadow: 0 0 10px #FF0000;
+    box-shadow: 0 0 20px #FF0000;
     background-position: 1000% 0%; /* Set default position */
     transition: box-shadow 0.3s, transform 0.3s; /* Smooth transition for glow and scale */
-    /* Aminate the size of the card */  
-    animation: animateBackground 10s linear infinite paused; /* Animation is now infinite */
+    /* Animate the size of the card */  
+    animation: animateBackground 10s linear infinite paused, glowAnimation 2s infinite alternate; /* Added glow animation */
+}
 
+@keyframes glowAnimation {
+    0% {
+        box-shadow: 0 0 20px #FF0000;
+    }
+    100% {
+        box-shadow: 0 0 20px #0088ff;
+    }
+}
+
+.result-card-buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+}
+
+.result-card:hover .result-card-buttons {
+    opacity: 1;
+}
+
+.wrench-button,
+.add-to-cart-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    z-index: 101;
+    border-radius: 5px;
+    padding: 5px;
+    outline: none;
+}
+
+.wrench-button,
+.add-to-cart-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px; /* Increased font size for larger icons */
+    position: relative;
+    z-index: 101;
+    border-radius: 5px;
+    padding: 10px; /* Increased padding */
+    transition: transform 0.3s, box-shadow 0.3s; /* Added smooth animation for hover effects */
+}
+
+.result-card-action-icon {
+    font-size: 32px;
+    color: red; /* Set the main icon color to red */
+    text-shadow: 0 0 2px #Ff0000, 0 0 4px #ff0000; /* Blue outline for the icon */
+    -webkit-background-clip: text; /* Ensure background clipping for modern browsers */
+    -webkit-text-fill-color: red; /* Use red as the fill color */
+    background-clip: text; /* Ensure compatibility with non-webkit browsers */
+    text-fill-color: red; /* Ensure compatibility with non-webkit browsers */
+    outline: none; /* Remove any native outline */
+    transform: scale(1); /* Keep the initial scale */
+    transition: transform 0.3s, text-shadow 0.3s; /* Smooth transitions for hover effects */
+}
+
+.result-card-action-icon:hover {
+    transform: scale(1.3); /* Slightly enlarge on hover */
+    text-shadow: 0 0 4px #0000ff, 0 0 8px #0000ff; /* Intensify the blue glow */
 }
 
 
+/* Updated animation for the icons */
+@keyframes iconGrowShrinkGlow {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 10px rgba(0, 136, 255, 0.8);
+    }
+    50% {
+        transform: scale(1.2) rotate(0deg);
+        box-shadow: 0 0 20px rgba(255, 0, 0, 1);
+    }
+}
+
+/* Hover effect for the action icon */
+.result-card-action-icon:hover {
+    transform: scale(1.3); /* Enlarge on hover */
+}
+
+/* Hover effect for the buttons */
+.wrench-button:hover,
+.add-to-cart-button:hover {
+    transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+/* Button glow animation */
+@keyframes buttonGlowAnimation {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0, 136, 255, 0.8);
+    }
+}
+@keyframes iconGradient {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+}
 
 .result-card:hover {
     transform: scale(1.05);
-    /* Enhanced glow effect on hover */
-    box-shadow: 0 0 20px #FF0000;
     animation-play-state: running; /* Resume animation on hover */
 }
-
 
 .result-card .loading-spinner-container {
     height: 100%;
     /* Center the spinner */
     position: absolute;
     z-index: 100;
-    
 }
 
 .result-card .result-overlay {
@@ -55,7 +159,6 @@
     justify-content: space-between;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -83,17 +186,18 @@
         height: 15rem;
         width: 15rem;
     }
-    .result-card .result-overlay{
+    .result-card .result-overlay {
         max-height: 15%;
         font-size: 0.8rem;
     }
 }
+
 @media (max-width: 268px) {
     .result-card {
         height: 10rem;
         width: 10rem;
     }
-    .result-card .result-overlay{
+    .result-card .result-overlay {
         max-height: 10%;
         font-size: 0.5rem;
     }

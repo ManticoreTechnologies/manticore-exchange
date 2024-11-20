@@ -12,16 +12,42 @@ const Townhall = () => {
 
     const [comments, setComments] = useState<Comment[]>([]);
     const { sendMessage, message, isConnected, isAuthenticated, getUserAddress } = useWebSocket("ws://localhost:8765");
+  /* Process incoming messages from websocket */
+  useEffect(() => {
+    if (message && message.includes("asset_comments")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comments ", ""));
+      setComments(parsedMessage);
+    }
 
-    useEffect(() => {
-        if (message && message.includes("asset_comments")) {
-            const parsedMessage = JSON.parse(message.replace("asset_comments ", ""));
-            setComments(parsedMessage);
-        }
-    }, [message]);
+    if (message && message.includes("asset_comment_added")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comment_added ", ""));
+      if (parsedMessage.asset_name === name) {
+        setComments(prevComments => [...prevComments, parsedMessage]);
+      }
+    }
+
+    if (message && message.includes("asset_comment_deleted")) {
+      const id = message.replace("asset_comment_deleted ", "");
+      setComments(prevComments => 
+        prevComments.map(comment => 
+          comment.id === id ? { ...comment, hidden: true } : comment
+        )
+      );
+    }
+
+    if (message && message.includes("asset_comment_updated")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comment_updated ", ""));
+      setComments(prevComments =>
+        prevComments.map(comment =>
+          comment.id === parsedMessage.id ? parsedMessage : comment
+        )
+      );
+    }
+  }, [message]);
 
     return (
-        <IsAuthenticated>
+        <IsAuthenticated
+        >
             <div className={styles.townhallContainer}>
                 <div className={styles.roofOuter}></div>
                 <div className={styles.roofInner}>

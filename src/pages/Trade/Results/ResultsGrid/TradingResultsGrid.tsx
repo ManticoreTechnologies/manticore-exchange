@@ -1,23 +1,25 @@
 import React from 'react';
-import ResultCard from '../ResultCard/ResultCard';
+import TradingResultCard from '../ResultCard/TradingResultCard';
 import './ResultsGrid.css';
 
 interface ResultsGridProps {
     results: any[];
     addToCart: (listing: any) => void;
     buyNow: (listing: any) => void;
+    showDetails: (listing: any) => void;
 }
 
-const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow }) => {
+const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow, showDetails }) => {
     if (!results || results.length === 0) {
         return <div className="no-results">No results found</div>;
     }
     return (
-        <div className="results-grid">
-            {results.map((result: any) => {
-                const sold = result.sold !== undefined ? result.sold : 0;
+        <div className="trading-results-grid">
+            <div className="trading-results-grid-container">
+                {results.map((result: any) => {
+                    const sold = result.sold !== undefined ? result.sold : 0;
                 return (
-                    <ResultCard
+                    <TradingResultCard
                         key={result.id}
                         assetName={result.asset_name}
                         description={result.description}
@@ -31,9 +33,11 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow })
                         ipfsHash={JSON.parse(result.asset_data).has_ipfs ? JSON.parse(result.asset_data).ipfs_hash : undefined}
                         addToCart={addToCart}
                         buyNow={buyNow}
+                        showDetails={showDetails}
                     />
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 };

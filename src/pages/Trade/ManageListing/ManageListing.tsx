@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiTool } from 'react-icons/fi';
 import './ManageListing.css';
@@ -8,6 +8,8 @@ interface ManageListingProps {
 }
 
 const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) => {
+    console.log('ManageListing component mounted'); // Debugging log
+
     const [isManagingListing, setIsManagingListing] = useState<boolean>(false); 
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const [listingId, setListingId] = useState<string>(initialListingId); // Use initialListingId if provided
@@ -25,6 +27,12 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
+
+    useEffect(() => {
+        if (initialListingId) {
+            setIsManagingListing(true);
+        }
+    }, [initialListingId]);
 
     const handleFetchListing = async () => {
         setIsLoading(true);
@@ -151,9 +159,7 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
 
     return (
         <div>
-            <button className="manage-listing-button" onClick={handleOpenPopup}>
-                <FiTool size={20} />
-            </button>
+
             {isManagingListing && (
                 <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
                     <div className="manage-listing-content">

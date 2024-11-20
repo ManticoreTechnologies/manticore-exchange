@@ -74,56 +74,125 @@
     transform: scale(0.98);
 }
 
+/* Quantity Popup Container */
 .quantity-popup {
-    width: 300px;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #333;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.quantity-popup-content {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    color: white;
+    z-index: 1000;
 }
 
-.quantity-popup h3 {
-    margin-bottom: 10px;
+/* Popup Content */
+.quantity-popup-content {
+    background: linear-gradient(45deg, #000000, #1a1a1a);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    color: #ffffff;
+    animation: contentGlow 2s infinite alternate;
 }
 
-.quantity-popup input {
-    width: 100px;
-    padding: 5px;
-    margin-bottom: 10px;
-    font-size: 1em;
+/* Title */
+.quantity-popup-content h3 {
+    margin: 0 0 1.5rem 0;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+    font-size: 1.5rem;
+}
+
+/* Input Field */
+.quantity-popup-content input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(26, 26, 26, 0.7));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.quantity-popup-content input:focus {
+    border-color: #0088ff;
+    box-shadow: 0 0 10px rgba(0, 136, 255, 0.3);
+    outline: none;
+}
+
+/* Cost Display */
+.quantity-popup-content p {
+    margin: 0.5rem 0;
+    font-size: 1.1em;
     text-align: center;
-    border-radius: 5px;
-    border: 1px solid #ccc;
 }
 
-.quantity-popup button {
-    padding: 10px;
-    margin-top: 5px;
+/* Buttons */
+.quantity-popup-content button {
+    width: 100%;
+    padding: 12px 24px;
+    margin: 0.5rem 0;
     border: none;
-    border-radius: 5px;
-    background-color: #dc3545;
-    color: white;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    background-size: var(--card-gradient-size) auto;
+    background-position: 1000% 0%;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
-.quantity-popup button:first-of-type {
-    margin-right: 10px;
+.quantity-popup-content button:hover:not(:disabled) {
+    transform: scale(1.02);
+    animation: glowAnimation 2s infinite alternate;
 }
 
-.quantity-popup button:hover {
-    background-color: #c82333;
+.quantity-popup-content button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(45deg, #666, #888);
+}
+
+/* Error Message */
+.quantity-popup-content .error-message {
+    color: #ff0000;
+    font-size: 0.9em;
+    margin: 0.5rem 0;
+    padding: 8px 12px;
+    background: linear-gradient(45deg, rgba(220, 53, 69, 0.1), rgba(255, 0, 0, 0.1));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+@keyframes contentGlow {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
+    }
+}
+
+@keyframes glowAnimation {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0, 136, 255, 0.8);
+    }
 }

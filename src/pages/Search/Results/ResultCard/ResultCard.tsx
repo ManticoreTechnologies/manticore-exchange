@@ -3,6 +3,9 @@ import './ResultCard.css';
 import placeholderImage from '../../../../images/Placeholder.webp'; // Import the placeholder image
 import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
+// Import Font Awesome icons
+import { FaWrench, FaShoppingCart } from 'react-icons/fa';
+
 interface ResultCardProps {
     name: string;
     blockHeight: number;
@@ -11,6 +14,12 @@ interface ResultCardProps {
     ipfsHash?: string;
     reissuable: boolean;
     units: number;
+    onClick?: () => void;
+    overlayButtons?: {
+        wrench: () => void;
+        addToCart: () => void;
+    };
+    quantityWord?: React.ReactNode;
 }
 
 const ResultCard: React.FC<ResultCardProps> = ({
@@ -20,7 +29,10 @@ const ResultCard: React.FC<ResultCardProps> = ({
     amount,
     ipfsHash,
     reissuable,
-    units
+    units,
+    onClick,
+    overlayButtons,
+    quantityWord
 }) => {
     const [isLoaded, setIsLoaded] = useState(false); // Track loading state
     const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
@@ -51,43 +63,68 @@ const ResultCard: React.FC<ResultCardProps> = ({
         }
     }, [ipfsHash, mediaSrc]);
     return (
-        <div className="result-card" onClick={() => {navigate(`/asset/${encodeURIComponent(name)}`);}}>
+        <div className="result-card" onClick={() => {onClick ? onClick() : navigate(`/asset/${encodeURIComponent(name)}`);}}>
+            {overlayButtons && (
+                <div className="result-card-buttons">
+                    {overlayButtons.wrench && (
+                        <button 
+                            className="wrench-button" 
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent event from bubbling up
+                                overlayButtons.wrench();
+                            }}
+                        >
+                            <div className="result-card-action-icon" data-icon="🔧">🔧</div>
+                        </button>
+                    )}
+                    {overlayButtons.addToCart && (
+                        <button 
+                            className="add-to-cart-button" 
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent event from bubbling up
+                                overlayButtons.addToCart();
+                            }}
+                        >
+                            <div className="result-card-action-icon" data-icon="🛒">🛒</div>
+                        </button>
+                    )}
+                </div>
+            )}
             {!isLoaded && (       
-                <div className="loading-spinner-container"><LoadingSpinner/></div> // Display spinner while loading
-               
-               )}
-         {isVideo ? (
-                    <video
+                <div className="loading-spinner-container"><LoadingSpinner/></div>
+            )}
+            {isVideo ? (
+                <video
+                    className="result-card-image"
+                    autoPlay
+                    muted
+                    loop
+                    onCanPlayThrough={() => setIsLoaded(true)}
+                    onError={() => setIsLoaded(true)}
+                >
+                    <source src={mediaSrc} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            ) : (
+                showPlaceholder ? (
+                    <img 
                         className="result-card-image"
-                        autoPlay
-                        muted
-                        loop
-                        onCanPlayThrough={() => setIsLoaded(true)} // Remove spinner when video is ready
-                        onError={() => setIsLoaded(true)} // Remove spinner on error
-                    >
-                        <source src={mediaSrc} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
+                        src={placeholderImage}
+                    />
                 ) : (
-                    showPlaceholder ? (
-                        <img 
-                            className="result-card-image"
-                            src={placeholderImage}
-                        />
-                    ) : (
                     <img 
                         className="result-card-image"
                         src={mediaSrc}
-                        onLoad={() => setIsLoaded(true)} // Remove spinner when image loads
-                        onError={() => {setIsLoaded(true); setShowPlaceholder(true)}} // Remove spinner even on error
+                        onLoad={() => setIsLoaded(true)}
+                        onError={() => {setIsLoaded(true); setShowPlaceholder(true)}}
                     />
-                    )
-                )}
-
-                <div className="result-overlay">
-                    <h3 title={name}>{truncateString(name, 15)}</h3>
-                    <p>Supply: {amount}</p>
-                </div>
+                )
+            )}
+            <div className="result-overlay">
+                <h3 title={name}>{truncateString(name, 15)}</h3>
+                {quantityWord && <p>{quantityWord}</p>}
+                {!quantityWord && <p>Supply: {amount} </p>}
+            </div>
         </div>
     );
 };

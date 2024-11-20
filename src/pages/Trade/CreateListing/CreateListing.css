@@ -1,27 +1,39 @@
 /* Popup container */
 .create-listing-popup {
-    width: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
 }
 
 /* Popup content */
 .create-listing-content {
-    background-color: var(--background-color); /* Black background */
-    padding: 20px;
-    border-radius: 10px;
-    width: 500px;
-    max-width: 90%;
-    box-shadow: var(--box-shadow); /* More prominent shadow */
+    background: linear-gradient(45deg, #000000, #1a1a1a);
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    animation: contentGlow 2s infinite alternate;
+    width: 90%;
+    max-width: 600px;
     position: relative;
-    overflow: hidden; /* Ensure content doesn't overflow the popup */
+    color: #ffffff;
+}
+
+@keyframes contentGlow {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
+    }
 }
 
 /* Titles */
@@ -51,38 +63,49 @@
 /* Form inputs */
 .create-listing-content input,
 .create-listing-content textarea {
-    width: calc(100% - 20px); /* Adjust width to ensure padding doesn't cause overflow */
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: transparent; /* Darker background for inputs */
-    border: none;
-    border-bottom: 2px solid red; /* White underline */
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(26, 26, 26, 0.7));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    transition: all 0.3s ease;
     color: var(--color);
     font-size: 1em;
     outline: none;
-    box-sizing: border-box; /* Ensure padding and border are included in element's width */
+    box-sizing: border-box;
 }
 
 .create-listing-content input:focus,
 .create-listing-content textarea:focus {
-    border-bottom: var(--search-bar-underline); /* Red underline when focused */
+    border-color: #0088ff;
+    box-shadow: 0 0 10px rgba(0, 136, 255, 0.3);
 }
 
 /* Buttons */
 .create-listing-content button {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    background-size: var(--card-gradient-size) auto;
+    background-position: 1000% 0%;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
     color: var(--color);
     font-size: 1em;
     cursor: pointer;
     margin-top: 10px;
-    background-color: var(--button-background-color);
 }
 
 .create-listing-content button:disabled {
     background-color: #ff4d4d;
     cursor: not-allowed;
+}
+
+.create-listing-content button:hover:not(:disabled) {
+    transform: scale(1.05);
+    animation: glowAnimation 2s infinite alternate;
 }
 
 /* Error message styling */
@@ -92,12 +115,13 @@
     margin-top: -5px;
     margin-bottom: 10px;
     text-align: left;
-    width: calc(100% - 20px); /* Ensure the error message has the same width as the input fields */
-    padding: 10px;
-    background-color: #333; /* Match the background color to the input fields */
-    border-radius: 5px;
-    border: 2px solid #dc3545; /* Red border to highlight the error */
-    box-sizing: border-box; /* Ensure padding and border are included in element's width */
+    width: calc(100% - 20px);
+    padding: 12px 16px;
+    background: linear-gradient(45deg, rgba(220, 53, 69, 0.1), rgba(255, 0, 0, 0.1));
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
 /* Status message and spinner alignment */
@@ -106,15 +130,20 @@
     margin-top: 20px;
     font-weight: bold;
     color: var(--color);
-    text-align: center; /* Ensure text is centered */
+    text-align: center;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 .status-container {
     display: flex;
-    flex-direction: column; /* Stack the status and spinner vertically */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 10px; /* Adjust spacing from the top */
+    margin-top: 10px;
 }
 /* Warning message styling */
 .warning-message {
@@ -127,8 +156,8 @@
 
 
 .checkmark {
-    font-size: 36px; /* Increased font size for larger checkmark */
-    color: #28a745; /* Green color */
+    font-size: 36px;
+    color: #28a745;
     font-weight: bold;
     cursor: pointer;
 }
@@ -136,48 +165,59 @@
 /* Close button */
 .close-button-create {
     position: absolute;
-    width: auto;
-    right: 20px; /* Adjust positioning */
-    top: 20px; /* Adjust positioning */
-    background-color: transparent; /* Remove background */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    right: 20px;
+    top: 20px;
+    background-color: transparent;
     border: none;
-    font-size: 1.3em; /* Increase the size of the 'X' */
+    font-size: 1.3em;
     cursor: pointer;
     color: var(--color);
-    transition: transform 0.2s, color 0.2s; /* Add smooth transition for hover effects */
-    outline: none; /* Remove focus outline */
+    transition: all 0.3s ease;
+    outline: none;
     background-color: transparent;
+    color: #FF0000;
+    text-shadow: 0 0 2px #FF0000;
 }
 
 .close-button-create:hover {
-    transform: scale(1.2); /* Increase size on hover */
-    color: #ff1e34; /* Change color on hover */
-    background-color: rgba(0,0,0,0);
+    color: #0088ff;
+    text-shadow: 0 0 4px #0088ff;
+    transform: scale(1.2) rotate(90deg);
 }
 
 .close-button-create:focus {
-    outline: none; /* Remove the default focus outline */
-    box-shadow: none; /* Remove any box-shadow that may appear on focus */
-    background-color: rgba(0,0,0,0);
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
 }
 
 /* Tags styling */
 .tags-container .tag {
     display: inline-block;
-    padding: 5px 10px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    background-color: var(--button-background-color);
+    padding: 6px 14px;
+    margin: 0 8px 8px 0;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    background-size: 200% auto;
     color: var(--color);
-    border-radius: 5px;
-    cursor: pointer; /* Add this to make the cursor a pointer */
+    border-radius: 20px;
+    cursor: pointer;
     font-size: 0.9em;
-    transition: background-color 0.2s ease, color 0.2s ease; /* Add smooth hover transition */
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
 .tags-container .tag:hover {
-    background-color: #ff4d4d; /* Change the background color on hover */
-    color: #fff; /* Change text color on hover */
+    transform: scale(1.1);
+    background-position: right center;
+    box-shadow: 0 0 15px rgba(0, 136, 255, 0.4);
 }
 
 /* Step 2: QR Code Step */
@@ -187,11 +227,16 @@
 }
 
 .qr-code-container {
-    margin: 20px 0;
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(26, 26, 26, 0.8));
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    margin: 24px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
 }
 
 .create-listing-content .qr-code-container strong {
@@ -201,7 +246,7 @@
 
 .create-listing-content .listing-address {
     font-size: 1.1em;
-    word-break: break-all; /* Ensure long addresses wrap properly */
+    word-break: break-all;
     margin: 10px 0;
 }
 

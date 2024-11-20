@@ -1,4 +1,4 @@
-.result-popup-overlay {
+.trading-result-popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -8,73 +8,143 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+    z-index: 1000;
 }
 
-.result-popup {
-    background: var(--background-color);
-    padding: 20px;
-    width: 400px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: var(--box-shadow);
-    background-size: cover; /* Add this line */
-    background-position: center; /* Add this line */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
-.popup-header {
+.trading-result-popup {
+    height: 20rem;
+    width: 20rem;
+    border-radius: 15px;
+    background: linear-gradient(45deg, #0088ff, #FF0000);
+    background-size: var(--card-gradient-size) auto;
+    box-shadow: 0 0 10px #FF0000;
+    background-position: 1000% 0%;
+    transition: box-shadow 0.3s, transform 0.3s;
+    animation: animateBackground 10s linear infinite paused;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.trading-result-popup-overlay.show .trading-result-popup {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #FF0000;
+    animation-play-state: running;
+}
+
+.trading-popup-header {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
-.close-button {
-    background-color: rgb(0,0,0,0.5);
+.trading-close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    z-index: 0;
+    z-index: 1;
 }
 
-.popup-image {
-    display: none; /* Hide the popup-image div as it's no longer needed */
+.trading-wrench-icon {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1;
 }
 
-.popup-content {
+.trading-popup-image {
+    display: none;
+}
+
+.trading-popup-content {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.8); /* Add a semi-transparent background for readability */
-    padding: 10px; /* Add some padding */
-    border-radius: 10px; /* Add border-radius for consistency */
-    position: relative; /* Ensure content is positioned relative to the container */
-}
-
-.popup-video {
+    justify-content: space-between;
+    align-items: center;
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none; /* Ensure video does not capture mouse events */
+    right: 0;
+    margin: 1%;
+    max-height: 30%;
+    white-space: normal;
+    overflow-y: auto;
+    text-overflow: ellipsis;
+    color: white;
+    font-size: 1rem;
 }
 
-.popup-action-buttons button {
+.trading-popup-video {
+    height: 98%;
+    width: 98%;
+    border-radius: 15px;
+    object-fit: contain;
+    background-color: transparent;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+.trading-popup-action-buttons button {
     margin-right: 10px;
     padding: 10px 15px;
     cursor: pointer;
 }
 
-@media (max-width: 768px) {
-    .result-popup {
-        width: 90%;
+@media (max-width: 368px) {
+    .trading-result-popup {
+        height: 15rem;
+        width: 15rem;
+    }
+    .trading-popup-content {
+        max-height: 15%;
+        font-size: 0.8rem;
     }
 }
 
-.popup-description {
-    max-height: 150px; /* Set a max height for the description container */
-    overflow-y: auto; /* Enable vertical scrolling */
-    background: rgba(0, 0, 0, 0); /* Add a semi-transparent background for readability */
-    padding: 10px; /* Add some padding */
-    border-radius: 10px; /* Add border-radius for consistency */
-    position: relative; /* Ensure content is positioned relative to the container */
+@media (max-width: 268px) {
+    .trading-result-popup {
+        height: 10rem;
+        width: 10rem;
+    }
+    .trading-popup-content {
+        max-height: 10%;
+        font-size: 0.5rem;
+    }
+}
+
+.trading-popup-description {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    color: white;
 }

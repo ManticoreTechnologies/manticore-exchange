@@ -68,21 +68,21 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
     }, [ipfsHash, mediaSrc]);
 
     return (
-        <div className="result-popup-overlay">
+        <div className="trading-result-popup-overlay show">
             <div
-                className="result-popup"
+                className="trading-result-popup"
                 style={{
                     backgroundImage: isVideo ? 'none' : `url(${mediaSrc})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    borderRadius: '10px',
-                    color: 'white', // Ensure text is visible on the background
-                    padding: '20px', // Add padding for content
+                    borderRadius: '15px',
+                    color: 'white',
+                    padding: '20px',
                 }}
             >
                 {isVideo && (
                     <video
-                        className="popup-video" // Apply the new class here
+                        className="trading-popup-video"
                         autoPlay
                         muted
                         loop
@@ -92,26 +92,26 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
                     </video>
                 )}
                 <ManageListing initialListingId={listingID} />
-                <div className="popup-header">
-                    <h3 className="popup-asset-name">{assetName}</h3>
-                    <button className="close-button" onClick={closePopup}>X</button>
+                <div className="trading-popup-header">
+                    <h3 className="trading-popup-asset-name">{assetName}</h3>
+                    <button className="trading-close-button" onClick={closePopup}>X</button>
                 </div>
-                <div className="popup-content">
-                    <div className="popup-description">
-                        <div className="description-scrollable">
+                <div className="trading-popup-content">
+                    <div className="trading-popup-description">
+                        <div className="trading-description-scrollable">
                             <p dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, '<br />') }} />
                         </div>
                     </div>
-                    <div className="popup-details">
+                    <div className="trading-popup-details">
                         <p><strong>Listing Address:</strong> {listingAddress}</p>
                         <p><strong>Status:</strong> {orderStatus}</p>
                         {orderStatus === 'ACTIVE' && (
                             <>
-                                <div className="popup-action-buttons">
+                                <div className="trading-popup-action-buttons">
                                     <button onClick={() => buyNow(listing)} disabled={quantity === 0}>Buy Now</button>
                                     <button onClick={() => addToCart(listing)}>Add to Cart</button>
                                 </div>
-                                <div className="popup-price-quantity">
+                                <div className="trading-popup-price-quantity">
                                     <p><strong>Price:</strong> {convertToEVR(unitPrice)} EVR</p>
                                     <p><strong>Available:</strong> {convertToEVR(quantity)} {assetName}</p>
                                     <p><strong>Sold:</strong> {convertToEVR(sold)} {assetName}</p>

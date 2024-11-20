@@ -1,0 +1,60 @@
+.asset-detail-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.asset-detail-container.dark-mode {
+  background-color: #333;
+  color: #f9f9f9;
+}
+
+.back-button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.asset-detail-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.asset-detail-card.dark-mode {
+  background-color: #444;
+}
+
+.asset-image-container img,
+.asset-image-container video {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.video-controls {
+  margin-top: 10px;
+}
+
+.comments-section {
+  margin-top: 20px;
+}
+
+.comments-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.comments-section li {
+  margin-bottom: 10px;
+}
+
+.edit-comment,
+.delete-comment {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.locked-comments {
+  color: #888;
+}

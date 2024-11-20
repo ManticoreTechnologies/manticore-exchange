@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ResultsGrid from './Results/ResultsGrid/ResultsGrid';
+import TradingResultsGrid from './Results/ResultsGrid/TradingResultsGrid';
 import Cart from './Cart/Cart';
 import Checkout from './Checkout/Checkout';
 import CreateListing from './CreateListing/CreateListing';  
@@ -7,6 +7,8 @@ import './Trading.css';
 import axios from 'axios';
 import TradingHeader from './TradingHeader/TradingHeader';
 import InvoiceToaster from './InvoiceToaster/InvoiceToaster'; // Import InvoiceToaster
+import ManageListing from './ManageListing/ManageListing';
+import TradingDetails from './Results/TradingDetails/TradingDetails';
 
 
 
@@ -23,6 +25,8 @@ const Trading: React.FC = () => {
     const [totalCost, setTotalCost] = useState<string>('0');
     const [quantityError, setQuantityError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>(''); // New state for search
+    const [showPopup, setShowPopup] = useState<boolean>(false); // New state for showing TradingDetails
+    const [selectedListing, setSelectedListing] = useState<any | null>(null); // New state for selected listing
 
     const cartRef = useRef<HTMLDivElement>(null);
 
@@ -164,6 +168,14 @@ const Trading: React.FC = () => {
         // You can implement search filtering on the listings here
     };
 
+    const showDetails = (listing: any) => {
+        setSelectedListing(listing); // Set the selected listing
+    };
+
+    const closeDetails = () => {
+        setSelectedListing(null); // Reset the selected listing
+    };
+
     return (
         <div className="trading-page">
 
@@ -173,36 +185,17 @@ const Trading: React.FC = () => {
                 cart={cart}
             />
 
-            {false &&/* Search Bar */
-            <div className="search-bar">
-                <input 
-                    type="text" 
-                    placeholder="Search listings..." 
-                    value={searchQuery} 
-                    onChange={handleSearch} 
-                    onKeyPress={(e) => { if (e.key === 'Enter') handleSearchSubmit(); }} // Search on Enter key
-                />
-            <button onClick={handleSearchSubmit}>
-            <button onClick={handleSearchSubmit}>
-                <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    width="24" 
-                    height="24" 
-                    className="search-icon"
-                >
-                    <path d="M10 2a8 8 0 105.29 14.71l5 5a1 1 0 001.42-1.42l-5-5A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/>
-                </svg>
-            </button>
-            </button>
-            </div>
-            }
-            {isCheckingOut ? (
-                <Checkout 
-                selectedItems={checkoutItems} 
-                onCheckoutComplete={handleCheckoutComplete} 
-                onBack={handleBack} 
-                />
+            {selectedListing ? (
+                <div>
+                    {/* Render the details page/component here */}
+                    <button onClick={closeDetails}>Back to Listings</button>
+                    {/* You can create a new component for detailed view */}
+                    <div>
+                        <h2>{selectedListing.assetName}</h2>
+                        <p>{selectedListing.description}</p>
+                        {/* Add more details as needed */}
+                    </div>
+                </div>
             ) : (
                 <>
                     <div 
@@ -220,7 +213,12 @@ const Trading: React.FC = () => {
                         )}
                     </div>
                     {!cartVisible && (
-                        <ResultsGrid results={listings} addToCart={promptQuantity} buyNow={handleBuyNow} />
+                        <TradingResultsGrid 
+                            results={listings} 
+                            addToCart={promptQuantity} 
+                            buyNow={handleBuyNow} 
+                            showDetails={showDetails} // Pass the new prop
+                        />
                     )}
                 </>
             )}
