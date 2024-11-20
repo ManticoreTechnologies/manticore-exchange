@@ -41,6 +41,14 @@
     flex-shrink: 0;
 }
 
+.status-label {
+    display: none
+}
+
+.amount-label {
+    color: var(--text-secondary);
+}
+
 .copy-wrapper {
     display: flex;
     align-items: center;
@@ -124,3 +132,7 @@
     text-align: center;
 }
 
+.invoice-labels {
+    background-color: #155724;
+    color: white;
+}

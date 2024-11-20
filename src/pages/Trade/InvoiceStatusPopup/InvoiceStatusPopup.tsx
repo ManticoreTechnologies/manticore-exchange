@@ -98,7 +98,7 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
         <div className="invoice-status-popup">
             <div className="popup-content">
                 <h3>Invoice Status</h3>
-                
+
                 <div className="info-row">
                     <strong>Order ID:</strong>
                     <span>{id}</span>
@@ -108,7 +108,7 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
                     <strong>Payment Address:</strong>
                     <div className="copy-wrapper">
                         <span>{truncateAddress(payment_address)}</span>
-                        <button 
+                        <button
                             className="copy-button"
                             onClick={() => handleCopy(payment_address)}
                             title={copySuccess ? 'Copied!' : 'Copy to clipboard'}
@@ -118,9 +118,10 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
                     </div>
                 </div>
 
-                <p><strong>Amount:</strong> {paymentAmountEVR} $EVR</p>
-                <p><strong>Status:</strong> {status}</p>
-
+                <div className="invoice-labels">
+                    <p style={{ color: 'white' }}><strong>Amount:</strong> {paymentAmountEVR} $EVR</p>
+                    <p style={{ color: 'white' }}><strong>Status:</strong> {status}</p>
+                </div>
                 {/* Conditionally render the fulfillment_txid only if it exists */}
                 {fulfillment_txid && fulfillment_txid.length > 0 && (
                     <p><strong>Order TXID:</strong> {fulfillment_txid[0]}</p>
