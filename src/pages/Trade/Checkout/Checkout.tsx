@@ -12,7 +12,7 @@ interface CheckoutProps {
 const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, onBack }) => {
     const [processing, setProcessing] = useState(false);
     const [invoiceData, setInvoiceData] = useState<any>(null);
-    const [payoutAddress, setPayoutAddress] = useState<string>(''); 
+    const [payoutAddress, setPayoutAddress] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     loading
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -108,7 +108,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    listing_id: orderItems, 
+                    listing_id: orderItems,
                     quantity: quantities,
                     payout_address: payoutAddress
                 }),
@@ -156,7 +156,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                 {selectedItems.map((item, index) => (
                     <li key={index} className="checkout-item">
                         <div>
-                            <strong>{item.assetName}</strong>
+                            <div className="asset-name"><p>{item.assetName}</p></div>
                             <p>Quantity: {item.quantity}</p>
                             <p>Total: {(item.unitPrice * item.quantity / 100000000).toFixed(8)} $EVR</p>
                         </div>
@@ -169,28 +169,33 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                 <p><strong>Total Amount: </strong>{totalAmountWithFeeEVR} $EVR</p>
                 <div className="payout-address">
                     <label htmlFor="payoutAddress">Payout Address:</label>
-                    <input 
-                        type="text" 
-                        id="payoutAddress" 
+                    <input
+                        type="text"
+                        id="payoutAddress"
                         value={payoutAddress}
                         onChange={(e) => setPayoutAddress(e.target.value)}
                         placeholder="Enter your payout address"
                     />
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <button 
-                    className="complete-checkout-button" 
-                    onClick={handleCheckout} 
+                <button
+                    className="complete-checkout-button"
+                    onClick={handleCheckout}
                     disabled={processing}
                 >
                     {processing ? 'Processing...' : 'Complete Purchase'}
                 </button>
-                <button 
-                    className="back-button" 
-                    onClick={onBack} 
+                <button
+                    className="exit-button"
+                    onClick={onBack}
                     disabled={processing}
+                    style={{
+                        position: 'absolute',
+                        top: '20px',
+                        right: '20px'
+                    }}
                 >
-                    {processing ? 'Processing...' : 'Back'}
+                    {processing ? 'Processing...' : '✕'}
                 </button>
             </div>
             {invoiceData && (

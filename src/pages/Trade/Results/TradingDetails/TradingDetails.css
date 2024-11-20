@@ -19,63 +19,63 @@ body {
     color: #f9f9f9;
   }
   
-  .trading-header {
+  .trading-details .trading-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
   
-  .back-button,
-  .dark-mode-toggle {
+  .trading-details .back-button,
+  .trading-details .dark-mode-toggle {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
   }
   
-  .back-button {
+  .trading-details .back-button {
     background-color: #ff5757;
     color: white;
   }
   
-  .dark-mode-toggle {
+  .trading-details .dark-mode-toggle {
     background-color: #00cc99;
     color: white;
   }
   
-  .trading-main {
+  .trading-details .trading-main {
     display: flex;
     margin-top: 20px;
   }
   
-  .trading-media {
+  .trading-details .trading-media {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
-  .trading-image {
+  .trading-details .trading-image {
     max-width: 100%;
     border-radius: 10px;
   }
   
-  .trading-info {
+  .trading-details .trading-info {
     flex: 1;
     margin-left: 20px;
   }
   
-  .trading-title {
+  .trading-details .trading-title {
     font-size: 1.8rem;
     margin-bottom: 10px;
   }
   
-  .trading-description {
+  .trading-details .trading-description {
     font-size: 1rem;
     margin-bottom: 20px;
   }
   
-  .add-to-cart {
+  .trading-details .add-to-cart {
     background-color: #00cc99;
     color: white;
     padding: 10px 15px;
@@ -84,44 +84,44 @@ body {
     cursor: pointer;
   }
   
-  .add-to-cart:hover {
+  .trading-details .add-to-cart:hover {
     background-color: #009977;
   }
   
-  .trading-comments {
+  .trading-details .trading-comments {
     margin-top: 40px;
   }
   
-  .comments-list {
+  .trading-details .comments-list {
     list-style: none;
     padding: 0;
   }
   
-  .comments-list li {
+  .trading-details .comments-list li {
     padding: 10px;
     margin-bottom: 10px;
     background-color: #f5f5f5;
     border-radius: 5px;
   }
   
-  .comments-list li.hidden-comment {
+  .trading-details .comments-list li.hidden-comment {
     opacity: 0.5;
   }
   
-  .comment-form {
+  .trading-details .comment-form {
     display: flex;
     gap: 10px;
     margin-top: 10px;
   }
   
-  .comment-form input {
+  .trading-details .comment-form input {
     flex: 1;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
   }
   
-  .comment-form button {
+  .trading-details .comment-form button {
     background-color: #00cc99;
     color: white;
     border: none;
@@ -130,7 +130,7 @@ body {
     cursor: pointer;
   }
   
-  .back-button {
+  .trading-details .back-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -144,8 +144,7 @@ body {
     transition: background 0.3s ease, transform 0.2s ease;
   }
   
-  .back-button:hover {
+  .trading-details .back-button:hover {
     background-color: #45475c;
     transform: scale(1.05);
   }
-  

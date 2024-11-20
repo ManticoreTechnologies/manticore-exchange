@@ -1,33 +1,44 @@
-/* General Checkout Styles */
+/* Main Checkout Container */
 .checkout {
-    background-color: #121212;
-    color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
-    padding: 20px;
+    /* Base styles */
     width: 100%;
     max-width: 400px;
+    padding: 20px;
     margin: 20px auto;
-    transition: all 0.3s ease-in-out;
-    position: fixed; /* Changed from relative to fixed */
+    
+    /* Positioning */
+    position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Centers the popup */
-    z-index: 100; /* Ensures it's on top of other content */
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    
+    /* Visual styles */
+    background: linear-gradient(45deg, #131313, #000000);
+    background-size: var(--card-gradient-size) auto;
+    background-position: 1000% 0%;
+    border-radius: 8px;
+    border: none;
+    color: #ffffff;
+    
+    /* Effects */
+    box-shadow: 0 0 20px #FF0000;
+    animation: glowAnimation 2s infinite alternate;
+    transition: all 0.3s ease-in-out;
 }
 
-/* Other styles remain unchanged */
-
+/* Header Styles */
 .checkout h2 {
-    margin-bottom: 20px;
+    color: #f44336;
     font-size: 24px;
     font-weight: 600;
     text-align: center;
-    color: #f44336;
-    border-bottom: 2px solid #f44336;
     padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f44336;
 }
 
+/* Checkout Items List */
 .checkout-items {
     list-style-type: none;
     padding: 0;
@@ -36,17 +47,23 @@
 }
 
 .checkout-item {
+    /* Layout */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     padding: 15px 10px;
     margin-bottom: 10px;
-    background-color: #1d1d1d;
-    border-radius: 4px;
-    width: 100%;
     box-sizing: border-box;
+    
+    /* Visual styles */
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    backdrop-filter: blur(5px);
 }
 
+/* Summary Section */
 .checkout-summary {
     margin-top: 20px;
     padding-top: 10px;
@@ -60,24 +77,72 @@
     color: #ffffff;
 }
 
+/* Button Styles */
 .complete-checkout-button, .back-button {
-    background-color: #f44336;
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
+    /* Base styles */
     padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
     margin: 5px;
-    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    font-size: 16px;
+    cursor: pointer;
+    
+    /* Visual styles */
+    background: transparent;
+    border: 2px solid #FF0000;
+    border-radius: 4px;
+    color: #ffffff;
+    
+    /* Effects */
+    text-shadow: 0 0 4px #FF0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    transition: all 0.3s ease;
 }
 
 .complete-checkout-button:hover, .back-button:hover {
-    background-color: #d32f2f;
+    background: transparent;
+    border-color: #0088ff;
     transform: scale(1.05);
+    text-shadow: 0 0 4px #0088ff;
+    box-shadow: 0 0 20px rgba(>{item.assetName}</strong>0, 136, 255, 0.8);
 }
 
 .complete-checkout-button:disabled, .back-button:disabled {
     background-color: #555555;
     cursor: not-allowed;
+}
+
+/* Input Styles */
+.payout-address input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #FF0000;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.payout-address input:focus {
+    border-color: #0088ff;
+    box-shadow: 0 0 15px rgba(0, 136, 255, 0.5);
+    outline: none;
+}
+
+/* Back Button Positioning */
+.back-button {
+    position: absolute;
+    bottom: 5px;
+    color: #4a90e2;
+}
+
+.asset-name {
+    display: block;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* Animations */
+@keyframes glowAnimation {
+    0% {
+        box-shadow: 0 0 20px #FF0000;
+    }
+    100% {
+        box-shadow: 0 0 20px #0088ff;
+    }
 }

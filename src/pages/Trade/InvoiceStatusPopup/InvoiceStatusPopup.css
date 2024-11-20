@@ -3,24 +3,76 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--background-color); /* Dark background to match the interface */
-    padding: 20px;
+    background-color: #1a1a1a;
+    padding: 30px;
     border: var(--modal-border);
-    border-radius: 8px; /* Consistent border radius */
-    box-shadow: var(--box-shadow); /* Slight shadow for depth */
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    width: 400px; /* Width to match the interface */
-    text-align: center; /* Center the text */
-    color: var(--text-color); /* White text color */
+    width: 480px;
+    color: var(--text-color);
 }
 
 .popup-content {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.popup-content h3 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 0, 0, 0.03);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.info-row strong {
+    color: var(--text-secondary);
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.copy-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.copy-wrapper span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.copy-button {
+    flex-shrink: 0;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .circle-timer {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     margin: 20px auto;
     position: relative;
     display: flex;
@@ -28,44 +80,44 @@
     justify-content: center;
 }
 
-.progress-ring {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
 .progress-ring__circle {
-    transition: stroke-dashoffset 1s linear, stroke 1s linear;
+    stroke-dasharray: 400;
+    stroke-linecap: round;
+    stroke-width: 4px;
+    fill: transparent;
+    transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
-    stroke: #e74c3c; /* Red stroke color to match the button */
 }
 
 .timer-text {
-    font-size: 20px; /* Slightly larger font size for emphasis */
-    font-weight: bold;
-    color: var(--text-color); /* White color to match the text */
+    position: absolute;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-color);
     z-index: 10;
 }
 
 .invoice-status-popup button {
-    background-color: #e74c3c; /* Red button color similar to the interface */
+    background: linear-gradient(to right, #3a7bd5, #3a6073);
     color: var(--text-color);
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .invoice-status-popup button:hover {
-    background-color: #c0392b; /* Darker red on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(58, 123, 213, 0.2);
 }
 
 .confirmation-message {
     margin-top: 20px;
     padding: 10px;
-    background-color: var(--background-color);
+    background-color: #1a1a1a;
     color: #155724;
     border: 1px solid #c3e6cb;
     border-radius: 5px;

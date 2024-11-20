@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './InvoiceStatusPopup.css';
+import { CopyIcon } from './icons';
 
 interface InvoiceStatusPopupProps {
     invoiceData: any;
@@ -13,7 +14,8 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
     const [percentage, setPercentage] = useState<number>(100);
     const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
     const [spinning, setSpinning] = useState<boolean>(false);
-    confirmationMessage
+    const [copySuccess, setCopySuccess] = useState<boolean>(false);
+
     // Convert payment_amount from satoshis to EVR
     const paymentAmountEVR = (payment_amount / 100000000).toFixed(8);
 
@@ -77,12 +79,45 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
         return `rgb(${r},${g},0)`;
     };
 
+    const handleCopy = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    };
+
+    const truncateAddress = (address: string) => {
+        if (!address) return '';
+        return `${address.slice(0, 8)}...${address.slice(-8)}`;
+    };
+
     return (
         <div className="invoice-status-popup">
             <div className="popup-content">
                 <h3>Invoice Status</h3>
-                <p><strong>Order ID:</strong> {id}</p>
-                <p><strong>Payment Address:</strong> {payment_address}</p>
+                
+                <div className="info-row">
+                    <strong>Order ID:</strong>
+                    <span>{id}</span>
+                </div>
+
+                <div className="info-row">
+                    <strong>Payment Address:</strong>
+                    <div className="copy-wrapper">
+                        <span>{truncateAddress(payment_address)}</span>
+                        <button 
+                            className="copy-button"
+                            onClick={() => handleCopy(payment_address)}
+                            title={copySuccess ? 'Copied!' : 'Copy to clipboard'}
+                        >
+                            <CopyIcon />
+                        </button>
+                    </div>
+                </div>
+
                 <p><strong>Amount:</strong> {paymentAmountEVR} $EVR</p>
                 <p><strong>Status:</strong> {status}</p>
 
