@@ -32,7 +32,7 @@ import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvmoreAssets";
 import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
-
+import Townhall from "./pages/Home/Townhall/Townhall";
 const App: React.FC = () => {
 
   return (
@@ -43,31 +43,32 @@ const App: React.FC = () => {
 
       <div className="main">
         <Routes>
-        <Route path="/" element={<Home />} />
-      <Route path="/search" element={<Explorer />} />
-      <Route path="/trade" element={<Trading />} />
-      <Route path="/faucet" element={<Faucet />} />
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
-      <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
-      <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
-      <Route path="/blog/ExploringEvrmoreAssets" element={<ExploringEvrmoreAssets />} />
-      <Route path="/blog/BitcoinExplainer" element={<BitcoinExplainer />} />
-      <Route path="/roadmap" element={<Roadmap />} />
-      <Route path="/tradeX" element={<TradeX />} />
-      <Route path="/tradeX/markets" element={<Markets />} />
-      <Route path="/tradeX/market" element={<Market />} />
-      <Route path="/deposit/:asset" element={<Deposit />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/wallet" element={<Wallet />} />
-      <Route path="/asset/:name" element={<AssetDetails />}/>
-      <Route path="/ipfs" element={<IPFSUploader/>}/>
-      <Route path="/chart" element={<EVRPage />}/>
-      <Route path="/trading-chart" element={<Chart data={[]} />}/>
-      <Route path="/contact" element={<Contact />}/>
-      <Route path="/about" element={<About />} />
-      <Route path="*" element={<NotFoundPage />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Explorer />} />
+          <Route path="/trade" element={<Trading />} />
+          <Route path="/faucet" element={<Faucet />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
+          <Route path="/blog/EvrmoreSocialCommerce" element={<EvrmoreSocialCommerce />} />
+          <Route path="/blog/WalletBasedAuthEvrmore" element={<WalletBasedAuthEvrmore />} />
+          <Route path="/blog/ExploringEvrmoreAssets" element={<ExploringEvrmoreAssets />} />
+          <Route path="/blog/BitcoinExplainer" element={<BitcoinExplainer />} />
+          <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/tradeX" element={<TradeX />} />
+          <Route path="/tradeX/markets" element={<Markets />} />
+          <Route path="/tradeX/market" element={<Market />} />
+          <Route path="/deposit/:asset" element={<Deposit />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/asset/:name" element={<AssetDetails />} />
+          <Route path="/ipfs" element={<IPFSUploader />} />
+          <Route path="/chart" element={<EVRPage />} />
+          <Route path="/trading-chart" element={<Chart data={[]} />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="town-hall" element={<Townhall />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
 

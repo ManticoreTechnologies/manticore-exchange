@@ -1,0 +1,150 @@
+.townhallContainer {
+    margin-top: 3%;
+    position: relative;
+    min-height: 600px;
+    padding: 70px 20px 20px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.content {
+    width: 100%;
+    max-width: 800px;
+    z-index: 1;
+}
+
+.pillarLeft,
+.pillarRight {
+    position: absolute;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 10px;
+}
+
+.pillarLeft::before,
+.pillarRight::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    width: 80px;
+    height: 40px;
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.25) 50%,
+            rgba(255, 255, 255, 0.15) 100%);
+    border-radius: 5px;
+    left: -10px;
+}
+
+.pillarLeft::after,
+.pillarRight::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    width: 80px;
+    height: 40px;
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.25) 50%,
+            rgba(255, 255, 255, 0.15) 100%);
+    border-radius: 5px;
+    left: -10px;
+}
+
+.pillarLeft {
+    left: 10%;
+}
+
+.pillarRight {
+    right: 10%;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.commentsWrapper {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.roofOuter {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 90px;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.25) 0%,
+            rgba(255, 255, 255, 0.15) 100%);
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    z-index: 2;
+}
+
+.roofInner {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 70px;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0.1) 100%);
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.roofTitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Times New Roman', serif;
+    /* Classic font for architectural feel */
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    /* Adjust to position text vertically */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Optional: Add media query for responsive font size */
+@media (max-width: 768px) {
+    .roofTitle {
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .townhallContainer {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+}
