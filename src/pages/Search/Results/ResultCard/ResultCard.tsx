@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ResultCard.css';
 import placeholderImage from '../../../../images/Placeholder.webp'; // Import the placeholder image
 import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner';
-
+import { useNavigate } from 'react-router-dom';
 interface ResultCardProps {
     name: string;
     blockHeight: number;
@@ -24,10 +24,11 @@ const ResultCard: React.FC<ResultCardProps> = ({
 }) => {
     const [isLoaded, setIsLoaded] = useState(false); // Track loading state
     const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
-
+    const [showPlaceholder, setShowPlaceholder] = useState(false); // Track if the placeholder should be shown
+    const navigate = useNavigate();
     // Helper function to truncate long strings
     const truncateString = (str: string, length: number) => {
-        return str.length > length ? `${str.substring(0, length)}...` : str;
+        return str.length > length ? `${str.substring(0, length - 4)}... ` : str;
     };
 
     // IPFS URL
@@ -37,6 +38,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
 
     // Fetch the content type to determine if the file is a video or image
     useEffect(() => {
+        console.log(name);
         if (ipfsHash) {
             fetch(mediaSrc, { method: 'HEAD' })
                 .then((response) => {
@@ -48,15 +50,53 @@ const ResultCard: React.FC<ResultCardProps> = ({
                 .catch(() => setIsLoaded(true)); // In case of error, mark as loaded
         }
     }, [ipfsHash, mediaSrc]);
-
     return (
-        <a href={`/asset/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer" className="result-card-link">
-            <div className="result-card">
-                {!isLoaded && (
-                    <div className="loading-spinner-container"><LoadingSpinner/></div> // Display spinner while loading
+        <div className="result-card" onClick={() => {navigate(`/asset/${encodeURIComponent(name)}`);}}>
+            {!isLoaded && (       
+                <div className="loading-spinner-container"><LoadingSpinner/></div> // Display spinner while loading
+               
+               )}
+         {isVideo ? (
+                    <video
+                        className="result-card-image"
+                        autoPlay
+                        muted
+                        loop
+                        onCanPlayThrough={() => setIsLoaded(true)} // Remove spinner when video is ready
+                        onError={() => setIsLoaded(true)} // Remove spinner on error
+                    >
+                        <source src={mediaSrc} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                ) : (
+                    showPlaceholder ? (
+                        <img 
+                            className="result-card-image"
+                            src={placeholderImage}
+                        />
+                    ) : (
+                    <img 
+                        className="result-card-image"
+                        src={mediaSrc}
+                        onLoad={() => setIsLoaded(true)} // Remove spinner when image loads
+                        onError={() => {setIsLoaded(true); setShowPlaceholder(true)}} // Remove spinner even on error
+                    />
+                    )
                 )}
 
-                {/* Render video if it's a video file, otherwise render an image */}
+                <div className="result-overlay">
+                    <h3 title={name}>{truncateString(name, 15)}</h3>
+                    <p>Supply: {amount}</p>
+                </div>
+        </div>
+    );
+};
+
+export default ResultCard;
+
+
+/*
+
                 {isVideo ? (
                     <video
                         width="100%"
@@ -71,26 +111,12 @@ const ResultCard: React.FC<ResultCardProps> = ({
                         Your browser does not support the video tag.
                     </video>
                 ) : (
-                    <img
+                    <img 
+                        className="result-card-image"
                         src={mediaSrc}
                         alt={name}
                         onLoad={() => setIsLoaded(true)} // Remove spinner when image loads
                         onError={() => setIsLoaded(true)} // Remove spinner even on error
                     />
                 )}
-
-                <div className="result-overlay">
-                    <h3 title={name}>{truncateString(name, 20)}</h3>
-                    <p><strong>Block Height:</strong> {blockHeight}</p>
-                    <p><strong>Block Hash:</strong> {truncateString(blockHash, 10)}</p>
-                    <p><strong>Amount:</strong> {amount}</p>
-                    {ipfsHash && <p><strong>IPFS Hash:</strong> {truncateString(ipfsHash, 10)}</p>}
-                    <p><strong>Reissuable:</strong> {reissuable ? 'Yes' : 'No'}</p>
-                    <p><strong>Units:</strong> {units}</p>
-                </div>
-            </div>
-        </a>
-    );
-};
-
-export default ResultCard;
+*/

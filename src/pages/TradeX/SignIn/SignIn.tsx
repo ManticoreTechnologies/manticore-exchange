@@ -14,7 +14,7 @@ const SignIn: React.FC = () => {
     const [sessionRestored, setSessionRestored] = useState(false); // New state to track session restoration
     const [remainingTime, setRemainingTime] = useState<number | null>(null); // New state for remaining time
 
-    const { message, sendMessage } = useWebSocket('wss://ws.manticore.exchange');
+    const { message, sendMessage } = useWebSocket('ws://localhost:8765');
 
     useEffect(() => {
         if (message) {
@@ -87,6 +87,20 @@ const SignIn: React.FC = () => {
         sendMessage(`authorize_challenge ${signedMessage}`);
     };
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            const element = document.querySelector(`.copyable[data-text="${text}"]`);
+            if (element) {
+                element.classList.add('show-tooltip');
+                setTimeout(() => {
+                    element.classList.remove('show-tooltip');
+                }, 1000); // Show for 1 second
+            }
+        }).catch(err => {
+            console.error(`Failed to copy ${text}: `, err);
+        });
+    };
+
     return (
         <div className="signin-container">
             {sessionRestored ? (
@@ -114,11 +128,12 @@ const SignIn: React.FC = () => {
                     {step === 2 && (
                         <div className="step-form">
                             <h2>Step 2: Sign the Challenge</h2>
-                            <p>Challenge: {challenge}</p>
+                            <p>Challenge: <span className="copyable" data-text={challenge} onClick={() => copyToClipboard(challenge)}>{challenge}</span></p>
                             <p>Sign this challenge with your wallet and paste the signature below.</p>
                             <label htmlFor="signedMessage">Signed Message:</label>
                             <input type="text" id="signedMessage" value={signedMessage} onChange={handleSignedMessageChange} />
                             <button onClick={handleSignedMessageSubmit}> Sign In <FaArrowRight /></button>
+                            <p>Your Address: <span className="copyable" data-text={address} onClick={() => copyToClipboard(address)}>{address}</span></p>
                         </div>
                     )}
                     {step === 3 && (

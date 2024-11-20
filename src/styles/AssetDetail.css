@@ -1,109 +1,302 @@
 .asset-detail-container {
-  position: relative;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px; /* Reduced padding for smaller screens */
-  background: var(--background-primary); /* Assuming this is your preferred background color */
-  flex-direction: row; /* Stack items vertically on smaller screens */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: black;
+  min-height: 100vh;
+  color: #f0f0f0;
 }
 
 .asset-detail-card {
-  position: relative;
-  flex-direction: column; /* Stack image and text vertically on smaller screens */
-  background: #000; /* Card background */
-  color: #fff; /* Text color */
-  border: 1px solid #e1e1e1; /* Card border */
-  border-radius: 8px;/* Ensures that the content respects the border-radius */
-  margin: auto; /* Centers the card in the container */
-  width: 100%; /* Ensures that the card stretches to max-width */
+  display: flex;
+  flex-direction: column;
+  background: #292b3c;
+  border: 1px solid #45475c;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 800px;
+  width: 100%;
 }
 
-
-
 .asset-image-container {
-  position: relative;
-  justify-content: center; /* Centers horizontally */
-  align-items: center; /* Centers vertically */
-  width: 100%; /* Full width for mobile */
-  max-width: 300px; /* Maximum width of the image container */
-  height: auto; /* Let the height adjust according to the image size */
-  margin: 20px auto; /* Center the image on mobile and add margin around it */
-  flex-shrink: 0; /* Prevent the container from shrinking */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #202231;
+  padding: 20px;
 }
 
 .asset-detail-image {
-  max-width: 100%; /* Ensures the image is not larger than the container */
-  height: auto; /* Keep aspect ratio */
-  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .asset-info-container {
-  position: relative;
-  /*center text*/
+  padding: 20px;
   text-align: center;
 }
 
 .asset-title {
-  font-size: 2em;* Spans across all columns */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #ffffff;
 }
 
 .asset-meta {
-  display: flex; /* Use flexbox to arrange items inline */
-  flex-wrap: wrap; /* Allow items to wrap to the next line */
-  width: 100%; /* Ensures asset meta spans the full width of the asset detail container */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .asset-meta p {
-  color: #fff; /* Make the labels text white */
-  padding: 5px 10px; /* Spacing between paragraphs */
-  margin: 5px 0; /* Spacing between paragraphs */
-  flex: 1 1 50%; /* Each item takes up 50% of the width, adjust as needed */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
-}
-
-.asset-description {
-  font-size: 0.9em;
-  line-height: 1.6;
-}
-
-/* If you have long hashes that still don't fit, you can add this */
-.asset-meta .block-hash {
-  word-break: break-all; /* Breaks the word to prevent overflow */
+  margin: 0;
+  padding: 10px;
+  background: #383a4f;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #d1d1e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .asset-meta .copyable {
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  cursor: pointer;
-  background-color: #333;
-  padding: 2px 5px;
+  padding: 5px;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.85rem;
+  transition: background 0.3s ease;
 }
 
 .asset-meta .copyable:hover {
-  background-color: #555;
+  background: #2563eb;
 }
 
-.asset-meta .copy-icon {
-  margin-left: 5px;
-  font-size: 0.8em;
-  color: #fff;
+.video-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
 }
 
-
-.back-button-container button{
-  padding: 5px 10px;
-  position: absolute;
-  background-color: transparent;
-  z-index: 100;
-  transition: transform 0.2s ease-in-out;
-  transition: color 0.2s ease-in-out;
+.video-controls button {
+  padding: 10px 15px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
+.video-controls button:hover {
+  background: #2563eb;
+}
+
+.video-controls label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.video-controls input[type="range"] {
+  margin-top: 5px;
+  width: 120px;
+}
+
+.video-controls select {
+  margin-top: 5px;
+  padding: 5px;
+  background: #383a4f;
+  color: #ffffff;
+  border: 1px solid #45475c;
+  border-radius: 4px;
+}
+
+.back-button-container {
+  align-self: flex-start;
+  margin-bottom: 20px;
+}
+
+.back-button-container button {
+  padding: 10px 20px;
+  background: #33354a;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
 
 .back-button-container button:hover {
-  background-color: transparent;
+  background: #45475c;
   transform: scale(1.05);
-  color: var(--button-background);
 }
+
+@media (max-width: 600px) {
+  .asset-detail-container {
+    padding: 10px;
+  }
+
+  .asset-detail-card {
+    border-radius: 8px;
+  }
+
+  .asset-info-container {
+    padding: 15px;
+  }
+
+  .asset-title {
+    font-size: 1.5rem;
+  }
+
+  .asset-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .video-controls {
+    flex-direction: column;
+  }
+}
+
+.comments-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comments-section h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.comments-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comments-section li {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  transition: transform 0.2s ease;
+}
+
+.comments-section li:hover {
+  transform: translateX(5px);
+}
+
+.comments-section li strong {
+  color: #007bff;
+  margin-right: 0.5rem;
+}
+
+.comments-section textarea {
+  width: 100%;
+  min-height: 120px;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.comments-section textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.comments-section button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.comments-section button:hover {
+  background-color: #0056b3;
+}
+
+.comments-section button:active {
+  transform: translateY(1px);
+}
+
+.locked-comments {
+  text-align: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.locked-comments span[role="img"] {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Add animation for new comments */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comments-section li {
+  animation: slideIn 0.3s ease forwards;
+  color: black;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .comments-section {
+    padding: 1rem;
+  }
+
+  .comments-section li {
+    padding: 0.75rem;
+  }
+
+  .comments-section textarea {
+    min-height: 100px;
+  }
+}
+

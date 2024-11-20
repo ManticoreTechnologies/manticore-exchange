@@ -3,7 +3,9 @@ import './LoadingSpinner.css';
 
 const LoadingSpinner: React.FC = () => {
     return (
-        <div className="loading-spinner"></div> // Display spinner while loading
+        <div className="loading-spinner-container">
+            <div className="loading-spinner"></div>
+        </div>
     );
 };
 

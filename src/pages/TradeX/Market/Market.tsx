@@ -14,7 +14,7 @@ const Market: React.FC<MarketProps> = () => {
   const queryParams = new URLSearchParams(location.search);
   const marketName = queryParams.get('name') || 'default_market_name';
 
-  const { message, sendMessage, isConnected } = useWebSocket('wss://ws.manticore.exchange');
+  const { message, sendMessage, isConnected } = useWebSocket('ws://localhost:8765');
   const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
 

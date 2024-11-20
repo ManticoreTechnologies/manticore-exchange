@@ -3,6 +3,10 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import '../../styles/AssetDetail.css'; // CSS for this page
 import logo from '../../images/Placeholder.webp';
 import api from '../../utility/api';
+import Cookies from 'js-cookie';
+// const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
+const wsUrl = 'ws://localhost:8765'; //'wss://ws.manticore.exchange';
+import useWebSocket from "../../hooks/useWebSocket";
 
 interface Asset {
   name: string;
@@ -14,6 +18,19 @@ interface Asset {
   reissuable: boolean;
   units: number;
   has_ipfs: boolean;
+}
+
+// Update Comment interface to match websocket response
+interface Comment {
+  id: string;
+  asset_name: string;
+  friend_name: string
+
+  address: string;
+  text: string;
+  created_at: Date
+  updated_at: Date
+  hidden: boolean
 }
 
 const AssetDetails: React.FC = () => {
@@ -29,9 +46,59 @@ const AssetDetails: React.FC = () => {
   const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
   const videoRef = useRef<HTMLVideoElement | null>(null); // Reference to the video
 
+  // Add new state variables for comments
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState<string>('');
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
   const from_faucet = searchParams.get('faucet');
   const faucet = from_faucet ? from_faucet : false;
   const showIPFSOnly = searchParams.get('showIPFSOnly') === 'true';
+  const address = Cookies.get('address');
+  const { sendMessage, message, isConnected, isAuthenticated, getUserAddress } = useWebSocket("ws://localhost:8765");
+
+  // Add new state for tracking which comment is being edited
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState<string>('');
+
+  /* Process incoming messages from websocket */
+  useEffect(() => {
+    if (message && message.includes("asset_comments")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comments ", ""));
+      setComments(parsedMessage);
+    }
+
+    if (message && message.includes("asset_comment_added")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comment_added ", ""));
+      if (parsedMessage.asset_name === name) {
+        setComments(prevComments => [...prevComments, parsedMessage]);
+      }
+    }
+
+    if (message && message.includes("asset_comment_deleted")) {
+      const id = message.replace("asset_comment_deleted ", "");
+      setComments(prevComments => 
+        prevComments.map(comment => 
+          comment.id === id ? { ...comment, hidden: true } : comment
+        )
+      );
+    }
+
+    if (message && message.includes("asset_comment_updated")) {
+      const parsedMessage = JSON.parse(message.replace("asset_comment_updated ", ""));
+      setComments(prevComments =>
+        prevComments.map(comment =>
+          comment.id === parsedMessage.id ? parsedMessage : comment
+        )
+      );
+    }
+  }, [message, name]);
+
+  useEffect(() => {
+    sendMessage(`get_asset_comments ${name}`);
+    ;
+  }, [isConnected]);
+
 
   const fetchAssets = async () => {
     setIsLoading(true);
@@ -39,6 +106,7 @@ const AssetDetails: React.FC = () => {
     try {
       const sanitizedAssetName = name ? name.replace(/!/g, '') : '';
       const response = await api.node<any>('listassets', [sanitizedAssetName, true]);
+      console.log(response);
       setAsset(response[sanitizedAssetName]);
     } catch (error: unknown) {
       setError('Failed to load asset details');
@@ -64,9 +132,10 @@ const AssetDetails: React.FC = () => {
     }
   };
 
+
   useEffect(() => {
     fetchAssets();
-  }, [name, showIPFSOnly]);
+  }, [name]);
 
   useEffect(() => {
     if (asset && asset.ipfs_hash) {
@@ -126,10 +195,42 @@ const AssetDetails: React.FC = () => {
     }
   };
 
+  // Update the comment handling functions to include type field
+  const handleAddComment = () => {
+    sendMessage(`add_asset_comment ${name} ${address} "${newComment}"`);
+
+    setNewComment('');
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    sendMessage(`delete_asset_comment ${commentId}`);
+      // Optimistically remove the comment from the local state
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId)
+    );
+  };
+
+  const handleUpdateComment = (commentId: string, newComment: string) => {
+    sendMessage(`update_asset_comment ${name} ${commentId} ${newComment}`);
+  }
+
+  const handleEditComment = (commentId: string, commentText: string) => {
+    setEditingCommentId(commentId);
+    setEditingCommentText(commentText);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingCommentId) {
+      handleUpdateComment(editingCommentId, editingCommentText);
+      setEditingCommentId(null);
+      setEditingCommentText('');
+    }
+  };
+
   return (
     <div className="asset-detail-container">
       <div className="back-button-container">
-        <button onClick={() => navigate(faucet ? `/faucet` : `/search`)}>Back</button>
+        <button onClick={() => window.history.back()}>Back</button>
       </div>
       <div className="asset-detail-card">
         <div className="asset-image-container">
@@ -154,7 +255,6 @@ const AssetDetails: React.FC = () => {
           {asset && (
             <div className="asset-meta">
               <p><strong>Block Hash:</strong> <span className="copyable" onClick={() => copyToClipboard(asset.blockhash)}>{asset.blockhash.slice(0, 5)}...{asset.blockhash.slice(-5)}<span className="copy-icon">📋</span></span></p>
-              <p><strong>{asset.has_ipfs && asset.ipfs_hash ? "IPFS Hash: " : "TXID: "}</strong> <span className="copyable" onClick={() => copyToClipboard(asset.ipfs_hash || asset.txid_hash)}>{(asset.ipfs_hash || asset.txid_hash).slice(0, 5)}...{(asset.ipfs_hash || asset.txid_hash).slice(-5)}<span className="copy-icon">📋</span></span></p>
               <p><strong>Block Height:</strong> {asset.block_height}</p>
               <p><strong>Reissuable:</strong> {asset.reissuable ? 'Yes' : 'No'}</p>
               <p><strong>Amount:</strong> {asset.amount}</p>
@@ -162,7 +262,7 @@ const AssetDetails: React.FC = () => {
             </div>
           )}
           {/* Video Controls */}
-          {asset && asset.has_ipfs && isVideo && (
+          {asset && asset.has_ipfs == true && isVideo && (
             <div className="video-controls">
               <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
               <label>
@@ -185,6 +285,65 @@ const AssetDetails: React.FC = () => {
                   <option value="2.0">2.0x</option>
                 </select>
               </label>
+            </div>
+          )}
+        </div>
+        {/* Add comments section before closing asset-detail-card div */}
+        <div className="comments-section">
+          <h2>Comments</h2>
+          {isAuthenticated ? (
+            <div>
+              <ul>
+                {comments.map((comment) => (
+                  <li 
+                    key={comment.id} 
+                    style={{ display: comment.hidden ? 'none' : 'block' }}
+                  >
+                    {editingCommentId === comment.id ? (
+                      <>
+                        <textarea
+                          value={editingCommentText}
+                          onChange={(e) => setEditingCommentText(e.target.value)}
+                          maxLength={500}
+                        />
+                        <button onClick={handleSaveEdit}>Save</button>
+                        <button onClick={() => setEditingCommentId(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <strong>{comment.friend_name}:</strong> {comment.text}
+                        {comment.address === getUserAddress() && (
+                          <>
+                            <button
+                              onClick={() => handleEditComment(comment.id, comment.text)}
+                              className="edit-comment"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="delete-comment"
+                            >
+                              🗑️
+                            </button>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Add a comment..."
+                maxLength={500} // Add reasonable limit
+              />
+              <button onClick={handleAddComment}>Submit</button>
+            </div>
+          ) : (
+            <div className="locked-comments">
+              <span role="img" aria-label="lock">🔒</span> Authenticate with wallet for access to feature.
             </div>
           )}
         </div>

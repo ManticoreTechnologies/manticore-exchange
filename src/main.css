@@ -28,7 +28,8 @@
     --button-hover: var(--accent-hover);
     --input-border: #ced4da;
     --input-focus: var(--accent-color);
-    
+    --input-disabled: red;
+
     /* Layout */
     --header-height: 70px;
     --footer-height: 25px;

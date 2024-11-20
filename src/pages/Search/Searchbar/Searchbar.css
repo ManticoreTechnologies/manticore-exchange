@@ -4,18 +4,82 @@
 */
 .searchbar-container {
     display: flex;
-
     /*Grow to fill the screen*/
     flex-grow: 1;
     flex-direction: column;
 
-    background-color: red;
-
     /* Center the searchbar */
     justify-content: center;
     align-items: center;
+
+    /* Flex transition animations */
+    transition: flex 1s ease-in-out;
+
+    padding-bottom: 1rem;
+
+    
 }
 
+.searchbar-container.loaded{
+    background-color: transparent;
+    
+}
+.searchbar-container.searching{
+    background-color: transparent;
+}
+
+.searchbar-container input{
+        /* remove outline */
+        outline: none;  
+
+        /* Remove border */
+        border: none;
+
+        /* Change color of insertion cursor */
+        caret-color: red;
+
+        /* Add bottom border */
+        border-bottom: 2px solid red;
+
+        box-shadow: none;
+
+        background-color: transparent;
+    }
+
+.searchbar-container input:focus{
+    caret-color:var(--input-focus);
+    outline: none;
+    box-shadow: none;
+    color: var(--input-focus);
+}
+
+.searchbar-container .bubble-buttons{
+    margin-top: 0.3125rem;
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    border-radius: 0.625rem;
+    color: white;
+
+    
+}
+
+.searchbar-container .bubble-buttons .bubble-button:hover{
+    background-color: var(--button-hover-background-color);
+    transform: scale(1.05);
+    color: var(--input-focus);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+@media (max-width: 280px) {
+
+    .searchbar-container input{
+        width: 80vw;
+    }
+    .searchbar-container .bubble-buttons{
+        gap: 0.5rem;
+    }
+}
 
 /*.search-button {
     background-color: var(--button-background-color);

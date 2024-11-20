@@ -7,12 +7,13 @@ interface SearchbarProps {
     onTypingStart: () => void;
     placeholder: string;
     bubbleButtons: Array<{ label: string, query: string }>; // New prop for bubble buttons
+    initialQuery: string;
 }
 
-const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placeholder="Type to search...", bubbleButtons = []}) => {
+const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placeholder="Type to search...", bubbleButtons = [], initialQuery = ''}) => {
     const [isSearching, setIsSearching] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState(initialQuery);
     const [filtersVisible, setFiltersVisible] = useState(false); // State to manage filter visibility
 
     useEffect(() => {
@@ -77,8 +78,22 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
     };
 
     return (
-        <div className={`searchbar-container ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''} ${isSearching ? 'constrained' : ''}`}>
+        <div className={`searchbar-container ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''}`}>
             <input type="text" placeholder={placeholder} className="search-input" value={query} onChange={handleChange} />
+
+            {!isSearching && bubbleButtons.length > 0 && (
+                    <div className="bubble-buttons">
+                        {bubbleButtons.map((button, index) => (
+                            <button
+                                key={index}
+                                className="bubble-button"
+                                onClick={() => handleBubbleClick(button.query)}
+                            >
+                                {button.label}
+                            </button>
+                        ))}
+                </div>
+            )}
         </div>
     );
 };
@@ -122,17 +137,5 @@ export default Searchbar;
                         </div>
                     </div>
                 )}
-                {!isSearching && bubbleButtons.length > 0 && (
-                    <div className="bubble-buttons">
-                        {bubbleButtons.map((button, index) => (
-                            <button
-                                key={index}
-                                className="bubble-button"
-                                onClick={() => handleBubbleClick(button.query)}
-                            >
-                                {button.label}
-                            </button>
-                        ))}
-                    </div>
-                )}
+
 */

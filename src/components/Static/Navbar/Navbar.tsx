@@ -71,9 +71,9 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        <div className="navbar-logo" onClick={handleLogoClick}>
-          <img className="navbar-logo-img" src={logo} alt="Logo" />
-          <span className="navbar-logo-text">MANTICORE</span>
+        <div className="navbar-logo">
+          <img className="navbar-logo-img" src={logo} alt="Logo"  onClick={handleLogoClick}/>
+          <span className="navbar-logo-text" onClick={handleLogoClick}>MANTICORE</span>
         </div>
 
         <div className="navbar-links">

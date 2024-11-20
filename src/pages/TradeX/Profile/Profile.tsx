@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
     const [balances, setBalances] = useState<any>(null); 
     const [isEditing, setIsEditing] = useState(false);
-    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("wss://ws.manticore.exchange");
+    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("ws://localhost:8765");
     const [imageUrl, setImageUrl] = useState<string | null>(logo); 
     //const navigate = useNavigate();
 

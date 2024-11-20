@@ -30,6 +30,10 @@ const useWebSocket = (url: string) => {
         };
     }, [url]);
 
+    const getUserAddress = () =>{
+        const storedAddress = Cookies.get('address');
+        return storedAddress;
+    }
     const authenticateWebSocket = (websocket: WebSocket) => {
         const userSession = Cookies.get('userSession');
         const storedAddress = Cookies.get('address');
@@ -52,7 +56,7 @@ const useWebSocket = (url: string) => {
         }
     };
 
-    return { message, sendMessage, isConnected, isAuthenticated };
+    return { message, sendMessage, getUserAddress, isConnected, isAuthenticated};
 };
 
 export default useWebSocket; 

@@ -9,7 +9,7 @@ const Deposit = () => {
   const { asset } = useParams();
   const navigate = useNavigate(); 
   //@ts-ignore
-  const { message, sendMessage, isConnected } = useWebSocket('wss://ws.manticore.exchange');
+  const { message, sendMessage, isConnected } = useWebSocket('ws://localhost:8765');
   const [depositAddress, setDepositAddress] = useState<string>('');
   const [loadingAddress, setLoadingAddress] = useState(true);
   //@ts-ignore

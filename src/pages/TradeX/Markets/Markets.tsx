@@ -12,7 +12,7 @@ const Markets = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<string>('All Markets');
   const [showFavorites, setShowFavorites] = useState<boolean>(false);
-  const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('wss://ws.manticore.exchange');
+  const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
   const navigate = useNavigate();
 
   useEffect(() => {

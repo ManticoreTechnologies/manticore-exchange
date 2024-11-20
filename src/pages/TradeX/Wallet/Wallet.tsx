@@ -11,7 +11,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Wallet = () => {
     //@ts-ignore
-    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('wss://ws.manticore.exchange');
+    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
     const [loadingBalances, setLoadingBalances] = useState(true);

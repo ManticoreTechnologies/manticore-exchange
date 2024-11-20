@@ -36,7 +36,7 @@
     color: var(--link-hover-color);
 }
 
-.searchBar {
+.marketsContainer .searchBar {
     margin-left: auto;
     width: 200px;
     padding: 8px;
