@@ -17,14 +17,31 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
     const [showCheckout, setShowCheckout] = useState<boolean>(false);
 
     const handleQuantityChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const newQuantity = Math.max(1, parseInt(e.target.value, 10)); 
+        const inputValue = e.target.value;
+        
+        // Allow empty input while typing
+        if (inputValue === '') {
+            updateQuantity(index, 1);
+            return;
+        }
+
+        const newQuantity = parseInt(inputValue, 10);
         const availableQuantity = cartItems[index].quantity;
+
+        // Validate if input is a valid number
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            const newErrors = [...errors];
+            newErrors[index] = 'Quantity must be at least 1';
+            setErrors(newErrors);
+            updateQuantity(index, 1);
+            return;
+        }
 
         if (newQuantity > availableQuantity) {
             const newErrors = [...errors];
             newErrors[index] = `Max available is ${availableQuantity}`;
             setErrors(newErrors);
-            updateQuantity(index, availableQuantity); 
+            updateQuantity(index, availableQuantity);
         } else {
             const newErrors = [...errors];
             newErrors[index] = '';
@@ -59,9 +76,17 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
     return (
         <>
             <div ref={cartRef} className="cart-container">
-                <h2>Your Cart</h2>
+                <div className="cart-header">
+                    <h2>Your Cart</h2>
+                    <button className="close-cart-button" onClick={closeCart}>×</button>
+                </div>
                 {cartItems.length === 0 ? (
-                    <p>Your cart is empty.</p>
+                    <div className="empty-cart">
+                        <p>Your cart is empty.</p>
+                        <button className="continue-shopping-button" onClick={closeCart}>
+                            Continue Shopping
+                        </button>
+                    </div>
                 ) : (
                     <>
                         <ul className="cart-items">
@@ -72,32 +97,36 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, close
                                         <p>Description: {item.description}</p>
                                         <p>Unit Price: {Number(item.unitPrice / 100000000).toString()} $EVR</p>
                                         <p>
-                                            Quantity: 
-                                            <input
-                                                type="number"
-                                                value={item.quantity}
-                                                min="1"
-                                                onChange={(e) => handleQuantityChange(index, e)}
-                                                className="quantity-input"
-                                            />
+                                            Quantity: {item.quantity}
                                             {errors[index] && (
                                                 <span className="error-message">{errors[index]}</span>
                                             )}
                                         </p>
                                         <p>Total: {Number(item.unitPrice * item.quantity / 100000000).toString()} $EVR</p>
                                     </div>
-                                    <button onClick={() => removeFromCart(index)}>Remove</button>
+                                    <button onClick={() => removeFromCart(index)}>×</button>
                                 </li>
                             ))}
                         </ul>
                         <div className="cart-summary">
-                            <p><strong>Total Amount: </strong>{totalAmountEVR} $EVR</p>
-                            <p><strong>Fee (0.5%): </strong>{feeEVR} $EVR</p>
-                            <p><strong>Final Amount: </strong>{finalAmountEVR} $EVR</p>
-                            <button className="checkout-button" onClick={handleProceedToCheckout}>
-                                Proceed to Checkout
-                            </button>
-                            <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
+                            <div className="summary-details">
+                                <p><strong>Total Amount: </strong>{totalAmountEVR} $EVR</p>
+                                <p><strong>Fee (0.5%): </strong>{feeEVR} $EVR</p>
+                                <p className="final-amount"><strong>Final Amount: </strong>{finalAmountEVR} $EVR</p>
+                            </div>
+                            <div className="cart-actions">
+                                <button className="checkout-button" onClick={handleProceedToCheckout}>
+                                    Proceed to Checkout
+                                </button>
+                                <div className="secondary-actions">
+                                    <button className="continue-shopping-button" onClick={closeCart}>
+                                        Continue Shopping
+                                    </button>
+                                    <button className="clear-cart-button" onClick={clearCart}>
+                                        Clear Cart
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </>
                 )}

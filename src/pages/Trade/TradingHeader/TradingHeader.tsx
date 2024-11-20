@@ -8,8 +8,7 @@ const TradingHeader: React.FC<any> = ({createListing, toggleCartVisibility, cart
     return (
         <div className="trading-header">
             
-            <ManageListing />
-
+         
             <div className="list-icon-container" onClick={createListing}>
                 <FiPlus className="list-icon" />
             </div>

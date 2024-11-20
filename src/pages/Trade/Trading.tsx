@@ -9,6 +9,7 @@ import TradingHeader from './TradingHeader/TradingHeader';
 import InvoiceToaster from './InvoiceToaster/InvoiceToaster'; // Import InvoiceToaster
 import ManageListing from './ManageListing/ManageListing';
 import TradingDetails from './Results/TradingDetails/TradingDetails';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
 
 
 
@@ -34,6 +35,17 @@ const Trading: React.FC = () => {
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
+
+    const navigate = useNavigate(); // Initialize useNavigate
+    const location = useLocation(); // Initialize useLocation
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.get('details') !== 'true') {
+            setShowPopup(false);
+            setSelectedListing(null);
+        }
+    }, [location]);
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -169,32 +181,33 @@ const Trading: React.FC = () => {
     };
 
     const showDetails = (listing: any) => {
-        setSelectedListing(listing); // Set the selected listing
+        setSelectedListing(listing);
+        setShowPopup(true);
+        navigate('?details=true'); // Update the URL
     };
 
     const closeDetails = () => {
-        setSelectedListing(null); // Reset the selected listing
+        setSelectedListing(null);
+        setShowPopup(false);
+        navigate('?details=false'); // Update the URL
     };
 
     return (
         <div className="trading-page">
 
-            <TradingHeader 
-                createListing={createListing} 
-                toggleCartVisibility={toggleCartVisibility}
-                cart={cart}
-            />
+<TradingHeader 
+                    createListing={createListing} 
+                    toggleCartVisibility={toggleCartVisibility}
+                    cart={cart}
+                />
 
-            {selectedListing ? (
+            {showPopup && selectedListing ? (
                 <div>
-                    {/* Render the details page/component here */}
-                    <button onClick={closeDetails}>Back to Listings</button>
-                    {/* You can create a new component for detailed view */}
-                    <div>
-                        <h2>{selectedListing.assetName}</h2>
-                        <p>{selectedListing.description}</p>
-                        {/* Add more details as needed */}
-                    </div>
+                    <TradingDetails 
+                        listing={selectedListing}
+                        closeDetails={closeDetails}
+                        addToCart={addToCart}
+                    />
                 </div>
             ) : (
                 <>
@@ -204,11 +217,11 @@ const Trading: React.FC = () => {
                     >
                         {cartVisible && (
                             <Cart 
-                            cartItems={cart} 
-                            removeFromCart={removeFromCart} 
-                            clearCart={clearCart}
-                            closeCart={() => setCartVisible(false)}
-                            updateQuantity={updateQuantity}
+                                cartItems={cart} 
+                                removeFromCart={removeFromCart} 
+                                clearCart={clearCart}
+                                closeCart={() => setCartVisible(false)}
+                                updateQuantity={updateQuantity}
                             />
                         )}
                     </div>
@@ -217,7 +230,7 @@ const Trading: React.FC = () => {
                             results={listings} 
                             addToCart={promptQuantity} 
                             buyNow={handleBuyNow} 
-                            showDetails={showDetails} // Pass the new prop
+                            showDetails={showDetails}
                         />
                     )}
                 </>
@@ -246,12 +259,12 @@ const Trading: React.FC = () => {
 
             {isCreatingListing && (
                 <CreateListing 
-                onClose={() => setIsCreatingListing(false)} 
-                onComplete={handleListingComplete} 
+                    onClose={() => setIsCreatingListing(false)} 
+                    onComplete={handleListingComplete} 
                 />
             )}
             
-            <InvoiceToaster /> {/* Add the InvoiceToaster component here */}
+            <InvoiceToaster />
 
         </div>
     );

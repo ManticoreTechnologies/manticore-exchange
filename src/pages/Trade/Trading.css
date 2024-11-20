@@ -1,7 +1,7 @@
 .trading-page {
     position: relative;
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 

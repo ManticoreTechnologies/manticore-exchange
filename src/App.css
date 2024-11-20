@@ -67,9 +67,13 @@
        to handle the safe area insets
        Never mind, the env variables dont fucking work
        so we will just ignore the phone shit footer not 
-       that important
+       that important   
     */
     overflow-y: scroll;
+
+    /* hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 
