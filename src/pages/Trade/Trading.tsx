@@ -85,6 +85,7 @@ const Trading: React.FC = () => {
     };
 
     const toggleCartVisibility = () => {
+
         setCartVisible(prev => !prev);
     };
 
@@ -201,7 +202,7 @@ const Trading: React.FC = () => {
                     cart={cart}
                 />
 
-            {showPopup && selectedListing ? (
+            {!cartVisible && showPopup && selectedListing ? (
                 <div>
                     <TradingDetails 
                         listing={selectedListing}
