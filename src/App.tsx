@@ -32,7 +32,7 @@ import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvmoreAssets";
 import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
-import Townhall from "./pages/Home/Townhall/Townhall";
+import Townhall from "./pages/Townhall/Townhall";
 const App: React.FC = () => {
 
   return (

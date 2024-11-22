@@ -3,6 +3,7 @@ import useWebSocket from '../../../hooks/useWebSocket'; // Adjust the path as ne
 import './SignIn.css'; // Import CSS for styling and animations
 import Cookies from 'js-cookie'; // Import Cookies for session management
 import { FaArrowRight } from 'react-icons/fa';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 const SignIn: React.FC = () => {
     //@ts-ignore
@@ -14,7 +15,7 @@ const SignIn: React.FC = () => {
     const [sessionRestored, setSessionRestored] = useState(false); // New state to track session restoration
     const [remainingTime, setRemainingTime] = useState<number | null>(null); // New state for remaining time
 
-    const { message, sendMessage } = useWebSocket('ws://localhost:8765');
+    const { message, sendMessage } = useWebSocket(wsUrl);
 
     useEffect(() => {
         if (message) {

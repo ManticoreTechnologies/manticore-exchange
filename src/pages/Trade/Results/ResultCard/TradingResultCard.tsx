@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import './TradingResultCard.css';
 import placeholderImage from '../../../../images/Placeholder.png'
 import ResultPopup from '../ResultPopup/ResultPopup';
+//@ts-ignore
 import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner'; // Import the loading spinner
 import GraphemeSplitter from 'grapheme-splitter'; // Import the library
+
+//@ts-ignore
 import SearchResultCard from '../Search/ResultCard/ResultCard';
 import ResultCard from '../../../Search/Results/ResultCard/ResultCard';
 import ManageListing from '../../ManageListing/ManageListing';
@@ -40,12 +43,20 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     showDetails
 }) => {
     const [showPopup, setShowPopup] = useState(false);
+
+//@ts-ignore
     const [isLoaded, setIsLoaded] = useState(false); // Track loading state
+
+//@ts-ignore
     const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
     const popupRef = useRef<HTMLDivElement>(null); // To reference the popup container
     const [showManageListing, setShowManageListing] = useState(false); // State to control ManageListing visibility
+
+//@ts-ignore
     const navigate = useNavigate();
     // Helper function to convert satoshis to EVR
+
+//@ts-ignore
     const convertToEVR = (satoshis: number): string => {
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, ''); // Removes trailing zeros
     };
@@ -81,6 +92,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
         }
     }, [ipfsHash, mediaSrc]);
 
+//@ts-ignore
     const truncateDescription = (text: string, maxLength: number): string => {
         const splitter = new GraphemeSplitter();
         const graphemes = splitter.splitGraphemes(text);

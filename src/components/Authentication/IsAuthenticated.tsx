@@ -1,13 +1,16 @@
+
+//@ts-ignore
 import React, { ReactNode } from "react";
 import CommentsSection from "../../____components/common/CommentsSection";
 import useWebSocket from "../../hooks/useWebSocket";
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 interface IsAuthenticatedProps {
   children: React.ReactNode;
 }
 
 const IsAuthenticated: React.FC<IsAuthenticatedProps> = ({ children }) => {
-  const { isAuthenticated } = useWebSocket("ws://localhost:8765");
+  const { isAuthenticated } = useWebSocket(wsUrl);
   
   if (!isAuthenticated) {
     return <div>
@@ -15,8 +18,11 @@ const IsAuthenticated: React.FC<IsAuthenticatedProps> = ({ children }) => {
             comments={[]}
             isAuthenticated={false}
             userAddress=""
+            //@ts-ignore
             onAddComment={(text: string) => {}}
+            //@ts-ignore
             onEditComment={(id, text) => {}}
+            //@ts-ignore
             onDeleteComment={(id) => {}}
         />
         log in to view this content

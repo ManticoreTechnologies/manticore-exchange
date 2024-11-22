@@ -7,6 +7,7 @@ import InfoCard from '../../components/Cards/InfoCard';
 import manticore_logo from '../../images/enhanced_logo.png'; 
 import './Home.css'; 
 import { FaFaucetDrip } from 'react-icons/fa6';
+//@ts-ignore
 import Townhall from './Townhall/Townhall';
 
 const Home: React.FC = () => {

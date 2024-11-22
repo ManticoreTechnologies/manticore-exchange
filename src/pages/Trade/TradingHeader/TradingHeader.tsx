@@ -2,7 +2,6 @@
 import { FiPlus, FiShoppingCart } from 'react-icons/fi';
 import React from 'react';
 import './TradingHeader.css';
-import ManageListing from '../ManageListing/ManageListing';
 
 const TradingHeader: React.FC<any> = ({createListing, toggleCartVisibility, cart}: any) => {
     return (

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './Searchbar.css';
+
+//@ts-ignore
 import { FaFilter } from 'react-icons/fa'; // Changed icon import
 
 interface SearchbarProps {
@@ -63,15 +65,18 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
         setIsSearching(true); // Move the search bar when a bubble is clicked
     };
 
+//@ts-ignore
     const toggleFilters = () => {
         setFiltersVisible(!filtersVisible); // Toggle the visibility of the filters
     };
 
+//@ts-ignore
     const handleSortChange = (value: string) => {
         value
         // Handle sort change logic here
     };
 
+//@ts-ignore
     const handleReissuableChange = (value: string) => {
         value
         // Handle reissuable change logic here

@@ -5,7 +5,7 @@ import logo from '../../images/Placeholder.webp';
 import api from '../../utility/api';
 import Cookies from 'js-cookie';
 // const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
-const wsUrl = 'ws://localhost:8765'; //'wss://ws.manticore.exchange';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 import useWebSocket from "../../hooks/useWebSocket";
 
 interface Asset {
@@ -36,6 +36,7 @@ interface Comment {
 const AssetDetails: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [searchParams] = useSearchParams();
+  //@ts-ignore
   const navigate = useNavigate();
   const [asset, setAsset] = useState<Asset | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -49,13 +50,16 @@ const AssetDetails: React.FC = () => {
   // Add new state variables for comments
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
+  //@ts-ignore
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   const from_faucet = searchParams.get('faucet');
+  //@ts-ignore
   const faucet = from_faucet ? from_faucet : false;
+  //@ts-ignore
   const showIPFSOnly = searchParams.get('showIPFSOnly') === 'true';
   const address = Cookies.get('address');
-  const { sendMessage, message, isConnected, isAuthenticated, getUserAddress } = useWebSocket("ws://localhost:8765");
+  const { sendMessage, message, isConnected, isAuthenticated, getUserAddress } = useWebSocket(wsUrl);
 
   // Add new state for tracking which comment is being edited
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);

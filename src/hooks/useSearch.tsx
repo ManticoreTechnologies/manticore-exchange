@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+const wsUrl = `${process.env.VITE_EXPLORER_API_PROTO}://${process.env.VITE_EXPLORER_API_HOST}:${process.env.VITE_EXPLORER_API_PORT}`;
+console.log(wsUrl);
 const useSearch = (cardsPerPage: number) => {
     const [isSearching, setIsSearching] = useState(false);
     const [results, setResults] = useState<any>(null);
@@ -36,7 +38,7 @@ const useSearch = (cardsPerPage: number) => {
         if (reissuable !== 'all') params["reissuable"] = reissuable;
 
         try {
-            const response = await axios.get('https://api.manticore.exchange/search', { params });
+            const response = await axios.get(`${wsUrl}/search`, { params });
             setResults(response.data);
             setCurrentPage(page);
         } catch (error) {

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 
 interface Comment {
   id: string | number;
-  text: string;
+  content: string;
   friend_name: string;
   address: string;
   hidden?: boolean;
+  ipfsHash: string;
 }
 
 interface CommentsSectionProps {
@@ -13,8 +14,6 @@ interface CommentsSectionProps {
   isAuthenticated: boolean;
   userAddress: string;
   onAddComment: (text: string) => void;
-  onEditComment: (commentId: string | number, newText: string) => void;
-  onDeleteComment: (commentId: string | number) => void;
 }
 
 const CommentsSection: React.FC<CommentsSectionProps> = ({
@@ -22,12 +21,8 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   isAuthenticated,
   userAddress,
   onAddComment,
-  onEditComment,
-  onDeleteComment,
 }) => {
   const [newComment, setNewComment] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState<string | number | null>(null);
-  const [editingCommentText, setEditingCommentText] = useState('');
 
   const handleAddComment = () => {
     if (newComment.trim()) {
@@ -36,16 +31,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
     }
   };
 
-  const handleEditComment = (commentId: string | number, text: string) => {
-    setEditingCommentId(commentId);
-    setEditingCommentText(text);
-  };
-
-  const handleSaveEdit = () => {
-    if (editingCommentId && editingCommentText.trim()) {
-      onEditComment(editingCommentId, editingCommentText);
-      setEditingCommentId(null);
-      setEditingCommentText('');
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAddComment();
     }
   };
 
@@ -60,43 +49,24 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                 key={comment.id} 
                 style={{ display: comment.hidden ? 'none' : 'block' }}
               >
-                {editingCommentId === comment.id ? (
-                  <>
-                    <textarea
-                      value={editingCommentText}
-                      onChange={(e) => setEditingCommentText(e.target.value)}
-                      maxLength={500}
+                <strong>{comment.friend_name}:</strong> {comment.content}
+                {comment.ipfsHash && (
+                  <div className="comment-image">
+                    <img 
+                      src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${comment.ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`} 
+                      alt="Comment attachment"
+                      style={{ maxWidth: '200px', marginTop: '8px' }}
                     />
-                    <button onClick={handleSaveEdit}>Save</button>
-                    <button onClick={() => setEditingCommentId(null)}>Cancel</button>
-                  </>
-                ) : (
-                  <>
-                    <strong>{comment.friend_name}:</strong> {comment.text}
-                    {comment.address === userAddress && (
-                      <>
-                        <button
-                          onClick={() => handleEditComment(comment.id, comment.text)}
-                          className="edit-comment"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => onDeleteComment(comment.id)}
-                          className="delete-comment"
-                        >
-                          🗑️
-                        </button>
-                      </>
-                    )}
-                  </>
+                  </div>
                 )}
               </li>
             ))}
           </ul>
+
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="Add a comment..."
             maxLength={500}
           />

@@ -28,6 +28,15 @@ export default defineConfig(({ mode }) => {
       'process.env.VITE_TRADING_WS_PORT': JSON.stringify(
         mode === 'development' ? process.env.VITE_TRADING_WS_PORT : process.env.VITE_TRADING_WS_PORT
       ),
+      'process.env.VITE_EXPLORER_API_HOST': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EXPLORER_API_HOST : process.env.VITE_EXPLORER_API_HOST
+      ),
+      'process.env.VITE_EXPLORER_API_PORT': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EXPLORER_API_PORT : process.env.VITE_EXPLORER_API_PORT
+      ),
+      'process.env.VITE_EXPLORER_API_PROTO': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EXPLORER_API_PROTO : process.env.VITE_EXPLORER_API_PROTO
+      ),
     }
   }
 });

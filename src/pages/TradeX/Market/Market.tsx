@@ -6,6 +6,8 @@ import NotFoundPage from '../../NotFound/NotFound';
 import ChartX from '../ChartX/ChartX';
 import './Market.css';
 import OrderBook from '../OrderBook/OrderBook';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
+
 interface MarketProps {
 }
 
@@ -14,7 +16,7 @@ const Market: React.FC<MarketProps> = () => {
   const queryParams = new URLSearchParams(location.search);
   const marketName = queryParams.get('name') || 'default_market_name';
 
-  const { message, sendMessage, isConnected } = useWebSocket('ws://localhost:8765');
+  const { message, sendMessage, isConnected } = useWebSocket(wsUrl);
   const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
 

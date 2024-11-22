@@ -5,6 +5,7 @@ import useWebSocket from '../../../hooks/useWebSocket';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 const Markets = () => {
   const [markets, setMarkets] = useState<any[]>([]);
@@ -12,7 +13,7 @@ const Markets = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<string>('All Markets');
   const [showFavorites, setShowFavorites] = useState<boolean>(false);
-  const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
+  const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket(wsUrl);
   const navigate = useNavigate();
 
   useEffect(() => {

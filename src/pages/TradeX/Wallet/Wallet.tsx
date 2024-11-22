@@ -6,12 +6,13 @@ import Cookies from 'js-cookie';
 import styles from './Wallet.module.css';
 import { useNavigate, NavLink } from 'react-router-dom';
 import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Wallet = () => {
     //@ts-ignore
-    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket('ws://localhost:8765');
+    const { message, sendMessage, isConnected, isAuthenticated } = useWebSocket(wsUrl);
     const userSession = Cookies.get('userSession');
     const [balances, setBalances] = useState<{ [key: string]: number }>({});
     const [loadingBalances, setLoadingBalances] = useState(true);

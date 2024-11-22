@@ -1,4 +1,5 @@
 import React, { FormEvent } from 'react';
+//@ts-ignore
 import { FaDiscord, FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa';
 import './Contact.css';
 

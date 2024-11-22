@@ -3,7 +3,10 @@ import { useParams, useLocation } from 'react-router-dom';
 import './TradingDetails.css'; // Refined CSS
 import logo from '../../../../images/Placeholder.webp';
 import useWebSocket from '../../../../hooks/useWebSocket';
+
+//@ts-ignore
 import Cookies from 'js-cookie';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 interface Listing {
   name: string;
@@ -23,15 +26,17 @@ interface Comment {
 
 const TradingDetails: React.FC<{ listing: Listing; closeDetails: () => void; addToCart: (listing: Listing, quantity: number) => void; }> = ({ listing, closeDetails, addToCart }) => {
   const { name } = useParams<{ name: string }>();
+  //@ts-ignore
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  //@ts-ignore
   const [mediaError, setMediaError] = useState<string>('');
 
-  const { message, sendMessage } = useWebSocket('ws://localhost:8765');
+  const { message, sendMessage } = useWebSocket(wsUrl);
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
   const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
@@ -40,6 +45,7 @@ const TradingDetails: React.FC<{ listing: Listing; closeDetails: () => void; add
   const [volume, setVolume] = useState(0.5); // Default volume at 50%
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0); // Default playback speed
 
+//@ts-ignore
   const handleAddComment = () => {
     if (newComment.trim()) {
       sendMessage(`add_listing_comment ${name} "${newComment}"`);
@@ -195,9 +201,8 @@ const TradingDetails: React.FC<{ listing: Listing; closeDetails: () => void; add
         <section className="trading-info">
           <h1 className="trading-title">{listing.name}</h1>
           <p className="trading-description">{listing.description}</p>
-          <p><strong>Quantity:</strong> {listing.quantity}</p>
-          <p><strong>Unit Price:</strong> {listing.unitPrice}</p>
-          <p><strong>Address:</strong> {listing.listingAddress}</p>
+          <p><strong>Quantity:</strong> {listing.quantity/100000000}</p>
+          <p><strong>Unit Price:</strong> {Number(listing.unitPrice)/100000000}</p>
           <div className="add-to-cart-section">
             <input
               type="number"

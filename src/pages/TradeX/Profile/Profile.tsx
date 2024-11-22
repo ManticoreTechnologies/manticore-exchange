@@ -6,6 +6,7 @@ import './Profile.css';
 import UnAuthenticated from '../UnAuthenticated/UnAuthenticated';
 import EditProfileModal from './EditProfileModal';
 import AssetsCarousel from './AssetsCarousel';
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 interface Asset {
     name: string;
@@ -16,7 +17,7 @@ const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
     const [balances, setBalances] = useState<any>(null); 
     const [isEditing, setIsEditing] = useState(false);
-    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket("ws://localhost:8765");
+    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket(wsUrl);
     const [imageUrl, setImageUrl] = useState<string | null>(logo); 
     //const navigate = useNavigate();
 

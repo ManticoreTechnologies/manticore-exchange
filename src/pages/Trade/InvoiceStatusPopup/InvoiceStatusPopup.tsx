@@ -12,6 +12,7 @@ const InvoiceStatusPopup: React.FC<InvoiceStatusPopupProps> = ({ invoiceData, on
 
     const [timeLeft, setTimeLeft] = useState<number>(expiration_time - Math.floor(Date.now() / 1000));
     const [percentage, setPercentage] = useState<number>(100);
+    //@ts-ignore
     const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
     const [spinning, setSpinning] = useState<boolean>(false);
     const [copySuccess, setCopySuccess] = useState<boolean>(false);

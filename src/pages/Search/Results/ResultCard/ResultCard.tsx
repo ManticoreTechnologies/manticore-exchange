@@ -4,6 +4,8 @@ import placeholderImage from '../../../../images/Placeholder.webp'; // Import th
 import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 // Import Font Awesome icons
+
+//@ts-ignore
 import { FaWrench, FaShoppingCart } from 'react-icons/fa';
 
 interface ResultCardProps {
@@ -24,11 +26,15 @@ interface ResultCardProps {
 
 const ResultCard: React.FC<ResultCardProps> = ({
     name,
+    //@ts-ignore
     blockHeight,
+    //@ts-ignore
     blockHash,
     amount,
     ipfsHash,
+    //@ts-ignore
     reissuable,
+    //@ts-ignore
     units,
     onClick,
     overlayButtons,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+//@ts-ignore
 import { FiTool } from 'react-icons/fi';
 import './ManageListing.css';
 
@@ -134,6 +135,7 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
         }));
     };
 
+//@ts-ignore
     const handleOpenPopup = () => {
         setIsClosing(false);
         setIsManagingListing(true);
