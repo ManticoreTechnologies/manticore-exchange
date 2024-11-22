@@ -50,10 +50,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                 style={{ display: comment.hidden ? 'none' : 'block' }}
               >
                 <strong>{comment.friend_name}:</strong> {comment.content}
-                {comment.ipfsHash && (
+                {comment.ipfs_hash && (
                   <div className="comment-image">
                     <img 
-                      src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${comment.ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`} 
+                      src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${comment.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`} 
                       alt="Comment attachment"
                       style={{ maxWidth: '200px', marginTop: '8px' }}
                     />

@@ -99,13 +99,13 @@ const Profile: React.FC = () => {
                 }));
             }
         }
-    }, [message]);
+    }, [message, isConnected]);
 
     // Request account info and balances when connected and authenticated
     useEffect(() => {
         if (isConnected && isAuthenticated) {
             sendMessage("get_account_info");
-            sendMessage("get_all_balances"); 
+             
         }
     }, [isConnected, isAuthenticated]);
 
