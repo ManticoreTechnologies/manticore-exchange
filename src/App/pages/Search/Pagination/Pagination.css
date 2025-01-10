@@ -32,7 +32,7 @@
 .pagination-container .arrow-button{
     background-color: transparent;
     border: none;
-    color: white;
+    color: var(--text-primary);
     transition: color 0.3s ease;
 }
 
@@ -47,19 +47,24 @@
 }
 
 .pagination-container .pagination-content .page-number{
-    color: white;
+    color: var(--text-primary);
     padding: 0 0.1rem;
     margin: 0 0.5rem;
     border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
     padding: 0.2rem 0.5rem;
+    cursor: pointer;
 }
 
 .pagination-container .pagination-content .page-number:hover{
     color: var(--input-focus);
+    transform: translateY(-1px);
 }
 
 .pagination-container .pagination-content .page-number.active{
     background-color: var(--input-focus);
-    color: black;
+    color: var(--text-inverse);
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
 }

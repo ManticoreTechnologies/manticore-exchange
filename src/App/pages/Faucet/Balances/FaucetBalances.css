@@ -1,96 +1,366 @@
-/* Style for the assets-list container */
+/* Style for the assets grid container */
 .assets-list {
-    margin: 1rem auto; /* Reduced margin */
-    padding: 0.5rem; /* Reduced padding */
-    max-width: 1000px;
-    text-align: center;
+    margin: var(--spacing-4) auto;
+    padding: var(--spacing-2);
+    max-width: var(--container-lg);
 }
 
-/* Table Styling */
-table {
+/* Grid layout for cards */
+.assets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-3);
+    padding: var(--spacing-2);
+}
+
+/* Card styling */
+.asset-card {
+    position: relative;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-fast) ease;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    height: 140px;
+    cursor: pointer;
+}
+
+.asset-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-primary-500);
+    background-color: color-mix(in srgb, var(--background-secondary) 95%, var(--color-primary-500) 5%);
+}
+
+/* Background image styling */
+.asset-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    border-collapse: collapse;
-    background-color: var(--background-color); /* Use variable for background color */
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); /* Red glow effect */
-    margin: 0 auto;
-}
-
-/* Table Header Styling */
-th {
-    font-size: 1.2rem;
-    color: var(--text-color); /* Use variable for text color */
-    background-color: var(--background-color); /* Use variable for background color */
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 0.5rem; /* Reduced padding */
-    border-bottom: 2px solid #ff000c;
-}
-
-/* Row Styling */
-tbody tr {
+    height: 100%;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    color: white; /* Use variable for text color */
+    opacity: 0.1;
+    transition: opacity var(--transition-fast) ease;
 }
 
-/* Hover effect on rows */
-tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.9); /* Darker background on hover */
+/* Card content container */
+.card-content {
+    position: relative;
+    z-index: 1;
+    padding: var(--spacing-4);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-/* Light background for text when hovering over the row */
-tbody tr:hover td {
-    background-color: rgba(255, 255, 255, 0.2); /* Light semi-transparent background for better contrast */
-    color: #ff000c; /* Aggressive red text color */
+/* Card header */
+.card-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
 }
 
-/* Cell Styling */
-td {
-    padding: 0.5rem; /* Reduced padding */
-    text-align: left;
-    border-bottom: 1px solid #ff000c; /* Aggressive red for borders */
-    background-color: rgba(0, 0, 0, 0.5); /* Fallback dark background */
+/* Asset name styling */
+.asset-name {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
 }
 
-td.balance-cell {
-    text-align: center; /* Center text in balance cells */
+/* Balance value styling */
+.balance-value {
+    font-family: var(--font-family-base);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
 }
 
-td img {
-    display: block;
-    max-height: 45px;
-    margin: 0.25rem auto; /* Reduced margin */
-    background-color: rgba(255, 255, 255, 0.8); /* Light background for better contrast */
-    padding: 0.25rem; /* Add padding around the image */
-    border-radius: 5px; /* Optional: Add rounded corners */
+/* Card details */
+.card-details {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
 }
 
-/* Clickable rows */
-tr a {
-    display: block;
-    color: inherit; /* Inherit color from row */
+.detail-label {
+    color: var(--text-muted);
+}
+
+.detail-hash {
+    color: var(--text-secondary);
+    font-family: var(--font-family-base);
+}
+
+/* Card hover effects */
+.asset-card:hover .asset-bg {
+    opacity: 0.15;
+}
+
+/* Expanded card overlay */
+.expanded-card-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    backdrop-filter: blur(4px);
+    animation: fadeIn var(--transition-normal) ease;
+}
+
+/* Expanded card */
+.expanded-card {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    animation: slideUp var(--transition-normal) ease;
+}
+
+/* Expanded card background */
+.expanded-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+}
+
+/* Expanded card content */
+.expanded-card-content {
+    position: relative;
+    z-index: 1;
+    padding: var(--spacing-6);
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+/* Expanded card header */
+.expanded-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.expanded-card-header h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.expanded-balance {
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Detail items */
+.expanded-card-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-2) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Expanded card form */
+.expanded-card-form {
+    margin-bottom: var(--spacing-6);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-4);
+}
+
+.expanded-card-form input {
+    width: 100%;
+    padding: var(--spacing-3);
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast) ease;
+}
+
+.expanded-card-form input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-500) 25%, transparent 75%);
+}
+
+.expanded-card-form input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.submit-button {
+    width: 100%;
+    padding: var(--spacing-3);
+    background-color: var(--color-primary-500);
+    color: var(--color-neutral-100);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast) ease;
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: var(--color-primary-700);
+}
+
+.submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.form-message {
+    margin-top: var(--spacing-3);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.form-message.success {
+    background-color: color-mix(in srgb, var(--color-success) 15%, transparent 85%);
+    color: var(--color-success);
+}
+
+.form-message.error {
+    background-color: color-mix(in srgb, var(--color-error) 15%, transparent 85%);
+    color: var(--color-error);
+}
+
+/* Asset details link */
+.asset-details-link {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--text-primary);
     text-decoration: none;
-    padding: 0.5rem; /* Reduced padding */
+    font-weight: 500;
+    border-radius: var(--border-radius-lg);
+    background-color: color-mix(in srgb, var(--background-tertiary) 90%, transparent 10%);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast) ease;
 }
 
-tr a:hover {
-    color: #ff000c; /* Red text on hover */
+.asset-details-link:hover {
+    background-color: var(--background-tertiary);
+    transform: translateX(4px);
+}
+
+/* Close button */
+.close-button {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    cursor: pointer;
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition-fast) ease;
+}
+
+.close-button:hover {
+    background-color: color-mix(in srgb, var(--text-primary) 10%, transparent 90%);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Responsive styling */
 @media (max-width: 768px) {
-    .assets-list {
-        padding: 0.25rem; /* Adjust padding for smaller screens */
+    .assets-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--spacing-2);
     }
 
-    th, td {
-        font-size: 0.9rem; /* Adjust font size for smaller screens */
-        padding: 0.25rem; /* Adjust padding for smaller screens */
+    .card-content {
+        padding: var(--spacing-3);
     }
 
-    td img {
-        max-height: 30px; /* Adjust image size for smaller screens */
+    .asset-name {
+        font-size: var(--font-size-base);
+    }
+
+    .balance-value {
+        font-size: var(--font-size-lg);
+    }
+
+    .expanded-card {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .expanded-card-content {
+        padding: var(--spacing-4);
+    }
+
+    .expanded-card-header h2 {
+        font-size: var(--font-size-xl);
+    }
+
+    .expanded-balance {
+        font-size: var(--font-size-lg);
+    }
+
+    .submit-button,
+    .expanded-card-form input {
+        padding: var(--spacing-2);
+        font-size: var(--font-size-sm);
     }
 }
