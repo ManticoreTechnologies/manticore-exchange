@@ -1,0 +1,143 @@
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  min-height: 400px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.9) 45%,
+    rgba(0, 0, 0, 0.9) 55%,
+    rgba(0, 136, 255, 0.8) 100%
+  );
+  background-size: 200% 200%;
+  animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-left, .hero-right {
+  max-width: 33rem;
+}
+
+.hero-center {
+  flex: 2;
+  text-align: center;
+}
+
+.hero-text {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+.hero-text:hover {
+  transform: translateY(-5px);
+}
+
+.hero-text p{
+    display: inline;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 
+    0 2px 10px rgba(255, 0, 0, 0.4),
+    0 4px 20px rgba(0, 136, 255, 0.4);
+  letter-spacing: 2px;
+  z-index: 1;
+}
+
+.hero h1:nth-of-type(2) {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  background: linear-gradient(
+    to right,
+    #ff0000 20%,
+    #0088ff 40%,
+    #0088ff 60%,
+    #ff0000 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 1rem 0;
+  text-shadow: none;
+  animation: shine 8s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.hero p {
+  max-width: 600px;
+  margin: 2rem auto 0;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  line-height: 1.6;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  padding: 0 1rem;
+}
+
+
+
+.hero-logo, .hero-logo-right {
+  width: clamp(60px, 20vh, 150px);
+  margin-bottom: 2rem;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  animation: pulse 5s infinite ease-in-out;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .hero-section {
+    margin: 1rem 0;
+  }
+
+  .hero-left, .hero-right {
+    max-width: 150px;
+  }
+
+  .hero-logo, .hero-logo-right {
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    margin: 1rem auto;
+  }
+}
+

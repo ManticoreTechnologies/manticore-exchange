@@ -1,7 +1,7 @@
 
 //@ts-ignore
 import React, { ReactNode } from "react";
-import CommentsSection from "../../____components/common/CommentsSection";
+import CommentsSection from "../Comments/CommentsSection";
 import useWebSocket from "../../hooks/useWebSocket";
 const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
@@ -17,6 +17,7 @@ const IsAuthenticated: React.FC<IsAuthenticatedProps> = ({ children }) => {
         <CommentsSection
             comments={[]}
             isAuthenticated={false}
+            //@ts-ignore
             userAddress=""
             //@ts-ignore
             onAddComment={(text: string) => {}}

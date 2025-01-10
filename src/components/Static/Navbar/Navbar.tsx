@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
-import logo from '../../../images/enhanced_logo_old.png';
+import logo from '@/images/enhanced_logo_old.png';
 import Dropdown from "./Dropdown";
 import { useNavigate } from "react-router-dom";
 

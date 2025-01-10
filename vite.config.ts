@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Load environment variables based on the current mode
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
@@ -12,6 +13,13 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: 8080,
     },
+
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+    },
+
     define: {
       'process.env.VITE_API_BASE_URL': JSON.stringify(
         mode === 'development' ? 'https://api.manticore.exchange' : 'https://api.manticore.exchange'

@@ -58,6 +58,17 @@
     --input-border: #4a5568;
 }
 
+/* Hide scrollbars while maintaining scroll functionality */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+/* Webkit browsers like Chrome, Safari */
+*::-webkit-scrollbar {
+    display: none;
+}
+
 body {
     background-color: var(--background-primary);
     color: var(--text-primary);

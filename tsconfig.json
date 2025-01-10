@@ -1,25 +1,31 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
+    "target": "ES2020", // target the ES2020 standard
+    "useDefineForClassFields": true, // use define for class fields
+    "lib": ["ES2020", "DOM", "DOM.Iterable"], // use the ES2020, DOM, and DOM.Iterable libraries
+    "module": "ESNext", // use ESNext modules
+    "skipLibCheck": true, // skip checking the types of libraries
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
+    "moduleResolution": "bundler", // use bundler to resolve modules
+    "allowImportingTsExtensions": true, // allow importing TS extensions
+    "resolveJsonModule": true, // resolve JSON modules
+    "isolatedModules": true, // isolate modules
+    "noEmit": true, // do not emit output
+    "jsx": "react-jsx", // use React JSX
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "strict": true, // enforce strict type checking
+    "noUnusedLocals": true, // report unused locals
+    "noUnusedParameters": true, // report unused parameters
+    "noFallthroughCasesInSwitch": true // report fallthrough cases in switch statements
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "____components"], // include the src directory
+  "references": [{ "path": "./tsconfig.node.json" }] // reference the node tsconfig file
 }
