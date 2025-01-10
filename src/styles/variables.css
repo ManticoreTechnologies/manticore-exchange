@@ -1,0 +1,140 @@
+:root {
+    /* Color System */
+    /* Primary Colors */
+    --color-primary-100: #e6fcfd;
+    --color-primary-300: #7deef2;
+    --color-primary-500: #1BDEE4;
+    --color-primary-700: #14a8ac;
+    --color-primary-900: #0d7275;
+
+    /* Secondary Colors */
+    --color-secondary-100: #fde6e6;
+    --color-secondary-300: #f27d7d;
+    --color-secondary-500: #E4211B;
+    --color-secondary-700: #ac1814;
+    --color-secondary-900: #750d0d;
+
+    /* Neutral Colors */
+    --color-neutral-100: #ffffff;
+    --color-neutral-200: #f8f9fa;
+    --color-neutral-300: #e9ecef;
+    --color-neutral-400: #dee2e6;
+    --color-neutral-500: #adb5bd;
+    --color-neutral-600: #6c757d;
+    --color-neutral-700: #495057;
+    --color-neutral-800: #343a40;
+    --color-neutral-900: #212529;
+    --color-black: #000000;
+
+    /* Semantic Colors */
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-error: #dc3545;
+    --color-info: #17a2b8;
+
+    /* Typography */
+    --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.125rem;   /* 18px */
+    --font-size-xl: 1.25rem;    /* 20px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    --font-size-3xl: 1.875rem;  /* 30px */
+    --font-size-4xl: 2.25rem;   /* 36px */
+
+    /* Spacing */
+    --spacing-0: 0;
+    --spacing-1: 0.25rem;   /* 4px */
+    --spacing-2: 0.5rem;    /* 8px */
+    --spacing-3: 0.75rem;   /* 12px */
+    --spacing-4: 1rem;      /* 16px */
+    --spacing-6: 1.5rem;    /* 24px */
+    --spacing-8: 2rem;      /* 32px */
+    --spacing-12: 3rem;     /* 48px */
+    --spacing-16: 4rem;     /* 64px */
+
+    /* Layout */
+    --header-height: 70px;
+    --footer-height: 25px;
+    --container-sm: 640px;
+    --container-md: 768px;
+    --container-lg: 1024px;
+    --container-xl: 1280px;
+
+    /* Z-index */
+    --z-negative: -1;
+    --z-elevate: 1;
+    --z-dropdown: 10;
+    --z-sticky: 100;
+    --z-drawer: 200;
+    --z-modal: 300;
+    --z-popover: 400;
+    --z-toast: 500;
+
+    /* Borders */
+    --border-radius-sm: 0.125rem;
+    --border-radius-md: 0.25rem;
+    --border-radius-lg: 0.5rem;
+    --border-radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    /* Transitions */
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 350ms;
+
+    /* Dark Theme by Default */
+    --background-primary: var(--color-black);
+    --background-secondary: #0a0a0a;
+    --background-tertiary: #141414;
+    --text-primary: var(--color-neutral-100);
+    --text-secondary: var(--color-primary-300);
+    --text-muted: var(--color-neutral-500);
+    --border-color: #1a1a1a;
+    --input-border: #2a2a2a;
+}
+
+/* Light theme */
+[data-theme="light"] {
+    --background-primary: var(--color-neutral-100);
+    --background-secondary: var(--color-neutral-200);
+    --background-tertiary: var(--color-neutral-300);
+    --text-primary: var(--color-neutral-900);
+    --text-secondary: var(--color-primary-700);
+    --text-muted: var(--color-neutral-600);
+    --border-color: var(--color-neutral-300);
+    --input-border: var(--color-neutral-400);
+}
+
+/* Cyberpunk theme */
+[data-theme="cyberpunk"] {
+    --background-primary: #000000;
+    --background-secondary: #1a0f1f;
+    --background-tertiary: #2a1f2f;
+    --text-primary: #00ff9f;
+    --text-secondary: #ff00ff;
+    --text-muted: #7b5e8a;
+    --border-color: #ff00ff;
+    --input-border: #7b5e8a;
+    --color-primary-500: #00ff9f;
+    --color-secondary-500: #ff00ff;
+}
+
+/* Midnight Blue theme */
+[data-theme="midnight"] {
+    --background-primary: #0a192f;
+    --background-secondary: #112240;
+    --background-tertiary: #1a365d;
+    --text-primary: #e2e8f0;
+    --text-secondary: #64ffda;
+    --text-muted: #8892b0;
+    --border-color: #1a365d;
+    --input-border: #2d3748;
+    --color-primary-500: #64ffda;
+    --color-secondary-500: #f97316;
+} 

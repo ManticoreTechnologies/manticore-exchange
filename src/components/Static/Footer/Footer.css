@@ -4,83 +4,75 @@
 */
 
 /* Footer styling */
-.footer{
-
-  /* Set the position to relative so all children 
-     can be positioned relative to this container
-  */
-  position: relative;
-  
-  /* Display the footer as a flex container */
-  display: inline-flex;
-
-  /* Align content center vertically */
-  align-items: center;
-
-  /* Set the background color */
-  background-color: var(--footer-bg-color);
-  
-  /* Set the min height and max height to +-10% */
-  min-height: calc(var(--footer-height, 15px) * 0.9);
-  max-height: calc(var(--footer-height, 15px) * 1.1);
-
-  height: var(--footer-height, 15px); 
-  
-  /* Font size based on height */
-  font-size: calc(var(--footer-height, 15px) * 0.5); 
-
-  
+.footer {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--background-secondary);
+    min-height: calc(var(--footer-height) * 0.9);
+    max-height: calc(var(--footer-height) * 1.1);
+    height: var(--footer-height);
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    padding: 0 var(--spacing-4);
+    z-index: var(--z-sticky);
 }
 
-.footer-text{
-
-  /* Set the position to absolute */
-  position: absolute;
-
-
-  font-size: 0.6rem;
-
-  /* Display the footer as a flex container */
-  display: flex;
+.ping-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-size: 0.6rem;
 }
 
-.footer a {
-
-  /* Set the color */
-  color: #ff000c;
-
-  /* Remove the underline */
-  text-decoration: none;
-
-  /* Add padding */
-  padding: 0 3px;
-
-  /* Add transition */
-  transition: color 0.3s ease;
-
+.footer-text {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: 0.6rem;
+    color: var(--text-muted);
 }
 
-.footer a:hover {
-  color: var(--color);
+.footer-text a {
+    color: var(--color-secondary-500);
+    text-decoration: none;
+    padding: 0 3px;
+    transition: color 0.3s ease;
 }
 
+.footer-text a:hover {
+    color: var(--color-primary-500);
+}
+
+.theme-settings-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: auto;
+    position: relative;
+    z-index: var(--z-dropdown);
+}
 
 @media (max-width: 450px) {
-  .ping {
-    right: 0;
-  }
-  .footer-text {
-    right: 0;
-  }
-  .footer-text a {
-    display: block;
-  }
+    .footer {
+        justify-content: flex-end;
+    }
+    
+    .ping-container {
+        margin-right: auto;
+    }
+
+    .footer-text {
+        display: none;
+    }
 }
 
 @media (min-width: 450px) {
-  .footer-text {
-    /* Center the text horizontally */
-    left: 50%;
-    transform: translateX(-50%);
-  }
+    .footer-text {
+        /* Center the text horizontally */
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
