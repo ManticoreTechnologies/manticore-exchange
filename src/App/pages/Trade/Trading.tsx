@@ -38,7 +38,6 @@ const Trading: React.FC = () => {
     const [searchResults, setSearchResults] = useState<any[]>([]); // New state for search results
     const [loading, setLoading] = useState<boolean>(false); // New state for loading indicator
     const [searchColumn, setSearchColumn] = useState<string>('asset_name');
-    const [includeAll, setIncludeAll] = useState<boolean>(false);
 
     const cartRef = useRef<HTMLDivElement>(null);
 
@@ -198,20 +197,12 @@ const Trading: React.FC = () => {
         }
     };
 
-// Add handler for checkbox
-    const handleIncludeAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIncludeAll(e.target.checked);
-        if (searchQuery) {
-            setLoading(true);
-        }
-    };
-
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
             if (searchQuery) {
                 try {
                     let url = `${trading_api_url}/search?`;
-                    if (includeAll) {
+                    if (searchColumn === 'all') {
                         url += `column=all&value=${searchQuery}`;
                     } else {
                         url += `column=${searchColumn}&value=${searchQuery}`;
@@ -230,7 +221,7 @@ const Trading: React.FC = () => {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, searchColumn, includeAll]);
+    }, [searchQuery, searchColumn]);
 
     const showDetails = (listing: any) => {
         setSelectedListing(listing);
@@ -244,53 +235,30 @@ const Trading: React.FC = () => {
         navigate('?details=false'); // Update the URL
     };
 
+    const searchOptions = [
+        { value: 'all', label: 'All' },
+        { value: 'asset_name', label: 'Asset Name' },
+        { value: 'seller', label: 'Seller' },
+        { value: 'price', label: 'Price' },
+        { value: 'quantity', label: 'Quantity' }
+    ];
+
     return (
         <div className="trading-page">
+            <TradingHeader 
+                createListing={createListing} 
+                toggleCartVisibility={toggleCartVisibility}
+                cart={cart}
+                searchColumn={searchColumn}
+                handleColumnChange={handleColumnChange}
+                searchQuery={searchQuery}
+                handleSearch={handleSearch}
+                searchOptions={searchOptions}
+            />
 
-<TradingHeader 
-                    createListing={createListing} 
-                    toggleCartVisibility={toggleCartVisibility}
-                    cart={cart}
-                />
-
-            <div className="search-bar">
-                <div className="search-options">
-                    <select 
-                        value={searchColumn} 
-                        onChange={handleColumnChange}
-                        disabled={includeAll}
-                    >
-                        <option value="asset_name">Asset Name</option>
-                        <option value="description">Description</option>
-                        <option value="tags">Tags</option>
-                    </select>
-                    <label className="search-checkbox">
-                        <input
-                            type="checkbox"
-                            checked={includeAll}
-                            onChange={handleIncludeAllChange}
-                        />
-                        Search All
-                    </label>
-                </div>
-                <div className="search-input-wrapper">
-                    <input 
-                        type="text" 
-                        value={searchQuery} 
-                        onChange={handleSearch} 
-                        placeholder={includeAll ? "Search everything..." : `Search by ${searchColumn.replace('_', ' ')}...`}
-                    />
-                    <div className={`loading-spinner ${loading ? 'visible' : ''}`} />
-                </div>
-            </div>
-
-            {!cartVisible && showPopup && selectedListing ? (
-                <div>
-                    <TradingDetails 
-                        listing={selectedListing}
-                        closeDetails={closeDetails}
-                        addToCart={addToCart}
-                    />
+            {listings.length === 0 ? (
+                <div className="no-results">
+                    <p>No listings found</p>
                 </div>
             ) : (
                 <>
@@ -308,18 +276,19 @@ const Trading: React.FC = () => {
                             />
                         )}
                     </div>
-                    {!cartVisible && (
+                    {!cartVisible && showPopup && selectedListing ? (
+                        <TradingDetails 
+                            listing={selectedListing}
+                            closeDetails={closeDetails}
+                            addToCart={promptQuantity}
+                        />
+                    ) : (
                         <TradingResultsGrid 
-                            results={searchQuery ? searchResults : listings} 
-                            addToCart={promptQuantity} 
-                            buyNow={handleBuyNow} 
+                            results={searchQuery ? searchResults : listings}
+                            addToCart={promptQuantity}
+                            buyNow={handleBuyNow}
                             showDetails={showDetails}
                         />
-                    )}
-                    {searchQuery && searchResults.length === 0 && !loading && (
-                        <div className="no-results">
-                            <p>No results found</p>
-                        </div>
                     )}
                 </>
             )}

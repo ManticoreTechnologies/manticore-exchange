@@ -1,7 +1,10 @@
 .trading-page {
     position: relative;
-    padding: 20px;
-    overflow-y: hidden;
+    padding: var(--spacing-4) var(--spacing-6);
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    background-color: var(--background-primary);
 }
 
 
@@ -9,7 +12,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: var(--spacing-6);
+    padding: var(--spacing-4) 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .list-icon-container {
@@ -197,52 +202,48 @@
     }
 }
 
+/* Updated Search Bar Styles */
 .search-bar {
-    position: relative;
+    margin: var(--spacing-4) 0;
     width: 100%;
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    max-width: var(--container-md);
+    margin-inline: auto;
 }
 
 .search-options {
     display: flex;
+    gap: var(--spacing-3);
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-3);
 }
 
 .search-options select {
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     cursor: pointer;
-    transition: all 0.3s ease;
+    outline: none;
 }
 
 .search-options select:hover:not(:disabled) {
-    border-color: rgba(255, 0, 0, 0.5);
+    border-color: var(--color-primary-500);
 }
 
-.search-options select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.search-options select:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px var(--color-primary-500);
 }
 
 .search-checkbox {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-}
-
-.search-checkbox input {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
+    gap: var(--spacing-2);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
 }
 
 .search-input-wrapper {
@@ -252,34 +253,23 @@
 
 .search-input-wrapper input {
     width: 100%;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    background: rgba(0, 0, 0, 0.2);
-    color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+    outline: none;
 }
 
 .search-input-wrapper input:focus {
-    outline: none;
-    border-color: rgba(255, 0, 0, 0.5);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
-    background: rgba(0, 0, 0, 0.3);
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px var(--color-primary-500);
 }
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .search-options {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .search-options select {
-        width: 100%;
-    }
+.search-input-wrapper input::placeholder {
+    color: var(--text-muted);
 }
 
 /* Loading Spinner */
@@ -343,4 +333,21 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .trading-page {
+        padding: var(--spacing-3);
+    }
+
+    .search-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input-wrapper input {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-2) var(--spacing-3);
+    }
 }
