@@ -309,7 +309,13 @@ const Trading: React.FC = () => {
                     </div>
 
                     {/* Main Content */}
-                    {showPopup && selectedListing ? (
+                    {isCheckingOut ? (
+                        <Checkout 
+                            selectedItems={checkoutItems}
+                            onCheckoutComplete={handleCheckoutComplete}
+                            onBack={handleBack}
+                        />
+                    ) : showPopup && selectedListing ? (
                         <TradingDetails 
                             listing={selectedListing}
                             closeDetails={closeDetails}
