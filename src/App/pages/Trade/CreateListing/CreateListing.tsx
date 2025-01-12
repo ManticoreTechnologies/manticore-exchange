@@ -39,15 +39,28 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
 
-        if (step === 2 && listingResponse?.listing_id) {
-            // Fetch the listing status every 5 seconds
+        const checkListingStatus = async () => {
+            if (!listingResponse?.listing_id) return;
+            try {
+                const response = await axios.get(`${trading_api_url}/listing/${listingResponse.listing_id}`);
+                const { listing_status } = response.data;
+                setOrderStatus(listing_status);
+            } catch (error) {
+                console.error('Error fetching listing status:', error);
+            }
+        };
+
+        if (step === 2) {
+            // Initial check
+            checkListingStatus();
+            // Set up interval for continuous checking
             interval = setInterval(checkListingStatus, 5000);
         }
 
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [step, listingResponse]);
+    }, [step, listingResponse, trading_api_url]);
 
     const handleNextStep = async () => {
         if (step === 1) {
@@ -94,21 +107,6 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         }
     };
 
-    const checkListingStatus = async () => {
-        if (!listingResponse) return;
-        try {
-            const response = await axios.get(`${trading_api_url}/listing/${listingResponse.listing_id}`);
-            const { listing_status } = response.data;
-            setOrderStatus(listing_status);
-
-            if (listing_status === 'ACTIVE') {
-                // Stop the loading spinner when the status is ACTIVE
-            }
-        } catch (error) {
-            console.error('Error fetching listing status:', error);
-        }
-    };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -121,9 +119,9 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                 }));
             }
         } else if (name === 'assetName') {
-            // Allow lowercase but convert them to uppercase and ensure only A-Z 0-9 . _ /
+            // Allow lowercase but convert them to uppercase and ensure only A-Z 0-9 . _ / #
             const uppercasedValue = value.toUpperCase();
-            if (/^[A-Z0-9._/]*$/.test(uppercasedValue)) { // Updated regex to include /
+            if (/^[A-Z0-9._/#]*$/.test(uppercasedValue)) { // Updated regex to include / and #
                 setListingDetails(prevDetails => ({
                     ...prevDetails,
                     [name]: uppercasedValue, // Automatically convert to uppercase
@@ -171,6 +169,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
     const handleConfirmPasswordCloseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmPasswordClose(e.target.value);
     };
+    // @ts-ignore
     const handleConfirmPasswordCompleteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmPasswordComplete(e.target.value);
     };
@@ -180,6 +179,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         }
         setShowConfirmationPopup(true); // Show confirmation popup on close attempt
     };
+    // @ts-ignore
     const handleCompleteClose = () => {
         if (confirmPasswordComplete === listingDetails.password) {
             onClose(); // Close if password matches
@@ -211,6 +211,21 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
         } else {
             return <p className="password-feedback secure">Password is secure.</p>;
         }
+    };
+
+    const renderStatus = (status: string | null) => {
+        if (!status) return <div className="status-badge pending">PENDING</div>;
+        const statusClass = status.toLowerCase();
+        return (
+            <div 
+                className={`status-badge ${statusClass}`} 
+                onClick={status === 'ACTIVE' ? onClose : undefined}
+            >
+                {status === 'CONFIRMING' && <div className="status-spinner" />}
+                {status === 'ACTIVE' && <div className="status-checkmark">✓</div>}
+                {status}
+            </div>
+        );
     };
 
     const renderStepContent = () => {
@@ -305,24 +320,16 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
                                 />
                             )}
                         </div>
-                        <p><strong>Listing ID:</strong> {listingResponse?.listing_id}</p>
-                        <p className="listing-status">
-                            <strong>Status:</strong> {orderStatus || 'PENDING'}
-                        </p>
+                        <div className="listing-details">
+                            <p><strong>Listing ID:</strong> {listingResponse?.listing_id}</p>
+                            <p>
+                                <strong>Status:</strong>
+                                {renderStatus(orderStatus)}
+                            </p>
+                        </div>
                         <div className="status-container">
-                            {orderStatus === 'ACTIVE' ? (
-                                <>
-                                    <input
-                                        type="password"
-                                        name="confirmPassword"
-                                        placeholder="Confirm Password"
-                                        value={confirmPasswordComplete}
-                                        onChange={handleConfirmPasswordCompleteChange}
-                                    />
-                                    <div className="checkmark" onClick={handleCompleteClose}>&#10004;</div> {/* Clickable Green checkmark */}
-                                </>
-                            ) : (
-                                <div className="loading-spinner"></div> // Loading spinner
+                            {orderStatus !== 'ACTIVE' && (
+                                <div className="loading-spinner" />
                             )}
                         </div>
                     </div>

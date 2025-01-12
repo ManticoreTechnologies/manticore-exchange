@@ -1,102 +1,154 @@
 .evr-page {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-family-base);
   padding: 0;
-  margin-top: 20px;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  margin-top: var(--spacing-4);
+  color: var(--text-primary);
+  background-color: var(--background-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
 }
 
 .xeggex-data {
-  background-color: transparent;
-  border-radius: 10px;
-  padding: 20px;
+  background-color: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
   text-align: center;
-  width: 100%; /* Full width of the parent container */
+  width: 100%;
   max-width: 600px;
-  margin-bottom: 20px; /* Added margin for better spacing */
+  margin-bottom: var(--spacing-4);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
 }
 
 .xeggex-data h1 {
-  font-size: 2em;
-  margin-bottom: 10px;
-  color: #ff000c;
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-2);
+  color: var(--accent-color);
+  font-weight: 700;
 }
 
 .xeggex-data img {
-  margin: 10px 0;
+  margin: var(--spacing-2) 0;
   max-width: 80px;
   height: auto;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--accent-color);
+  padding: var(--spacing-1);
+  background: var(--background-tertiary);
 }
 
 .xeggex-data p {
-  margin: 5px 0;
-  font-size: 1.1em;
+  margin: var(--spacing-1) 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
 }
 
 .xeggex-data .links {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 15px 0;
+  gap: var(--spacing-2);
+  margin: var(--spacing-4) 0;
 }
 
 .xeggex-data .links a {
-  color: #ff000c;
+  color: var(--accent-color);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.xeggex-data .links a:hover {
+  color: var(--hover-color);
 }
 
 .xeggex-data .about {
-  margin: 15px 0;
-  font-size: 1em;
+  margin: var(--spacing-4) 0;
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .xeggex-data .social-links {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 15px 0;
+  gap: var(--spacing-2);
+  margin: var(--spacing-4) 0;
 }
 
 .xeggex-data .social-links a {
-  color: #ff000c;
+  color: var(--accent-color);
   text-decoration: none;
+  transition: all var(--transition-normal);
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  background: var(--background-tertiary);
+}
+
+.xeggex-data .social-links a:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
 }
 
 .xeggex-data .trade-links {
-  margin-top: 20px;
-  color: #ff000c;
-  font-weight: bold;
+  margin-top: var(--spacing-4);
+  color: var(--accent-color);
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .xeggex-data .trade-links ul {
   list-style: none;
   padding: 0;
+  margin: var(--spacing-2) 0;
 }
 
 .xeggex-data .trade-links li {
-  margin: 5px 0;
+  margin: var(--spacing-1) 0;
+  padding: var(--spacing-2);
+  background: var(--background-tertiary);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+}
+
+.xeggex-data .trade-links li:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
 .info-chart-container {
-  width: 100%; /* Ensures the chart container takes full width of the parent */
-  max-width: 100%; /* Ensures the chart doesn't exceed the container's width */
-  height: 400px; /* Set a fixed height for the chart */
-  margin: 0 auto; /* Center the chart container */
+  width: 100%;
+  max-width: 100%;
+  height: 400px;
+  margin: var(--spacing-4) auto;
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .info-chart-container {
-    width: 100%; /* Ensures the chart container takes full width of the parent */
-    max-width: 100%; /* Ensures the chart doesn't exceed the container's width */
-    height: 300px; /* Set a fixed height for the chart */
+    height: 300px;
+    padding: var(--spacing-2);
+  }
+  
+  .xeggex-data {
+    padding: var(--spacing-4);
+  }
+  
+  .xeggex-data h1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .xeggex-data p {
+    font-size: var(--font-size-base);
   }
 }

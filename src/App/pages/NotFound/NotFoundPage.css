@@ -2,44 +2,83 @@
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column; /* Stacks elements vertically */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: var(--background-color); /* Ensure it fits the dark theme */
-    color: var(--text-color); /* Updated to a less intense color for better readability */
-    font-family: 'Arial', sans-serif; /* Consider a more professional typeface like 'Helvetica' */
+    background: var(--background-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family-base);
     overflow: hidden;
     text-align: center;
-    animation: fadeIn 2s ease-in-out;
+    animation: fadeIn var(--transition-normal) ease-in-out;
 }
 
 .glow {
-    font-size: 10rem;
-    text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); /* Simplified for a cleaner glow */
-    background: none; /* Removed background gradient for a more professional look */
-    color: var(--glow-color); /* Keeps the glowing effect */
-    animation: pulseGlow 2s infinite ease-in-out; /* Soft pulse animation */
+    font-size: var(--font-size-4xl);
+    text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
+    color: var(--accent-color);
+    animation: pulseGlow 2s infinite ease-in-out;
+    margin-bottom: var(--spacing-8);
 }
 
 .message {
-    font-size: 1.75rem; /* Slightly larger for better readability */
-    margin-top: 20px;
-    color: var(--text-color); /* Ensures text is legible */
-    text-shadow: 0 0 2px var(--glow-color); /* Reduced glow for text clarity */
-    animation: fadeIn 4s ease-in-out; /* Kept as is */
+    font-size: var(--font-size-xl);
+    margin-top: var(--spacing-4);
+    color: var(--text-secondary);
+    text-shadow: 0 0 2px var(--accent-color);
+    animation: fadeIn var(--transition-slow) ease-in-out;
+    max-width: var(--container-sm);
+    padding: 0 var(--spacing-4);
+}
+
+.not-found-button {
+    margin-top: var(--spacing-8);
+    padding: var(--spacing-3) var(--spacing-6);
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.not-found-button:hover {
+    background: var(--hover-color);
+    transform: translateY(-2px);
 }
 
 @keyframes pulseGlow {
     0%, 100% {
-        text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+        text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
     }
     50% {
-        text-shadow: 0 0 30px var(--glow-color), 0 0 40px var(--glow-color);
+        text-shadow: 0 0 30px var(--hover-color), 0 0 40px var(--hover-color);
     }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    .glow {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .message {
+        font-size: var(--font-size-lg);
+        padding: 0 var(--spacing-4);
+    }
+    
+    .not-found-button {
+        padding: var(--spacing-2) var(--spacing-4);
+    }
 }

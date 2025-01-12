@@ -8,11 +8,11 @@
     align-items: center;
     justify-content: center;
     background: transparent;
-    
+    z-index: 1000;
 }
 
-.modal-content {
-    background: var(--background-primary); /* Dark background for the modal */
+.edit-profile-modal .modal-content {
+    background: var(--background-primary);
     color: var(--text-color);
     padding: 20px;
     border-radius: 8px;
@@ -22,30 +22,48 @@
     position: relative;
 }
 
-.close-button {
+.edit-profile-modal .modal-content .edit-profile-close-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: none;
+    background: transparent;
     border: none;
-    font-size: 24px;
-    color: #f5f5f5;
+    color: var(--text-color);
+    font-size: 1.5em;
     cursor: pointer;
-    transition: color 0.2s;
+    padding: 5px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    outline: none;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
 }
 
-.close-button:hover {
-    color: #d32f2f;
+.edit-profile-modal .modal-content .edit-profile-close-button:hover {
+    color: var(--error-color);
+    transform: scale(1.1);
+    background-color: transparent;
 }
 
-.modal-content label {
+.edit-profile-modal .modal-content .edit-profile-close-button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.edit-profile-modal .modal-content label {
     display: block;
     margin-top: 10px;
-    color: #ccc;
+    color: var(--text-color);
+    font-weight: 500;
 }
 
-.modal-content input, .modal-content textarea {
-    border: none;
+.edit-profile-modal .modal-content input, 
+.edit-profile-modal .modal-content textarea {
     width: 100%;
     margin-top: 5px;
     padding: 8px;
@@ -54,21 +72,30 @@
     background: transparent;
     outline: none;
     color: var(--text-color);
+    box-sizing: border-box;
 }
 
-.modal-content button {
+.edit-profile-modal .modal-content input:focus,
+.edit-profile-modal .modal-content textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: var(--input-focus-shadow);
+}
+
+.edit-profile-modal .modal-content button {
     margin-top: 15px;
-    padding: 10px;
-    background-color: #d32f2f;
-    color: #fff;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-.modal-content button:hover {
-    background-color: #b71c1c;
+.edit-profile-modal .modal-content button:hover {
+    background-color: var(--primary-color-hover);
+    transform: translateY(-1px);
 }
 
 

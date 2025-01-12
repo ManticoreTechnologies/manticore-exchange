@@ -1,15 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, 
+// @ts-ignore
+useRef } from 'react';
 import './TradingResultCard.css';
 import placeholderImage from '@/images/Placeholder.png'
+// @ts-ignore
 import ResultPopup from '../ResultPopup/ResultPopup';
 //@ts-ignore
 import LoadingSpinner from '@/components/Spinners/LoadingSpinner'; // Import the loading spinner
+// @ts-ignore
 import GraphemeSplitter from 'grapheme-splitter'; // Import the library
 
 //@ts-ignore
 import SearchResultCard from '../Search/ResultCard/ResultCard';
+//@ts-ignore
 import ResultCard from '@/App/pages/Search/Results/ResultCard/ResultCard';
+// @ts-ignore
 import ManageListing from '@/App/pages/Trade/ManageListing/ManageListing';
+// @ts-ignore
 import { useNavigate } from 'react-router-dom';
 interface TradingResultCardProps {
     assetName: string;
@@ -25,6 +32,7 @@ interface TradingResultCardProps {
     buyNow: (listing: any) => void;
     units: string;
     showDetails: (listing: any) => void; // New prop to show details
+    seller: string;
 }
 
 const TradingResultCard: React.FC<TradingResultCardProps> = ({
@@ -34,31 +42,22 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     listingAddress,
     orderStatus,
     ipfsHash,
-    quantity = 0, // Default to 0 if undefined
-    sold = 0, // Default to 0 if undefined
+    quantity = 0,
+    //@ts-ignore
+    sold = 0,
     listingID,
     units,
     addToCart,
     buyNow,
-    showDetails
+    showDetails,
+    seller
 }) => {
-    const [showPopup, setShowPopup] = useState(false);
+    // @ts-ignore
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isVideo, setIsVideo] = useState(false);
 
-//@ts-ignore
-    const [isLoaded, setIsLoaded] = useState(false); // Track loading state
-
-//@ts-ignore
-    const [isVideo, setIsVideo] = useState(false); // Track if the file is a video
-    const popupRef = useRef<HTMLDivElement>(null); // To reference the popup container
-    const [showManageListing, setShowManageListing] = useState(false); // State to control ManageListing visibility
-
-//@ts-ignore
-    const navigate = useNavigate();
-    // Helper function to convert satoshis to EVR
-
-//@ts-ignore
     const convertToEVR = (satoshis: number): string => {
-        return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, ''); // Removes trailing zeros
+        return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, '');
     };
 
     const listing = {
@@ -70,15 +69,14 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
         ipfsHash,
         quantity,
         units,
-        listingID
+        listingID,
+        seller
     };
 
-    // IPFS image source handling
     const mediaSrc = ipfsHash 
         ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
         : placeholderImage;
 
-    // Fetch the content type to determine if the file is a video or image
     useEffect(() => {
         if (ipfsHash) {
             fetch(mediaSrc, { method: 'HEAD' })
@@ -88,89 +86,67 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                         setIsVideo(true);
                     }
                 })
-                .catch(() => setIsLoaded(true)); // In case of error, mark as loaded
+                .catch(() => setIsLoaded(true));
         }
     }, [ipfsHash, mediaSrc]);
 
-//@ts-ignore
-    const truncateDescription = (text: string, maxLength: number): string => {
-        const splitter = new GraphemeSplitter();
-        const graphemes = splitter.splitGraphemes(text);
-        if (graphemes.length <= maxLength) return text;
-        return graphemes.slice(0, maxLength).join('') + '...';
-    };
-
-    const handleShowPopup = () => {
-        showDetails(listing); // Call the new prop function
-    };
-
-    const handleShowManageListing = () => {
-        console.log('Opening Manage Listing'); // Debugging log
-        setShowManageListing(true);
-    };
-
     return (
-        <>
-            <div className="trading-result-card"> 
-                <ResultCard
-                    name={assetName}
-                    blockHeight={0}
-                    blockHash={''}
-                    amount={quantity}
-                    reissuable={false}
-                    units={0}
-                    ipfsHash={ipfsHash}
-                    onClick={handleShowPopup}
-                    overlayButtons={{
-                        wrench: handleShowManageListing, // Use the handler to show ManageListing
-                        addToCart: () => {
-                            console.log('add to cart');
-                            addToCart(listing); // Call addToCart with the listing
-                        }
-                    }}
-                    quantityWord={
-                        quantity > 0 ? (
-                            <div className="in-stock-text">
-                                <span className="status-dot in-stock-dot"></span>In Stock
-                            </div>
-                        ) : (
-                            <div className="out-of-stock-text">
-                                <span className="status-dot out-of-stock-dot"></span>Out of Stock
-                            </div>
-                        )
-                    }
-                />
-                {showManageListing && (
-                    <ManageListing initialListingId={listingID} />
-                )}
-                {showPopup && (
-                    <div className="trading-popup-overlay">
-                        <div ref={popupRef} className="trading-popup-container">
-                            <ResultPopup
-                                assetName={assetName}
-                                description={description}
-                                unitPrice={unitPrice}
-                                listingAddress={listingAddress}
-                                orderStatus={orderStatus}
-                                ipfsHash={ipfsHash}
-                                quantity={quantity}
-                                sold={sold}
-                                listingID={listingID}
-                                closePopup={() => {
-                                    const overlay = document.querySelector('.trading-popup-overlay');
-                                    if (overlay) {
-                                        overlay.classList.remove('show');
-                                    }
-                                    setTimeout(() => setShowPopup(false), 300); // Wait for animation to finish
-                                }}
-                                addToCart={addToCart}
-                                buyNow={buyNow}
-                            />
-                        </div>
-                    </div>
+        <div className="trading-result-card">
+            <div className="trading-result-card__media">
+                {isVideo ? (
+                    <video
+                        className="trading-result-card__video"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                    >
+                        <source src={mediaSrc} type="video/mp4" />
+                    </video>
+                ) : (
+                    <img
+                        src={mediaSrc}
+                        alt={assetName}
+                        className="trading-result-card__image"
+                        onLoad={() => setIsLoaded(true)}
+                    />
                 )}
             </div>
-        </>
+            <div className="trading-result-card__content">
+                <h3 className="trading-result-card__title">{assetName}</h3>
+                <div className="trading-result-card__info">
+                    <div className="trading-result-card__status" data-status={orderStatus}>
+                        {orderStatus}
+                    </div>
+                    <div className="trading-result-card__price">
+                        {convertToEVR(unitPrice)} EVR
+                    </div>
+                </div>
+                <p className="trading-result-card__description">{description}</p>
+                <div className="trading-result-card__actions">
+                    <button 
+                        className="trading-result-card__button"
+                        onClick={() => buyNow(listing)}
+                        disabled={orderStatus !== 'ACTIVE'}
+                    >
+                        Buy Now
+                    </button>
+                    <button 
+                        className="trading-result-card__button trading-result-card__button--secondary"
+                        onClick={() => addToCart(listing)}
+                        disabled={orderStatus !== 'ACTIVE'}
+                    >
+                        Add to Cart
+                    </button>
+                    <button 
+                        className="trading-result-card__button trading-result-card__button--secondary"
+                        onClick={() => showDetails(listing)}
+                    >
+                        Details
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };
 

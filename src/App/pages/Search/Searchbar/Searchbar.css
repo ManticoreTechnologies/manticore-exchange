@@ -2,264 +2,91 @@
     We shall have the results grid below the searchbar
     When result grid appears it should push the searchbar up
 */
-.searchbar-container {
-    display: flex;
-    /*Grow to fill the screen*/
-    flex-grow: 1;
-    flex-direction: column;
 
-    /* Center the searchbar */
+.search-page-searchbar {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    /* Flex transition animations */
-    transition: flex 1s ease-in-out;
-
     padding-bottom: 1rem;
-
-    
+    opacity: 0;
+    /* Initial state - takes up most of the viewport */
+    flex-grow: 1;
+    min-height: 70vh;
+    transition: all 0.5s ease-out;
 }
 
-.searchbar-container.loaded{
-    background-color: transparent;
-    
-}
-.searchbar-container.searching{
-    background-color: transparent;
+.search-page-searchbar.loaded {
+    opacity: 1;
 }
 
-.searchbar-container input{
-        /* remove outline */
-        outline: none;  
+.search-page-searchbar.searching {
+    /* When searching, shrink to minimal height needed */
+    min-height: 15vh;
+    flex-grow: 0;
+}
 
-        /* Remove border */
-        border: none;
-
-        /* Change color of insertion cursor */
-        caret-color: red;
-
-        /* Add bottom border */
-        border-bottom: 2px solid red;
-
-        box-shadow: none;
-
-        background-color: transparent;
-    }
-
-.searchbar-container input:focus{
-    caret-color:var(--input-focus);
+.search-page-searchbar input {
+    width: 100%;
+    max-width: 600px;
+    padding: var(--spacing-3);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+    caret-color: var(--color-primary-500);
     outline: none;
-    box-shadow: none;
-    color: var(--input-focus);
 }
 
-.searchbar-container .bubble-buttons{
-    margin-top: 0.3125rem;
-    font-size: 0.75rem;
+.search-page-searchbar input:focus {
+    border-color: var(--color-primary-500);
+    border-width: 2px;
+    color: var(--text-primary);
+}
+
+.search-page-searchbar .bubble-buttons {
+    margin-top: var(--spacing-3);
+    font-size: var(--font-size-sm);
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    border-radius: 0.625rem;
-    color: white;
-
-    
+    gap: var(--spacing-3);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
 }
 
-.searchbar-container .bubble-buttons .bubble-button:hover{
-    background-color: var(--button-hover-background-color);
-    transform: scale(1.05);
-    color: var(--input-focus);
-    transition: color 0.3s ease, transform 0.3s ease;
+.search-page-searchbar.loaded .bubble-buttons {
+    opacity: 1;
 }
+
+.search-page-searchbar.searching .bubble-buttons {
+    display: none;
+}
+
+.search-page-searchbar .bubble-buttons .bubble-button {
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-full);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.search-page-searchbar .bubble-buttons .bubble-button:hover {
+    background-color: var(--background-hover);
+    border-color: var(--color-primary-500);
+    transform: translateY(-2px);
+}
+
 @media (max-width: 280px) {
-
-    .searchbar-container input{
+    .search-page-searchbar input {
         width: 80vw;
     }
-    .searchbar-container .bubble-buttons{
+    .search-page-searchbar .bubble-buttons {
         gap: 0.5rem;
     }
 }
 
-/*.search-button {
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-.search-input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: var(--search-bar-color);
-    font-size: 18px;
-    border-bottom: 2px solid red;
-    transition: border-color 0.3s ease;
-    outline: none;
-}
-.search-input:focus {
-    border-bottom: 2px solid var(--glow-color);
-    outline: none;
-}
-.search-input::placeholder {
-    color: var(--search-bar-color);
-}
-.search-button:hover {
-    background-color: var(--button-hover-background-color);
-    transform: scale(1.05);
-}
-.search-container {
-    position: absolute;
-    width: 80%;
-    max-width: 500px;
-    height: 50px;
-    background-color: transparent;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transform: translate(-50%, -50%) scale(0.5);
-    opacity: 0;
-    transition: transform 0.5s ease-in-out, opacity 1s ease-in-out, background-color 1s ease-in-out, top 0.5s ease-in-out, left 0.5s ease-in-out;
-    top: 50%;
-    left: 50%;
-}
 
-.search-container.loaded {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-    background-color: transparent;
-}
-
-.search-container.searching {
-    top: 11%;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.search-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 1.25rem;
-    position: relative;
-}
-
-.bubble-buttons {
-    margin-top: 0.3125rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.bubble-button {
-    padding: 0.125rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 0.625rem;
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    outline: none;
-}
-
-.bubble-button:hover {
-    background-color: var(--button-hover-background-color);
-    transform: scale(1.05);
-}
-
-.filter-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.3125rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    font-size: 1.5rem;
-    outline: none;
-}
-
-.filter-button .filter-icon {
-    width: 5rem;
-    height: 5rem;
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-.filters-container {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    background-color: transparent;
-    color: var(--search-filters-color);
-    border-radius: 0.5rem;
-    flex-wrap: nowrap;
-    position: fixed;
-    margin-top: 3rem;
-    width: 100%;
-    justify-content: center;
-}
-
-.filter-item {
-    font-size: 0.75rem;
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    white-space: nowrap;
-}
-
-.filter-item label {
-    margin-right: 0.3125rem;
-    font-weight: bold;
-    color: var(--search-filters-color);
-}
-
-.search-input {
-    outline: none;
-}
-
-@media (max-width: 768px) {
-    .search-container {
-        top: 50%;
-        left: 50%;
-        width: 80%;
-        max-width: none;
-        transform: translate(-50%, -50%) scale(0.8);
-    }
-
-    .search-container.searching {
-        top: 10%;
-        left: 50%;
-        right: auto;
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    .search-input {
-        font-size: 1rem;
-        outline: none;
-    }
-
-    .search-input:focus {
-        font-size: 1.125rem;
-        outline: none;
-    }
-
-    .bubble-button {
-        font-size: 0.625rem;
-        padding: 0.1875rem 0.5rem;
-        outline: none;
-    }
-
-    .bubble-buttons {
-        gap: 0.375rem;
-    }
-}*/

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BsSun, BsMoon, BsPalette2 } from 'react-icons/bs';
-import { RiAliensFill } from 'react-icons/ri';
-import { FaMoon } from 'react-icons/fa';
+import { SiEvernote } from 'react-icons/si';
 import './ThemeSettings.css';
 
-type Theme = 'dark' | 'light' | 'cyberpunk' | 'midnight';
+type Theme = 'dark' | 'light' | 'evrmore';
 
 interface ThemeOption {
     id: Theme;
@@ -15,8 +14,7 @@ interface ThemeOption {
 const themeOptions: ThemeOption[] = [
     { id: 'dark', name: 'Dark', icon: <BsMoon className="w-3 h-3" /> },
     { id: 'light', name: 'Light', icon: <BsSun className="w-3 h-3" /> },
-    { id: 'cyberpunk', name: 'Cyber', icon: <RiAliensFill className="w-3 h-3" /> },
-    { id: 'midnight', name: 'Night', icon: <FaMoon className="w-3 h-3" /> }
+    { id: 'evrmore', name: 'Evrmore', icon: <SiEvernote className="w-3 h-3" /> }
 ];
 
 const ThemeSettings: React.FC = () => {
@@ -55,8 +53,8 @@ const ThemeSettings: React.FC = () => {
                     e.stopPropagation();
                     setIsOpen(!isOpen);
                 }}
-                className="btn p-1 rounded-full bg-background-secondary hover:bg-background-tertiary transition-fast focus:outline-none"
-                aria-label="Theme"
+                className="btn p-1 rounded-full bg-background-secondary hover:bg-background-tertiary transition-colors focus:outline-none"
+                aria-label="Theme Settings"
             >
                 <BsPalette2 className="w-3 h-3 text-primary settings-icon" />
             </button>
@@ -68,10 +66,10 @@ const ThemeSettings: React.FC = () => {
                             <button
                                 key={theme.id}
                                 onClick={() => toggleTheme(theme.id)}
-                                className={`flex items-center gap-1.5 p-1.5 rounded-md transition-fast text-xs focus:outline-none
+                                className={`flex items-center gap-1.5 p-1.5 rounded-md transition-colors text-xs focus:outline-none
                                     ${currentTheme === theme.id 
-                                        ? 'bg-background-tertiary text-primary' 
-                                        : 'hover:bg-background-tertiary'
+                                        ? 'bg-background-tertiary text-accent' 
+                                        : 'hover:bg-background-tertiary text-primary'
                                     }`}
                                 title={`${theme.name} Theme`}
                             >

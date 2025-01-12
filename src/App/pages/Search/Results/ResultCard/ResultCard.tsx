@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ResultCard.css';
-import placeholderImage from '@/images/Placeholder.webp'; // Import the placeholder image
+import logo from '@/images/logo-official.webp';
 import LoadingSpinner from '@/components/Spinners/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 // Import Font Awesome icons
@@ -52,7 +52,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
     // IPFS URL
     const mediaSrc = ipfsHash
         ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`
-        : placeholderImage;
+        : logo;
 
     // Fetch the content type to determine if the file is a video or image
     useEffect(() => {
@@ -114,13 +114,15 @@ const ResultCard: React.FC<ResultCardProps> = ({
             ) : (
                 showPlaceholder ? (
                     <img 
-                        className="result-card-image"
-                        src={placeholderImage}
+                        className="result-card-image placeholder-image"
+                        src={logo}
+                        alt={`${name} placeholder`}
                     />
                 ) : (
                     <img 
                         className="result-card-image"
                         src={mediaSrc}
+                        alt={name}
                         onLoad={() => setIsLoaded(true)}
                         onError={() => {setIsLoaded(true); setShowPlaceholder(true)}}
                     />

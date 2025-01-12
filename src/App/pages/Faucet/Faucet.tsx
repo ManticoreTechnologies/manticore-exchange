@@ -9,6 +9,8 @@ const Faucet: React.FC = () => {
             <HomeHero 
                 title="Manticore" 
                 subtitle="Faucet"
+                // @ts-ignore
+                hideCloseButton={true}
                 body={
                     <>
                         Welcome to the Manticore Faucet! Click on any asset below to claim your free tokens and explore the power of decentralized assets.

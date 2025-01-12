@@ -33,9 +33,10 @@ const Trading: React.FC = () => {
     const [totalCost, setTotalCost] = useState<string>('0');
     const [quantityError, setQuantityError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>(''); // New state for search
-    const [showPopup, setShowPopup] = useState<boolean>(false); // New state for showing TradingDetails
+    const [showPopup, setShowPopup] = useState<boolean>(true); // New state for showing TradingDetails
     const [selectedListing, setSelectedListing] = useState<any | null>(null); // New state for selected listing
     const [searchResults, setSearchResults] = useState<any[]>([]); // New state for search results
+    //@ts-ignore
     const [loading, setLoading] = useState<boolean>(false); // New state for loading indicator
     const [searchColumn, setSearchColumn] = useState<string>('asset_name');
 
@@ -54,6 +55,9 @@ const Trading: React.FC = () => {
         if (searchParams.get('details') !== 'true') {
             setShowPopup(false);
             setSelectedListing(null);
+        } else {
+            console.log('Showing popup');
+            setShowPopup(true);
         }
     }, [location]);
 
@@ -61,7 +65,11 @@ const Trading: React.FC = () => {
         const fetchListings = async () => {
             try {
                 const response = await axios.get(`${trading_api_url}/listings`);
-                console.log(response.data);
+                console.log('API Response:', response.data);
+                // Log a sample listing to check its structure
+                if (response.data.length > 0) {
+                    console.log('Sample listing:', response.data[0]);
+                }
                 setListings(response.data);
             } catch (error) {
                 console.error('Error fetching listings:', error);
@@ -235,6 +243,18 @@ const Trading: React.FC = () => {
         navigate('?details=false'); // Update the URL
     };
 
+    const handleListingUpdate = (updatedListing: any) => {
+        // Update the selected listing
+        setSelectedListing(updatedListing);
+        
+        // Update the listing in the listings array
+        setListings(prevListings => 
+            prevListings.map(listing => 
+                listing.listingID === updatedListing.listingID ? updatedListing : listing
+            )
+        );
+    };
+
     const searchOptions = [
         { value: 'all', label: 'All' },
         { value: 'asset_name', label: 'Asset Name' },
@@ -242,6 +262,19 @@ const Trading: React.FC = () => {
         { value: 'price', label: 'Price' },
         { value: 'quantity', label: 'Quantity' }
     ];
+
+    useEffect(() => {
+        // Update body class when cart is visible
+        if (cartVisible) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+
+        return () => {
+            document.body.classList.remove('modal-open');
+        };
+    }, [cartVisible]);
 
     return (
         <div className="trading-page">
@@ -262,11 +295,9 @@ const Trading: React.FC = () => {
                 </div>
             ) : (
                 <>
-                    <div 
-                        ref={cartRef} 
-                        className={`cart ${cartVisible ? 'cart-visible' : 'cart-hidden'}`}
-                    >
-                        {cartVisible && (
+                    {/* Cart Modal Overlay */}
+                    <div className={`cart-overlay ${cartVisible ? 'visible' : ''}`}>
+                        <div className={`cart ${cartVisible ? 'cart-visible' : ''}`}>
                             <Cart 
                                 cartItems={cart} 
                                 removeFromCart={removeFromCart} 
@@ -274,13 +305,16 @@ const Trading: React.FC = () => {
                                 closeCart={() => setCartVisible(false)}
                                 updateQuantity={updateQuantity}
                             />
-                        )}
+                        </div>
                     </div>
-                    {!cartVisible && showPopup && selectedListing ? (
+
+                    {/* Main Content */}
+                    {showPopup && selectedListing ? (
                         <TradingDetails 
                             listing={selectedListing}
                             closeDetails={closeDetails}
                             addToCart={promptQuantity}
+                            onListingUpdate={handleListingUpdate}
                         />
                     ) : (
                         <TradingResultsGrid 

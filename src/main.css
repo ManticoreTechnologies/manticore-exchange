@@ -19,24 +19,28 @@ body {
     border-radius: var(--border-radius-md);
     transition: all var(--transition-normal);
     cursor: pointer;
+    border: none;
 }
 
 .btn-primary {
-    background-color: var(--color-primary-500);
-    color: var(--color-neutral-100);
+    background-color: var(--accent-color);
+    color: var(--text-primary);
 }
 
 .btn-primary:hover {
-    background-color: var(--color-primary-700);
+    background-color: var(--hover-color);
+    opacity: var(--button-hover-opacity);
 }
 
 .btn-secondary {
-    background-color: var(--color-secondary-500);
-    color: var(--color-neutral-100);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-    background-color: var(--color-secondary-700);
+    background-color: var(--background-tertiary);
+    border-color: var(--accent-color);
 }
 
 /* Form Styles */
@@ -45,23 +49,29 @@ body {
     padding: var(--spacing-2);
     border: 1px solid var(--input-border);
     border-radius: var(--border-radius-md);
-    background-color: var(--background-primary);
+    background-color: var(--background-secondary);
     color: var(--text-primary);
-    transition: border-color var(--transition-normal);
+    transition: all var(--transition-normal);
 }
 
 .form-input:focus {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 2px var(--color-primary-100);
+    border-color: var(--accent-color);
+    box-shadow: var(--input-focus-ring);
 }
 
 /* Card Styles */
 .card {
-    background-color: var(--background-secondary);
+    background-color: var(--card-background);
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-4);
     box-shadow: var(--shadow-md);
+    border: 1px solid var(--card-border);
+    transition: transform var(--transition-normal);
+}
+
+.card:hover {
+    transform: translateY(-2px);
 }
 
 /* Animation Classes */
@@ -82,5 +92,17 @@ body {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* Text Styles */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent-color); }
+
+/* Background Styles */
+.bg-primary { background-color: var(--background-primary); }
+.bg-secondary { background-color: var(--background-secondary); }
+.bg-tertiary { background-color: var(--background-tertiary); }
+.bg-accent { background-color: var(--accent-color); }
 
 

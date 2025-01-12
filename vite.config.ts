@@ -45,6 +45,15 @@ export default defineConfig(({ mode }) => {
       'process.env.VITE_EXPLORER_API_PROTO': JSON.stringify(
         mode === 'development' ? process.env.VITE_EXPLORER_API_PROTO : process.env.VITE_EXPLORER_API_PROTO
       ),
+      'process.env.VITE_EVRMORE_RPC_HOST': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EVRMORE_RPC_HOST : process.env.VITE_EVRMORE_RPC_HOST
+      ),
+      'process.env.VITE_EVRMORE_RPC_PORT': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EVRMORE_RPC_PORT : process.env.VITE_EVRMORE_RPC_PORT
+      ),
+      'process.env.VITE_EVRMORE_RPC_PROTO': JSON.stringify(
+        mode === 'development' ? process.env.VITE_EVRMORE_RPC_PROTO : process.env.VITE_EVRMORE_RPC_PROTO
+      ),
     }
   }
 });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import './Asset.css'; // CSS for this page
-import logo from '@/images/Placeholder.webp';
+import logo from '@/images/logo-official.webp';
 import api from '../../utility/api';
 import Cookies from 'js-cookie';
 // const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;

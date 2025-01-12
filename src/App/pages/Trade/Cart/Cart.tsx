@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import './Cart.css';
+import placeholderImage from '@/images/enhanced_logo.png';
 import Checkout from '../Checkout/Checkout';
 
 interface CartProps {
@@ -10,135 +11,118 @@ interface CartProps {
     updateQuantity: (index: number, quantity: number) => void;
 }
 
-//@ts-ignore
-const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, closeCart, updateQuantity }) => {
-    const cartRef = useRef<HTMLDivElement>(null);
-    const [errors, setErrors] = useState<string[]>([]);
-    const [showCheckout, setShowCheckout] = useState<boolean>(false);
+const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart, clearCart, closeCart }) => {
+    const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
+    const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
 
-//@ts-ignore
-    const handleQuantityChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const inputValue = e.target.value;
-        
-        // Allow empty input while typing
-        if (inputValue === '') {
-            updateQuantity(index, 1);
-            return;
-        }
-
-        const newQuantity = parseInt(inputValue, 10);
-        const availableQuantity = cartItems[index].quantity;
-
-        // Validate if input is a valid number
-        if (isNaN(newQuantity) || newQuantity < 1) {
-            const newErrors = [...errors];
-            newErrors[index] = 'Quantity must be at least 1';
-            setErrors(newErrors);
-            updateQuantity(index, 1);
-            return;
-        }
-
-        if (newQuantity > availableQuantity) {
-            const newErrors = [...errors];
-            newErrors[index] = `Max available is ${availableQuantity}`;
-            setErrors(newErrors);
-            updateQuantity(index, availableQuantity);
-        } else {
-            const newErrors = [...errors];
-            newErrors[index] = '';
-            setErrors(newErrors);
-            updateQuantity(index, newQuantity);
-        }
+    const getImageUrl = (item: any) => {
+        if (!item.ipfsHash) return placeholderImage;
+        return `${PINATA_GATEWAY}${item.ipfsHash}`;
     };
 
-    const totalAmountSats = cartItems.reduce((total, item) => {
-        const unitPrice = item.unitPrice || 0;
-        const quantity = item.quantity || 1;
-        return total + unitPrice * quantity;
-    }, 0);
+    const calculateTotal = () => {
+        const subtotal = cartItems.reduce((total, item) => total + (item.unitPrice * item.quantity) / 100000000, 0);
+        const fee = subtotal * 0.005; // 0.5% fee
+        return {
+            subtotal: subtotal.toFixed(8),
+            fee: fee.toFixed(8),
+            total: (subtotal + fee).toFixed(8)
+        };
+    };
 
-    const feeSats = Math.floor(totalAmountSats * 0.005); // 5% fee
-    const finalAmountSats = totalAmountSats + feeSats;
-
-    // Convert the amounts from satoshis to EVR for display, and remove trailing zeros
-    const totalAmountEVR = Number(totalAmountSats / 100000000).toString();
-    const feeEVR = Number(feeSats / 100000000).toString();
-    const finalAmountEVR = Number(finalAmountSats / 100000000).toString();
-
-    const handleProceedToCheckout = () => {
-        setShowCheckout(true);
+    const truncateDescription = (description: string, maxLength: number = 50) => {
+        if (!description) return "No description available";
+        if (description.length <= maxLength) return description;
+        return `${description.substring(0, maxLength)}...`;
     };
 
     const handleCheckoutComplete = () => {
-        setShowCheckout(false);
-        clearCart();  // Optionally clear the cart when checkout is complete
+        setIsCheckingOut(false);
+        clearCart();
+        closeCart();
     };
+
+    const handleBack = () => {
+        setIsCheckingOut(false);
+    };
+
+    const totals = calculateTotal();
+
+    if (isCheckingOut) {
+        return (
+            <Checkout
+                selectedItems={cartItems}
+                onCheckoutComplete={handleCheckoutComplete}
+                onBack={handleBack}
+            />
+        );
+    }
 
     return (
         <>
-            <div ref={cartRef} className="cart-container">
-                <div className="cart-header">
-                    <h2>Your Cart</h2>
-                    <button className="close-cart-button" onClick={closeCart}>×</button>
-                </div>
+            <div className="cart-header">
+                <h2>Your Cart</h2>
+                <button className="close-cart-button" onClick={closeCart}>×</button>
+            </div>
+
+            <div className="cart-items-container">
                 {cartItems.length === 0 ? (
                     <div className="empty-cart">
-                        <p>Your cart is empty.</p>
-                        <button className="continue-shopping-button" onClick={closeCart}>
-                            Continue Shopping
-                        </button>
+                        <p>Your cart is empty</p>
                     </div>
                 ) : (
-                    <>
-                        <ul className="cart-items">
-                            {cartItems.map((item, index) => (
-                                <li key={index} className="cart-item">
-                                    <div>
-                                        <strong>{item.assetName}</strong>
-                                        <p>Description: {item.description}</p>
-                                        <p>Unit Price: {Number(item.unitPrice / 100000000).toString()} $EVR</p>
-                                        <p>
-                                            Quantity: {item.quantity}
-                                            {errors[index] && (
-                                                <span className="error-message">{errors[index]}</span>
-                                            )}
-                                        </p>
-                                        <p>Total: {Number(item.unitPrice * item.quantity / 100000000).toString()} $EVR</p>
+                    <ul className="cart-items">
+                        {cartItems.map((item, index) => (
+                            <li key={index} className="cart-item">
+                                <img 
+                                    src={getImageUrl(item)} 
+                                    alt={item.assetName}
+                                    className="cart-item-image"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = placeholderImage;
+                                    }}
+                                />
+                                <div className="cart-item-info">
+                                    <div className="cart-item-name">{item.assetName}</div>
+                                    <div className="cart-item-description">
+                                        {truncateDescription(item.description)}
                                     </div>
-                                    <button onClick={() => removeFromCart(index)}>×</button>
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="cart-summary">
-                            <div className="summary-details">
-                                <p><strong>Total Amount: </strong>{totalAmountEVR} $EVR</p>
-                                <p><strong>Fee (0.5%): </strong>{feeEVR} $EVR</p>
-                                <p className="final-amount"><strong>Final Amount: </strong>{finalAmountEVR} $EVR</p>
-                            </div>
-                            <div className="cart-actions">
-                                <button className="checkout-button" onClick={handleProceedToCheckout}>
-                                    Proceed to Checkout
-                                </button>
-                                <div className="secondary-actions">
-                                    <button className="continue-shopping-button" onClick={closeCart}>
-                                        Continue Shopping
-                                    </button>
-                                    <button className="clear-cart-button" onClick={clearCart}>
-                                        Clear Cart
-                                    </button>
+                                    <div className="cart-item-details">
+                                        <div className="cart-item-price">
+                                            Unit Price: {(item.unitPrice / 100000000).toFixed(8)} EVR
+                                        </div>
+                                        <div className="cart-item-quantity">
+                                            Quantity: {item.quantity}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </>
+                                <button onClick={() => removeFromCart(index)} className="remove-item-button">×</button>
+                            </li>
+                        ))}
+                    </ul>
                 )}
             </div>
-            {showCheckout && (
-                <Checkout
-                    selectedItems={cartItems}
-                    onCheckoutComplete={handleCheckoutComplete}
-                    onBack={() => setShowCheckout(false)}
-                />
-            )}
+
+            <div className="cart-footer">
+                <div className="cart-summary">
+                    <div className="cart-subtotal">Subtotal: {totals.subtotal} EVR</div>
+                    <div className="cart-fee">Fee (0.5%): {totals.fee} EVR</div>
+                    <div className="cart-total">Total: {totals.total} EVR</div>
+                </div>
+                
+                <div className="cart-buttons">
+                    <button 
+                        className="checkout-button" 
+                        onClick={() => setIsCheckingOut(true)}
+                        disabled={cartItems.length === 0}
+                    >
+                        Proceed to Checkout
+                    </button>
+                    <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
+                    <button className="continue-shopping-button" onClick={closeCart}>Continue Shopping</button>
+                </div>
+            </div>
         </>
     );
 };

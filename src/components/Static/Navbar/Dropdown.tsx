@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch } from 'react-icons/fa';
 import './Dropdown.css';
 
@@ -13,8 +13,25 @@ interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile, showMore }) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        if (isOpen) {
+          toggleDropdown();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, toggleDropdown]);
+
   return (
-    <div className="dropdown" aria-expanded={isOpen}>
+    <div className="dropdown" aria-expanded={isOpen} ref={dropdownRef}>
       <button 
         className="dropdown-toggle" 
         onClick={toggleDropdown} 
@@ -42,7 +59,6 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
           {!showSearch && (
             <a href="/search"><FaSearch className='dropdown-icon'/> Search</a>
           )}
-          
         </div>
       )}
     </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './FaucetBalances.css';
 import axios from 'axios';
+import { splitAssetName } from './utils';
 
 interface FaucetCardExpandedProps {
     asset: string;
@@ -23,6 +25,9 @@ const FaucetCardExpanded: React.FC<FaucetCardExpandedProps> = ({
     const [address, setAddress] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState('');
+    const assetParts = splitAssetName(asset);
+
+    const encodedAssetPath = asset.split('/').map(part => encodeURIComponent(part)).join('%2F');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,9 +37,9 @@ const FaucetCardExpanded: React.FC<FaucetCardExpandedProps> = ({
         setMessage('');
 
         try {
-            const response = await axios.post(`${faucet_api_url}/claim`, {
+            const response = await axios.post(`${faucet_api_url}/request`, {
                 address,
-                asset
+                assetName: asset
             });
 
             if (response.data.success) {
@@ -53,7 +58,7 @@ const FaucetCardExpanded: React.FC<FaucetCardExpandedProps> = ({
     return (
         <div className="expanded-card-overlay" onClick={onClose}>
             <div className="expanded-card" onClick={e => e.stopPropagation()}>
-                <button className="close-button" onClick={onClose}>×</button>
+                <button className="faucet-close-button" onClick={onClose}>×</button>
                 
                 <div 
                     className="expanded-card-bg"
@@ -64,18 +69,34 @@ const FaucetCardExpanded: React.FC<FaucetCardExpandedProps> = ({
                 
                 <div className="expanded-card-content">
                     <div className="expanded-card-header">
-                        <h2>{asset === "EVR" ? "EVRMORE ($EVR)" : asset}</h2>
-                        <span className="expanded-balance">{data.balance}</span>
+                        <div className="asset-path">
+                            {assetParts.parents.map((parent, index) => {
+                                // Build the path up to this parent
+                                const pathSegments = assetParts.parents.slice(0, index + 1);
+                                const encodedPath = pathSegments.map(segment => encodeURIComponent(segment)).join('%2F');
+                                
+                                return (
+                                    <React.Fragment key={index}>
+                                        <Link 
+                                            to={`/asset/${encodedPath}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="asset-parent-link"
+                                        >
+                                            {parent}
+                                        </Link>
+                                        <span className="asset-parent-separator">/</span>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+                        <div className="asset-name">{assetParts.name}</div>
                     </div>
                     
                     <div className="expanded-card-details">
-                        {data.ipfs_hash && (
-                            <div className="detail-item">
-                                <span className="detail-label">IPFS Hash:</span>
-                                <span className="detail-value">{data.ipfs_hash}</span>
-                            </div>
-                        )}
-                        
+                        <div className="detail-item balance-detail">
+                            <span className="detail-label">Available Balance:</span>
+                            <span className="detail-value">{data.balance}</span>
+                        </div>
                         {data.metadata && Object.entries(data.metadata).map(([key, value]: [string, any]) => (
                             <div key={key} className="detail-item">
                                 <span className="detail-label">{key}:</span>
@@ -111,7 +132,7 @@ const FaucetCardExpanded: React.FC<FaucetCardExpandedProps> = ({
                     </div>
 
                     <a 
-                        href={`/${asset}`} 
+                        href={`/asset/${encodedAssetPath}`} 
                         className="asset-details-link"
                         onClick={(e) => {
                             e.stopPropagation();

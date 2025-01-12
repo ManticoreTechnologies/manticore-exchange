@@ -166,7 +166,7 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
             {isManagingListing && (
                 <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
                     <div className="manage-listing-content">
-                        <button className="close-button" onClick={handleClosePopup}>✕</button>
+                        <button className="manage-listing-close-button" onClick={handleClosePopup}>✕</button>
                         {listingData ? (
                             <div>
                                 <h2>Manage Listing</h2>

@@ -1,4 +1,3 @@
-
 /* App.css handles the parent container styling 
    for the Navbar, Main and Footer
    The navbar and footer have fixed heights 
@@ -6,155 +5,126 @@
    remaining space of the viewport
 */
 
-
-/* App container
-    This hosts the navbar, main and footer
-*/
+/* App container */
 .App {
-
-    /* Set position to relative to allow 
-       the footer to be absolute relative 
-       to this container   
-    */
     position: relative;
-
-    /* Set the display to flex to allow the 
-       main container to grow and take up the 
-       remaining space
-    */
     display: flex;
     flex-direction: column;
-
-    /* Set the background color 
-       to visualize the layout 
-       change to transparent when ready
-    */
-    background-color: transparent;
-    
-    /* We want the app to be exactly the height of the 
-       viewport so that everything is visible correctly
-    */
+    background-color: var(--background-primary);
     height: 100vh;
-
-    /* Hide any overflow, this prevents scrollbars from appearing 
-       The App container should NEVER scroll
-       Scrolling should be handled locally within 
-       the main containers child components
-    */
     overflow: hidden;
-
 }
 
-/* Main container 
-
-    This is the container that will host the dynamic content 
-    The navbar, footer and other static content 
-    should not included in this container
-*/
+/* Main container */
 .main {
-
-    /* Set the background color 
-       to visualize the layout 
-       change to transparent when ready
-    */
-    background-color: transparent;
-
-    /* Grow to take up the remaining space */
+    background-color: var(--background-primary);
     flex-grow: 1;
-    
-    /* Handle overflow as scroll IN THE CHILDREN 
-       so that we can use the env variables 
-       to handle the safe area insets
-       Never mind, the env variables dont fucking work
-       so we will just ignore the phone shit footer not 
-       that important   
-    */
     overflow-y: scroll;
-
-    /* hide scrollbar */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-
-
-
-/* Button st
-
-
-
-
-
-
+.main::-webkit-scrollbar {
+    display: none;
+}
 
 /* Button Styles */
 button.custom-button {
-    /* Base button styles */
-    border: 1px solid red;
+    border: 1px solid var(--accent-color);
     cursor: pointer;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 1.8vh;
-    font-weight: 1000;
-    color: var(--button-text-color);
-    background-color: transparent;
-    text-shadow: 1px 1px 2px var(--text-shadow-color); /* Add text shadow */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    box-shadow: 0 4px 15px var(--button-shadow-color); /* Subtle shadow effect */
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-sm);
 }
 
 button.custom-button:hover {
-    /* Hover effects */
-    transform: scale(1.1); /* More noticeable scale */
-    border: 2px solid var(--button-border-color); /* Solid border on hover */
-    background-color: var(--button-hover-background-color); /* Darker red */
-    box-shadow: 0 6px 20px var(--button-shadow-color), 0 0 10px var(--button-border-color); /* Stronger shadow and glow effect */
+    transform: translateY(-2px);
+    border-color: var(--hover-color);
+    background-color: var(--background-tertiary);
+    box-shadow: var(--shadow-md);
 }
 
 button.custom-button:active {
-    /* When button is clicked */
-    transform: scale(1.05); /* Slightly smaller on click */
-    box-shadow: 0 2px 8px var(--button-shadow-color); /* Less shadow on click */
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+    background-color: var(--active-color);
 }
 
 /* Input Styles */
 input.custom-input {
     width: 100%;
     height: 100%;
-    padding: 0;
+    padding: var(--spacing-2) var(--spacing-3);
     border: none;
     outline: none;
-    color: var(--search-bar-color); /* White text for contrast */
-    background-color: transparent; /* No background */
-    border-bottom: var(--search-bar-underline); /* Red underline to match the site's accent color */
-    font-size: 18px;
-    transition: font-size 0.3s ease, border-color 0.3s ease; 
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-normal);
 }
 
 input.custom-input:focus {
-    border-bottom: var(--search-bar-underline-focus); /* Change underline to white on focus */
+    border-color: var(--accent-color);
+    box-shadow: var(--input-focus-ring);
 }
 
 input.custom-input::placeholder {
-    color: var(--search-bar-color); /* Lighter placeholder text */
+    color: var(--text-muted);
 }
 
 /* Select Styles */
 select.custom-select {
-    border: none;
-    background-color: transparent;
-    color: var(--text-color);
-    border-bottom: var(--search-bar-underline); /* Change underline to white on focus */
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-normal);
+    cursor: pointer;
 }
 
 select.custom-select:focus {
     outline: none;
-    border-bottom: var(--search-bar-underline-focus);
+    border-color: var(--accent-color);
+    box-shadow: var(--input-focus-ring);
 }
 
 option.custom-option {
-    background-color: var(--search-filters-bg-color);
-    color: var(--text-color);
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    padding: var(--spacing-2);
+}
+
+/* Layout Utilities */
+.container {
+    width: 100%;
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    .main {
+        padding: var(--spacing-2);
+    }
+    
+    .container {
+        padding: 0 var(--spacing-2);
+    }
+    
+    button.custom-button {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-1) var(--spacing-3);
+    }
 }
 
 

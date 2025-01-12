@@ -15,23 +15,28 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow, s
             <div className="trading-results-grid-container">
                 {results.map((result: any) => {
                     const sold = result.sold !== undefined ? result.sold : 0;
-                return (
-                    <TradingResultCard
-                        key={result.id}
-                        assetName={result.asset_name}
-                        description={result.description}
-                        unitPrice={result.unit_price}
-                        listingAddress={result.listing_address}
-                        orderStatus={result.listing_status}
-                        quantity={result.remaining_quantity}
-                        units={JSON.parse(result.asset_data).units}
-                        sold={sold}
-                        listingID={result.id}
-                        ipfsHash={JSON.parse(result.asset_data).has_ipfs ? JSON.parse(result.asset_data).ipfs_hash : undefined}
-                        addToCart={addToCart}
-                        buyNow={buyNow}
-                        showDetails={showDetails}
-                    />
+                    const assetData = JSON.parse(result.asset_data);
+                    const listing = {
+                        assetName: result.asset_name,
+                        description: result.description,
+                        unitPrice: result.unit_price,
+                        listingAddress: result.listing_address,
+                        orderStatus: result.listing_status,
+                        quantity: result.remaining_quantity,
+                        units: assetData.units,
+                        sold: sold,
+                        listingID: result.id,
+                        ipfsHash: assetData.has_ipfs ? assetData.ipfs_hash : undefined,
+                        seller: result.seller_address
+                    };
+                    return (
+                        <TradingResultCard
+                            key={result.id}
+                            {...listing}
+                            addToCart={addToCart}
+                            buyNow={buyNow}
+                            showDetails={() => showDetails(listing)}
+                        />
                     );
                 })}
             </div>

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 
-const apiUrl = 'localhost:8001';
+const apiUrl = import.meta.env.VITE_EVRMORE_RPC_PROTO+"://"+import.meta.env.VITE_EVRMORE_RPC_HOST+":"+import.meta.env.VITE_EVRMORE_RPC_PORT;
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const coinmarketcapApiKey = import.meta.env.VITE_COINMARKETCAP_API_KEY;
 const xeggexApiUrl = 'https://api.xeggex.com/v2/'; // Base URL for Xeggex API

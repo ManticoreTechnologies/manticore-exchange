@@ -4,6 +4,7 @@ import axios, { AxiosError } from 'axios';
 import logo from '@/images/Placeholder.webp';
 import evr_logo from '@/images/evr_logo.svg';
 import FaucetCardExpanded from './FaucetCardExpanded';
+import { splitAssetName } from './utils';
 
 const faucet_api_host = import.meta.env.VITE_FAUCET_API_HOST || 'faucet.manticore.exchange';
 const faucet_api_port = import.meta.env.VITE_FAUCET_API_PORT || '443';
@@ -51,19 +52,32 @@ const FaucetBalances: React.FC = () => {
                         />
                         <div className="card-content">
                             <div className="card-header">
-                                <span className="asset-name">
-                                    {asset === "EVR" ? "EVRMORE ($EVR)" : asset}
-                                </span>
+                                <div className="asset-name">
+                                    {(() => {
+                                        const { parents, name } = splitAssetName(asset);
+                                        return (
+                                            <>
+                                                {parents.length > 0 && (
+                                                    <div className="asset-parents-container">
+                                                        <div className="asset-parents">
+                                                            {parents.map((parent, index) => (
+                                                                <React.Fragment key={index}>
+                                                                    {index > 0 && <span className="asset-parent-separator">/</span>}
+                                                                    <span className="asset-parent">{parent}</span>
+                                                                </React.Fragment>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <span className="asset-main-name">{name}</span>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
                                 <span className="balance-value">
                                     {data.balance}
                                 </span>
                             </div>
-                            {data.ipfs_hash && (
-                                <div className="card-details">
-                                    <span className="detail-label">IPFS:</span>
-                                    <span className="detail-hash">{data.ipfs_hash.substring(0, 8)}...</span>
-                                </div>
-                            )}
                         </div>
                     </div>
                 ))}

@@ -83,7 +83,7 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
     };
 
     return (
-        <div className={`searchbar-container ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''}`}>
+        <div className={`search-page-searchbar ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''}`}>
             <input type="text" placeholder={placeholder} className="search-input" value={query} onChange={handleChange} />
 
             {!isSearching && bubbleButtons.length > 0 && (

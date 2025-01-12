@@ -3,36 +3,43 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
-    padding: 30px;
-    border: var(--modal-border);
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    background: var(--background-secondary);
+    padding: var(--spacing-6);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-modal);
     width: 480px;
-    color: var(--text-color);
+    color: var(--text-primary);
+    animation: slideUp 0.3s ease-out;
+    position: relative;
 }
 
 .popup-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--spacing-4);
+    animation: fadeIn 0.3s ease-out;
 }
 
 .popup-content h3 {
-    margin: 0 0 20px;
-    font-size: 24px;
+    margin: 0;
+    font-size: var(--font-size-2xl);
     font-weight: 600;
+    color: var(--text-primary);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .info-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px;
-    background: rgba(255, 0, 0, 0.03);
-    border-radius: 8px;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background: var(--background-tertiary);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
+    border: 1px solid var(--input-border);
 }
 
 .info-row strong {
@@ -41,20 +48,13 @@
     flex-shrink: 0;
 }
 
-.status-label {
-    display: none
-}
-
-.amount-label {
-    color: var(--text-secondary);
-}
-
 .copy-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
     width: 100%;
     min-width: 0;
+    position: relative;
 }
 
 .copy-wrapper span {
@@ -62,26 +62,43 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
+    color: var(--text-primary);
 }
 
 .copy-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    padding: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    padding: var(--spacing-2);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
+    width: 32px;
+    height: 32px;
 }
 
 .copy-button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--background-tertiary);
+    border-color: var(--accent-color);
+}
+
+.copy-button:active {
+    transform: scale(0.95);
+}
+
+.copy-button.success {
+    animation: copySuccess 0.3s ease-out;
+    border-color: var(--color-success);
+    color: var(--color-success);
 }
 
 .circle-timer {
-    width: 140px;
-    height: 140px;
-    margin: 20px auto;
+    width: 80px;
+    height: 80px;
+    margin: var(--spacing-4) auto;
     position: relative;
     display: flex;
     align-items: center;
@@ -89,50 +106,197 @@
 }
 
 .progress-ring__circle {
-    stroke-dasharray: 400;
+    stroke-dasharray: 226;  /* 2 * PI * r (36) */
     stroke-linecap: round;
     stroke-width: 4px;
     fill: transparent;
     transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
-    transform: rotate(-90deg);
     transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring__circle.spinning {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(-90deg);
+    }
+    to {
+        transform: rotate(270deg);
+    }
 }
 
 .timer-text {
     position: absolute;
-    font-size: 18px;
+    font-size: var(--font-size-sm);
     font-weight: 500;
-    color: var(--text-color);
-    z-index: 10;
+    color: var(--text-primary);
+    z-index: var(--z-elevate);
 }
 
-.invoice-status-popup button {
-    background: linear-gradient(to right, #3a7bd5, #3a6073);
-    color: var(--text-color);
-    padding: 12px 24px;
+.invoice-status-popup .close-button {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--text-muted);
+    padding: var(--spacing-1);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius-full);
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-size: var(--font-size-xl);
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    transition: all var(--transition-normal);
+    margin: 0;
 }
 
-.invoice-status-popup button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(58, 123, 213, 0.2);
+.invoice-status-popup .close-button:hover {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+.invoice-status-popup .close-button:active {
+    transform: scale(0.95);
 }
 
 .confirmation-message {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1a1a1a;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    border-radius: 5px;
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-3);
+    background: var(--background-tertiary);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+    border-radius: var(--border-radius-md);
     text-align: center;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .invoice-labels {
-    background-color: #155724;
-    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background: var(--background-tertiary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--input-border);
+}
+
+.invoice-labels p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.invoice-labels strong {
+    color: var(--text-secondary);
+}
+
+.checkmark-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: var(--spacing-4) auto;
+    cursor: pointer;
+    animation: scaleIn 0.3s ease-out;
+    width: 80px;
+    height: 80px;
+}
+
+.checkmark {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: checkmarkDraw 0.6s ease forwards;
+    width: 48px;
+    height: 48px;
+    transform: scale(1.2);
+}
+
+.checkmark-text {
+    margin-top: var(--spacing-2);
+    color: var(--color-success);
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out 0.6s forwards;
+}
+
+@keyframes checkmarkDraw {
+    from {
+        stroke-dashoffset: 100;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-transition-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: var(--spacing-4) auto;
+}
+
+.circle-timer.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.copy-wrapper.order-txid span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    max-width: 100%;
+    word-break: break-all;
+}
+
+.info-row .order-txid {
+    max-width: calc(100% - 140px);  /* Accounting for the label width */
+}
+
+@media (max-width: 480px) {
+    .info-row .order-txid {
+        max-width: 100%;
+    }
 }

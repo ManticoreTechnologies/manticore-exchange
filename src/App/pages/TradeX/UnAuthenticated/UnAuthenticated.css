@@ -1,55 +1,92 @@
 .unauthenticated-container {
-
-/* Center Vertically */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   width: 100%;
+  background: var(--background-primary);
+  animation: fadeIn var(--transition-normal) ease-in-out;
 }
 
 .unauthenticated-content {
-  max-width: 500px;
+  max-width: var(--container-md);
   width: 100%;
   text-align: center;
-  /* Center Horizontally */
   margin: 0 auto;
+  padding: var(--spacing-6);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
 }
 
 .main-title {
-  color: white;
-  font-size: 2rem;
-  margin-bottom: 24px;
+  color: var(--text-primary);
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-6);
+  font-weight: 600;
+  animation: textPop 0.5s ease-in-out;
 }
 
 .message-container {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-8);
+  animation: slideIn 0.5s ease-in-out;
 }
 
 .main-message {
-  font-size: 1.2rem;
-  color: white;
-  margin-bottom: 12px;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-3);
+  line-height: 1.4;
 }
 
 .sub-message {
-  color: white;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: var(--font-size-base);
 }
 
 .signin-button {
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  background-color: #2196f3;
-  color: white;
+  background: linear-gradient(45deg, var(--accent-color), var(--hover-color));
+  color: var(--text-primary);
   border: none;
-  transition: background-color 0.2s ease;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 }
 
 .signin-button:hover {
-  background-color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes textPop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

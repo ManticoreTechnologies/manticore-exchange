@@ -8,141 +8,170 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.6); /* Darker semi-transparent background */
+    background: var(--modal-overlay);
     transition: opacity 0.3s ease-in-out;
     z-index: 1000;
-    opacity: 1; /* Ensure opacity is set to 1 by default */
+    opacity: 1;
 }
 
 /* Popup content */
 .manage-listing-content {
-    background-color: black; /* Dark background */
+    background: var(--background-primary);
     padding: 30px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg);
     width: 500px;
     max-width: 90%;
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3); /* Soft shadow for depth */
+    box-shadow: var(--modal-shadow);
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease-in-out;
     transform: translateY(0);
+    border: var(--modal-border);
 }
 
 /* Closing animation for popup */
 .manage-listing-popup.closing {
     opacity: 0;
-    transform: translateY(-20px); /* Slide up effect */
+    transform: translateY(-20px);
 }
 
 /* Headings */
-h2 {
+.manage-listing-popup .manage-listing-content h2 {
     margin-top: 0;
-    font-size: 1.75em; /* Slightly larger font */
-    color: var(--color);
+    font-size: 1.75em;
+    color: var(--text-color);
     text-align: left;
-    letter-spacing: 0.5px; /* Spacing between letters for elegance */
+    letter-spacing: 0.5px;
     margin-bottom: 15px;
 }
 
 /* Form labels */
-label {
-    color: var(--color);
+.manage-listing-popup .manage-listing-content label {
+    color: var(--text-color);
     display: block;
     margin: 15px 0 7px;
     font-weight: 600;
 }
 
 /* Inputs and Textareas */
-.manage-listing-content input,
-.manage-listing-content textarea {
+.manage-listing-popup .manage-listing-content input,
+.manage-listing-popup .manage-listing-content textarea {
     width: calc(100% - 20px);
     padding: 12px;
     margin-bottom: 15px;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid #ccc; /* Soft initial underline */
-    color: var(--color);
+    background: var(--input-background);
+    border: var(--input-border);
+    color: var(--text-color);
     font-size: 1.1em;
     outline: none;
     box-sizing: border-box;
-    transition: border-bottom 0.3s ease; /* Smooth underline change */
+    transition: all 0.3s ease;
+    border-radius: var(--border-radius);
 }
 
-.manage-listing-content input:focus,
-.manage-listing-content textarea:focus {
-    border-bottom: var(--search-bar-underline); /* Highlight on focus */
+.manage-listing-popup .manage-listing-content input:focus,
+.manage-listing-popup .manage-listing-content textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: var(--input-focus-shadow);
 }
 
 /* Buttons */
-.manage-listing-content button {
+.manage-listing-popup .manage-listing-content button {
     padding: 12px 24px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     font-size: 1em;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
-    background-color: #e74c3c; /* Red button color */
-    color: #ffffff;
+    transition: all 0.3s ease;
+    background: var(--button-gradient);
+    color: var(--text-color);
     margin-top: 25px;
 }
 
-button:disabled {
-    background-color: #666;
+.manage-listing-popup .manage-listing-content button:disabled {
+    background: var(--button-disabled);
     cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.manage-listing-popup .manage-listing-content button:not(:disabled):hover {
+    transform: scale(1.05);
+    box-shadow: var(--button-hover-shadow);
 }
 
 /* Refund button */
-.refund-button {
-    background-color: #28a745; /* Green for refund button */
+.manage-listing-popup .manage-listing-content .refund-button {
+    background: var(--success-color) !important;
 }
 
-.refund-button:hover {
-    background-color: #218838; /* Darker green on hover */
+.manage-listing-popup .manage-listing-content .refund-button:hover {
+    background: var(--success-color-hover) !important;
 }
 
 /* Error message styling */
-.error-message {
-    color: #e74c3c; /* Red color for error messages */
+.manage-listing-popup .manage-listing-content .error-message {
+    color: var(--error-color);
     font-size: 0.9em;
     margin-top: 15px;
     padding: 10px;
-    background-color: rgba(231, 76, 60, 0.1); /* Light red background */
-    border-left: 4px solid #e74c3c;
-    border-radius: 4px;
+    background: var(--error-background);
+    border-left: 4px solid var(--error-color);
+    border-radius: var(--border-radius);
 }
 
 /* Listing address styling */
-.listing-address h3 {
-    color: var(--color);
+.manage-listing-popup .manage-listing-content .listing-address h3 {
+    color: var(--text-color);
     margin-bottom: 8px;
     font-size: 1.2em;
 }
 
-.listing-address p {
-    color: var(--color);
+.manage-listing-popup .manage-listing-content .listing-address p {
+    color: var(--text-secondary);
     word-break: break-all;
     font-size: 1.05em;
 }
 
 /* Close button */
-.close-button {
+.manage-listing-popup .manage-listing-content .manage-listing-close-button {
     position: absolute;
     width: auto;
-    right: 15px; /* Adjust positioning */
-    top: 15px; /* Adjust positioning */
-    background-color: transparent; /* Remove background */
+    height: auto;
+    right: 15px;
+    top: 15px;
+    background-color: transparent;
     border: none;
-    font-size: 1.4em; /* Increase size */
+    font-size: 1.4em;
     cursor: pointer;
-    color: var(--color);
-    transition: transform 0.2s ease, color 0.2s ease; /* Smooth transition */
-    outline: none; /* Remove focus outline */
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    outline: none;
+    margin: 0;
+    padding: 5px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    text-align: center;
+    box-shadow: none;
+    text-decoration: none;
+    min-width: unset;
 }
 
-.close-button:hover {
-    transform: scale(1.2); /* Increase size on hover */
-    color: #dc3545; /* Change to red on hover */
+.manage-listing-popup .manage-listing-content .manage-listing-close-button:hover {
+    transform: scale(1.2);
+    color: var(--error-color);
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.manage-listing-popup .manage-listing-content .manage-listing-close-button:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
 }
 
 /* Manage listing button */
@@ -151,44 +180,45 @@ button:disabled {
     z-index: 0;
     background-color: transparent;
     border: none;
-    color: var(--color);
+    color: var(--text-color);
     cursor: pointer;
     padding: 5px;
     font-size: 1.05em;
-    transition: transform 0.2s, color 0.3s; /* Smooth hover effect */
+    transition: all 0.2s ease;
 }
 
 .manage-listing-button:hover {
-    transform: scale(1.1); /* Enlarge slightly on hover */
-    color: #e74c3c; /* Change to red on hover */
+    transform: scale(1.1);
+    color: var(--primary-color);
 }
 
 /* Popup confirmation buttons */
-.manage-listing-content .confirm-button, .cancel-button {
+.manage-listing-popup .manage-listing-content .confirm-button,
+.manage-listing-popup .manage-listing-content .cancel-button {
     margin: 10px;
     padding: 12px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 1em;
     font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+    transition: all 0.3s ease;
 }
 
-.manage-listing-content .confirm-button {
-    background-color: #28a745;
-    color: #fff;
+.manage-listing-popup .manage-listing-content .confirm-button {
+    background: var(--success-color);
+    color: var(--text-color);
 }
 
-.manage-listing-content .cancel-button {
-    background-color: #dc3545;
-    color: #fff;
+.manage-listing-popup .manage-listing-content .cancel-button {
+    background: var(--error-color);
+    color: var(--text-color);
 }
 
-.manage-listing-content .confirm-button:hover {
-    background-color: #218838; /* Darker green on hover */
+.manage-listing-popup .manage-listing-content .confirm-button:hover {
+    background: var(--success-color-hover);
 }
 
-.manage-listing-content .cancel-button:hover {
-    background-color: #c0392b; /* Darker red on hover */
+.manage-listing-popup .manage-listing-content .cancel-button:hover {
+    background: var(--error-color-hover);
 }
