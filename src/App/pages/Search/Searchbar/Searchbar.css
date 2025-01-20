@@ -1,34 +1,34 @@
-/*  The searchbar container will flex to fill the screen
-    We shall have the results grid below the searchbar
-    When result grid appears it should push the searchbar up
-*/
-
+/* Main searchbar container */
 .search-page-searchbar {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding-bottom: 1rem;
+    transition: all 0.3s ease-out;
+    padding: var(--spacing-6);
     opacity: 0;
-    /* Initial state - takes up most of the viewport */
-    flex-grow: 1;
-    min-height: 70vh;
-    transition: all 0.5s ease-out;
 }
 
+/* Initial loaded state */
 .search-page-searchbar.loaded {
     opacity: 1;
 }
 
+/* Searching state */
 .search-page-searchbar.searching {
-    /* When searching, shrink to minimal height needed */
-    min-height: 15vh;
-    flex-grow: 0;
+    padding: var(--spacing-3);
 }
 
-.search-page-searchbar input {
+/* Search input container */
+.search-page-searchbar .search-input-container {
     width: 100%;
-    max-width: 600px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Search input */
+.search-page-searchbar input {
+    width: 50%;
     padding: var(--spacing-3);
     background-color: var(--background-secondary);
     color: var(--text-primary);
@@ -36,22 +36,20 @@
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-base);
     transition: all 0.3s ease;
-    caret-color: var(--color-primary-500);
     outline: none;
 }
 
 .search-page-searchbar input:focus {
     border-color: var(--color-primary-500);
     border-width: 2px;
-    color: var(--text-primary);
 }
 
+/* Bubble buttons container */
 .search-page-searchbar .bubble-buttons {
-    margin-top: var(--spacing-3);
-    font-size: var(--font-size-sm);
     display: flex;
     justify-content: center;
     gap: var(--spacing-3);
+    margin-top: var(--spacing-3);
     opacity: 0;
     transition: opacity 0.3s ease-out;
 }
@@ -64,6 +62,7 @@
     display: none;
 }
 
+/* Individual bubble buttons */
 .search-page-searchbar .bubble-buttons .bubble-button {
     padding: var(--spacing-2) var(--spacing-4);
     background-color: var(--background-tertiary);
@@ -72,6 +71,7 @@
     border-radius: var(--border-radius-full);
     transition: all 0.2s ease;
     cursor: pointer;
+    font-size: var(--font-size-sm);
 }
 
 .search-page-searchbar .bubble-buttons .bubble-button:hover {
@@ -80,12 +80,18 @@
     transform: translateY(-2px);
 }
 
-@media (max-width: 280px) {
-    .search-page-searchbar input {
-        width: 80vw;
+/* Mobile adjustments */
+@media (max-width: 640px) {
+    .search-page-searchbar {
+        padding: var(--spacing-3);
     }
-    .search-page-searchbar .bubble-buttons {
-        gap: 0.5rem;
+    
+    .search-page-searchbar .search-input-container {
+        width: 90%;
+    }
+
+    .search-page-searchbar input {
+        width: 90%;
     }
 }
 

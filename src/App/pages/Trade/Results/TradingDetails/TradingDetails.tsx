@@ -1,3 +1,31 @@
+
+/* We shale be receiving this data format 
+
+Object { description: "This is a test listing", id: 1039764572696346600, ipfs_hash: "Qm1234567890abcdef", name: "Test Listing", offerings: (1) […], seller_address: "EW9wU7BDZy9X9uj2LfYJzfYnGz3rHmEMPt", tags: "test, listing" }
+​
+description: "This is a test listing"
+​
+id: 1039764572696346600
+​
+ipfs_hash: "Qm1234567890abcdef"
+​
+name: "Test Listing"
+​
+offerings: Array [ {…} ]
+​​
+0: Object { listing_id: 1039764572696346600, offering_asset_name: "CREDITS", offering_created_at: "2025-01-20T13:56:08.327492", … }
+​​
+length: 1
+​​
+<prototype>: Array []
+​
+seller_address: "EW9wU7BDZy9X9uj2LfYJzfYnGz3rHmEMPt"
+​
+tags: "test, listing"
+*/
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './TradingDetails.css';
@@ -324,6 +352,54 @@ const TradingDetails: React.FC<{
     }
   };
 
+  const handleRefund = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(`${trading_api_url}/manage`, {
+        listing_id: listing.listingID,
+        password,
+        action: 'refund'
+      });
+      setNotificationType('success');
+      setNotificationMessage(response.data.message);
+      setShowNotificationModal(true);
+      setIsManageMode(false);
+    } catch (error: any) {
+      console.error('Error refunding listing:', error);
+      setError(error.response?.data?.message || 'Failed to process refund');
+      setNotificationType('error');
+      setNotificationMessage(error.response?.data?.message || 'Failed to process refund');
+      setShowNotificationModal(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(`${trading_api_url}/manage`, {
+        listing_id: listing.listingID,
+        password,
+        action: 'cancel'
+      });
+      setNotificationType('success');
+      setNotificationMessage(response.data.message);
+      setShowNotificationModal(true);
+      setIsManageMode(false);
+    } catch (error: any) {
+      console.error('Error canceling listing:', error);
+      setError(error.response?.data?.message || 'Failed to cancel listing');
+      setNotificationType('error');
+      setNotificationMessage(error.response?.data?.message || 'Failed to cancel listing');
+      setShowNotificationModal(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="trading-details">
       <div className="details-header">
@@ -479,10 +555,17 @@ const TradingDetails: React.FC<{
                     disabled
                     title="Quantity cannot be changed here"
                   />
-                  {/* TODO: Quantity changes should be handled through the order management system, not in the listing details */}
-                  <button onClick={handleManageSave} className="save-changes-button">
-                    Save Changes
-                  </button>
+                  <div className="manage-actions">
+                    <button onClick={handleManageSave} className="save-changes-button">
+                      Save Changes
+                    </button>
+                    <button onClick={handleRefund} className="refund-button" disabled={isLoading}>
+                      Refund Balance
+                    </button>
+                    <button onClick={handleCancel} className="cancel-button" disabled={isLoading}>
+                      Cancel Listing
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (
@@ -518,28 +601,34 @@ const TradingDetails: React.FC<{
                     <div className="price-details">
                       <h3>Price</h3>
                       <p className="unit-price">{Number(listing.unitPrice)/100000000} EVR</p>
-                      <p className="quantity-available">
-                        {listing.quantity/100000000} units available
-                      </p>
+                      {listing.quantity > 0 ? (
+                        <p className="quantity-available">
+                          {listing.quantity/100000000} units available
+                        </p>
+                      ) : (
+                        <p className="out-of-stock">Out of stock</p>
+                      )}
                     </div>
 
-                    <div className="purchase-controls">
-                      <div className="quantity-controls">
-                        <button onClick={() => handleQuantityChange(false)} className="quantity-button">
-                          <IoMdRemove />
-                        </button>
-                        <span className="quantity-display">{quantity}</span>
-                        <button onClick={() => handleQuantityChange(true)} className="quantity-button">
-                          <IoMdAdd />
+                    {listing.quantity > 0 ? (
+                      <div className="purchase-controls">
+                        <div className="quantity-controls">
+                          <button onClick={() => handleQuantityChange(false)} className="quantity-button">
+                            <IoMdRemove />
+                          </button>
+                          <span className="quantity-display">{quantity}</span>
+                          <button onClick={() => handleQuantityChange(true)} className="quantity-button">
+                            <IoMdAdd />
+                          </button>
+                        </div>
+                        <button
+                          className="add-to-cart-button"
+                          onClick={() => addToCart(listing, quantity)}
+                        >
+                          Add to Cart
                         </button>
                       </div>
-                      <button
-                        className="add-to-cart-button"
-                        onClick={() => addToCart(listing, quantity)}
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               </>
@@ -613,57 +702,38 @@ const TradingDetails: React.FC<{
       {/* Password Modal */}
       {showPasswordModal && (
         <div className="report-modal">
-          <div className="report-content">
-            <h2 style={{ color: '#00ff9d' }}>Enter Listing Password</h2>
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ color: '#00ff9d', marginBottom: '0.5rem' }}>Listing ID</div>
+          <div className="report-content password-modal">
+            <h2>Enter Listing Password</h2>
+            <div className="password-modal-field">
+              <div className="password-modal-field-label">Listing ID</div>
               <input
                 type="text"
                 id="listingID"
                 value={listing.listingID}
-                className="edit-input"
-                style={{ 
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid #00ff9d',
-                  color: '#fff',
-                  padding: '0.75rem'
-                }}
+                className="password-modal-input"
                 disabled
               />
             </div>
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ color: '#00ff9d', marginBottom: '0.5rem' }}>Password</div>
+            <div className="password-modal-field">
+              <div className="password-modal-field-label">Password</div>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className="edit-input"
-                style={{ 
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid #00ff9d',
-                  color: '#fff',
-                  padding: '0.75rem'
-                }}
+                className="password-modal-input"
               />
             </div>
-            <div style={{ color: '#00ff9d', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            <div className="password-modal-hint">
               Listing ID and password are required.
             </div>
             {error && <p className="error-message">{error}</p>}
-            <div className="report-actions" style={{ gap: '1rem' }}>
+            <div className="password-modal-actions">
               <button 
                 onClick={handlePasswordSubmit} 
                 disabled={isLoading || !password.trim()}
-                style={{
-                  backgroundColor: '#00ff9d',
-                  color: '#000',
-                  border: 'none',
-                  padding: '0.75rem 2rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="password-modal-submit"
               >
                 {isLoading ? 'Verifying...' : 'Submit'}
               </button>
@@ -673,14 +743,7 @@ const TradingDetails: React.FC<{
                   setPassword('');
                   setError(null);
                 }} 
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#fff',
-                  border: '1px solid #00ff9d',
-                  padding: '0.75rem 2rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="password-modal-cancel"
               >
                 Cancel
               </button>

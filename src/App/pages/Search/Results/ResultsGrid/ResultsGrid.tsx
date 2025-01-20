@@ -10,31 +10,51 @@ interface ResultsGridProps {
 }
 
 const ResultsGrid: React.FC<ResultsGridProps> = ({ results, isSearching, isLoaded }) => {
+    let processedResults;
+    let hasResults = false;
 
-    try{
-        results = results.results;
+    try {
+        processedResults = results?.results;
+        hasResults = Array.isArray(processedResults) && processedResults.length > 0;
     } catch (error) {
-       return <div className={"results-grid " + (isSearching ? 'is-searching' : '') + (isLoaded ? 'is-loaded' : '')}>
-            {isSearching && <div className="spinner-container"><LoadingSpinner /></div>}
-        </div>;
+        processedResults = [];
     }
+
+    const gridClasses = [
+        'results-grid',
+        isSearching ? 'is-searching' : '',
+        isLoaded ? 'is-loaded' : '',
+        !hasResults && isLoaded ? 'no-results' : ''
+    ].filter(Boolean).join(' ');
+
     return (
-        <div className={"results-grid " + (isSearching ? 'is-searching' : '') + (isLoaded ? 'is-loaded' : '')}>
-            {results.length === 0 && <div className="results-grid no-results">No results found</div>}
-            <div className="results-grid-container">
-                {!isSearching && results && Object.keys(results).map((index: any) => (
-                    <ResultCard
-                    key={results[index].name}
-                    name={results[index].name}
-                    blockHeight={results[index].block_height}
-                    blockHash={results[index].blockhash}
-                    amount={results[index].amount}
-                    ipfsHash={results[index].has_ipfs ? results[index].ipfs_hash : undefined}
-                    reissuable={results[index].reissuable}
-                    units={results[index].units}
-                />
-                ))}
-            </div>
+        <div className={gridClasses}>
+            {isSearching && (
+                <div className="spinner-container">
+                    <LoadingSpinner />
+                </div>
+            )}
+            
+            {!isSearching && !hasResults && isLoaded && (
+                <div className="no-results-message">No results found</div>
+            )}
+
+            {hasResults && (
+                <div className="results-grid-container">
+                    {processedResults.map((result: any) => (
+                        <ResultCard
+                            key={result.name}
+                            name={result.name}
+                            blockHeight={result.block_height}
+                            blockHash={result.blockhash}
+                            amount={result.amount}
+                            ipfsHash={result.has_ipfs ? result.ipfs_hash : undefined}
+                            reissuable={result.reissuable}
+                            units={result.units}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );    
 };

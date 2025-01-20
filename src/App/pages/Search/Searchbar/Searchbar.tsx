@@ -13,18 +13,28 @@ interface SearchbarProps {
 }
 
 const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placeholder="Type to search...", bubbleButtons = [], initialQuery = ''}) => {
-    const [isSearching, setIsSearching] = useState(false);
+    const [isSearching, setIsSearching] = useState(!!initialQuery);
     const [isLoaded, setIsLoaded] = useState(false);
     const [query, setQuery] = useState(initialQuery);
-    const [filtersVisible, setFiltersVisible] = useState(false); // State to manage filter visibility
 
     useEffect(() => {
         setTimeout(() => {
-            setIsLoaded(true); // Trigger the load animations
+            setIsLoaded(true);
         }, 100);
-    }, []);
+        
+        // Set initial searching state if there's an initial query
+        if (initialQuery) {
+            setIsSearching(true);
+            onTypingStart();
+        }
+    }, [initialQuery]);
 
-    // Debounce function to delay search execution
+    // Update local state when initialQuery changes
+    useEffect(() => {
+        setQuery(initialQuery);
+        setIsSearching(!!initialQuery);
+    }, [initialQuery]);
+
     const debounce = (func: Function, wait: number) => {
         let timeoutId: NodeJS.Timeout;
         return (...args: any[]) => {
@@ -35,68 +45,63 @@ const Searchbar: React.FC<SearchbarProps> = ({ onSearch, onTypingStart, placehol
         };
     };
 
-    // Memoized debounce search function
     const debouncedSearch = useCallback(debounce((input: string) => {
         onSearch(input);
-    }, 650), []); // Only recreate the debounce function when the component mounts
+    }, 650), []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
         setQuery(input);
-
-        // Notify Explorer that typing has started
         onTypingStart();
 
-        // Move to the top right if the query length is greater than 0
         if (input.trim().length > 0) {
             setIsSearching(true);
         } else {
             onSearch('');
-            setIsSearching(false); // Reset to center when the input is empty
+            setIsSearching(false);
         }
 
-        // Trigger the debounced search function
         debouncedSearch(input);
     };
 
     const handleBubbleClick = (query: string) => {
         setQuery(query);
+        setIsSearching(true);
+        onTypingStart();
+        // Immediately trigger search for bubble buttons
         onSearch(query);
-        setIsSearching(true); // Move the search bar when a bubble is clicked
     };
 
-//@ts-ignore
-    const toggleFilters = () => {
-        setFiltersVisible(!filtersVisible); // Toggle the visibility of the filters
-    };
-
-//@ts-ignore
-    const handleSortChange = (value: string) => {
-        value
-        // Handle sort change logic here
-    };
-
-//@ts-ignore
-    const handleReissuableChange = (value: string) => {
-        value
-        // Handle reissuable change logic here
+    const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+        const pastedText = event.clipboardData.getData('text');
+        if (pastedText) {
+            setIsSearching(true);
+            onTypingStart();
+        }
     };
 
     return (
         <div className={`search-page-searchbar ${isLoaded ? 'loaded' : ''} ${isSearching ? 'searching' : ''}`}>
-            <input type="text" placeholder={placeholder} className="search-input" value={query} onChange={handleChange} />
+            <input 
+                type="text" 
+                placeholder={placeholder} 
+                className="search-input" 
+                value={query} 
+                onChange={handleChange}
+                onPaste={handlePaste}
+            />
 
             {!isSearching && bubbleButtons.length > 0 && (
-                    <div className="bubble-buttons">
-                        {bubbleButtons.map((button, index) => (
-                            <button
-                                key={index}
-                                className="bubble-button"
-                                onClick={() => handleBubbleClick(button.query)}
-                            >
-                                {button.label}
-                            </button>
-                        ))}
+                <div className="bubble-buttons">
+                    {bubbleButtons.map((button, index) => (
+                        <button
+                            key={index}
+                            className="bubble-button"
+                            onClick={() => handleBubbleClick(button.query)}
+                        >
+                            {button.label}
+                        </button>
+                    ))}
                 </div>
             )}
         </div>

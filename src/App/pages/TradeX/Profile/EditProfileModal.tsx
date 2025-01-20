@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import './EditProfileModal.css';
 
 const EditProfileModal = ({ accountInfo, onSave, onClose }: { accountInfo: any, onSave: (updatedInfo: any) => void, onClose: () => void }) => {
@@ -17,21 +17,35 @@ const EditProfileModal = ({ accountInfo, onSave, onClose }: { accountInfo: any, 
     };
 
     return (
-        <div className="edit-profile-modal">
-            <div className="modal-content">
-                <button className="edit-profile-close-button" onClick={onClose}>×</button>
+        <div className="tradex-profile-modal">
+            <div className="tradex-profile-modal__content">
+                <button className="tradex-profile-modal__close-button" onClick={onClose}>×</button>
                 <h2>Edit Profile</h2>
-                <label>Username</label>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <label className="tradex-profile-modal__label">Username</label>
+                <input 
+                    type="text" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    className="tradex-profile-modal__input"
+                />
                 
-                <label>Bio</label>
-                <textarea value={bio} onChange={(e) => setBio(e.target.value)} />
+                <label className="tradex-profile-modal__label">Bio</label>
+                <textarea 
+                    value={bio} 
+                    onChange={(e) => setBio(e.target.value)} 
+                    className="tradex-profile-modal__textarea"
+                />
 
-                <label>Profile Picture IPFS Hash</label>
-                <input type="text" value={ipfsHash} onChange={(e) => setIpfsHash(e.target.value)} />
+                <label className="tradex-profile-modal__label">Profile Picture IPFS Hash</label>
+                <input 
+                    type="text" 
+                    value={ipfsHash} 
+                    onChange={(e) => setIpfsHash(e.target.value)} 
+                    className="tradex-profile-modal__input"
+                />
 
-                <button onClick={handleSave}>Save</button>
-                <button onClick={onClose}>Cancel</button>
+                <button onClick={handleSave} className="tradex-profile-modal__button">Save</button>
+                <button onClick={onClose} className="tradex-profile-modal__button">Cancel</button>
             </div>
         </div>
     );

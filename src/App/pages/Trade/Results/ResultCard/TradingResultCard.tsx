@@ -1,6 +1,8 @@
-import React, { useState, useEffect, 
-// @ts-ignore
-useRef } from 'react';
+import React, {
+    useState, useEffect,
+    // @ts-ignore
+    useRef
+} from 'react';
 import './TradingResultCard.css';
 import placeholderImage from '@/images/Placeholder.png'
 // @ts-ignore
@@ -19,62 +21,49 @@ import ManageListing from '@/App/pages/Trade/ManageListing/ManageListing';
 // @ts-ignore
 import { useNavigate } from 'react-router-dom';
 interface TradingResultCardProps {
-    assetName: string;
+    name: string;
     description: string;
-    unitPrice: number; // Unit price in satoshis
-    listingAddress: string;
-    orderStatus: string;
-    ipfsHash?: string;
-    quantity?: number; // Quantity in satoshis
-    sold?: number; // Sold quantity in satoshis
-    listingID: string;
+    offerings: any[];
+    ipfsHash: string;
+    tags?: string;
+    seller_address: string;
     addToCart: (listing: any) => void;
     buyNow: (listing: any) => void;
-    units: string;
     showDetails: (listing: any) => void; // New prop to show details
-    seller: string;
 }
 
 const TradingResultCard: React.FC<TradingResultCardProps> = ({
-    assetName,
+    name,
     description,
-    unitPrice,
-    listingAddress,
-    orderStatus,
+    offerings,
     ipfsHash,
-    quantity = 0,
-    //@ts-ignore
-    sold = 0,
-    listingID,
-    units,
+    tags,
+    seller_address,
     addToCart,
     buyNow,
-    showDetails,
-    seller
+    showDetails
 }) => {
-    // @ts-ignore
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
+    const [offeringImages, setOfferingImages] = useState<string[]>([]);
 
     const convertToEVR = (satoshis: number): string => {
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, '');
     };
 
     const listing = {
-        assetName,
+        name,
         description,
-        unitPrice,
-        listingAddress,
-        orderStatus,
-        ipfsHash,
-        quantity,
-        units,
-        listingID,
-        seller
+        offerings,
+        tags,
+        seller_address,
+        units: 0, // Assuming default value
+        listingID: '', // Assuming default value
+        seller: '' // Assuming default value
     };
 
-    const mediaSrc = ipfsHash 
-        ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
+    const mediaSrc = ipfsHash
+        ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`
         : placeholderImage;
 
     useEffect(() => {
@@ -89,6 +78,28 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 .catch(() => setIsLoaded(true));
         }
     }, [ipfsHash, mediaSrc]);
+
+    useEffect(() => {
+        // Validate each offering's IPFS hash and check if it's an image
+        const validateOfferings = async () => {
+            const validImages = await Promise.all(
+                offerings.map(async (offering) => {
+                    if (!offering.ipfs_hash) return null;
+                    const url = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${offering.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+                    try {
+                        const response = await fetch(url, { method: 'HEAD' });
+                        const contentType = response.headers.get('Content-Type');
+                        return contentType?.startsWith('image') ? url : null;
+                    } catch {
+                        return null;
+                    }
+                })
+            );
+            setOfferingImages(validImages.filter(Boolean) as string[]);
+        };
+
+        validateOfferings();
+    }, [offerings]);
 
     return (
         <div className="trading-result-card">
@@ -106,39 +117,61 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 ) : (
                     <img
                         src={mediaSrc}
-                        alt={assetName}
+                        alt={name}
                         className="trading-result-card__image"
                         onLoad={() => setIsLoaded(true)}
+                        onError={(e) => {
+                            e.currentTarget.src = placeholderImage;
+                        }}
                     />
                 )}
             </div>
             <div className="trading-result-card__content">
-                <h3 className="trading-result-card__title">{assetName}</h3>
-                <div className="trading-result-card__info">
-                    <div className="trading-result-card__status" data-status={orderStatus}>
-                        {orderStatus}
+                <h3 className="trading-result-card__title">{name}</h3>
+                {tags && tags.length > 0 && (
+                    <div className="trading-result-card__tags">
+                        {tags.split(',').map((tag, index) => (
+                            <span key={index} className="tag">#{tag}</span>
+                        ))}
                     </div>
-                    <div className="trading-result-card__price">
-                        {convertToEVR(unitPrice)} EVR
+                )}
+                <p className="trading-result-card__description">{description}</p>
+
+                <div className="trading-result-card__offerings">
+                    <div className={`offerings-count ${offerings.length === 0 ? 'offerings-count--empty' : 'offerings-count--has-offerings'}`}>
+                        {offerings.length} Offering{offerings.length !== 1 ? 's' : ''}
+                    </div>
+
+                    <div className="offerings-images">
+                        {offeringImages.slice(0, 5).map((imgUrl, index) => (
+                            <img
+                                key={index}
+                                src={imgUrl}
+                                alt={`Offering ${index + 1}`}
+                                className="offering-image"
+                                data-remaining={offeringImages.length > 5 ? `+${offeringImages.length - 5}` : ''}
+                                onError={(e) => {
+                                    e.currentTarget.src = placeholderImage;
+                                }}
+                            />
+                        ))}
                     </div>
                 </div>
-                <p className="trading-result-card__description">{description}</p>
+
                 <div className="trading-result-card__actions">
-                    <button 
+                    <button
                         className="trading-result-card__button"
                         onClick={() => buyNow(listing)}
-                        disabled={orderStatus !== 'ACTIVE'}
                     >
                         Buy Now
                     </button>
-                    <button 
+                    <button
                         className="trading-result-card__button trading-result-card__button--secondary"
                         onClick={() => addToCart(listing)}
-                        disabled={orderStatus !== 'ACTIVE'}
                     >
                         Add to Cart
                     </button>
-                    <button 
+                    <button
                         className="trading-result-card__button trading-result-card__button--secondary"
                         onClick={() => showDetails(listing)}
                     >

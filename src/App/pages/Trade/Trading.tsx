@@ -15,8 +15,6 @@ import ManageListing from './ManageListing/ManageListing';
 import TradingDetails from './Results/TradingDetails/TradingDetails';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
 
-
-
 const Trading: React.FC = () => {
     const [listings, setListings] = useState<any[]>([]);
     const [cartVisible, setCartVisible] = useState<boolean>(false);
@@ -40,6 +38,7 @@ const Trading: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false); // New state for loading indicator
     const [searchColumn, setSearchColumn] = useState<string>('asset_name');
 
+    // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
@@ -64,15 +63,19 @@ const Trading: React.FC = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await axios.get(`${trading_api_url}/listings`);
+                const response = await axios.get(`${trading_api_url}/listings/search?query=${searchQuery}&page=1&per_page=10`);
                 console.log('API Response:', response.data);
-                // Log a sample listing to check its structure
-                if (response.data.length > 0) {
-                    console.log('Sample listing:', response.data[0]);
+                if (response.data.success) {
+                    const listingsData = response.data.listings.results || [];
+                    console.log('Listings Data:', listingsData);
+                    setListings(listingsData);
+                } else {
+                    console.error('Failed to fetch listings:', response.data);
+                    setListings([]); // Ensure listings is an array
                 }
-                setListings(response.data);
             } catch (error) {
                 console.error('Error fetching listings:', error);
+                setListings([]); // Ensure listings is an array
             }
         };
 
@@ -191,32 +194,21 @@ const Trading: React.FC = () => {
         }
     };
 
-//@ts-ignore
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         setLoading(true);
-    };
-
-// Add handler for column change
-    const handleColumnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSearchColumn(e.target.value);
-        if (searchQuery) {
-            setLoading(true);
-        }
     };
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
             if (searchQuery) {
                 try {
-                    let url = `${trading_api_url}/search?`;
-                    if (searchColumn === 'all') {
-                        url += `column=all&value=${searchQuery}`;
-                    } else {
-                        url += `column=${searchColumn}&value=${searchQuery}`;
-                    }
+                    let url = `${trading_api_url}/listings/search`;
+                    url += `?query=${searchQuery}`;
+                    url += `&page=1&per_page=50`;
+                    console.log('Fetching search results from:', url);
                     const response = await axios.get(url);
-                    setSearchResults(response.data);
+                    setSearchResults(response.data.listings.results);
                 } catch (error) {
                     console.error('Error fetching search results:', error);
                 } finally {
@@ -255,14 +247,6 @@ const Trading: React.FC = () => {
         );
     };
 
-    const searchOptions = [
-        { value: 'all', label: 'All' },
-        { value: 'asset_name', label: 'Asset Name' },
-        { value: 'seller', label: 'Seller' },
-        { value: 'price', label: 'Price' },
-        { value: 'quantity', label: 'Quantity' }
-    ];
-
     useEffect(() => {
         // Update body class when cart is visible
         if (cartVisible) {
@@ -282,11 +266,8 @@ const Trading: React.FC = () => {
                 createListing={createListing} 
                 toggleCartVisibility={toggleCartVisibility}
                 cart={cart}
-                searchColumn={searchColumn}
-                handleColumnChange={handleColumnChange}
                 searchQuery={searchQuery}
                 handleSearch={handleSearch}
-                searchOptions={searchOptions}
             />
 
             {listings.length === 0 ? (

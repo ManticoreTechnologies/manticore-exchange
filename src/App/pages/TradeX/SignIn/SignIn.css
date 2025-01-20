@@ -1,290 +1,314 @@
-.signin-container {
-    max-width: var(--container-sm);
-    margin: auto;
-    padding: var(--spacing-6);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    background-color: var(--background-secondary);
-    opacity: 0;
-    animation: fadeInFromCenter 1s forwards;
-    text-align: center;
-    position: absolute;
+.signin-page {
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: var(--shadow-md);
-}
-
-.step-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-4);
-    animation: slideIn 0.5s ease-in-out;
-    align-items: center;
-}
-
-.step-form h2 {
-    margin-bottom: var(--spacing-4);
-    font-size: var(--font-size-2xl);
-    color: var(--text-primary);
-    animation: textPop 0.5s ease-in-out;
-}
-
-.step-form label {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: var(--font-size-base);
-}
-
-.step-form input[type="text"] {
-    padding: var(--spacing-3);
-    border: none;
-    border-bottom: 1px solid var(--border-color);
-    font-size: var(--font-size-base);
-    transition: all var(--transition-normal);
-    background-color: var(--background-tertiary);
-    color: var(--text-primary);
     width: 100%;
-}
-
-.step-form input[type="text"]:focus,
-.step-form input[type="text"]:hover {
-    outline: none;
-    border: none;
-    border-bottom: 1px solid var(--accent-color);
-}
-
-.step-form button {
-    padding: var(--spacing-3) var(--spacing-6);
-    background-color: var(--background-tertiary);
-    color: var(--text-primary);
+    max-width: 600px;
+    background-color: var(--background-primary);
+    border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    font-size: var(--font-size-base);
+    z-index: var(--z-modal);
+    overflow: hidden;
+}
+
+.signin-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.signin-header {
+    padding: var(--spacing-4) var(--spacing-6);
+    background-color: var(--background-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.back-button {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
-    transition: all var(--transition-normal);
-}
-
-.step-form button:hover {
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-    transform: translateY(-2px);
-}
-
-.step-form p {
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    white-space: pre-wrap;
-}
-
-/* Base copyable styles */
-.copyable {
-    cursor: pointer;
-    position: relative;
-    color: var(--accent-color);
-    transition: all var(--transition-normal);
-}
-
-/* Copyable elements inside signing instructions */
-.signing-instructions .copyable {
-    background: var(--background-tertiary);
-    padding: var(--spacing-2);
-    margin: var(--spacing-2) 0;
-    border-radius: var(--border-radius-md);
-    font-family: var(--font-family-mono);
-    border: 1px solid var(--border-color);
-    display: block;
-}
-
-.signing-instructions .copyable:hover {
-    background: var(--background-secondary);
-    transform: translateX(var(--spacing-2));
-    border-color: var(--accent-color);
-}
-
-/* Tooltip for copyable elements */
-.copyable::after {
-    content: 'Click to copy';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    padding: var(--spacing-2) var(--spacing-3);
     background-color: var(--background-tertiary);
-    color: var(--text-primary);
-    padding: var(--spacing-2);
-    border-radius: var(--border-radius-sm);
-    font-size: var(--font-size-sm);
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    pointer-events: none;
-    border: 1px solid var(--border-color);
-}
-
-.copyable:hover::after {
-    opacity: 1;
-}
-
-.copyable.show-tooltip::after {
-    content: 'Copied!';
-    opacity: 1;
-}
-
-/* Inline copyable elements */
-span.copyable {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-decoration-color: var(--accent-color);
-}
-
-span.copyable:hover {
-    color: var(--hover-color);
-}
-
-/* Help button and instructions */
-.help-button {
-    background: linear-gradient(45deg, var(--accent-color), var(--hover-color));
-    color: var(--text-primary);
     border: none;
-    padding: var(--spacing-2) var(--spacing-4);
-    border-radius: var(--border-radius-full);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
     cursor: pointer;
-    margin: var(--spacing-4) 0;
-    font-size: var(--font-size-sm);
-    transition: all var(--transition-normal);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition-all);
 }
 
-.help-button:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+.back-button:hover {
+    background-color: var(--background-quaternary);
+    color: var(--text-primary);
 }
 
-.signing-instructions {
-    background: var(--background-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: all var(--transition-normal);
-    margin: var(--spacing-2) 0;
+.signin-page .steps-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
 }
 
-.signing-instructions.show {
-    padding: var(--spacing-4);
-    max-height: 500px;
-    opacity: 1;
-}
-
-.signing-instructions ol {
-    margin: 0;
-    padding-left: var(--spacing-6);
-}
-
-.signing-instructions li {
-    margin: var(--spacing-2) 0;
-    color: var(--text-secondary);
-}
-
-/* Info section specific styles */
-.signing-instructions h3 {
-    color: var(--accent-color);
-    margin-bottom: var(--spacing-4);
-    font-size: var(--font-size-lg);
-}
-
-.signing-instructions p {
-    text-align: left;
-    margin-bottom: var(--spacing-4);
-    line-height: 1.6;
-}
-
-.info-note {
-    background: var(--background-secondary);
-    border-left: 3px solid var(--accent-color);
-    padding: var(--spacing-3);
-    margin-top: var(--spacing-4);
-    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-}
-
-/* Secondary help button style */
-.help-button.secondary {
-    background: var(--background-tertiary);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-1) var(--spacing-3);
-    margin-top: var(--spacing-4);
-    box-shadow: none;
-}
-
-.help-button.secondary:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: var(--background-secondary);
-    transform: translateY(-1px);
-}
-
-/* Address display */
-.address-display {
-    margin-top: var(--spacing-4);
-    font-size: var(--font-size-sm);
+.signin-page .step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
     color: var(--text-muted);
 }
 
-/* Main action buttons */
-.submit-icon {
-    background: linear-gradient(45deg, var(--accent-color), var(--hover-color));
+.signin-page .step.active {
+    color: var(--accent-color);
+}
+
+.signin-page .step.completed {
     color: var(--text-primary);
-    padding: var(--spacing-3) var(--spacing-6);
+}
+
+.signin-page .step-number {
+    width: 24px;
+    height: 24px;
     border-radius: var(--border-radius-full);
-    font-weight: 600;
+    background-color: var(--background-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-all);
+}
+
+.signin-page .step.active .step-number {
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+.signin-page .step-connector {
+    width: 60px;
+    height: 2px;
+    background-color: var(--background-tertiary);
+    transition: var(--transition-all);
+}
+
+.signin-page .step-connector.active {
+    background-color: var(--accent-color);
+}
+
+.step-form {
+    padding: var(--spacing-6);
+    animation: slideIn 0.3s ease-out;
+}
+
+.step-form h2 {
+    color: var(--text-primary);
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-4);
+}
+
+.signature-input {
     margin: var(--spacing-4) 0;
+}
+
+.signature-input label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-2);
+}
+
+.signature-input input {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    transition: var(--transition-all);
+}
+
+.signature-input input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.submit-icon {
+    width: 100%;
+    padding: var(--spacing-4);
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-all);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin: var(--spacing-4) 0;
+}
+
+.submit-icon:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
 
-.submit-icon:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+.submit-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* Animations */
-@keyframes fadeInFromCenter {
-    from {
-        opacity: 0;
-        transform: scale(0.5) translate(-50%, -50%);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translate(-50%, -50%);
-    }
+.help-button {
+    width: 100%;
+    padding: var(--spacing-2);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-all);
+    text-align: center;
+}
+
+.help-button:hover {
+    color: var(--text-primary);
+}
+
+.signing-instructions {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--background-tertiary);
+    border-radius: var(--border-radius-md);
+    display: none;
+}
+
+.signing-instructions.show {
+    display: block;
+    animation: slideIn 0.3s ease-out;
+}
+
+.signing-instructions h3 {
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-3);
+}
+
+.signing-instructions ol {
+    padding-left: var(--spacing-4);
+    color: var(--text-secondary);
+}
+
+.signing-instructions li {
+    margin-bottom: var(--spacing-3);
+}
+
+.signing-instructions strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: var(--spacing-1);
+}
+
+.command {
+    font-family: var(--font-mono);
+    background-color: var(--background-secondary);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-sm);
+    margin-top: var(--spacing-2);
+    cursor: pointer;
+    transition: var(--transition-all);
+}
+
+.command:hover {
+    background-color: var(--background-primary);
+}
+
+.error-message {
+    background: rgba(var(--error-color-rgb), 0.1);
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-sm);
+}
+
+.challenge-container {
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.challenge-text {
+    font-family: var(--font-mono);
+    background-color: var(--background-secondary);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    margin-top: var(--spacing-2);
+    cursor: pointer;
+    word-break: break-all;
+}
+
+.challenge-timer {
+    margin-top: var(--spacing-2);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.challenge-timer.warning {
+    color: var(--warning-color);
+}
+
+.challenge-timer.critical {
+    color: var(--error-color);
 }
 
 @keyframes slideIn {
     from {
-        transform: translateX(-100%);
         opacity: 0;
+        transform: translateY(20px);
     }
     to {
-        transform: translateX(0);
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@keyframes textPop {
-    from {
-        transform: scale(0.8);
-        opacity: 0;
+@media (max-width: 768px) {
+    .signin-page {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: none;
+        max-width: none;
+        border-radius: 0;
     }
-    to {
-        transform: scale(1);
-        opacity: 1;
+    
+    .signin-container {
+        max-height: none;
+    }
+    
+    .step-form {
+        padding: var(--spacing-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .steps-indicator {
+        display: none;
+    }
+    
+    .step-form {
+        padding: var(--spacing-3);
     }
 }

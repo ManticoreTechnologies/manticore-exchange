@@ -1,4 +1,4 @@
-.edit-profile-modal {
+.tradex-profile-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000;
 }
 
-.edit-profile-modal .modal-content {
+.tradex-profile-modal__content {
     background: var(--background-primary);
     color: var(--text-color);
     padding: 20px;
@@ -22,7 +22,7 @@
     position: relative;
 }
 
-.edit-profile-modal .modal-content .edit-profile-close-button {
+.tradex-profile-modal__close-button {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -44,26 +44,26 @@
     border-radius: 50%;
 }
 
-.edit-profile-modal .modal-content .edit-profile-close-button:hover {
+.tradex-profile-modal__close-button:hover {
     color: var(--error-color);
     transform: scale(1.1);
     background-color: transparent;
 }
 
-.edit-profile-modal .modal-content .edit-profile-close-button:focus {
+.tradex-profile-modal__close-button:focus {
     outline: none;
     box-shadow: none;
 }
 
-.edit-profile-modal .modal-content label {
+.tradex-profile-modal__label {
     display: block;
     margin-top: 10px;
     color: var(--text-color);
     font-weight: 500;
 }
 
-.edit-profile-modal .modal-content input, 
-.edit-profile-modal .modal-content textarea {
+.tradex-profile-modal__input,
+.tradex-profile-modal__textarea {
     width: 100%;
     margin-top: 5px;
     padding: 8px;
@@ -75,13 +75,13 @@
     box-sizing: border-box;
 }
 
-.edit-profile-modal .modal-content input:focus,
-.edit-profile-modal .modal-content textarea:focus {
+.tradex-profile-modal__input:focus,
+.tradex-profile-modal__textarea:focus {
     border-color: var(--primary-color);
     box-shadow: var(--input-focus-shadow);
 }
 
-.edit-profile-modal .modal-content button {
+.tradex-profile-modal__button {
     margin-top: 15px;
     padding: 10px 20px;
     background-color: var(--primary-color);
@@ -93,7 +93,7 @@
     font-weight: 500;
 }
 
-.edit-profile-modal .modal-content button:hover {
+.tradex-profile-modal__button:hover {
     background-color: var(--primary-color-hover);
     transform: translateY(-1px);
 }

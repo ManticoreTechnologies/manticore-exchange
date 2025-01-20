@@ -7,22 +7,16 @@ interface TradingHeaderProps {
     createListing: () => void;
     toggleCartVisibility: () => void;
     cart: any[];
-    searchColumn: string;
-    handleColumnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     searchQuery: string;
     handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    searchOptions: Array<{ value: string; label: string; }>;
 }
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({
     createListing, 
     toggleCartVisibility, 
     cart,
-    searchColumn,
-    handleColumnChange,
     searchQuery,
-    handleSearch,
-    searchOptions
+    handleSearch
 }) => {
     return (
         <div className="trading-header">
@@ -32,23 +26,11 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
 
             <div className="search-bar-container">
                 <div className="search-input-wrapper">
-                    <select 
-                        value={searchColumn}
-                        onChange={handleColumnChange}
-                        aria-label="Search category"
-                        className="search-select"
-                    >
-                        {searchOptions.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={handleSearch}
-                        placeholder={`Search by ${searchOptions.find(opt => opt.value === searchColumn)?.label.toLowerCase()}...`}
+                        placeholder="Search..."
                         aria-label="Search input"
                     />
                 </div>

@@ -10,8 +10,8 @@
 }
 
 .details-header {
-  padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header-actions {
@@ -23,36 +23,37 @@
 .action-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
   background: transparent;
-  color: #fff;
+  color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-all);
 }
 
 .action-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--background-tertiary);
 }
 
 .action-button.manage-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #00ff9d;
-  border: 1px solid #00ff9d;
+  gap: var(--spacing-2);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
 }
 
 .action-button.manage-button:hover {
-  background: rgba(0, 255, 157, 0.1);
+  background: var(--accent-color-hover);
+  color: var(--text-primary);
 }
 
 .action-button.manage-button.active {
-  background: #00ff9d;
-  color: #000;
+  background: var(--accent-color);
+  color: var(--background-primary);
 }
 
 .like-container {
@@ -63,23 +64,23 @@
 .like-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
   background: transparent;
-  color: #fff;
+  color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-all);
 }
 
 .like-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--background-tertiary);
 }
 
 .like-button.liked {
-  color: #ff4444;
+  color: var(--color-error);
 }
 
 /* Push Report button to the right */
@@ -289,7 +290,7 @@
 
 .unit-price {
   font-size: var(--font-size-3xl);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary-500);
   margin: 0;
 }
@@ -297,6 +298,21 @@
 .quantity-available {
   color: var(--text-muted);
   margin: var(--spacing-2) 0 0 0;
+}
+
+.out-of-stock {
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--spacing-2) 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.out-of-stock::before {
+  content: '•';
+  font-size: var(--font-size-xl);
+  line-height: 1;
 }
 
 .purchase-controls {
@@ -475,21 +491,22 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: var(--modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: var(--z-modal);
 }
 
 .report-content {
-  background-color: var(--background-secondary);
+  background: var(--background-secondary);
   padding: var(--spacing-6);
   border-radius: var(--border-radius-lg);
-  max-width: 500px;
+  max-width: var(--max-width-lg);
   width: 90%;
   position: relative;
-  z-index: 10000;
+  z-index: var(--z-modal);
+  border: 1px solid var(--border-color);
 }
 
 .report-content h2 {
@@ -503,10 +520,16 @@
   padding: var(--spacing-3);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
-  background-color: var(--background-tertiary);
+  background: var(--input-bg);
   color: var(--text-primary);
   margin-bottom: var(--spacing-4);
   resize: vertical;
+  transition: var(--transition-all);
+}
+
+.report-content textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: var(--input-focus-ring);
 }
 
 .report-actions {
@@ -519,20 +542,29 @@
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  font-weight: 500;
+  transition: var(--transition-all);
+  font-weight: var(--font-weight-medium);
 }
 
 .report-actions button:first-child {
-  background-color: var(--color-primary-500);
-  color: var(--color-neutral-100);
+  background: var(--button-primary-bg);
+  color: var(--text-primary);
   border: none;
 }
 
+.report-actions button:first-child:hover {
+  background: var(--button-primary-hover);
+}
+
 .report-actions .cancel-button {
-  background-color: transparent;
+  background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-primary);
+}
+
+.report-actions .cancel-button:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .report-actions button:disabled {
@@ -756,4 +788,200 @@
 
 .media-overlay .wrench-icon {
   font-size: 1.2em;
+}
+
+/* Password Modal Styles */
+.password-modal {
+  color: var(--text-primary);
+}
+
+.password-modal h2 {
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-6);
+}
+
+.password-modal-field {
+  margin-bottom: var(--spacing-4);
+}
+
+.password-modal-field-label {
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.password-modal-input {
+  width: 100%;
+  padding: var(--spacing-3);
+  background: var(--background-tertiary);
+  border: 1px solid var(--accent-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  transition: var(--transition-all);
+}
+
+.password-modal-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.password-modal-input:focus {
+  box-shadow: var(--input-focus-ring);
+}
+
+.password-modal-hint {
+  color: var(--accent-color);
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-4) 0;
+}
+
+.password-modal-actions {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
+}
+
+.password-modal-submit {
+  flex: 1;
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--accent-color);
+  color: var(--background-primary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.password-modal-submit:hover {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.password-modal-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.password-modal-cancel {
+  flex: 1;
+  padding: var(--spacing-3) var(--spacing-6);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--accent-color);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.password-modal-cancel:hover {
+  color: var(--accent-color);
+  background: var(--background-tertiary);
+}
+
+/* Success/Error Colors */
+.report-content h2[style*="color: #00ff9d"] {
+  color: var(--accent-color) !important;
+}
+
+.report-content div[style*="color: #00ff9d"] {
+  color: var(--accent-color) !important;
+}
+
+.report-content input[style*="border: 1px solid #00ff9d"] {
+  border-color: var(--accent-color) !important;
+}
+
+.report-actions button[style*="background-color: #00ff9d"] {
+  background: var(--accent-color) !important;
+  color: var(--background-primary) !important;
+}
+
+.report-actions button[style*="border: 1px solid #00ff9d"] {
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+}
+
+.manage-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+}
+
+.manage-actions button {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.manage-actions .save-changes-button {
+  background: var(--accent-color);
+  color: var(--background-primary);
+}
+
+.manage-actions .save-changes-button:hover {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.manage-actions .refund-button {
+  background: var(--color-success);
+  color: var(--background-primary);
+  border: 1px solid var(--color-success);
+}
+
+.manage-actions .refund-button:hover {
+  background: var(--color-success-dark);
+  transform: translateY(-1px);
+}
+
+.manage-actions .cancel-button {
+  background: var(--color-error);
+  color: var(--background-primary);
+  border: 1px solid var(--color-error);
+}
+
+.manage-actions .cancel-button:hover {
+  background: var(--color-error-dark);
+  transform: translateY(-1px);
+}
+
+.manage-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Add a warning style for dangerous actions */
+.manage-actions .refund-button,
+.manage-actions .cancel-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.manage-actions .refund-button::before,
+.manage-actions .cancel-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.manage-actions .refund-button:hover::before,
+.manage-actions .cancel-button:hover::before {
+  transform: translateX(100%);
 }

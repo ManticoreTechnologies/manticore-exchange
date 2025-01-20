@@ -4,6 +4,7 @@ import "./Navbar.css";
 import logo from '@/images/enhanced_logo_old.png';
 import Dropdown from "./Dropdown";
 import { useNavigate } from "react-router-dom";
+import { MoonPayBuyWidget } from '@moonpay/moonpay-react';       
 
 // Theme toggle button
 //@ts-ignore
@@ -36,6 +37,7 @@ const Navbar: React.FC = () => {
   const [showFaucet, setShowFaucet] = useState(true);
   const [showProfile, setShowProfile] = useState(true);
   const [showMore, setShowMore] = useState(true);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -123,6 +125,7 @@ const Navbar: React.FC = () => {
             </NavLink>
           )}
         
+
           </div>
       </div>
     </nav>
@@ -130,3 +133,21 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
+
+/* MOONPAY WIDGET
+
+        <MoonPayBuyWidget
+        variant="overlay"
+        baseCurrencyCode="usd"
+        baseCurrencyAmount="100"
+        defaultCurrencyCode="eth"
+        walletAddress="0x0000000000000000000000000000000000000000"
+        visible={visible}
+        />
+        <button onClick={() => setVisible(!visible)}>
+
+        Toggle widget
+        </button>
+
+*/

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Checkout.css';
 import ExpiredInvoicePopup from '../ExpiredInvoicePopup/ExpiredInvoicePopup';
+import Debug from '@/App/components/Debug/Debug';
+import { FaCopy } from 'react-icons/fa';
 
 interface CheckoutProps {
     selectedItems: any[];
@@ -12,9 +14,11 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
     const [processing, setProcessing] = useState(false);
     const [invoiceData, setInvoiceData] = useState<any>(null);
     const [payoutAddress, setPayoutAddress] = useState<string>('');
+    // @ts-ignore
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isExpiredPopupOpen, setIsExpiredPopupOpen] = useState<boolean>(false);
+    // @ts-ignore
     const [orderId, setOrderId] = useState<string | null>(null);
     const [currentStep, setCurrentStep] = useState<number>(1);
     const [timeRemaining, setTimeRemaining] = useState<number>(0);
@@ -130,7 +134,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
             if (response.ok) {
                 setInvoiceData({
                     ...data,
-                    amount: totalAmountWithFeeSats
+                    payment_amount: data.payment_amount
                 });
                 setOrderId(data.id);
                 setCurrentStep(2);
@@ -158,18 +162,20 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
     };
 
     const formatTime = (seconds: number): string => {
-        if (seconds <= 0) return "0:00";
+        if (seconds <= 0) return "00:00";
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
     const getProgressPercentage = (): string => {
-        if (!expirationTime) return '0deg';
+        if (!expirationTime) return '360deg';
         const now = Date.now();
         const remaining = Math.max(0, Math.floor((expirationTime - now) / 1000));
-        // Calculate progress in degrees (0 to 360)
-        return Math.min(360, Math.max(0, (remaining / (15 * 60)) * 360)) + 'deg';
+        // Calculate progress in degrees (360 to 0)
+        // 15 minutes = 900 seconds
+        const progress = (remaining / 900) * 360;
+        return `${progress}deg`;
     };
 
     return (
@@ -255,10 +261,9 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                     <div className="payment-section">
                         {invoiceData && (
                             <div className="invoice-status-container">
-                                {/* Debug display */}
-                                <pre className="debug-data">
-                                    {JSON.stringify(invoiceData, null, 2)}
-                                </pre>
+                                <Debug sections={[
+                                    { title: 'Invoice Data', data: invoiceData }
+                                ]} />
 
                                 <div className="invoice-header">
                                     <h2>Payment Details</h2>
@@ -288,7 +293,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                                                 className="copy-button"
                                                 onClick={() => navigator.clipboard.writeText(invoiceData.payment_address)}
                                             >
-                                                Copy
+                                                <FaCopy />
                                             </button>
                                         </div>
                                     </div>
@@ -296,7 +301,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                                     <div className="invoice-field">
                                         <label>Amount</label>
                                         <div className="field-value">
-                                            <span>{(invoiceData.amount / 100000000).toFixed(8)} EVR</span>
+                                            <span>{(invoiceData.payment_amount / 100000000).toFixed(8)} EVR</span>
                                         </div>
                                     </div>
 

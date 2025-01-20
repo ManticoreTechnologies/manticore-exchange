@@ -9,128 +9,130 @@
     justify-content: center;
     align-items: center;
     background: var(--modal-overlay);
-    transition: opacity 0.3s ease-in-out;
-    z-index: 1000;
+    transition: var(--transition-opacity);
+    z-index: var(--z-modal);
     opacity: 1;
 }
 
 /* Popup content */
 .manage-listing-content {
     background: var(--background-primary);
-    padding: 30px;
+    padding: var(--spacing-8);
     border-radius: var(--border-radius-lg);
-    width: 500px;
+    width: var(--max-width-lg);
     max-width: 90%;
-    box-shadow: var(--modal-shadow);
+    box-shadow: var(--shadow-2xl);
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease-in-out;
+    transition: var(--transition-transform);
     transform: translateY(0);
-    border: var(--modal-border);
+    border: 1px solid var(--border-color);
 }
 
 /* Closing animation for popup */
 .manage-listing-popup.closing {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(calc(-1 * var(--spacing-5)));
 }
 
 /* Headings */
 .manage-listing-popup .manage-listing-content h2 {
     margin-top: 0;
-    font-size: 1.75em;
-    color: var(--text-color);
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
     text-align: left;
     letter-spacing: 0.5px;
-    margin-bottom: 15px;
+    margin-bottom: var(--spacing-4);
 }
 
 /* Form labels */
 .manage-listing-popup .manage-listing-content label {
-    color: var(--text-color);
+    color: var(--text-primary);
     display: block;
-    margin: 15px 0 7px;
-    font-weight: 600;
+    margin: var(--spacing-4) 0 var(--spacing-2);
+    font-weight: var(--font-weight-semibold);
 }
 
 /* Inputs and Textareas */
 .manage-listing-popup .manage-listing-content input,
 .manage-listing-popup .manage-listing-content textarea {
-    width: calc(100% - 20px);
-    padding: 12px;
-    margin-bottom: 15px;
-    background: var(--input-background);
-    border: var(--input-border);
-    color: var(--text-color);
-    font-size: 1.1em;
+    width: 100%;
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
     outline: none;
     box-sizing: border-box;
-    transition: all 0.3s ease;
-    border-radius: var(--border-radius);
+    transition: var(--transition-all);
+    border-radius: var(--border-radius-md);
 }
 
 .manage-listing-popup .manage-listing-content input:focus,
 .manage-listing-popup .manage-listing-content textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: var(--input-focus-shadow);
+    box-shadow: var(--input-focus-ring);
+    border-color: var(--accent-color);
 }
 
 /* Buttons */
 .manage-listing-popup .manage-listing-content button {
-    padding: 12px 24px;
+    padding: var(--spacing-3) var(--spacing-6);
     border: none;
-    border-radius: var(--border-radius);
-    font-size: 1em;
-    font-weight: 600;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--button-gradient);
-    color: var(--text-color);
-    margin-top: 25px;
+    transition: var(--transition-all);
+    background: var(--button-primary-bg);
+    color: var(--text-primary);
+    margin-top: var(--spacing-6);
 }
 
 .manage-listing-popup .manage-listing-content button:disabled {
-    background: var(--button-disabled);
+    background: var(--button-secondary-bg);
     cursor: not-allowed;
     opacity: 0.7;
 }
 
 .manage-listing-popup .manage-listing-content button:not(:disabled):hover {
     transform: scale(1.05);
-    box-shadow: var(--button-hover-shadow);
+    background: var(--button-primary-hover);
+    box-shadow: var(--shadow-md);
 }
 
 /* Refund button */
 .manage-listing-popup .manage-listing-content .refund-button {
-    background: var(--success-color) !important;
+    background: var(--color-success);
+    color: var(--background-primary);
 }
 
 .manage-listing-popup .manage-listing-content .refund-button:hover {
-    background: var(--success-color-hover) !important;
+    background: var(--color-success-dark);
 }
 
 /* Error message styling */
 .manage-listing-popup .manage-listing-content .error-message {
-    color: var(--error-color);
-    font-size: 0.9em;
-    margin-top: 15px;
-    padding: 10px;
-    background: var(--error-background);
-    border-left: 4px solid var(--error-color);
-    border-radius: var(--border-radius);
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-3);
+    background: var(--background-secondary);
+    border-left: 4px solid var(--color-error);
+    border-radius: var(--border-radius-md);
 }
 
 /* Listing address styling */
 .manage-listing-popup .manage-listing-content .listing-address h3 {
-    color: var(--text-color);
-    margin-bottom: 8px;
-    font-size: 1.2em;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-lg);
 }
 
 .manage-listing-popup .manage-listing-content .listing-address p {
     color: var(--text-secondary);
     word-break: break-all;
-    font-size: 1.05em;
+    font-size: var(--font-size-base);
 }
 
 /* Close button */
@@ -138,17 +140,17 @@
     position: absolute;
     width: auto;
     height: auto;
-    right: 15px;
-    top: 15px;
-    background-color: transparent;
+    right: var(--spacing-4);
+    top: var(--spacing-4);
+    background: transparent;
     border: none;
-    font-size: 1.4em;
+    font-size: var(--font-size-xl);
     cursor: pointer;
-    color: var(--text-color);
-    transition: all 0.2s ease;
+    color: var(--text-muted);
+    transition: var(--transition-all);
     outline: none;
     margin: 0;
-    padding: 5px;
+    padding: var(--spacing-1);
     line-height: 1;
     display: flex;
     align-items: center;
@@ -162,10 +164,7 @@
 
 .manage-listing-popup .manage-listing-content .manage-listing-close-button:hover {
     transform: scale(1.2);
-    color: var(--error-color);
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
+    color: var(--color-error);
 }
 
 .manage-listing-popup .manage-listing-content .manage-listing-close-button:focus {
@@ -178,47 +177,49 @@
 .manage-listing-button {
     position: relative;
     z-index: 0;
-    background-color: transparent;
+    background: transparent;
     border: none;
-    color: var(--text-color);
+    color: var(--text-primary);
     cursor: pointer;
-    padding: 5px;
-    font-size: 1.05em;
-    transition: all 0.2s ease;
+    padding: var(--spacing-1);
+    font-size: var(--font-size-base);
+    transition: var(--transition-all);
 }
 
 .manage-listing-button:hover {
     transform: scale(1.1);
-    color: var(--primary-color);
+    color: var(--accent-color);
 }
 
 /* Popup confirmation buttons */
 .manage-listing-popup .manage-listing-content .confirm-button,
 .manage-listing-popup .manage-listing-content .cancel-button {
-    margin: 10px;
-    padding: 12px 20px;
+    margin: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    transition: all 0.3s ease;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    transition: var(--transition-all);
 }
 
 .manage-listing-popup .manage-listing-content .confirm-button {
-    background: var(--success-color);
-    color: var(--text-color);
+    background: var(--color-success);
+    color: var(--background-primary);
 }
 
 .manage-listing-popup .manage-listing-content .cancel-button {
-    background: var(--error-color);
-    color: var(--text-color);
+    background: var(--color-error);
+    color: var(--background-primary);
 }
 
 .manage-listing-popup .manage-listing-content .confirm-button:hover {
-    background: var(--success-color-hover);
+    background: var(--color-success-dark);
+    transform: scale(1.05);
 }
 
 .manage-listing-popup .manage-listing-content .cancel-button:hover {
-    background: var(--error-color-hover);
+    background: var(--color-error-dark);
+    transform: scale(1.05);
 }

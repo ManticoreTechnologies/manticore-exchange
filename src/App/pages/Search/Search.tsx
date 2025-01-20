@@ -34,16 +34,28 @@ const Search: React.FC = () => {
     const [noResults, setNoResults] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
 
-    // Restore state from URL params when the URL changes
+    // Set initial searching state based on URL params
     useEffect(() => {
-        handleSearch(initialQuery, reissuable, sort, initialPage);
-        setCurrentPage(initialPage);
-    }, [location.search]); // Triggered whenever the URL changes
+        if (initialQuery) {
+            setIsSearching(true);
+            handleSearch(initialQuery, reissuable, sort, initialPage);
+            setCurrentPage(initialPage);
+        }
+    }, []); // Run only on mount
+
+    // Handle URL changes
+    useEffect(() => {
+        if (initialQuery) {
+            handleSearch(initialQuery, reissuable, sort, initialPage);
+            setCurrentPage(initialPage);
+        }
+    }, [location.search]);
 
     // Update UI based on search results
     useEffect(() => {
         if (results) {
-            setNoResults(results.results.length === 0);
+            const hasSearchResults = results.results && results.results.length > 0;
+            setNoResults(!hasSearchResults);
             setTotalPages(results.total_pages || 0);
         } else {
             setNoResults(true);
@@ -52,12 +64,19 @@ const Search: React.FC = () => {
     }, [results]);
 
     const handlePageChange = (page: number) => {
+        // Scroll the content area to top
+        const contentArea = document.querySelector('.search-content');
+        if (contentArea) {
+            contentArea.scrollTo({ 
+                top: 0,
+                behavior: 'smooth' 
+            });
+        }
+        
         setResults(null);
         setIsSearching(true);
         setCurrentPage(page);
-
-        // Update the URL with the new page
-        navigate(`?query=${query}&page=${page}`);
+        navigate(`?query=${encodeURIComponent(query)}&page=${page}`);
         handleSearch(query, reissuable, sort, page);
     };
 
@@ -70,33 +89,37 @@ const Search: React.FC = () => {
         setIsSearching(true);
         setResults(null);
         setCurrentPage(1);
-
-        // Update the URL with the new search query
-        navigate(`?query=${searchQuery}&page=1`);
+        navigate(`?query=${encodeURIComponent(searchQuery)}&page=1`);
         handleSearch(searchQuery, reissuable, sort, 1);
     };
 
     return (
-        <div className="search-container">
-            <Searchbar
-                onSearch={handleSearchAction}
-                onTypingStart={() => {
-                    setIsSearching(true);
-                    setResults(null);
-                }}
-                placeholder="Search assets..."
-                bubbleButtons={bubbleButtons}
-                initialQuery={initialQuery}
-            />
-            <ResultsGrid results={results} isSearching={isSearching} isLoaded={results !== null} />
-            <Pagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                isSearching={isSearching}
-                isLoaded={results !== null}
-                noResults={noResults}
-            />
+        <div className={`search-container ${isSearching || initialQuery ? 'is-searching' : ''}`}>
+            <div className="search-header">
+                <Searchbar
+                    onSearch={handleSearchAction}
+                    onTypingStart={() => {
+                        setIsSearching(true);
+                        setResults(null);
+                    }}
+                    placeholder="Search assets..."
+                    bubbleButtons={bubbleButtons}
+                    initialQuery={initialQuery}
+                />
+            </div>
+                <ResultsGrid 
+                    results={results} 
+                    isSearching={isSearching} 
+                    isLoaded={results !== null || !!initialQuery} 
+                />
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                    isSearching={isSearching}
+                    isLoaded={results !== null}
+                    noResults={noResults}
+                />
         </div>
     );
 };

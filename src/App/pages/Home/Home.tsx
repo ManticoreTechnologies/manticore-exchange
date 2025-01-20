@@ -3,7 +3,6 @@ import React from 'react';
 import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine } from 'react-icons/fa'; 
 import HomeHero from '../../../components/HomeHero/HomeHero';
 import InfoCard from '../../../components/Cards/InfoCard';
-
 import { FaFaucetDrip } from 'react-icons/fa6';
 import './Home.css';
 
@@ -84,6 +83,7 @@ const Home: React.FC = () => {
         action="View Profile" 
         body="Manage your account, view your assets, and access exclusive features with your Manticore profile."
       />
+
       </div>
     </div>
   );

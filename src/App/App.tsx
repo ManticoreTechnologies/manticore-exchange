@@ -32,6 +32,8 @@ import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
 import Townhall from "./pages/Townhall/Townhall";
 
+import { MoonPayProvider } from '@moonpay/moonpay-react';
+
 // Import the home page
 import Home from "./pages/Home/Home";
 import Search from "./pages/Search/Search";
@@ -92,3 +94,11 @@ const AppWrapper: React.FC = () => (
 );
 
 export default AppWrapper;
+
+/*  MOONPAY PROVIDER
+<MoonPayProvider
+            apiKey="pk_test_tS96CJBes7e7Fg8X1WcMeWQfmfVNHv"
+            debug
+        >
+</MoonPayProvider>
+*/

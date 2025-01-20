@@ -13,21 +13,15 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({ results, addToCart, buyNow, s
     return (
         <div className="trading-results-grid">
             <div className="trading-results-grid-container">
-                {results.map((result: any) => {
-                    const sold = result.sold !== undefined ? result.sold : 0;
-                    const assetData = JSON.parse(result.asset_data);
+                {
+                results.map((result: any) => {
                     const listing = {
-                        assetName: result.asset_name,
+                        name: result.name,
                         description: result.description,
-                        unitPrice: result.unit_price,
-                        listingAddress: result.listing_address,
-                        orderStatus: result.listing_status,
-                        quantity: result.remaining_quantity,
-                        units: assetData.units,
-                        sold: sold,
-                        listingID: result.id,
-                        ipfsHash: assetData.has_ipfs ? assetData.ipfs_hash : undefined,
-                        seller: result.seller_address
+                        offerings: result.offerings,
+                        tags: result.tags,
+                        ipfsHash: result.ipfs_hash,
+                        seller_address: result.seller_address
                     };
                     return (
                         <TradingResultCard
