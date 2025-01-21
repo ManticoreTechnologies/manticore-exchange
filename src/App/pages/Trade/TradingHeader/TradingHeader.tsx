@@ -9,6 +9,10 @@ interface TradingHeaderProps {
     cart: any[];
     searchQuery: string;
     handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    filterQuery: string;
+    handleFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    filterType: string;
+    handleFilterTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({
@@ -16,7 +20,11 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
     toggleCartVisibility, 
     cart,
     searchQuery,
-    handleSearch
+    handleSearch,
+    filterQuery,
+    handleFilter,
+    filterType,
+    handleFilterTypeChange
 }) => {
     return (
         <div className="trading-header">
@@ -33,6 +41,24 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                         placeholder="Search..."
                         aria-label="Search input"
                     />
+                </div>
+            </div>
+
+            <div className="filter-bar-container">
+                <div className="search-input-wrapper">
+                    <input
+                        type="text"
+                        value={filterQuery}
+                        onChange={handleFilter}
+                        placeholder="Filter..."
+                        aria-label="Filter input"
+                    />
+                    <select value={filterType} onChange={handleFilterTypeChange} className="search-select">
+                        <option value="">Select Filter</option>
+                        <option value="seller_address">Seller Address</option>
+                        <option value="listing_address">Listing Address</option>
+                        <option value="tags">Tags</option>
+                    </select>
                 </div>
             </div>
 

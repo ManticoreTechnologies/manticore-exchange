@@ -37,6 +37,9 @@ const Trading: React.FC = () => {
     //@ts-ignore
     const [loading, setLoading] = useState<boolean>(false); // New state for loading indicator
     const [searchColumn, setSearchColumn] = useState<string>('asset_name');
+    const [filterQuery, setFilterQuery] = useState<string>('');
+    const [filterType, setFilterType] = useState<string>('');
+    const [filterValue, setFilterValue] = useState<string>('');
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -199,12 +202,17 @@ const Trading: React.FC = () => {
         setLoading(true);
     };
 
+
+
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
-            if (searchQuery) {
+            if (searchQuery || (filterType && filterQuery)) {
                 try {
                     let url = `${trading_api_url}/listings/search`;
                     url += `?query=${searchQuery}`;
+                    if (filterType && filterQuery) {
+                        url += `&${filterType}=${filterQuery}`;
+                    }
                     url += `&page=1&per_page=50`;
                     console.log('Fetching search results from:', url);
                     const response = await axios.get(url);
@@ -221,7 +229,7 @@ const Trading: React.FC = () => {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, searchColumn]);
+    }, [searchQuery, filterType, filterQuery]);
 
     const showDetails = (listing: any) => {
         setSelectedListing(listing);
@@ -268,8 +276,11 @@ const Trading: React.FC = () => {
                 cart={cart}
                 searchQuery={searchQuery}
                 handleSearch={handleSearch}
+                filterQuery={filterQuery}
+                handleFilter={(e) => setFilterQuery(e.target.value)}
+                filterType={filterType}
+                handleFilterTypeChange={(e) => setFilterType(e.target.value)}
             />
-
             {listings.length === 0 ? (
                 <div className="no-results">
                     <p>No listings found</p>

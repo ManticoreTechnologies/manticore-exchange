@@ -102,7 +102,17 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     }, [offerings]);
 
     return (
-        <div className="trading-result-card">
+        <div 
+            className="trading-result-card"
+            onClick={() => showDetails(listing)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    showDetails(listing);
+                }
+            }}
+        >
             <div className="trading-result-card__media">
                 {isVideo ? (
                     <video
@@ -156,27 +166,6 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                             />
                         ))}
                     </div>
-                </div>
-
-                <div className="trading-result-card__actions">
-                    <button
-                        className="trading-result-card__button"
-                        onClick={() => buyNow(listing)}
-                    >
-                        Buy Now
-                    </button>
-                    <button
-                        className="trading-result-card__button trading-result-card__button--secondary"
-                        onClick={() => addToCart(listing)}
-                    >
-                        Add to Cart
-                    </button>
-                    <button
-                        className="trading-result-card__button trading-result-card__button--secondary"
-                        onClick={() => showDetails(listing)}
-                    >
-                        Details
-                    </button>
                 </div>
             </div>
         </div>

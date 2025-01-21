@@ -56,7 +56,6 @@ interface Listing {
   listingID: string;
   seller?: string;
   createdAt?: string;
-  tags?: string[];
 }
 
 interface Comment {
@@ -590,7 +589,7 @@ const TradingDetails: React.FC<{
                     <p className="trading-description">{listing.description}</p>
                     {listing.tags && listing.tags.length > 0 && (
                       <div className="tags-container">
-                        {listing.tags.map((tag, index) => (
+                        {listing.tags.split(',').map((tag, index) => (
                           <span key={index} className="tag">#{tag}</span>
                         ))}
                       </div>

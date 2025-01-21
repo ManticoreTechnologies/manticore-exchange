@@ -132,3 +132,38 @@
         order: 3;
     }
 }
+
+.filter-bar-container {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 var(--spacing-4);
+}
+
+.filter-bar-container .search-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.filter-bar-container input {
+    flex: 1;
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+    outline: none;
+}
+
+.filter-bar-container input:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px var(--color-primary-500);
+}
+
+.filter-bar-container input::placeholder {
+    color: var(--text-muted);
+}

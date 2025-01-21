@@ -210,7 +210,8 @@
     margin-bottom: var(--spacing-3);
 }
 
-.search-options select {
+.search-options select,
+.search-options input {
     background-color: var(--background-secondary);
     color: var(--text-primary);
     border: 1px solid var(--input-border);
@@ -222,11 +223,13 @@
     outline: none;
 }
 
-.search-options select:hover:not(:disabled) {
+.search-options select:hover:not(:disabled),
+.search-options input:hover:not(:disabled) {
     border-color: var(--color-primary-500);
 }
 
-.search-options select:focus {
+.search-options select:focus,
+.search-options input:focus {
     border-color: var(--color-primary-500);
     box-shadow: 0 0 0 2px var(--color-primary-500);
 }
