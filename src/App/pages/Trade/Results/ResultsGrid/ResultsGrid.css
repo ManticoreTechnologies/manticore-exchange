@@ -6,6 +6,9 @@
     overflow: scroll;
     padding: 0rem 2rem;
     padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--header-height) - var(--spacing-4) * 2);
 }
 .trading-results-grid.is-searching{
     height: 100%;
@@ -40,7 +43,47 @@
     justify-items: center; 
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    width: 100%;
+    background-color: var(--background-primary);
+}
 
+.pagination-button {
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.pagination-button:hover:not(:disabled) {
+    background: var(--background-tertiary);
+    transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.total-results {
+    margin-left: var(--spacing-2);
+    color: var(--text-muted);
+}
 
 @media (max-width: 368px) {
     .trading-results-grid .trading-results-grid-container{
@@ -50,6 +93,16 @@
 @media (max-width: 268px) {
     .trading-results-grid .trading-results-grid-container{
         grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    }
+}
+@media (max-width: 768px) {
+    .pagination {
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+    
+    .pagination-button {
+        width: 100%;
     }
 }
 /*.results-grid {

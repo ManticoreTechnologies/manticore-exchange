@@ -40,6 +40,9 @@ const Trading: React.FC = () => {
     const [filterQuery, setFilterQuery] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
     const [filterValue, setFilterValue] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [totalResults, setTotalResults] = useState<number>(0);
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -66,19 +69,25 @@ const Trading: React.FC = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await axios.get(`${trading_api_url}/listings/search?query=${searchQuery}&page=1&per_page=10`);
+                const response = await axios.get(`${trading_api_url}/listings/search?query=${searchQuery}&page=${currentPage}&per_page=10`);
                 console.log('API Response:', response.data);
                 if (response.data.success) {
                     const listingsData = response.data.listings.results || [];
                     console.log('Listings Data:', listingsData);
                     setListings(listingsData);
+                    setSearchResults(response.data.listings.results);
+                    setTotalPages(response.data.listings.total_pages);
+                    setTotalResults(response.data.listings.total_results);
+                    setLoading(false);
                 } else {
                     console.error('Failed to fetch listings:', response.data);
                     setListings([]); // Ensure listings is an array
+                    setLoading(false);
                 }
             } catch (error) {
                 console.error('Error fetching listings:', error);
                 setListings([]); // Ensure listings is an array
+                setLoading(false);
             }
         };
 
@@ -88,7 +97,7 @@ const Trading: React.FC = () => {
             setCart(JSON.parse(savedCart));
         }
         fetchListings();
-    }, []);
+    }, [currentPage]);
 
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
@@ -202,8 +211,6 @@ const Trading: React.FC = () => {
         setLoading(true);
     };
 
-
-
     useEffect(() => {
         const delayDebounceFn = setTimeout(async () => {
             if (searchQuery || (filterType && filterQuery)) {
@@ -213,10 +220,12 @@ const Trading: React.FC = () => {
                     if (filterType && filterQuery) {
                         url += `&${filterType}=${filterQuery}`;
                     }
-                    url += `&page=1&per_page=50`;
+                    url += `&page=${currentPage}&per_page=10`;
                     console.log('Fetching search results from:', url);
                     const response = await axios.get(url);
                     setSearchResults(response.data.listings.results);
+                    setTotalPages(response.data.listings.total_pages);
+                    setTotalResults(response.data.listings.total_results);
                 } catch (error) {
                     console.error('Error fetching search results:', error);
                 } finally {
@@ -229,7 +238,7 @@ const Trading: React.FC = () => {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, filterType, filterQuery]);
+    }, [searchQuery, filterType, filterQuery, currentPage]);
 
     const showDetails = (listing: any) => {
         setSelectedListing(listing);
@@ -267,6 +276,11 @@ const Trading: React.FC = () => {
             document.body.classList.remove('modal-open');
         };
     }, [cartVisible]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0); // Scroll to top when page changes
+    };
 
     return (
         <div className="trading-page">
@@ -320,6 +334,10 @@ const Trading: React.FC = () => {
                             addToCart={promptQuantity}
                             buyNow={handleBuyNow}
                             showDetails={showDetails}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalResults={totalResults}
+                            onPageChange={handlePageChange}
                         />
                     )}
                 </>
