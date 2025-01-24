@@ -37,6 +37,7 @@ import { MoonPayProvider } from '@moonpay/moonpay-react';
 // Import the home page
 import Home from "./pages/Home/Home";
 import Search from "./pages/Search/Search";
+import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
 
 
 
@@ -53,6 +54,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/trade" element={<Trading />} />
+          <Route path="/trade/listing/:id" element={<ListingDetails />} />
           <Route path="/faucet" element={<Faucet />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />
