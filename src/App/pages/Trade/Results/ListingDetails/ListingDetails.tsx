@@ -33,36 +33,53 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './ListingDetails.css';
 import useWebSocket from '@/hooks/useWebSocket';
-import { FiHeart, FiMessageCircle, FiTool } from 'react-icons/fi';
+import { FiHeart, FiMessageCircle, FiTool, FiShare2, FiShoppingCart, FiArrowLeft } from 'react-icons/fi';
 //@ts-ignore
 import Cookies from 'js-cookie';
 import axios from 'axios';
 // @ts-ignore
 import IsAuthenticated from '@/components/Authentication/IsAuthenticated';
+import CommentsSection from '@/components/Comments/CommentsSection';
+import Cart from '../../Cart/Cart';
+import Checkout from '../../Checkout/Checkout';
+import InvoiceToaster from '../../InvoiceToaster/InvoiceToaster';
 
 const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
-const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:${import.meta.env.VITE_TRADING_API_PORT || '668'}`;
+//${import.meta.env.VITE_TRADING_API_PORT || '668'}
+const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
+
+interface Balance {
+  asset_name: string;
+  confirmed_balance: string;
+  pending_balance: string;
+  last_confirmed_tx_hash: string | null;
+  last_confirmed_tx_time: string | null;
+}
+
+interface Price {
+  asset_name: string;
+  price_evr: string;
+  price_asset_name: string | null;
+  price_asset_amount: string | null;
+}
 
 interface Listing {
+  id: string;
+  seller_address: string;
+  listing_address: string;
+  deposit_address: string;
   name: string;
   description: string;
-  hearts: number;
-  id: string;
-  ipfs_hash: string;
-  seller_address: string;
-  tags: string;
-  offerings: Array<{
-    id: string;
-    asset_name: string;
-    ipfs_hash: string;
-    price: number;
-    quantity: number;
-    visible: boolean;
-  }>;
+  image_ipfs_hash: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  prices: Price[];
+  balances: Balance[];
 }
 
 interface Comment {
@@ -77,6 +94,7 @@ interface Comment {
 
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [listing, setListing] = useState<Listing | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
@@ -108,14 +126,21 @@ const ListingDetails: React.FC = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
+  const [cartVisible, setCartVisible] = useState<boolean>(false);
+  const [cart, setCart] = useState<any[]>([]);
+  const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
+  const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
+  const cartRef = useRef<HTMLDivElement>(null);
 
   const { message, sendMessage, isAuthenticated, getUserAddress } = useWebSocket(wsUrl);
 
   useEffect(() => {
-    axios.get(`${trading_api_url}/listing/${id}`)
+    axios.get(`${trading_api_url}/listings/${id}`)
       .then(response => {
-        setListing(response.data.listing);
-        setLikeCount(response.data.listing.hearts);
+        if (response.data) {
+          setListing(response.data);
+          setEditedListing(response.data);
+        }
       })
       .catch(error => console.error('Error fetching listing:', error));
   }, [id]);
@@ -132,12 +157,12 @@ const ListingDetails: React.FC = () => {
     }
   }, [message]);
 
-  const mediaSrc = listing?.ipfs_hash ? 
-    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${listing.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : '';
+  const mediaSrc = listing?.image_ipfs_hash ?
+    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${listing.image_ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : '';
 
   useEffect(() => {
-    if (listing?.ipfs_hash) {
-      fetchFileMetadata(listing.ipfs_hash);
+    if (listing?.image_ipfs_hash) {
+      fetchFileMetadata(listing.image_ipfs_hash);
     }
   }, [listing]);
 
@@ -204,14 +229,26 @@ const ListingDetails: React.FC = () => {
     }));
   };
 
-  //@ts-ignore
+  const handleBack = () => {
+    navigate('/trade');
+  };
+
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      setNotificationType('success');
+      setNotificationMessage('Link copied to clipboard!');
+      setShowNotificationModal(true);
     } catch (error) {
       console.error('Failed to copy link:', error);
+      setNotificationType('error');
+      setNotificationMessage('Failed to copy link');
+      setShowNotificationModal(true);
     }
+  };
+
+  const handleViewCart = () => {
+    setCartVisible(true);
   };
 
   const handleReport = () => {
@@ -230,7 +267,7 @@ const ListingDetails: React.FC = () => {
   const handleQuantityChange = (increment: boolean) => {
     setQuantity(prev => {
       const newQuantity = increment ? prev + 1 : Math.max(1, prev - 1);
-      return Math.min(newQuantity, Math.floor(listing?.offerings[0].quantity || 0));
+      return Math.min(newQuantity, Math.floor(Number(listing?.balances[0].confirmed_balance || 0)));
     });
   };
 
@@ -280,16 +317,22 @@ const ListingDetails: React.FC = () => {
     const updatedListing: Listing = {
       name: editedListing.name || 'Unknown',
       description: editedListing.description || 'No description',
-      hearts: listing.hearts,
-      id: listing.id,
-      ipfs_hash: newIpfsHash || editedListing.ipfs_hash,
+      image_ipfs_hash: newIpfsHash || editedListing.image_ipfs_hash,
+      status: listing.status,
+      created_at: listing.created_at,
+      updated_at: listing.updated_at,
+      prices: editedListing.prices.map(price => ({
+        ...price,
+        price_evr: (Number(price.price_evr) * 100000000).toString()
+      })),
+      balances: editedListing.balances.map(balance => ({
+        ...balance,
+        confirmed_balance: (Number(balance.confirmed_balance) * 100000000).toString()
+      })),
+      listing_address: listing.listing_address,
+      deposit_address: listing.deposit_address,
       seller_address: listing.seller_address,
-      tags: editedListing.tags || '',
-      offerings: editedListing.offerings.map(offering => ({
-        ...offering,
-        price: Number(offering.price),
-        quantity: Number(offering.quantity)
-      }))
+      id: listing.id
     };
     setEditedListing(updatedListing);
     setIsManageMode(false);
@@ -300,13 +343,12 @@ const ListingDetails: React.FC = () => {
         listing_id: updatedListing.id,
         password,
         action: 'update',
-        unit_price: Number(updatedListing.offerings[0].price) * 100000000,
+        unit_price: Number(updatedListing.prices[0].price_evr) * 100000000,
         description: updatedListing.description,
-        ipfs_hash: updatedListing.ipfs_hash,
-        offerings: updatedListing.offerings.map(offering => ({
-          asset_name: offering.asset_name,
-          price: Number(offering.price) * 100000000,
-          quantity: Number(offering.quantity) * 100000000
+        ipfs_hash: updatedListing.image_ipfs_hash,
+        offerings: updatedListing.balances.map(balance => ({
+          asset_name: balance.asset_name,
+          price: Number(balance.confirmed_balance) * 100000000
         })),
       });
 
@@ -418,31 +460,56 @@ const ListingDetails: React.FC = () => {
   };
 
   // Add to Cart Functionality
-  const handleAddToCart = (offeringId: string, quantity: number) => {
-    console.log(`Adding ${quantity} of offering ${offeringId} to cart`);
-    // Implement cart addition logic here
+  const handleAddToCart = (assetName: string, quantity: number) => {
+    if (!listing) return;
+
+    const price = listing.prices.find(p => p.asset_name === assetName);
+    if (!price) return;
+
+    const newItem = {
+      id: listing.id,
+      name: listing.name,
+      description: listing.description,
+      image_ipfs_hash: listing.image_ipfs_hash,
+      quantity: quantity,
+      unitPrice: price.price_evr,
+      asset_name: assetName
+    };
+
+    const updatedCart = [...cart, newItem];
+    setCart(updatedCart);
+    localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
+    
+    setNotificationType('success');
+    setNotificationMessage('Item added to cart!');
+    setShowNotificationModal(true);
   };
 
   // Render offerings in the UI
   const renderOfferings = () => (
-    listing?.offerings.map((offering, index) => (
-      <div key={offering.id} className="offering-item">
-        <h4>Offering {index + 1}</h4>
-        <img
-          src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${offering.ipfs_hash}`}
-          alt={offering.asset_name}
-          className="offering-image"
-          onError={(e) => e.currentTarget.src = '/path/to/enhanced_logo.png'}
-        />
-        <p>Asset Name: {offering.asset_name}</p>
-        <p>Price: {offering.price} EVR</p>
-        <p>Quantity: {offering.quantity}</p>
-        <p>Visible: {offering.visible ? 'Yes' : 'No'}</p>
-        <button onClick={() => handleAddToCart(offering.id, quantity)} className="add-to-cart-button">
-          Add to Cart
-        </button>
-      </div>
-    )) || <p>No offerings available.</p>
+    listing?.balances.map((balance, index) => {
+      const price = listing.prices.find(p => p.asset_name === balance.asset_name);
+      return (
+        <div key={`${balance.asset_name}-${index}`} className="offering-item">
+          <h4>{balance.asset_name}</h4>
+          <p>Price: {price ? `${Number(price.price_evr)/100000000} EVR` : 'N/A'}</p>
+          <p>Available: {balance.confirmed_balance}</p>
+          <p>Status: {listing.status}</p>
+          <div className="quantity-controls">
+            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+            <span>{quantity}</span>
+            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+          </div>
+          <button 
+            onClick={() => handleAddToCart(balance.asset_name, quantity)}
+            className="add-to-cart-button"
+            disabled={Number(balance.confirmed_balance) <= 0}
+          >
+            Add to Cart
+          </button>
+        </div>
+      );
+    }) || <p>No offerings available.</p>
   );
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -451,118 +518,140 @@ const ListingDetails: React.FC = () => {
     }
   };
 
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, assetName: string) => {
     if (editedListing) {
-      setEditedListing({ ...editedListing, tags: e.target.value });
+      const updatedPrices = editedListing.prices.map(price =>
+        price.asset_name === assetName
+          ? { ...price, price_evr: e.target.value }
+          : price
+      );
+      setEditedListing({ ...editedListing, prices: updatedPrices });
     }
   };
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editedListing && editedListing.offerings.length > 0) {
-      const updatedOfferings = [...editedListing.offerings];
-      updatedOfferings[0].price = Number(e.target.value) * 100000000;
-      setEditedListing({ ...editedListing, offerings: updatedOfferings });
-    }
+  const toggleCartVisibility = () => {
+    setCartVisible(!cartVisible);
+  };
+
+  const removeFromCart = (index: number) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+    localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem('manticore_cart');
+  };
+
+  const handleCheckout = (items: any[]) => {
+    setCheckoutItems(items);
+    setIsCheckingOut(true);
+    setCartVisible(false);
   };
 
   return (
-    <div className="trading-details">
-      <div className="details-header">
+    <div className="listing-details">
+      <header className="details-header">
+        <button className="action-button back-button" onClick={handleBack}>
+          <FiArrowLeft /> Back to Listings
+        </button>
         <div className="header-actions">
-          <button onClick={closeDetails} className="action-button">
-            ← Back
+          <button className="action-button share-button" onClick={handleShare}>
+            <FiShare2 /> Share
           </button>
-          <div className="like-container">
-            <button onClick={handleLikeToggle} className={`like-button ${isLiked ? 'liked' : ''}`}>
-              <FiHeart /> {likeCount}
-            </button>
-          </div>
-          {/* TODO: Re-enable authentication check once websocket auth is properly implemented
-              Original condition: isAuthenticated && listing.seller === getUserAddress() */}
-          <button 
-            onClick={() => isManageMode ? setIsManageMode(false) : handleManageClick()} 
-            className={`action-button manage-button ${isManageMode ? 'active' : ''}`}
-          >
-            <FiTool className="wrench-icon" /> {isManageMode ? 'Exit Manage' : 'Manage'}
-          </button>
-          <button onClick={() => setIsReporting(true)} className="action-button">
-            Report
+          <button className="action-button cart-button" onClick={handleViewCart}>
+            <FiShoppingCart /> View Cart
           </button>
         </div>
-      </div>
+      </header>
 
       <main className="trading-main">
-        <section 
-          className={`trading-media ${isManageMode ? 'manage-mode' : ''}`} 
-        >
-          <div 
-            className="media-container"
-            onClick={() => isManageMode && handleImageUpload()}
-            style={{ cursor: isManageMode ? 'pointer' : 'default' }}
-          >
-            {isMediaLoading ? (
-              <div className="media-loader">Loading...</div>
-            ) : mediaError ? (
-              <div className="media-error">{mediaError}</div>
-            ) : isVideo ? (
-              <div className="video-container">
-                <video
-                  ref={videoRef}
-                  src={newIpfsHash || mediaSrc}
-                  className="trading-video"
-                  playsInline
-                  autoPlay
-                  muted
-                  loop
-                  onError={handleMediaError}
-                  onLoadedData={handleMediaLoad}
-                  crossOrigin="anonymous"
-                />
-                {showMediaControls && !isManageMode && (
-                  <div className="video-controls">
-                    <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
-                    <div className="volume-control">
-                      <label>Volume:</label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                      />
-                    </div>
-                    <div className="speed-control">
-                      <label>Speed:</label>
-                      <div className="speed-buttons">
-                        {[0.5, 1.0, 1.5, 2.0].map(speed => (
-                          <button
-                            key={speed}
-                            onClick={() => handlePlaybackSpeedChange(speed)}
-                            className={playbackSpeed === speed ? 'active' : ''}
-                          >
-                            {speed}x
-                          </button>
-                        ))}
+        <section className="media-section">
+          <div className="trading-media">
+            <div
+              className="media-container"
+              onClick={() => isManageMode && handleImageUpload()}
+              style={{ cursor: isManageMode ? 'pointer' : 'default' }}
+            >
+              {isMediaLoading ? (
+                <div className="media-loader">Loading...</div>
+              ) : mediaError ? (
+                <div className="media-error">{mediaError}</div>
+              ) : isVideo ? (
+                <div className="video-container">
+                  <video
+                    ref={videoRef}
+                    src={newIpfsHash || mediaSrc}
+                    className="trading-video"
+                    playsInline
+                    autoPlay
+                    muted
+                    loop
+                    onError={handleMediaError}
+                    onLoadedData={handleMediaLoad}
+                    crossOrigin="anonymous"
+                  />
+                  {showMediaControls && !isManageMode && (
+                    <div className="video-controls">
+                      <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
+                      <div className="volume-control">
+                        <label>Volume:</label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={volume}
+                          onChange={handleVolumeChange}
+                        />
+                      </div>
+                      <div className="speed-control">
+                        <label>Speed:</label>
+                        <div className="speed-buttons">
+                          {[0.5, 1.0, 1.5, 2.0].map(speed => (
+                            <button
+                              key={speed}
+                              onClick={() => handlePlaybackSpeedChange(speed)}
+                              className={playbackSpeed === speed ? 'active' : ''}
+                            >
+                              {speed}x
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <img
-                src={newIpfsHash || mediaSrc}
-                alt={listing?.name}
-                className="trading-image"
-                onError={handleMediaError}
-                onLoad={handleMediaLoad}
-              />
-            )}
-            {isManageMode && (
-              <div className="media-overlay">
-                <FiTool className="wrench-icon" /> Click to change IPFS hash
-              </div>
-            )}
+                  )}
+                </div>
+              ) : (
+                <img
+                  src={newIpfsHash || mediaSrc}
+                  alt={listing?.name}
+                  className="trading-image"
+                  onError={handleMediaError}
+                  onLoad={handleMediaLoad}
+                />
+              )}
+              {isManageMode && (
+                <div className="media-overlay">
+                  <FiTool className="wrench-icon" /> Click to change IPFS hash
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="media-actions">
+            <button
+              className={`action-button manage-button ${isManageMode ? 'active' : ''}`}
+              onClick={() => setIsManageMode(!isManageMode)}
+            >
+              <FiTool /> Manage Listing
+            </button>
+            <button
+              className="action-button report-button"
+              onClick={() => setIsReporting(true)}
+            >
+              Report
+            </button>
           </div>
         </section>
 
@@ -585,35 +674,24 @@ const ListingDetails: React.FC = () => {
                     className="edit-input description"
                     placeholder="Description"
                   />
-                  <input
-                    type="text"
-                    value={editedListing?.tags}
-                    onChange={handleTagsChange}
-                    className="edit-input tags"
-                    placeholder="Tags"
-                  />
                 </div>
 
                 <div className="price-section">
                   <h3>Price Settings</h3>
-                  <input
-                    type="number"
-                    value={Number(editedListing?.offerings[0].price)/100000000}
-                    onChange={handlePriceChange}
-                    className="edit-input price"
-                    placeholder="Price in EVR"
-                    min="0"
-                    step="0.00000001"
-                  />
-                  <input
-                    type="number"
-                    value={Number(editedListing?.offerings[0].quantity)/100000000}
-                    className="edit-input quantity"
-                    placeholder="Quantity"
-                    min="1"
-                    disabled
-                    title="Quantity cannot be changed here"
-                  />
+                  {listing?.prices.map((price, index) => (
+                    <div key={`${price.asset_name}-${index}`} className="price-item">
+                      <label>{price.asset_name}</label>
+                      <input
+                        type="number"
+                        value={Number(price.price_evr) / 100000000}
+                        onChange={(e) => handlePriceChange(e, price.asset_name)}
+                        className="edit-input price"
+                        placeholder="Price in EVR"
+                        min="0"
+                        step="0.00000001"
+                      />
+                    </div>
+                  ))}
                   <div className="manage-actions">
                     <button onClick={handleManageSave} className="save-changes-button">
                       Save Changes
@@ -642,13 +720,6 @@ const ListingDetails: React.FC = () => {
                   <div className="description-section">
                     <h2>Description</h2>
                     <p className="trading-description" style={{ color: 'var(--text-secondary)' }}>{listing?.description}</p>
-                    {listing?.tags && listing.tags.length > 0 && (
-                      <div className="tags-container">
-                        {listing.tags.split(',').map((tag, index) => (
-                          <span key={index} className="tag">#{tag}</span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <section className="offerings-section">
@@ -662,9 +733,22 @@ const ListingDetails: React.FC = () => {
         </section>
       </main>
 
+      <div className="trading-comments">
+        <div className="comments-header" onClick={() => setShowComments(!showComments)}>
+          <h2>
+            <FiMessageCircle /> Comments ({comments.length})
+          </h2>
+          <span className="toggle-icon">{showComments ? '−' : '+'}</span>
+        </div>
 
-
-      
+        {showComments && (
+          <CommentsSection
+            comments={comments}
+            isAuthenticated={isAuthenticated}
+            onAddComment={handleAddComment}
+          />
+        )}
+      </div>
 
       {isReporting && (
         <div className="report-modal">
@@ -742,19 +826,19 @@ const ListingDetails: React.FC = () => {
             </div>
             {error && <p className="error-message">{error}</p>}
             <div className="password-modal-actions">
-              <button 
-                onClick={handlePasswordSubmit} 
+              <button
+                onClick={handlePasswordSubmit}
                 disabled={isLoading || !password.trim()}
                 className="password-modal-submit"
               >
                 {isLoading ? 'Verifying...' : 'Submit'}
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowPasswordModal(false);
                   setPassword('');
                   setError(null);
-                }} 
+                }}
                 className="password-modal-cancel"
               >
                 Cancel
@@ -771,7 +855,7 @@ const ListingDetails: React.FC = () => {
             <h2 style={{ color: notificationType === 'success' ? '#00ff9d' : '#ff4444' }}>
               {notificationType === 'success' ? 'Success!' : 'Error'}
             </h2>
-            <p style={{ 
+            <p style={{
               color: '#fff',
               margin: '1rem 0',
               textAlign: 'center',
@@ -780,7 +864,7 @@ const ListingDetails: React.FC = () => {
               {notificationMessage}
             </p>
             <div className="report-actions">
-              <button 
+              <button
                 onClick={() => setShowNotificationModal(false)}
                 style={{
                   backgroundColor: notificationType === 'success' ? '#00ff9d' : '#ff4444',
@@ -798,6 +882,32 @@ const ListingDetails: React.FC = () => {
           </div>
         </div>
       )}
+
+      {cartVisible && (
+        <div className="cart-modal-overlay">
+          <Cart
+            cart={cart}
+            onClose={() => setCartVisible(false)}
+            onRemove={removeFromCart}
+            onClear={clearCart}
+            onCheckout={handleCheckout}
+            ref={cartRef}
+          />
+        </div>
+      )}
+
+      {isCheckingOut && (
+        <Checkout
+          items={checkoutItems}
+          onClose={() => setIsCheckingOut(false)}
+          onComplete={() => {
+            setIsCheckingOut(false);
+            clearCart();
+          }}
+        />
+      )}
+      
+      <InvoiceToaster />
     </div>
   );
 };

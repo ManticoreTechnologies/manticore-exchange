@@ -17,8 +17,6 @@ interface TradingHeaderProps {
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({
     createListing, 
-    toggleCartVisibility, 
-    cart,
     searchQuery,
     handleSearch,
     filterQuery,
@@ -62,10 +60,10 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                 </div>
             </div>
 
-            <div className="cart-icon-container" onClick={toggleCartVisibility}>
+            {/* <div className="cart-icon-container" onClick={toggleCartVisibility}>
                 <FiShoppingCart className="cart-icon" />
                 {cart.length > 0 && <span className="cart-count">{cart.length}</span>}
-            </div>
+            </div> */}
         </div>
     );
 };

@@ -40,7 +40,6 @@ import Search from "./pages/Search/Search";
 import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
 
 
-
 const App: React.FC = () => {
 
   return (
@@ -54,7 +53,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/trade" element={<Trading />} />
-          <Route path="/trade/listing/:id" element={<ListingDetails />} />
+          <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/faucet" element={<Faucet />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />

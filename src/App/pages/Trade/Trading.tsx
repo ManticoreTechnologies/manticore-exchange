@@ -43,12 +43,14 @@ const Trading: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalResults, setTotalResults] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(50); // Add this new state
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
-    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
+    // const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
+    const trading_api_port = 8000;
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
@@ -69,24 +71,36 @@ const Trading: React.FC = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await axios.get(`${trading_api_url}/listings/search?query=${searchQuery}&page=${currentPage}&per_page=10`);
+                setLoading(true);
+                const offset = (currentPage - 1) * pageSize;
+                let url = `${trading_api_url}/listings/?limit=${pageSize}&offset=${offset}`;
+                
+                // Add search params if they exist
+                if (searchQuery) {
+                    url += `&search_term=${encodeURIComponent(searchQuery)}`;
+                }
+                
+                const response = await axios.get(url);
                 console.log('API Response:', response.data);
-                if (response.data.success) {
-                    const listingsData = response.data.listings.results || [];
-                    console.log('Listings Data:', listingsData);
-                    setListings(listingsData);
-                    setSearchResults(response.data.listings.results);
-                    setTotalPages(response.data.listings.total_pages);
-                    setTotalResults(response.data.listings.total_results);
+                
+                // The response is now directly an array of listings
+                if (Array.isArray(response.data)) {
+                    setListings(response.data);
+                    setSearchResults(response.data);
+                    
+                    // Calculate total pages based on array length and pageSize
+                    const totalItems = response.data.length;
+                    setTotalResults(totalItems);
+                    setTotalPages(Math.ceil(totalItems / pageSize));
                     setLoading(false);
                 } else {
-                    console.error('Failed to fetch listings:', response.data);
-                    setListings([]); // Ensure listings is an array
+                    console.error('Unexpected response format:', response.data);
+                    setListings([]);
                     setLoading(false);
                 }
             } catch (error) {
                 console.error('Error fetching listings:', error);
-                setListings([]); // Ensure listings is an array
+                setListings([]);
                 setLoading(false);
             }
         };
@@ -97,7 +111,7 @@ const Trading: React.FC = () => {
             setCart(JSON.parse(savedCart));
         }
         fetchListings();
-    }, [currentPage]);
+    }, [currentPage, pageSize, searchQuery]);
 
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
@@ -215,17 +229,32 @@ const Trading: React.FC = () => {
         const delayDebounceFn = setTimeout(async () => {
             if (searchQuery || (filterType && filterQuery)) {
                 try {
-                    let url = `${trading_api_url}/listings/search`;
-                    url += `?query=${searchQuery}`;
-                    if (filterType && filterQuery) {
-                        url += `&${filterType}=${filterQuery}`;
+                    const offset = (currentPage - 1) * pageSize;
+                    let url = `${trading_api_url}/listings/?limit=${pageSize}&offset=${offset}`;
+                    
+                    if (searchQuery) {
+                        url += `&search_term=${encodeURIComponent(searchQuery)}`;
                     }
-                    url += `&page=${currentPage}&per_page=10`;
-                    console.log('Fetching search results from:', url);
+                    
+                    // Add other filters based on filterType
+                    if (filterType && filterQuery) {
+                        switch(filterType) {
+                            case 'seller':
+                                url += `&seller_address=${encodeURIComponent(filterQuery)}`;
+                                break;
+                            case 'asset':
+                                url += `&asset_name=${encodeURIComponent(filterQuery)}`;
+                                break;
+                        }
+                    }
+                    
                     const response = await axios.get(url);
-                    setSearchResults(response.data.listings.results);
-                    setTotalPages(response.data.listings.total_pages);
-                    setTotalResults(response.data.listings.total_results);
+                    
+                    if (Array.isArray(response.data)) {
+                        setSearchResults(response.data);
+                        setTotalResults(response.data.length);
+                        setTotalPages(Math.ceil(response.data.length / pageSize));
+                    }
                 } catch (error) {
                     console.error('Error fetching search results:', error);
                 } finally {
@@ -238,12 +267,10 @@ const Trading: React.FC = () => {
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, filterType, filterQuery, currentPage]);
+    }, [searchQuery, filterType, filterQuery, currentPage, pageSize]);
 
     const showDetails = (listing: any) => {
-        setSelectedListing(listing);
-        setShowPopup(true);
-        navigate('?details=true'); // Update the URL
+        navigate(`/listing/${listing.id}`);
     };
 
     const closeDetails = () => {
@@ -295,25 +322,17 @@ const Trading: React.FC = () => {
                 filterType={filterType}
                 handleFilterTypeChange={(e) => setFilterType(e.target.value)}
             />
-            {listings.length === 0 ? (
+            {loading ? (
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading listings...</p>
+                </div>
+            ) : listings.length === 0 ? (
                 <div className="no-results">
                     <p>No listings found</p>
                 </div>
             ) : (
                 <>
-                    {/* Cart Modal Overlay */}
-                    <div className={`cart-overlay ${cartVisible ? 'visible' : ''}`}>
-                        <div className={`cart ${cartVisible ? 'cart-visible' : ''}`}>
-                            <Cart 
-                                cartItems={cart} 
-                                removeFromCart={removeFromCart} 
-                                clearCart={clearCart}
-                                closeCart={() => setCartVisible(false)}
-                                updateQuantity={updateQuantity}
-                            />
-                        </div>
-                    </div>
-
                     {/* Main Content */}
                     {isCheckingOut ? (
                         <Checkout 

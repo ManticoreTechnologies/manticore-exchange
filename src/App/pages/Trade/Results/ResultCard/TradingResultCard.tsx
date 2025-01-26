@@ -21,24 +21,36 @@ import ManageListing from '@/App/pages/Trade/ManageListing/ManageListing';
 // @ts-ignore
 import { useNavigate } from 'react-router-dom';
 interface TradingResultCardProps {
+    id: string;
     name: string;
     description: string;
-    offerings: any[];
-    ipfsHash: string;
-    tags?: string;
-    seller_address: string;
-    addToCart: (listing: any) => void;
-    buyNow: (listing: any) => void;
-    showDetails: (listing: any) => void; // New prop to show details
+    seller: string;
+    listingAddress: string;
+    ipfsHash: string | null;
+    status: string;
+    createdAt: string;
+    unitPrice: string;
+    quantity: number;
+    balances: Array<{asset_name: string; confirmed_balance: string}>;
+    prices: Array<{asset_name: string; price_evr: string}>;
+    addToCart: () => void;
+    buyNow: () => void;
+    showDetails: () => void;
 }
 
 const TradingResultCard: React.FC<TradingResultCardProps> = ({
+    id,
     name,
     description,
-    offerings,
+    seller,
+    listingAddress,
     ipfsHash,
-    tags,
-    seller_address,
+    status,
+    createdAt,
+    unitPrice,
+    quantity,
+    balances,
+    prices,
     addToCart,
     buyNow,
     showDetails
@@ -54,9 +66,9 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     const listing = {
         name,
         description,
-        offerings,
-        tags,
-        seller_address,
+        offerings: [],
+        tags: '',
+        seller_address: seller,
         units: 0, // Assuming default value
         listingID: '', // Assuming default value
         seller: '' // Assuming default value
@@ -83,33 +95,23 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
         // Validate each offering's IPFS hash and check if it's an image
         const validateOfferings = async () => {
             const validImages = await Promise.all(
-                offerings.map(async (offering) => {
-                    if (!offering.ipfs_hash) return null;
-                    const url = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${offering.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
-                    try {
-                        const response = await fetch(url, { method: 'HEAD' });
-                        const contentType = response.headers.get('Content-Type');
-                        return contentType?.startsWith('image') ? url : null;
-                    } catch {
-                        return null;
-                    }
-                })
+                [] // No offerings in the new interface
             );
             setOfferingImages(validImages.filter(Boolean) as string[]);
         };
 
         validateOfferings();
-    }, [offerings]);
+    }, []);
 
     return (
         <div 
             className="trading-result-card"
-            onClick={() => showDetails(listing)}
+            onClick={() => showDetails()}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    showDetails(listing);
+                    showDetails();
                 }
             }}
         >
@@ -138,18 +140,11 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
             </div>
             <div className="trading-result-card__content">
                 <h3 className="trading-result-card__title">{name}</h3>
-                {tags && tags.length > 0 && (
-                    <div className="trading-result-card__tags">
-                        {tags.split(',').map((tag, index) => (
-                            <span key={index} className="tag">#{tag}</span>
-                        ))}
-                    </div>
-                )}
                 <p className="trading-result-card__description">{description}</p>
 
                 <div className="trading-result-card__offerings">
-                    <div className={`offerings-count ${offerings.length === 0 ? 'offerings-count--empty' : 'offerings-count--has-offerings'}`}>
-                        {offerings.length} Offering{offerings.length !== 1 ? 's' : ''}
+                    <div className={`offerings-count ${[] === 0 ? 'offerings-count--empty' : 'offerings-count--has-offerings'}`}>
+                        {[]} Offering{[] !== 1 ? 's' : ''}
                     </div>
 
                     <div className="offerings-images">
