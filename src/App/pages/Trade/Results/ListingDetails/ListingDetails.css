@@ -1181,5 +1181,10 @@
   font-size: 12px;
   padding: 2px 6px;
   border-radius: 10px;
-  display: attr(data-count) none;
+  display: none; /* Hide by default */
+}
+
+/* Only show the count badge when there are items */
+.cart-button[data-count]:not([data-count=""]):after {
+  display: block;
 }

@@ -560,7 +560,11 @@ const ListingDetails: React.FC = () => {
           <button className="action-button share-button" onClick={handleShare}>
             <FiShare2 /> Share
           </button>
-          <button className="action-button cart-button" onClick={handleViewCart}>
+          <button 
+            className="action-button cart-button" 
+            onClick={handleViewCart}
+            data-count={cart.length > 0 ? cart.length : ''}
+          >
             <FiShoppingCart /> View Cart
           </button>
         </div>
