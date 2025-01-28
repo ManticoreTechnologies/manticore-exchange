@@ -1,369 +1,406 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import QRCode from 'qrcode.react';
-import zxcvbn from 'zxcvbn'; // Library for password strength checking
 import './CreateListing.css';
 import './NumberInput.css';
 
 interface CreateListingProps {
     onClose: () => void;
     onComplete: () => void;
+    userAddress: string;
 }
 
-const CreateListing: React.FC<CreateListingProps> = ({ onClose }) => {
+interface PriceSpec {
+    asset_name: string;
+    price_evr?: number;
+    price_asset_name?: string;
+    price_asset_amount?: number;
+}
+
+interface AssetPrice {
+    asset_name: string;
+    price_evr: string;
+}
+
+interface ValidationError {
+    loc: string[];
+    msg: string;
+    type: string;
+}
+
+const STEPS = [
+    { number: 1, label: 'Basic Info' },
+    { number: 2, label: 'Assets & Prices' },
+    { number: 3, label: 'Review' },
+    { number: 4, label: 'Complete' }
+];
+
+const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) => {
     const [step, setStep] = useState(1);
     const [listingDetails, setListingDetails] = useState({
-        assetName: '',
+        name: '',
         description: '',
-        unitPrice: '', // EVR as string input
-        password: '',
-        payoutAddress: '',
+        image_ipfs_hash: '', // Optional IPFS hash for image
+        seller_address: userAddress, // Initialize with provided address
     });
-    const [tags, setTags] = useState<string[]>([]); // Store tags as an array
-    const [tagInput, setTagInput] = useState(''); // For managing tag input
-    const [listingResponse, setListingResponse] = useState<any>(null);
+    const [assetPrices, setAssetPrices] = useState<AssetPrice[]>([{ asset_name: '', price_evr: '' }]);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [orderStatus, setOrderStatus] = useState<string | null>(null);
-    const [passwordStrength, setPasswordStrength] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [confirmPassword, setConfirmPassword] = useState<string>(''); // New state for confirmation password
-    const [confirmPasswordClose, setConfirmPasswordClose] = useState<string>(''); // New state for confirmation password 
-    const [confirmPasswordComplete, setConfirmPasswordComplete] = useState<string>(''); // New state for confirmation password
-    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false); // For showing the confirmation popup
+    const [listingResponse, setListingResponse] = useState<any>(null);
+    const [slideDirection, setSlideDirection] = useState<'in' | 'out'>('in');
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
-    useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
-
-        const checkListingStatus = async () => {
-            if (!listingResponse?.listing_id) return;
-            try {
-                const response = await axios.get(`${trading_api_url}/listing/${listingResponse.listing_id}`);
-                const { listing_status } = response.data;
-                setOrderStatus(listing_status);
-            } catch (error) {
-                console.error('Error fetching listing status:', error);
-            }
-        };
-
-        if (step === 2) {
-            // Initial check
-            checkListingStatus();
-            // Set up interval for continuous checking
-            interval = setInterval(checkListingStatus, 5000);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [step, listingResponse, trading_api_url]);
-
     const handleNextStep = async () => {
-        if (step === 1) {
-            if (passwordStrength < 3) {
-                alert('Please enter a stronger password.');
-                return;
-            }
-
-            if (confirmPassword !== listingDetails.password) {
-                alert('Passwords do not match. Please confirm the password.');
-                return;
-            }
-
-            setIsSubmitting(true);
-            setErrorMessage(null); // Clear any previous error messages
-
-            try {
-                // Convert the unit price from EVR to satoshis
-                const unitPriceInSatoshis = Math.floor(Number(listingDetails.unitPrice) * 100000000);
-
-                const response = await axios.post(`${trading_api_url}/list`, {
-                    name: listingDetails.assetName,
-                    description: listingDetails.description,
-                    price: unitPriceInSatoshis, // Send the price in satoshis
-                    payout_address: listingDetails.payoutAddress,
-                    password: listingDetails.password,
-                    tags
-                });
-                console.log(response.data);
-                setListingResponse(response.data);
-                setStep(2);
-            } catch (error: any) {
-                console.error('Error creating listing:', error);
-                if (error.response && error.response.data) {
-                    setErrorMessage(error.response.data.error);
-                } else {
-                    setErrorMessage('Failed to create listing. Please try again.');
-                }
-            } finally {
-                setIsSubmitting(false);
-            }
+        if (step === 3) {
+            await submitListing();
         } else {
-            setStep(prev => prev + 1);
+            setSlideDirection('out');
+            setTimeout(() => {
+                setStep(prev => prev + 1);
+                setSlideDirection('in');
+            }, 300);
+        }
+    };
+
+    const handlePrevStep = () => {
+        setSlideDirection('out');
+        setTimeout(() => {
+            setStep(prev => prev - 1);
+            setSlideDirection('in');
+        }, 300);
+    };
+
+    const submitListing = async () => {
+        setIsSubmitting(true);
+        setErrorMessage(null);
+
+        try {
+            const prices: PriceSpec[] = assetPrices.map(ap => ({
+                asset_name: ap.asset_name.trim(),
+                price_evr: Number(ap.price_evr)
+            }));
+
+            const response = await axios.post(`${trading_api_url}/listings/`, {
+                seller_address: listingDetails.seller_address,
+                name: listingDetails.name.trim(),
+                description: listingDetails.description.trim(),
+                image_ipfs_hash: listingDetails.image_ipfs_hash.trim() || null,
+                prices
+            });
+
+            setListingResponse(response.data);
+            setStep(4);
+        } catch (error) {
+            console.error('Error creating listing:', error);
+            
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError<any>;
+                
+                if (axiosError.response?.status === 422) {
+                    const validationErrors = axiosError.response.data?.detail;
+                    if (Array.isArray(validationErrors)) {
+                        const errorMessages = validationErrors.map((err: ValidationError) => {
+                            const field = err.loc[err.loc.length - 1];
+                            return `${field}: ${err.msg}`;
+                        });
+                        setErrorMessage(errorMessages.join('\n'));
+                    } else {
+                        setErrorMessage(axiosError.response.data?.detail || 'Invalid input data');
+                    }
+                } else if (axiosError.response?.data?.detail) {
+                    setErrorMessage(axiosError.response.data.detail);
+                } else {
+                    setErrorMessage(axiosError.message || 'Failed to create listing. Please try again.');
+                }
+            } else {
+                setErrorMessage('An unexpected error occurred. Please try again.');
+            }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        setListingDetails(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-        if (name === 'unitPrice') {
-            // Allow only numbers and up to one decimal point
-            if (/^\d*\.?\d*$/.test(value)) {
-                setListingDetails(prevDetails => ({
-                    ...prevDetails,
-                    [name]: value,
-                }));
+    const handleAssetPriceChange = (index: number, field: keyof AssetPrice, value: string) => {
+        setAssetPrices(prevPrices => {
+            const newPrices = [...prevPrices];
+            if (field === 'asset_name') {
+                const uppercasedValue = value.toUpperCase();
+                if (/^[A-Z0-9._/#]*$/.test(uppercasedValue)) {
+                    newPrices[index] = {
+                        ...newPrices[index],
+                        [field]: uppercasedValue
+                    };
+                }
+            } else if (field === 'price_evr') {
+                if (/^\d*\.?\d{0,8}$/.test(value)) {
+                    newPrices[index] = {
+                        ...newPrices[index],
+                        [field]: value
+                    };
+                }
             }
-        } else if (name === 'assetName') {
-            // Allow lowercase but convert them to uppercase and ensure only A-Z 0-9 . _ / #
-            const uppercasedValue = value.toUpperCase();
-            if (/^[A-Z0-9._/#]*$/.test(uppercasedValue)) { // Updated regex to include / and #
-                setListingDetails(prevDetails => ({
-                    ...prevDetails,
-                    [name]: uppercasedValue, // Automatically convert to uppercase
-                }));
-            }
-        } else {
-            setListingDetails(prevDetails => ({
-                ...prevDetails,
-                [name]: value,
-            }));
-        }
-
-        if (name === 'password') {
-            const strength = zxcvbn(value).score;
-            setPasswordStrength(strength);
-        }
-    };
-
-    // Handle tag input and prevent spaces
-    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
-        if (!value.includes(' ')) {
-            setTagInput(value); // Prevent space characters
-        }
-    };
-
-    // Handle tag addition when the user presses 'Enter'
-    const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && tagInput.trim() !== '' && tags.length < 5) {
-            setTags([...tags, tagInput.trim()]);
-            setTagInput(''); // Clear the input after adding
-            e.preventDefault(); // Prevent form submission
-        }
-    };
-
-    // Remove tag when clicked
-    const handleRemoveTag = (tagToRemove: string) => {
-        setTags(tags.filter(tag => tag !== tagToRemove)); // Filter out the clicked tag
-    };
-
-    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(e.target.value);
-    };
-
-    const handleConfirmPasswordCloseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPasswordClose(e.target.value);
-    };
-    // @ts-ignore
-    const handleConfirmPasswordCompleteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPasswordComplete(e.target.value);
-    };
-    const handleFinalClose = () => {
-        if(step==1){
-            onClose();
-        }
-        setShowConfirmationPopup(true); // Show confirmation popup on close attempt
-    };
-    // @ts-ignore
-    const handleCompleteClose = () => {
-        if (confirmPasswordComplete === listingDetails.password) {
-            onClose(); // Close if password matches
-        } else {
-            alert('Password does not match. Please try again.');
-        }
-    };
-    const handlePopupConfirm = () => {
-        if (confirmPasswordClose === listingDetails.password) {
-            onClose(); // Close if password matches
-        } else {
-            alert('Password does not match. Please try again.');
-        }
-    };
-
-    const handlePopupCancel = async() => {
-        const response = await axios.post(`${trading_api_url}/manage`, {
-            listing_id: listingResponse.listing_id,
-            password: listingDetails.password,
-            action: 'cancel',
+            return newPrices;
         });
-        alert(response.data.message)
-        onClose();
     };
 
-    const getPasswordFeedback = () => {
-        if (passwordStrength < 3) {
-            return <p className="password-feedback insecure">Password is insecure. Please use a stronger password.</p>;
-        } else {
-            return <p className="password-feedback secure">Password is secure.</p>;
+    const addAssetPrice = () => {
+        setAssetPrices(prev => [...prev, { asset_name: '', price_evr: '' }]);
+    };
+
+    const removeAssetPrice = (index: number) => {
+        if (assetPrices.length > 1) {
+            setAssetPrices(prev => prev.filter((_, i) => i !== index));
         }
     };
 
-    const renderStatus = (status: string | null) => {
-        if (!status) return <div className="status-badge pending">PENDING</div>;
-        const statusClass = status.toLowerCase();
+    const renderErrorMessage = () => {
+        if (!errorMessage) return null;
+        
         return (
-            <div 
-                className={`status-badge ${statusClass}`} 
-                onClick={status === 'ACTIVE' ? onClose : undefined}
-            >
-                {status === 'CONFIRMING' && <div className="status-spinner" />}
-                {status === 'ACTIVE' && <div className="status-checkmark">✓</div>}
-                {status}
+            <div className="error-message">
+                {errorMessage.split('\n').map((error, index) => (
+                    <p key={index}>{error}</p>
+                ))}
             </div>
         );
     };
 
-    const renderStepContent = () => {
-        switch (step) {
-            case 1:
-                return (
-                    <div className="step-content">
-                        <h2 className="step-title">Step 1: Specify Listing Details</h2>
+    const renderStepProgress = () => {
+        const progress = ((step - 1) / (STEPS.length - 1)) * 100;
+        
+        return (
+            <div className="step-progress">
+                <div className="step-progress-bar" style={{ width: `${progress}%` }} />
+                {STEPS.map((s) => (
+                    <div 
+                        key={s.number}
+                        className={`step-circle ${step === s.number ? 'active' : ''} ${step > s.number ? 'completed' : ''}`}
+                    >
+                        {step > s.number ? '✓' : s.number}
+                        <span className="step-label">{s.label}</span>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const renderBasicInfo = () => (
+        <>
+            <h2 className="step-title">Basic Information</h2>
+            <input
+                type="text"
+                name="seller_address"
+                placeholder="Seller Address (EVR)"
+                value={listingDetails.seller_address}
+                onChange={handleInputChange}
+                className="evr-address-input"
+            />
+            <div className="input-help-text">
+                Your EVR address where you'll receive payments for sold assets.
+            </div>
+            <input
+                type="text"
+                name="name"
+                placeholder="Listing Name"
+                value={listingDetails.name}
+                onChange={handleInputChange}
+            />
+            <textarea
+                name="description"
+                placeholder="Description"
+                value={listingDetails.description}
+                onChange={handleInputChange}
+            />
+            <input
+                type="text"
+                name="image_ipfs_hash"
+                placeholder="IPFS Image Hash (optional)"
+                value={listingDetails.image_ipfs_hash}
+                onChange={handleInputChange}
+            />
+        </>
+    );
+
+    const renderAssetPrices = () => (
+        <>
+            <h2 className="step-title">Asset Prices</h2>
+            <div className="asset-prices-container">
+                {assetPrices.map((assetPrice, index) => (
+                    <div key={index} className="asset-price-row">
                         <input
                             type="text"
-                            name="assetName"
                             placeholder="Asset Name"
-                            value={listingDetails.assetName}
-                            onChange={handleInputChange}
-                        />
-                        <textarea
-                            name="description"
-                            placeholder="Description"
-                            value={listingDetails.description}
-                            onChange={handleInputChange}
+                            value={assetPrice.asset_name}
+                            onChange={(e) => handleAssetPriceChange(index, 'asset_name', e.target.value)}
                         />
                         <input
                             type="text"
-                            name="unitPrice"
-                            placeholder="Unit Price ($EVR)"
-                            value={listingDetails.unitPrice}
-                            onChange={handleInputChange}
+                            placeholder="Price (EVR)"
+                            value={assetPrice.price_evr}
+                            onChange={(e) => handleAssetPriceChange(index, 'price_evr', e.target.value)}
                         />
-                        <input
-                            type="text"
-                            name="tags"
-                            placeholder="Enter a tag and press Enter"
-                            value={tagInput}
-                            onChange={handleTagInputChange}
-                            onKeyDown={handleTagKeyDown}
-                        />
-                        <div className="tags-container">
-                            {tags.map((tag, index) => (
-                                <span key={index} className="tag" onClick={() => handleRemoveTag(tag)}>
-                                    {tag} &#10005; {/* 'X' to remove */}
-                                </span>
-                            ))}
+                        {assetPrices.length > 1 && (
+                            <button 
+                                className="remove-asset-button"
+                                onClick={() => removeAssetPrice(index)}
+                                type="button"
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+                ))}
+                <button 
+                    className="add-asset-button"
+                    onClick={addAssetPrice}
+                    type="button"
+                >
+                    + Add Another Asset
+                </button>
+            </div>
+        </>
+    );
+
+    const renderReview = () => (
+        <>
+            <h2 className="step-title">Review Your Listing</h2>
+            <div className="listing-details">
+                <p><strong>Listing Name:</strong> {listingDetails.name}</p>
+                <p><strong>Description:</strong> {listingDetails.description}</p>
+                {listingDetails.image_ipfs_hash && (
+                    <p><strong>Image IPFS Hash:</strong> {listingDetails.image_ipfs_hash}</p>
+                )}
+                <div className="asset-prices-list">
+                    <strong>Assets and Prices:</strong>
+                    {assetPrices.map((ap, index) => (
+                        <p key={index}>
+                            {ap.asset_name}: {ap.price_evr} EVR
+                        </p>
+                    ))}
+                </div>
+                <p><strong>Seller Address:</strong> {listingDetails.seller_address}</p>
+            </div>
+        </>
+    );
+
+    const renderSuccess = () => (
+        <div className="success-step">
+            <div className="success-checkmark">✓</div>
+            <h2 className="step-title">Listing Created Successfully</h2>
+            <div className="listing-details">
+                <p><strong>Listing ID:</strong></p>
+                <div className="listing-id">{listingResponse?.listing_id}</div>
+                <div className="asset-prices-list">
+                    <strong>Assets and Prices:</strong>
+                    {assetPrices.map((ap, index) => (
+                        <p key={index}>
+                            <span>{ap.asset_name}</span>
+                            <span>{ap.price_evr} EVR</span>
+                        </p>
+                    ))}
+                </div>
+                {listingResponse?.deposit_address && (
+                    <div className="deposit-address-container">
+                        <div className="deposit-address-label">Deposit Address</div>
+                        <div className="deposit-address">{listingResponse.deposit_address}</div>
+                        <div className="qr-container">
+                            <QRCode
+                                value={listingResponse.deposit_address}
+                                size={160}
+                                fgColor="#000000"
+                                bgColor="#ffffff"
+                            />
                         </div>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Enter a Secure Password"
-                            value={listingDetails.password}
-                            onChange={handleInputChange}
-                        />
-                        {getPasswordFeedback()}
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                        />
-                        {confirmPassword !== listingDetails.password && confirmPassword.length > 0 && <p className="password-feedback" style={{ color: 'red' }}>Passwords don't match</p>}
-                        <input
-                            type="text"
-                            name="payoutAddress"
-                            placeholder="Payout Address"
-                            value={listingDetails.payoutAddress}
-                            onChange={handleInputChange}
-                        />
-                        {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    const renderStepContent = () => {
+        const content = (() => {
+            switch (step) {
+                case 1:
+                    return renderBasicInfo();
+                case 2:
+                    return renderAssetPrices();
+                case 3:
+                    return renderReview();
+                case 4:
+                    return renderSuccess();
+                default:
+                    return null;
+            }
+        })();
+
+        return (
+            <div className={`step-content ${slideDirection === 'out' ? 'slide-out' : ''}`}>
+                {content}
+                {renderErrorMessage()}
+                <div className="step-navigation">
+                    <button 
+                        className="cancel-button"
+                        onClick={onClose}
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+                    {step < 4 ? (
+                        <div className="action-buttons">
+                            {step > 1 && (
+                                <button 
+                                    className="prev-button"
+                                    onClick={handlePrevStep}
+                                    disabled={isSubmitting}
+                                    type="button"
+                                >
+                                    Previous
+                                </button>
+                            )}
+                            <button 
+                                className="next-button"
+                                onClick={handleNextStep}
+                                disabled={
+                                    isSubmitting || 
+                                    (step === 1 && (!listingDetails.name || !listingDetails.seller_address || listingDetails.seller_address.length !== 34 || !listingDetails.seller_address.toUpperCase().startsWith('E'))) ||
+                                    (step === 2 && assetPrices.some(ap => !ap.asset_name || !ap.price_evr))
+                                }
+                                type="button"
+                            >
+                                {step === 3 ? (isSubmitting ? 'Creating...' : 'Create Listing') : 'Next'}
+                            </button>
+                        </div>
+                    ) : (
                         <button 
-                            className="next-button" 
-                            onClick={handleNextStep} 
-                            disabled={isSubmitting || passwordStrength < 3 || confirmPassword !== listingDetails.password || listingDetails.payoutAddress.length !== 34 || listingDetails.payoutAddress[0].toUpperCase() !== "E"}
+                            className="done-button"
+                            onClick={onClose}
+                            type="button"
                         >
-                            {isSubmitting ? 'Submitting...' : 'Next'}
+                            Done
                         </button>
-                    </div>
-                );
-            case 2:
-                return (
-                    <div className="step-content step-qr">
-                        <h2 className="step-title">Step 2: Send Assets to Address</h2>
-                        <p className="warning-message"><strong>Important:</strong> Please save your <strong>Listing Password</strong>. You will need it to manage this listing. Failure to do so will result in losing access to the listing.</p>
-                        <p className="listing-message">{listingResponse?.message}</p>
-                        <div className="qr-code-container">
-                            <strong>Listing Address:</strong>
-                            <p className="listing-address">{listingResponse?.listing_address}</p>
-                            {listingResponse?.listing_address && (
-                                <QRCode
-                                    value={listingResponse.listing_address}
-                                    size={160}
-                                    fgColor="#000000"
-                                    bgColor="#ffffff"
-                                />
-                            )}
-                        </div>
-                        <div className="listing-details">
-                            <p><strong>Listing ID:</strong> {listingResponse?.listing_id}</p>
-                            <p>
-                                <strong>Status:</strong>
-                                {renderStatus(orderStatus)}
-                            </p>
-                        </div>
-                        <div className="status-container">
-                            {orderStatus !== 'ACTIVE' && (
-                                <div className="loading-spinner" />
-                            )}
-                        </div>
-                    </div>
-                );
-            default:
-                return null;
-        }
+                    )}
+                </div>
+            </div>
+        );
     };
 
     return (
         <div className="create-listing-popup">
             <div className="create-listing-content">
-                <div className="close-button-create" onClick={handleFinalClose}>✕</div>
+                {renderStepProgress()}
                 {renderStepContent()}
-
-                {/* Confirmation Popup */}
-                {showConfirmationPopup && (
-                    <div className="confirmation-popup">
-                        <div className="popup-content">
-                            <h3>Confirm Close</h3>
-                            <p>Are you sure you want to close? You will lose access to the listing if you haven't saved the password.</p>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                placeholder="Enter Password to Confirm"
-                                value={confirmPasswordClose}
-                                onChange={handleConfirmPasswordCloseChange}
-                            />
-                            <button className="confirm-button" onClick={handlePopupConfirm}>Confirm</button>
-                            <button className="cancel-button" onClick={handlePopupCancel}>Cancel Listing</button>
-                            <button className="cancel-button" onClick={() => setShowConfirmationPopup(false)}>Back</button>
-                            </div>
-                    </div>
-                )}
             </div>
         </div>
     );
