@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
         <Ping />
       </div>
       <p className="footer-text">
-        © 2024 Manticore Technologies
+        © {new Date().getFullYear()} Manticore Technologies
         <Link to="/about">About</Link> | <Link to="/contact">Contact</Link>
       </p>
       <div className="theme-settings-container">
