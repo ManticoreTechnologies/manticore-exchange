@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatEvrAmount } from '@/utils/formatting';
 
 interface Offering {
   id: string;
   asset_name: string;
   ipfs_hash: string;
-  price: number;
+  price: string;
   quantity: number;
   visible: boolean;
 }
@@ -27,13 +28,13 @@ const OfferingsList: React.FC<OfferingsListProps> = ({ offerings, handleAddToCar
           <div key={offering.id} className="offering-item">
             <h4>{t('offering')} {index + 1}</h4>
             <img
-              src={`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${offering.ipfs_hash}`}
+              src={`https://ipfs.manticore.exchange/ipfs/${offering.ipfs_hash}`}
               alt={offering.asset_name}
               className="offering-image"
               onError={(e) => e.currentTarget.src = '/path/to/enhanced_logo.png'}
             />
             <p>{t('assetName')}: {offering.asset_name}</p>
-            <p>{t('price')}: {offering.price} EVR</p>
+            <p>{t('price')}: {formatEvrAmount(offering.price)} EVR</p>
             <p>{t('quantity')}: {offering.quantity}</p>
             <p>{t('visible')}: {offering.visible ? t('yes') : t('no')}</p>
             <button onClick={() => handleAddToCart(offering.id, quantity)} className="add-to-cart-button">

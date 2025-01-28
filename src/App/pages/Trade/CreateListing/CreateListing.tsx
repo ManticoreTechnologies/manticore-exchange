@@ -15,11 +15,13 @@ interface PriceSpec {
     price_evr?: number;
     price_asset_name?: string;
     price_asset_amount?: number;
+    ipfs_hash?: string;
 }
 
 interface AssetPrice {
     asset_name: string;
     price_evr: string;
+    ipfs_hash: string;
 }
 
 interface ValidationError {
@@ -29,10 +31,9 @@ interface ValidationError {
 }
 
 const STEPS = [
-    { number: 1, label: 'Basic Info' },
-    { number: 2, label: 'Assets & Prices' },
-    { number: 3, label: 'Review' },
-    { number: 4, label: 'Complete' }
+    { number: 1, label: 'Info' },
+    { number: 2, label: 'Assets' },
+    { number: 3, label: 'Review' }
 ];
 
 const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) => {
@@ -43,7 +44,11 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
         image_ipfs_hash: '', // Optional IPFS hash for image
         seller_address: userAddress, // Initialize with provided address
     });
-    const [assetPrices, setAssetPrices] = useState<AssetPrice[]>([{ asset_name: '', price_evr: '' }]);
+    const [assetPrices, setAssetPrices] = useState<AssetPrice[]>([{ 
+        asset_name: '', 
+        price_evr: '',
+        ipfs_hash: '' 
+    }]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [listingResponse, setListingResponse] = useState<any>(null);
@@ -81,14 +86,15 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
         try {
             const prices: PriceSpec[] = assetPrices.map(ap => ({
                 asset_name: ap.asset_name.trim(),
-                price_evr: Number(ap.price_evr)
+                price_evr: Number(ap.price_evr),
+                ipfs_hash: ap.ipfs_hash.trim() || undefined
             }));
 
             const response = await axios.post(`${trading_api_url}/listings/`, {
                 seller_address: listingDetails.seller_address,
                 name: listingDetails.name.trim(),
                 description: listingDetails.description.trim(),
-                image_ipfs_hash: listingDetails.image_ipfs_hash.trim() || null,
+                image_ipfs_hash: listingDetails.image_ipfs_hash.trim() || undefined,
                 prices
             });
 
@@ -150,13 +156,18 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                         [field]: value
                     };
                 }
+            } else {
+                newPrices[index] = {
+                    ...newPrices[index],
+                    [field]: value
+                };
             }
             return newPrices;
         });
     };
 
     const addAssetPrice = () => {
-        setAssetPrices(prev => [...prev, { asset_name: '', price_evr: '' }]);
+        setAssetPrices(prev => [...prev, { asset_name: '', price_evr: '', ipfs_hash: '' }]);
     };
 
     const removeAssetPrice = (index: number) => {
@@ -201,17 +212,6 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             <h2 className="step-title">Basic Information</h2>
             <input
                 type="text"
-                name="seller_address"
-                placeholder="Seller Address (EVR)"
-                value={listingDetails.seller_address}
-                onChange={handleInputChange}
-                className="evr-address-input"
-            />
-            <div className="input-help-text">
-                Your EVR address where you'll receive payments for sold assets.
-            </div>
-            <input
-                type="text"
                 name="name"
                 placeholder="Listing Name"
                 value={listingDetails.name}
@@ -222,6 +222,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 placeholder="Description"
                 value={listingDetails.description}
                 onChange={handleInputChange}
+                rows={3}
             />
             <input
                 type="text"
@@ -229,6 +230,14 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 placeholder="IPFS Image Hash (optional)"
                 value={listingDetails.image_ipfs_hash}
                 onChange={handleInputChange}
+            />
+            <input
+                type="text"
+                name="seller_address"
+                placeholder="Seller Address (EVR)"
+                value={listingDetails.seller_address}
+                onChange={handleInputChange}
+                className="evr-address-input"
             />
         </>
     );
@@ -251,6 +260,12 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                             value={assetPrice.price_evr}
                             onChange={(e) => handleAssetPriceChange(index, 'price_evr', e.target.value)}
                         />
+                        <input
+                            type="text"
+                            placeholder="IPFS Hash"
+                            value={assetPrice.ipfs_hash}
+                            onChange={(e) => handleAssetPriceChange(index, 'ipfs_hash', e.target.value)}
+                        />
                         {assetPrices.length > 1 && (
                             <button 
                                 className="remove-asset-button"
@@ -267,7 +282,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                     onClick={addAssetPrice}
                     type="button"
                 >
-                    + Add Another Asset
+                    + Add Asset
                 </button>
             </div>
         </>
@@ -275,22 +290,22 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
 
     const renderReview = () => (
         <>
-            <h2 className="step-title">Review Your Listing</h2>
+            <h2 className="step-title">Review</h2>
             <div className="listing-details">
-                <p><strong>Listing Name:</strong> {listingDetails.name}</p>
+                <p><strong>Name:</strong> {listingDetails.name}</p>
                 <p><strong>Description:</strong> {listingDetails.description}</p>
-                {listingDetails.image_ipfs_hash && (
-                    <p><strong>Image IPFS Hash:</strong> {listingDetails.image_ipfs_hash}</p>
-                )}
                 <div className="asset-prices-list">
                     <strong>Assets and Prices:</strong>
                     {assetPrices.map((ap, index) => (
-                        <p key={index}>
-                            {ap.asset_name}: {ap.price_evr} EVR
-                        </p>
+                        <div key={index} className="review-asset-item">
+                            <p>{ap.asset_name}: {ap.price_evr} EVR</p>
+                            {ap.ipfs_hash && (
+                                <p className="review-ipfs-hash">{ap.ipfs_hash}</p>
+                            )}
+                        </div>
                     ))}
                 </div>
-                <p><strong>Seller Address:</strong> {listingDetails.seller_address}</p>
+                <p><strong>Address:</strong> {listingDetails.seller_address}</p>
             </div>
         </>
     );

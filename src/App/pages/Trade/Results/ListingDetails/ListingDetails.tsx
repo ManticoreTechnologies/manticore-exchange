@@ -34,23 +34,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './ListingDetails.css';
-import useWebSocket from '@/hooks/useWebSocket';
-import { FiHeart, FiMessageCircle, FiTool, FiShare2, FiShoppingCart, FiArrowLeft } from 'react-icons/fi';
-//@ts-ignore
-import Cookies from 'js-cookie';
 import axios from 'axios';
-// @ts-ignore
-import IsAuthenticated from '@/components/Authentication/IsAuthenticated';
-import CommentsSection from '@/components/Comments/CommentsSection';
-import Cart from '../../Cart/Cart';
-import Checkout from '../../Checkout/Checkout';
-import InvoiceToaster from '../../InvoiceToaster/InvoiceToaster';
+import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink } from 'react-icons/fi';
+import './ListingDetails.css';
+import ManticoreLogo from '@/images/enhanced_logo.png';
+import { formatEvrAmount, truncateAddress } from '@/utils/formatting';
 
-const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
-
-//${import.meta.env.VITE_TRADING_API_PORT || '668'}
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
+const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
 
 interface Balance {
   asset_name: string;
@@ -65,6 +56,7 @@ interface Price {
   price_evr: string;
   price_asset_name: string | null;
   price_asset_amount: string | null;
+  ipfs_hash: string | null;
 }
 
 interface Listing {
@@ -82,478 +74,183 @@ interface Listing {
   balances: Balance[];
 }
 
-interface Comment {
-  id: string;
-  content: string;
-  friend_name: string;
-  address: string;
-  ipfsHash: string;
-  created_at?: Date;
-  hidden?: boolean;
-}
-
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [listing, setListing] = useState<Listing | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState<string>('');
-  const [quantity, setQuantity] = useState<number>(1);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
-  const [showComments, setShowComments] = useState(false);
-  const [isReporting, setIsReporting] = useState(false);
-  const [reportReason, setReportReason] = useState('');
-  const [isMediaLoading, setIsMediaLoading] = useState(true);
-  const [mediaError, setMediaError] = useState<string>('');
-  const [isVideo, setIsVideo] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
-  const [showMediaControls, setShowMediaControls] = useState(false);
-  const [isManageMode, setIsManageMode] = useState(false);
-  const [editedListing, setEditedListing] = useState<Listing | null>(null);
-  const [newIpfsHash, setNewIpfsHash] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showIpfsModal, setShowIpfsModal] = useState(false);
-  const [newIpfsHashInput, setNewIpfsHashInput] = useState('');
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
-  const [cartVisible, setCartVisible] = useState<boolean>(false);
   const [cart, setCart] = useState<any[]>([]);
-  const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
-  const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
-  const cartRef = useRef<HTMLDivElement>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
+  const [assetMediaStates, setAssetMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
 
-  const { message, sendMessage, isAuthenticated, getUserAddress } = useWebSocket(wsUrl);
-
+  // Load cart from localStorage on mount
   useEffect(() => {
-    axios.get(`${trading_api_url}/listings/${id}`)
-      .then(response => {
+    const savedCart = localStorage.getItem('manticore_cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  // Fetch listing data
+  useEffect(() => {
+    const fetchListing = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${trading_api_url}/listings/${id}`);
         if (response.data) {
+          console.log(response.data);
           setListing(response.data);
-          setEditedListing(response.data);
+          // Initialize quantities for each asset
+          const initialQuantities: Record<string, number> = {};
+          response.data.balances.forEach((balance: Balance) => {
+            initialQuantities[balance.asset_name] = 1;
+          });
+          setQuantities(initialQuantities);
         }
-      })
-      .catch(error => console.error('Error fetching listing:', error));
+      } catch (err) {
+        setError('Failed to load listing details. Please try again later.');
+        console.error('Error fetching listing:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchListing();
+    }
   }, [id]);
 
-  useEffect(() => {
-    if (message) {
-      try {
-        const data = JSON.parse(message);
-        if (data.type === 'comments') setComments(data.comments);
-        else if (data.type === 'like_update') setLikeCount(data.count);
-      } catch (error) {
-        console.error('Error parsing message:', error);
-      }
+  // Add this function to check media type
+  const checkMediaType = async (ipfsHash: string, assetName: string) => {
+    try {
+      const response = await fetch(`${PINATA_GATEWAY}${ipfsHash}`, { method: 'HEAD' });
+      const contentType = response.headers.get('Content-Type');
+      setAssetMediaStates(prev => ({
+        ...prev,
+        [assetName]: {
+          isVideo: contentType?.startsWith('video') || false,
+          isLoaded: true
+        }
+      }));
+    } catch (error) {
+      console.error('Error checking media type:', error);
+      setAssetMediaStates(prev => ({
+        ...prev,
+        [assetName]: {
+          isVideo: false,
+          isLoaded: true
+        }
+      }));
     }
-  }, [message]);
+  };
 
-  const mediaSrc = listing?.image_ipfs_hash ?
-    `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${listing.image_ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` : '';
-
+  // Add effect to check media types when listing changes
   useEffect(() => {
-    if (listing?.image_ipfs_hash) {
-      fetchFileMetadata(listing.image_ipfs_hash);
+    if (listing) {
+      listing.prices.forEach(price => {
+        if (price.ipfs_hash) {
+          checkMediaType(price.ipfs_hash, price.asset_name);
+        }
+      });
     }
   }, [listing]);
 
-  //@ts-ignore
-  const fetchFileMetadata = async (ipfsHash: string) => {
-    try {
-      const response = await fetch(mediaSrc, { method: 'HEAD' });
-      const contentType = response.headers.get('Content-Type');
-      setIsVideo(contentType?.startsWith('video') || false);
-      setIsMediaLoading(false);
-    } catch (error) {
-      console.error('Error fetching file metadata:', error);
-      setMediaError('Failed to load media. Please try again later.');
-      setIsMediaLoading(false);
-    }
-  };
-
-  const handleMediaLoad = () => {
-    setIsMediaLoading(false);
-    if (videoRef.current) {
-      videoRef.current.play()
-        .then(() => {
-          setIsPlaying(true);
-          // Unmute after autoplay starts if it's not in manage mode
-          if (!isManageMode) {
-            videoRef.current!.muted = false;
-          }
-        })
-        .catch(error => {
-          console.error('Error autoplaying media:', error);
-        });
-    }
-  };
-
-  const handleMediaError = () => {
-    setMediaError('Failed to load media. Please try again later.');
-    setIsMediaLoading(false);
-  };
-
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      sendMessage(JSON.stringify({
-        type: 'add_comment',
-        listing_id: listing?.name,
-        text: newComment
-      }));
-      setNewComment('');
-    }
-  };
-
-  //@ts-ignore
-  const handleDeleteComment = (commentId: string) => {
-    sendMessage(JSON.stringify({
-      type: 'delete_comment',
-      comment_id: commentId
-    }));
-  };
-
-  const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
-    sendMessage(JSON.stringify({
-      type: 'toggle_like',
-      listing_id: listing?.name
-    }));
-  };
-
-  const handleBack = () => {
-    navigate('/trade');
-  };
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setNotificationType('success');
-      setNotificationMessage('Link copied to clipboard!');
-      setShowNotificationModal(true);
-    } catch (error) {
-      console.error('Failed to copy link:', error);
-      setNotificationType('error');
-      setNotificationMessage('Failed to copy link');
-      setShowNotificationModal(true);
-    }
-  };
-
-  const handleViewCart = () => {
-    setCartVisible(true);
-  };
-
-  const handleReport = () => {
-    if (reportReason.trim()) {
-      sendMessage(JSON.stringify({
-        type: 'report_listing',
-        listing_id: listing?.name,
-        reason: reportReason
-      }));
-      setIsReporting(false);
-      setReportReason('');
-      alert('Thank you for your report. We will review it shortly.');
-    }
-  };
-
-  const handleQuantityChange = (increment: boolean) => {
-    setQuantity(prev => {
-      const newQuantity = increment ? prev + 1 : Math.max(1, prev - 1);
-      return Math.min(newQuantity, Math.floor(Number(listing?.balances[0].confirmed_balance || 0)));
+  const handleQuantityChange = (assetName: string, increment: boolean) => {
+    setQuantities(prev => {
+      const currentQty = prev[assetName] || 1;
+      const balance = listing?.balances.find(b => b.asset_name === assetName);
+      const available = balance ? Number(balance.confirmed_balance) : 0;
+      
+      let newQty = increment ? currentQty + 1 : currentQty - 1;
+      newQty = Math.max(1, Math.min(newQty, available)); // Clamp between 1 and available
+      
+      return { ...prev, [assetName]: newQty };
     });
   };
 
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = Number(e.target.value);
-    setVolume(newVolume);
-    if (videoRef.current) {
-      videoRef.current.volume = newVolume;
-    }
-  };
-
-  const handlePlaybackSpeedChange = (speed: number) => {
-    setPlaybackSpeed(speed);
-    if (videoRef.current) {
-      videoRef.current.playbackRate = speed;
-    }
-  };
-
-  const handleImageUpload = () => {
-    setShowIpfsModal(true);
-  };
-
-  const handleIpfsSubmit = () => {
-    if (newIpfsHashInput) {
-      setNewIpfsHash(newIpfsHashInput);
-      setShowIpfsModal(false);
-    }
-  };
-
-  const handleManageSave = async () => {
-    if (!editedListing || !listing) return;
-    setIsLoading(true);
-    setError(null);
-
-    // Immediately update UI with the edited data
-    const updatedListing: Listing = {
-      name: editedListing.name || 'Unknown',
-      description: editedListing.description || 'No description',
-      image_ipfs_hash: newIpfsHash || editedListing.image_ipfs_hash,
-      status: listing.status,
-      created_at: listing.created_at,
-      updated_at: listing.updated_at,
-      prices: editedListing.prices.map(price => ({
-        ...price,
-        price_evr: (Number(price.price_evr) * 100000000).toString()
-      })),
-      balances: editedListing.balances.map(balance => ({
-        ...balance,
-        confirmed_balance: (Number(balance.confirmed_balance) * 100000000).toString()
-      })),
-      listing_address: listing.listing_address,
-      deposit_address: listing.deposit_address,
-      seller_address: listing.seller_address,
-      id: listing.id
-    };
-    setEditedListing(updatedListing);
-    setIsManageMode(false);
-
-    // Then submit to backend
-    try {
-      const response = await axios.post(`${trading_api_url}/manage`, {
-        listing_id: updatedListing.id,
-        password,
-        action: 'update',
-        unit_price: Number(updatedListing.prices[0].price_evr) * 100000000,
-        description: updatedListing.description,
-        ipfs_hash: updatedListing.image_ipfs_hash,
-        offerings: updatedListing.balances.map(balance => ({
-          asset_name: balance.asset_name,
-          price: Number(balance.confirmed_balance) * 100000000
-        })),
-      });
-
-      setSuccessMessage(response.data.message);
-      setPassword(''); // Clear password after successful save
-      setNotificationType('success');
-      setNotificationMessage('Listing updated successfully!');
-      setShowNotificationModal(true);
-      onListingUpdate(updatedListing);
-    } catch (error: any) {
-      console.error('Error updating listing:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to update listing.';
-      setError(errorMessage);
-      setNotificationType('error');
-      setNotificationMessage(`Failed to update listing: ${errorMessage}`);
-      setShowNotificationModal(true);
-      setIsManageMode(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleManageClick = () => {
-    setShowPasswordModal(true);
-    setError(null);
-  };
-
-  const handlePasswordSubmit = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      //@ts-ignore
-      const response = await axios.post(`${trading_api_url}/manage`, {
-        listing_id: listing?.id,
-        password,
-        action: 'fetch'
-      });
-      setIsLoading(false);
-      setShowPasswordModal(false);
-      setIsManageMode(true);
-      // Don't clear password here anymore since we need it for saving changes
-      // setPassword('');
-    } catch (error: any) {
-      console.error('Error authenticating:', error);
-      setError(error.response?.data?.message || 'Invalid password');
-      setIsLoading(false);
-    }
-  };
-
-  const handleRefund = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(`${trading_api_url}/manage`, {
-        listing_id: listing?.id,
-        password,
-        action: 'refund'
-      });
-      setNotificationType('success');
-      setNotificationMessage(response.data.message);
-      setShowNotificationModal(true);
-      setIsManageMode(false);
-    } catch (error: any) {
-      console.error('Error refunding listing:', error);
-      setError(error.response?.data?.message || 'Failed to process refund');
-      setNotificationType('error');
-      setNotificationMessage(error.response?.data?.message || 'Failed to process refund');
-      setShowNotificationModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCancel = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(`${trading_api_url}/manage`, {
-        listing_id: listing?.id,
-        password,
-        action: 'cancel'
-      });
-      setNotificationType('success');
-      setNotificationMessage(response.data.message);
-      setShowNotificationModal(true);
-      setIsManageMode(false);
-    } catch (error: any) {
-      console.error('Error canceling listing:', error);
-      setError(error.response?.data?.message || 'Failed to cancel listing');
-      setNotificationType('error');
-      setNotificationMessage(error.response?.data?.message || 'Failed to cancel listing');
-      setShowNotificationModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle undefined functions by providing basic implementations
-  const onListingUpdate = (updatedListing: Listing) => {
-    console.log('Listing updated:', updatedListing);
-  };
-
-  const closeDetails = () => {
-    console.log('Closing details view');
-  };
-
-  const addToCart = (listing: Listing, quantity: number) => {
-    console.log(`Adding ${quantity} of ${listing.name} to cart`);
-  };
-
-  // Add to Cart Functionality
-  const handleAddToCart = (assetName: string, quantity: number) => {
+  const handleAddToCart = (assetName: string) => {
     if (!listing) return;
 
     const price = listing.prices.find(p => p.asset_name === assetName);
+    const quantity = quantities[assetName] || 1;
+
     if (!price) return;
 
     const newItem = {
-      id: listing.id,
+      listingId: listing.id,
       name: listing.name,
       description: listing.description,
       image_ipfs_hash: listing.image_ipfs_hash,
-      quantity: quantity,
+      quantity,
       unitPrice: price.price_evr,
-      asset_name: assetName
+      asset_name: assetName,
+      seller_address: listing.seller_address
     };
 
     const updatedCart = [...cart, newItem];
     setCart(updatedCart);
     localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
     
-    setNotificationType('success');
-    setNotificationMessage('Item added to cart!');
-    setShowNotificationModal(true);
+    setNotification({
+      show: true,
+      type: 'success',
+      message: 'Item added to cart successfully!'
+    });
+
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, show: false }));
+    }, 3000);
   };
 
-  // Render offerings in the UI
-  const renderOfferings = () => (
-    listing?.balances.map((balance, index) => {
-      const price = listing.prices.find(p => p.asset_name === balance.asset_name);
-      return (
-        <div key={`${balance.asset_name}-${index}`} className="offering-item">
-          <h4>{balance.asset_name}</h4>
-          <p>Price: {price ? `${Number(price.price_evr)/100000000} EVR` : 'N/A'}</p>
-          <p>Available: {balance.confirmed_balance}</p>
-          <p>Status: {listing.status}</p>
-          <div className="quantity-controls">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-            <span>{quantity}</span>
-            <button onClick={() => setQuantity(quantity + 1)}>+</button>
-          </div>
-          <button 
-            onClick={() => handleAddToCart(balance.asset_name, quantity)}
-            className="add-to-cart-button"
-            disabled={Number(balance.confirmed_balance) <= 0}
-          >
-            Add to Cart
-          </button>
-        </div>
-      );
-    }) || <p>No offerings available.</p>
-  );
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (editedListing) {
-      setEditedListing({ ...editedListing, description: e.target.value });
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setNotification({
+        show: true,
+        type: 'success',
+        message: 'Link copied to clipboard!'
+      });
+    } catch (err) {
+      setNotification({
+        show: true,
+        type: 'error',
+        message: 'Failed to copy link'
+      });
     }
   };
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, assetName: string) => {
-    if (editedListing) {
-      const updatedPrices = editedListing.prices.map(price =>
-        price.asset_name === assetName
-          ? { ...price, price_evr: e.target.value }
-          : price
-      );
-      setEditedListing({ ...editedListing, prices: updatedPrices });
-    }
-  };
+  if (loading) {
+    return (
+      <div className="listing-details-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading listing details...</p>
+      </div>
+    );
+  }
 
-  const toggleCartVisibility = () => {
-    setCartVisible(!cartVisible);
-  };
-
-  const removeFromCart = (index: number) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
-    setCart(updatedCart);
-    localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-    localStorage.removeItem('manticore_cart');
-  };
-
-  const handleCheckout = (items: any[]) => {
-    setCheckoutItems(items);
-    setIsCheckingOut(true);
-    setCartVisible(false);
-  };
+  if (error || !listing) {
+    return (
+      <div className="listing-details-error">
+        <img src={ManticoreLogo} alt="Manticore Logo" className="error-logo" />
+        <h2>Error Loading Listing</h2>
+        <p>{error || 'Listing not found'}</p>
+        <button className="action-button" onClick={() => navigate('/trade')}>
+          <FiArrowLeft /> Return to Listings
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="listing-details">
       <header className="details-header">
-        <button className="action-button back-button" onClick={handleBack}>
+        <button className="action-button back-button" onClick={() => navigate('/trade')}>
           <FiArrowLeft /> Back to Listings
         </button>
         <div className="header-actions">
@@ -562,356 +259,189 @@ const ListingDetails: React.FC = () => {
           </button>
           <button 
             className="action-button cart-button" 
-            onClick={handleViewCart}
-            data-count={cart.length > 0 ? cart.length : ''}
+            onClick={() => navigate('/cart')}
+            data-count={cart.length || ''}
           >
-            <FiShoppingCart /> View Cart
+            <FiShoppingCart /> Cart
           </button>
         </div>
       </header>
 
-      <main className="trading-main">
-        <section className="media-section">
-          <div className="trading-media">
-            <div
-              className="media-container"
-              onClick={() => isManageMode && handleImageUpload()}
-              style={{ cursor: isManageMode ? 'pointer' : 'default' }}
-            >
-              {isMediaLoading ? (
-                <div className="media-loader">Loading...</div>
-              ) : mediaError ? (
-                <div className="media-error">{mediaError}</div>
-              ) : isVideo ? (
-                <div className="video-container">
-                  <video
-                    ref={videoRef}
-                    src={newIpfsHash || mediaSrc}
-                    className="trading-video"
-                    playsInline
-                    autoPlay
-                    muted
-                    loop
-                    onError={handleMediaError}
-                    onLoadedData={handleMediaLoad}
-                    crossOrigin="anonymous"
-                  />
-                  {showMediaControls && !isManageMode && (
-                    <div className="video-controls">
-                      <button onClick={handlePlayPause}>{isPlaying ? 'Pause' : 'Play'}</button>
-                      <div className="volume-control">
-                        <label>Volume:</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="1"
-                          step="0.1"
-                          value={volume}
-                          onChange={handleVolumeChange}
-                        />
-                      </div>
-                      <div className="speed-control">
-                        <label>Speed:</label>
-                        <div className="speed-buttons">
-                          {[0.5, 1.0, 1.5, 2.0].map(speed => (
-                            <button
-                              key={speed}
-                              onClick={() => handlePlaybackSpeedChange(speed)}
-                              className={playbackSpeed === speed ? 'active' : ''}
-                            >
-                              {speed}x
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <img
-                  src={newIpfsHash || mediaSrc}
-                  alt={listing?.name}
-                  className="trading-image"
-                  onError={handleMediaError}
-                  onLoad={handleMediaLoad}
-                />
-              )}
-              {isManageMode && (
-                <div className="media-overlay">
-                  <FiTool className="wrench-icon" /> Click to change IPFS hash
-                </div>
-              )}
-            </div>
+      <main className="listing-content">
+        <section className="listing-primary">
+          <div className="listing-media">
+            {listing.image_ipfs_hash ? (
+              <img
+                src={`${PINATA_GATEWAY}${listing.image_ipfs_hash}`}
+                alt={listing.name}
+                className="listing-image"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = ManticoreLogo;
+                  target.className = "placeholder-image";
+                }}
+              />
+            ) : (
+              <img
+                src={ManticoreLogo}
+                alt="Manticore Logo"
+                className="placeholder-image"
+              />
+            )}
           </div>
-          <div className="media-actions">
-            <button
-              className={`action-button manage-button ${isManageMode ? 'active' : ''}`}
-              onClick={() => setIsManageMode(!isManageMode)}
-            >
-              <FiTool /> Manage Listing
-            </button>
-            <button
-              className="action-button report-button"
-              onClick={() => setIsReporting(true)}
-            >
-              Report
-            </button>
+
+          <div className="listing-info">
+            <div className="listing-header">
+              <h1>{listing.name}</h1>
+              <div className="seller-info">
+                <span>Listed by</span>
+                <div className="seller-address">
+                  <span>{truncateAddress(listing.seller_address)}</span>
+                  <button 
+                    className="copy-button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(listing.seller_address);
+                      setNotification({
+                        show: true,
+                        type: 'success',
+                        message: 'Address copied!'
+                      });
+                    }}
+                  >
+                    <FiCopy />
+                  </button>
+                  <a 
+                    href={`https://explorer.manticore.exchange/address/${listing.seller_address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="explorer-link"
+                  >
+                    <FiExternalLink />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="listing-description">
+              <h2>Description</h2>
+              <p>{listing.description}</p>
+            </div>
+
+            <div className="listing-details-info">
+              <div className="detail-item">
+                <span className="detail-label">Listing ID</span>
+                <span className="detail-value">{listing.id}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Created</span>
+                <span className="detail-value">
+                  {new Date(listing.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Status</span>
+                <span className={`detail-value status-${listing.status.toLowerCase()}`}>
+                  {listing.status}
+                </span>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="trading-info">
-          <div className="info-content">
-            {isManageMode ? (
-              <>
-                <div className="description-section">
-                  <h2>Edit Details</h2>
-                  <input
-                    type="text"
-                    value={editedListing?.name}
-                    className="edit-input title"
-                    placeholder="Listing Title"
-                    disabled
-                  />
-                  <textarea
-                    value={editedListing?.description}
-                    onChange={handleDescriptionChange}
-                    className="edit-input description"
-                    placeholder="Description"
-                  />
-                </div>
+        <section className="listing-assets">
+          <h2>Available Assets</h2>
+          <div className="assets-grid">
+            {listing.balances.map((balance, index) => {
+              const price = listing.prices.find(p => p.asset_name === balance.asset_name);
+              const available = Number(balance.confirmed_balance);
+              const quantity = quantities[balance.asset_name] || 1;
 
-                <div className="price-section">
-                  <h3>Price Settings</h3>
-                  {listing?.prices.map((price, index) => (
-                    <div key={`${price.asset_name}-${index}`} className="price-item">
-                      <label>{price.asset_name}</label>
-                      <input
-                        type="number"
-                        value={Number(price.price_evr) / 100000000}
-                        onChange={(e) => handlePriceChange(e, price.asset_name)}
-                        className="edit-input price"
-                        placeholder="Price in EVR"
-                        min="0"
-                        step="0.00000001"
+              return (
+                <div key={`${balance.asset_name}-${index}`} className="asset-card">
+                  <div className="asset-header">
+                    {price?.ipfs_hash && (
+                      <div className="asset-media">
+                        {assetMediaStates[balance.asset_name]?.isVideo ? (
+                          <video
+                            src={`${PINATA_GATEWAY}${price.ipfs_hash}`}
+                            className="asset-video"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <img
+                            src={`${PINATA_GATEWAY}${price.ipfs_hash}`}
+                            alt={balance.asset_name}
+                            className="asset-image"
+                          />
+                        )}
+                      </div>
+                    )}
+                    <div className="asset-info">
+                      <h3>{balance.asset_name}</h3>
+                      <span className="asset-price">
+                        {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="asset-availability">
+                    <div className="availability-indicator">
+                      <div 
+                        className="availability-bar"
+                        style={{ 
+                          width: `${Math.min((available / (available + 1)) * 100, 100)}%`,
+                          backgroundColor: available > 0 ? 'var(--accent-color)' : 'var(--color-error)'
+                        }}
                       />
                     </div>
-                  ))}
-                  <div className="manage-actions">
-                    <button onClick={handleManageSave} className="save-changes-button">
-                      Save Changes
-                    </button>
-                    <button onClick={handleRefund} className="refund-button" disabled={isLoading}>
-                      Refund Balance
-                    </button>
-                    <button onClick={handleCancel} className="cancel-button" disabled={isLoading}>
-                      Cancel Listing
+                    <span className="availability-text">
+                      {available} available
+                    </span>
+                  </div>
+
+                  <div className="asset-controls">
+                    <div className="quantity-controls">
+                      <button 
+                        className="quantity-button"
+                        onClick={() => handleQuantityChange(balance.asset_name, false)}
+                        disabled={quantity <= 1}
+                      >
+                        −
+                      </button>
+                      <span className="quantity-display">{quantity}</span>
+                      <button 
+                        className="quantity-button"
+                        onClick={() => handleQuantityChange(balance.asset_name, true)}
+                        disabled={quantity >= available}
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button 
+                      className="add-to-cart-button"
+                      onClick={() => handleAddToCart(balance.asset_name)}
+                      disabled={available <= 0}
+                    >
+                      <FiShoppingCart />
+                      {available <= 0 ? 'Out' : 'Add'}
                     </button>
                   </div>
                 </div>
-              </>
-            ) : (
-              <>
-                <div className="info-header">
-                  <h1 className="trading-title">{listing?.name}</h1>
-                  {listing?.seller_address && (
-                    <p className="seller-info">
-                      Listed by <span className="seller-name">{listing.seller_address}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div className="info-content">
-                  <div className="description-section">
-                    <h2>Description</h2>
-                    <p className="trading-description" style={{ color: 'var(--text-secondary)' }}>{listing?.description}</p>
-                  </div>
-
-                  <section className="offerings-section">
-                    <h3>Offerings</h3>
-                    {renderOfferings()}
-                  </section>
-                </div>
-              </>
-            )}
+              );
+            })}
           </div>
         </section>
       </main>
 
-      <div className="trading-comments">
-        <div className="comments-header" onClick={() => setShowComments(!showComments)}>
-          <h2>
-            <FiMessageCircle /> Comments ({comments.length})
-          </h2>
-          <span className="toggle-icon">{showComments ? '−' : '+'}</span>
-        </div>
-
-        {showComments && (
-          <CommentsSection
-            comments={comments}
-            isAuthenticated={isAuthenticated}
-            onAddComment={handleAddComment}
-          />
-        )}
-      </div>
-
-      {isReporting && (
-        <div className="report-modal">
-          <div className="report-content">
-            <h2>Report Listing</h2>
-            <textarea
-              value={reportReason}
-              onChange={(e) => setReportReason(e.target.value)}
-              placeholder="Please describe why you're reporting this listing..."
-              rows={4}
-            />
-            <div className="report-actions">
-              <button onClick={handleReport} disabled={!reportReason.trim()}>
-                Submit Report
-              </button>
-              <button onClick={() => setIsReporting(false)} className="cancel-button">
-                Cancel
-              </button>
-            </div>
-          </div>
+      {notification.show && (
+        <div className={`notification notification-${notification.type}`}>
+          {notification.message}
         </div>
       )}
-
-      {showIpfsModal && (
-        <div className="report-modal">
-          <div className="report-content">
-            <h2>Change IPFS Hash</h2>
-            <input
-              type="text"
-              value={newIpfsHashInput}
-              onChange={(e) => setNewIpfsHashInput(e.target.value)}
-              placeholder="Enter new IPFS hash"
-              className="edit-input"
-            />
-            <div className="report-actions">
-              <button onClick={handleIpfsSubmit} disabled={!newIpfsHashInput.trim()}>
-                Update Image
-              </button>
-              <button onClick={() => setShowIpfsModal(false)} className="cancel-button">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Modal */}
-      {showPasswordModal && (
-        <div className="report-modal">
-          <div className="report-content password-modal">
-            <h2>Enter Listing Password</h2>
-            <div className="password-modal-field">
-              <div className="password-modal-field-label">Listing ID</div>
-              <input
-                type="text"
-                id="listingID"
-                value={listing?.id}
-                className="password-modal-input"
-                disabled
-              />
-            </div>
-            <div className="password-modal-field">
-              <div className="password-modal-field-label">Password</div>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                className="password-modal-input"
-              />
-            </div>
-            <div className="password-modal-hint">
-              Listing ID and password are required.
-            </div>
-            {error && <p className="error-message">{error}</p>}
-            <div className="password-modal-actions">
-              <button
-                onClick={handlePasswordSubmit}
-                disabled={isLoading || !password.trim()}
-                className="password-modal-submit"
-              >
-                {isLoading ? 'Verifying...' : 'Submit'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowPasswordModal(false);
-                  setPassword('');
-                  setError(null);
-                }}
-                className="password-modal-cancel"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Notification Modal */}
-      {showNotificationModal && (
-        <div className="report-modal">
-          <div className="report-content">
-            <h2 style={{ color: notificationType === 'success' ? '#00ff9d' : '#ff4444' }}>
-              {notificationType === 'success' ? 'Success!' : 'Error'}
-            </h2>
-            <p style={{
-              color: '#fff',
-              margin: '1rem 0',
-              textAlign: 'center',
-              fontSize: '1.1rem'
-            }}>
-              {notificationMessage}
-            </p>
-            <div className="report-actions">
-              <button
-                onClick={() => setShowNotificationModal(false)}
-                style={{
-                  backgroundColor: notificationType === 'success' ? '#00ff9d' : '#ff4444',
-                  color: '#000',
-                  border: 'none',
-                  padding: '0.75rem 2rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  width: '100%'
-                }}
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {cartVisible && (
-        <div className="cart-modal-overlay">
-          <Cart
-            cart={cart}
-            onClose={() => setCartVisible(false)}
-            onRemove={removeFromCart}
-            onClear={clearCart}
-            onCheckout={handleCheckout}
-            ref={cartRef}
-          />
-        </div>
-      )}
-
-      {isCheckingOut && (
-        <Checkout
-          items={checkoutItems}
-          onClose={() => setIsCheckingOut(false)}
-          onComplete={() => {
-            setIsCheckingOut(false);
-            clearCart();
-          }}
-        />
-      )}
-      
-      <InvoiceToaster />
     </div>
   );
 };

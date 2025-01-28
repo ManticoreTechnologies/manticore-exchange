@@ -32,7 +32,7 @@ interface TradingResultCardProps {
     unitPrice: string;
     quantity: number;
     balances: Array<{asset_name: string; confirmed_balance: string}>;
-    prices: Array<{asset_name: string; price_evr: string}>;
+    prices: Array<{asset_name: string; price_evr: string; ipfs_hash?: string}>;
     addToCart: () => void;
     buyNow: () => void;
     showDetails: () => void;
@@ -57,30 +57,21 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
-    const [offeringImages, setOfferingImages] = useState<string[]>([]);
+    const [priceMediaStates, setPriceMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
 
     const convertToEVR = (satoshis: number): string => {
         return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, '');
     };
 
-    const listing = {
-        name,
-        description,
-        offerings: [],
-        tags: '',
-        seller_address: seller,
-        units: 0, // Assuming default value
-        listingID: '', // Assuming default value
-        seller: '' // Assuming default value
+    const getMediaSrc = (hash: string | null | undefined) => {
+        return hash
+            ? `https://ipfs.manticore.exchange/ipfs/${hash}`
+            : placeholderImage;
     };
-
-    const mediaSrc = ipfsHash
-        ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`
-        : placeholderImage;
 
     useEffect(() => {
         if (ipfsHash) {
-            fetch(mediaSrc, { method: 'HEAD' })
+            fetch(getMediaSrc(ipfsHash), { method: 'HEAD' })
                 .then((response) => {
                     const contentType = response.headers.get('Content-Type');
                     if (contentType && contentType.startsWith('video')) {
@@ -89,19 +80,33 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 })
                 .catch(() => setIsLoaded(true));
         }
-    }, [ipfsHash, mediaSrc]);
 
-    useEffect(() => {
-        // Validate each offering's IPFS hash and check if it's an image
-        const validateOfferings = async () => {
-            const validImages = await Promise.all(
-                [] // No offerings in the new interface
-            );
-            setOfferingImages(validImages.filter(Boolean) as string[]);
-        };
-
-        validateOfferings();
-    }, []);
+        // Check media type for each price's IPFS hash
+        prices.forEach(price => {
+            if (price.ipfs_hash) {
+                fetch(getMediaSrc(price.ipfs_hash), { method: 'HEAD' })
+                    .then((response) => {
+                        const contentType = response.headers.get('Content-Type');
+                        setPriceMediaStates(prev => ({
+                            ...prev,
+                            [price.asset_name]: {
+                                isVideo: contentType?.startsWith('video') || false,
+                                isLoaded: true
+                            }
+                        }));
+                    })
+                    .catch(() => {
+                        setPriceMediaStates(prev => ({
+                            ...prev,
+                            [price.asset_name]: {
+                                isVideo: false,
+                                isLoaded: true
+                            }
+                        }));
+                    });
+            }
+        });
+    }, [ipfsHash, prices]);
 
     return (
         <div 
@@ -124,11 +129,11 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                         loop
                         playsInline
                     >
-                        <source src={mediaSrc} type="video/mp4" />
+                        <source src={getMediaSrc(ipfsHash)} type="video/mp4" />
                     </video>
                 ) : (
                     <img
-                        src={mediaSrc}
+                        src={getMediaSrc(ipfsHash)}
                         alt={name}
                         className="trading-result-card__image"
                         onLoad={() => setIsLoaded(true)}
@@ -142,25 +147,49 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 <h3 className="trading-result-card__title">{name}</h3>
                 <p className="trading-result-card__description">{description}</p>
 
-                <div className="trading-result-card__offerings">
-                    <div className={`offerings-count ${[] === 0 ? 'offerings-count--empty' : 'offerings-count--has-offerings'}`}>
-                        {[]} Offering{[] !== 1 ? 's' : ''}
-                    </div>
-
-                    <div className="offerings-images">
-                        {offeringImages.slice(0, 5).map((imgUrl, index) => (
-                            <img
-                                key={index}
-                                src={imgUrl}
-                                alt={`Offering ${index + 1}`}
-                                className="offering-image"
-                                data-remaining={offeringImages.length > 5 ? `+${offeringImages.length - 5}` : ''}
-                                onError={(e) => {
-                                    e.currentTarget.src = placeholderImage;
-                                }}
-                            />
-                        ))}
-                    </div>
+                <div className="trading-result-card__prices">
+                    {prices.map((price, index) => {
+                        const mediaState = priceMediaStates[price.asset_name];
+                        const balance = balances.find(b => b.asset_name === price.asset_name);
+                        
+                        return (
+                            <div key={index} className="price-item">
+                                {price.ipfs_hash && (
+                                    <div className="price-media">
+                                        {mediaState?.isVideo ? (
+                                            <video
+                                                className="price-video"
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                            >
+                                                <source src={getMediaSrc(price.ipfs_hash)} type="video/mp4" />
+                                            </video>
+                                        ) : (
+                                            <img
+                                                src={getMediaSrc(price.ipfs_hash)}
+                                                alt={`${price.asset_name} media`}
+                                                className="price-image"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = placeholderImage;
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                )}
+                                <div className="price-details">
+                                    <span className="price-asset-name">{price.asset_name}</span>
+                                    <span className="price-amount">{Number(price.price_evr) / 100000000} EVR</span>
+                                    {balance && (
+                                        <span className="price-balance">
+                                            {Number(balance.confirmed_balance)} available
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
