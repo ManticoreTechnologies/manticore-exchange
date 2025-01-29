@@ -36,6 +36,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink } from 'react-icons/fi';
+import QRCode from 'qrcode';
 import './ListingDetails.css';
 import ManticoreLogo from '@/images/enhanced_logo.png';
 import { formatEvrAmount, truncateAddress } from '@/utils/formatting';
@@ -88,6 +89,7 @@ const ListingDetails: React.FC = () => {
     message: string;
   }>({ show: false, type: 'success', message: '' });
   const [assetMediaStates, setAssetMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
+  const [qrCodeData, setQrCodeData] = useState<string>('');
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -225,24 +227,61 @@ const ListingDetails: React.FC = () => {
     }
   };
 
+  // Generate QR code when deposit address changes
+  useEffect(() => {
+    if (listing?.deposit_address) {
+      QRCode.toDataURL(listing.deposit_address, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      .then((url: string) => {
+        setQrCodeData(url);
+      })
+      .catch((err: Error) => {
+        console.error('Error generating QR code:', err);
+      });
+    }
+  }, [listing?.deposit_address]);
+
   if (loading) {
     return (
-      <div className="listing-details-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading listing details...</p>
+      <div className="listing-details">
+        <div className="details-header">
+          <button className="action-button back-button" onClick={() => navigate('/trade')}>
+            <FiArrowLeft /> Back to Listings
+          </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-6)' }}>
+          <div className="loading-spinner"></div>
+          <span style={{ marginLeft: 'var(--spacing-3)' }}>Loading listing details...</span>
+        </div>
       </div>
     );
   }
 
   if (error || !listing) {
     return (
-      <div className="listing-details-error">
-        <img src={ManticoreLogo} alt="Manticore Logo" className="error-logo" />
-        <h2>Error Loading Listing</h2>
-        <p>{error || 'Listing not found'}</p>
-        <button className="action-button" onClick={() => navigate('/trade')}>
-          <FiArrowLeft /> Return to Listings
-        </button>
+      <div className="listing-details">
+        <div className="details-header">
+          <button className="action-button back-button" onClick={() => navigate('/trade')}>
+            <FiArrowLeft /> Back to Listings
+          </button>
+        </div>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          padding: 'var(--spacing-6)',
+          gap: 'var(--spacing-4)'
+        }}>
+          <img src={ManticoreLogo} alt="Manticore Logo" style={{ width: '80px', opacity: 0.5 }} />
+          <h2>Error Loading Listing</h2>
+          <p>{error || 'Listing not found'}</p>
+        </div>
       </div>
     );
   }
@@ -435,6 +474,32 @@ const ListingDetails: React.FC = () => {
             })}
           </div>
         </section>
+
+        {qrCodeData && (
+          <div className="qr-code-container">
+            <div className="qr-code-label">Deposit Address</div>
+            <div className="qr-code">
+              <img
+                src={qrCodeData}
+                alt="Deposit Address QR Code"
+              />
+            </div>
+            <div 
+              className="qr-code-address"
+              onClick={() => {
+                navigator.clipboard.writeText(listing.deposit_address);
+                setNotification({
+                  show: true,
+                  type: 'success',
+                  message: 'Address copied to clipboard!'
+                });
+              }}
+              title="Click to copy address"
+            >
+              {listing.deposit_address}
+            </div>
+          </div>
+        )}
       </main>
 
       {notification.show && (

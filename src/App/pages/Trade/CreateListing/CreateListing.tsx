@@ -53,6 +53,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [listingResponse, setListingResponse] = useState<any>(null);
     const [slideDirection, setSlideDirection] = useState<'in' | 'out'>('in');
+    const [notification, setNotification] = useState<{ show: boolean; type: string; message: string }>({ show: false, type: '', message: '' });
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
@@ -312,7 +313,6 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
 
     const renderSuccess = () => (
         <div className="success-step">
-            <div className="success-checkmark">✓</div>
             <h2 className="step-title">Listing Created Successfully</h2>
             <div className="listing-details">
                 <p><strong>Listing ID:</strong></p>
@@ -329,14 +329,29 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 {listingResponse?.deposit_address && (
                     <div className="deposit-address-container">
                         <div className="deposit-address-label">Deposit Address</div>
-                        <div className="deposit-address">{listingResponse.deposit_address}</div>
                         <div className="qr-container">
                             <QRCode
                                 value={listingResponse.deposit_address}
-                                size={160}
+                                size={180}
+                                level="H"
+                                includeMargin={false}
                                 fgColor="#000000"
                                 bgColor="#ffffff"
                             />
+                        </div>
+                        <div 
+                            className="deposit-address"
+                            onClick={() => {
+                                navigator.clipboard.writeText(listingResponse.deposit_address);
+                                setNotification({
+                                    show: true,
+                                    type: 'success',
+                                    message: 'Address copied to clipboard!'
+                                });
+                            }}
+                            title="Click to copy address"
+                        >
+                            {listingResponse.deposit_address}
                         </div>
                     </div>
                 )}

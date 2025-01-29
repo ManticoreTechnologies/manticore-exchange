@@ -7,7 +7,7 @@
     overflow: hidden;
     transition: all var(--transition-normal);
     width: 100%;
-    height: 420px;
+    height: 380px;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
     outline: none;
@@ -44,7 +44,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2);
-    height: 220px;
+    height: 180px;
     overflow: hidden;
 }
 
@@ -157,7 +157,7 @@
     }
     
     .trading-result-card {
-        height: 400px;
+        height: 360px;
     }
     
     .trading-result-card__media {
@@ -245,80 +245,165 @@
 .trading-result-card__prices {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2);
     margin-top: auto;
-}
-
-.price-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2);
+    position: relative;
+    height: 40px;
+    overflow: hidden;
     background: var(--background-tertiary);
     border-radius: var(--border-radius-md);
     border: 1px solid var(--border-color);
+}
+
+.trading-asset-container {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    animation: scrollAssets linear infinite;
+    transition: transform 0.3s ease;
+    will-change: transform;
+}
+
+.trading-asset-container:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scrollAssets {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+.trading-asset-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: 0 var(--spacing-2);
+    background: var(--background-secondary);
     transition: all var(--transition-normal);
-}
-
-.price-item:hover {
-    transform: translateX(2px);
-    border-color: var(--accent-color);
-    background: var(--background-hover);
-}
-
-.price-media {
-    width: 40px;
     height: 40px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.trading-asset-item:last-child {
+    border-bottom: none;
+}
+
+.trading-asset-item:hover {
+    transform: scale(1.01);
+    background: var(--background-hover);
+    z-index: 1;
+}
+
+.trading-asset-media {
+    width: 24px;
+    height: 24px;
     border-radius: var(--border-radius-sm);
     overflow: hidden;
-    flex-shrink: 0;
     background: var(--background-secondary);
     border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.price-image,
-.price-video {
+.trading-asset-image,
+.trading-asset-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.price-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
+.trading-asset-details {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--spacing-2);
     min-width: 0;
 }
 
-.price-asset-name {
-    font-weight: 600;
+.trading-asset-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--spacing-3);
+    min-width: 0;
+}
+
+.trading-asset-name {
+    font-weight: 500;
     color: var(--text-primary);
     font-size: var(--font-size-sm);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 120px;
 }
 
-.price-amount {
+.trading-asset-amount {
     color: var(--accent-color);
     font-weight: 500;
     font-size: var(--font-size-sm);
     font-family: var(--font-family-mono);
+    white-space: nowrap;
 }
 
-.price-balance {
+.trading-asset-balance {
     color: var(--text-muted);
     font-size: var(--font-size-xs);
+    white-space: nowrap;
+    min-width: 40px;
+    text-align: right;
+}
+
+.trading-asset-indicator {
+    display: none;
+}
+
+.trading-result-card__assets-count {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    z-index: 2;
+    backdrop-filter: blur(8px);
 }
 
 @media (max-width: 640px) {
-    .price-item {
-        padding: var(--spacing-1);
+    .trading-result-card__prices {
+        height: 36px;
     }
 
-    .price-media {
-        width: 32px;
-        height: 32px;
+    .trading-asset-item {
+        height: 36px;
+        padding: 0 var(--spacing-1);
+        gap: var(--spacing-1);
+    }
+
+    .trading-asset-media {
+        width: 20px;
+        height: 20px;
+    }
+
+    .trading-asset-info {
+        gap: var(--spacing-2);
+    }
+
+    .trading-asset-name {
+        max-width: 80px;
+    }
+
+    .trading-asset-amount {
+        font-size: var(--font-size-xs);
     }
 }
