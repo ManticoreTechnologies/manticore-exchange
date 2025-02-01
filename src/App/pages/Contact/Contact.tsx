@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
 //@ts-ignore
-import { FaDiscord, FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaDiscord, FaGithub, FaTwitter } from 'react-icons/fa';
 import './Contact.css';
 
 const Contact: React.FC = () => {
@@ -17,68 +17,74 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="contact-container">
-        <h1 className="page-title">Get in Touch</h1>
-        
-        <form onSubmit={handleSubmit} className="contact-form">
-          <div className="form-group">
-            <label htmlFor="subject">Subject:</label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              required
-              placeholder="What would you like to discuss?"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="message">Message:</label>
-            <textarea
-              id="message"
-              name="message"
-              required
-              placeholder="Type your message here..."
-              rows={6}
-            />
-          </div>
-          
-          <button type="submit" className="submit-btn">
-            Send Message
-          </button>
-        </form>
+    <div className="contact-details">
+      <main className="contact-content">
+        <section className="contact-primary">
+          <div className="contact-info">
+            <header className="contact-header">
+              <h1>Get in Touch</h1>
+            </header>
+            
+            <form onSubmit={handleSubmit} className="contact-form">
+              <div className="form-group">
+                <label htmlFor="subject">Subject:</label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  required
+                  placeholder="What would you like to discuss?"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="message">Message:</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  placeholder="Type your message here..."
+                  rows={6}
+                />
+              </div>
+              
+              <button type="submit" className="submit-btn">
+                Send Message
+              </button>
+            </form>
 
-        <div className="social-links">
-          <h2>Connect With Us</h2>
-          <div className="social-icons">
-            <a 
-              href="https://discord.gg/UE5Nmn9jNM" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              aria-label="Discord"
-            >
-              <FaDiscord />
-            </a>
-            <a 
-              href="https://github.com/your-username" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-            >
-              <FaGithub />
-            </a>
-            <a 
-              href="https://x.com/ManticoreTech" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              aria-label="Twitter"
-            >
-              <FaTwitter />
-            </a>
+            <div className="social-links">
+              <h2>Connect With Us</h2>
+              <div className="social-icons">
+                <a 
+                  href="https://discord.gg/UE5Nmn9jNM" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Discord"
+                >
+                  <FaDiscord />
+                </a>
+                <a 
+                  href="https://github.com/your-username" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                >
+                  <FaGithub />
+                </a>
+                <a 
+                  href="https://x.com/ManticoreTech" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
+                >
+                  <FaTwitter />
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
