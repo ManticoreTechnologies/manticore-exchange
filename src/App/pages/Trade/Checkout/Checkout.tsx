@@ -1,196 +1,167 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Checkout.css';
-import ExpiredInvoicePopup from '../ExpiredInvoicePopup/ExpiredInvoicePopup';
+import { FiArrowLeft, FiCopy } from 'react-icons/fi';
 import Debug from '@/App/components/Debug/Debug';
-import { FaCopy } from 'react-icons/fa';
+
+interface CartItem {
+    listingId: string;
+    name: string;
+    description: string;
+    image_ipfs_hash: string | null;
+    quantity: number;
+    unitPrice: string;
+    asset_name: string;
+    seller_address: string;
+}
+
+interface OrderItem {
+    asset_name: string;
+    quantity: number;
+}
 
 interface CheckoutProps {
-    selectedItems: any[];
+    items: CartItem[];
     onCheckoutComplete: () => void;
     onBack: () => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, onBack }) => {
-    const [processing, setProcessing] = useState(false);
-    const [invoiceData, setInvoiceData] = useState<any>(null);
-    const [payoutAddress, setPayoutAddress] = useState<string>('');
-    // @ts-ignore
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [isExpiredPopupOpen, setIsExpiredPopupOpen] = useState<boolean>(false);
-    // @ts-ignore
-    const [orderId, setOrderId] = useState<string | null>(null);
+interface OrderError {
+    status: number;
+    detail: string;
+}
+
+const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }) => {
     const [currentStep, setCurrentStep] = useState<number>(1);
-    const [timeRemaining, setTimeRemaining] = useState<number>(0);
-    const [expirationTime, setExpirationTime] = useState<number | null>(null);
+    const [buyerAddress, setBuyerAddress] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [orderData, setOrderData] = useState<any>(null);
 
-    // Calculate totals
-    const totalAmountWithoutFeeSats = selectedItems.reduce((total, item) => total + item.unitPrice * item.quantity, 0);
-    const feeSats = Math.floor(totalAmountWithoutFeeSats * 0.005); // 0.5% fee
-    const totalAmountWithFeeSats = totalAmountWithoutFeeSats + feeSats;
+    const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 
-    // Convert to EVR for display
-    const totalAmountWithoutFeeEVR = (totalAmountWithoutFeeSats / 100000000).toFixed(8);
-    const feeEVR = (feeSats / 100000000).toFixed(8);
-    const totalAmountWithFeeEVR = (totalAmountWithFeeSats / 100000000).toFixed(8);
+    const calculateTotals = () => {
+        const subtotal = items.reduce((total, item) => 
+            total + (Number(item.unitPrice) * item.quantity), 0);
+        const fee = subtotal * 0.005; // 0.5% fee
+        return {
+            subtotal: subtotal.toFixed(8),
+            fee: fee.toFixed(8),
+            total: (subtotal + fee).toFixed(8)
+        };
+    };
 
-    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
-    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
-    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
-    const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-
-        if (invoiceData) {
-            setLoading(true);
-            
-            // Set expiration time when invoice is created
-            if (invoiceData.expiration_time) {
-                // Convert Unix timestamp (seconds) to milliseconds
-                const expiresAt = Math.floor(invoiceData.expiration_time * 1000);
-                setExpirationTime(expiresAt);
-                const now = Date.now();
-                setTimeRemaining(Math.max(0, Math.floor((expiresAt - now) / 1000)));
-            }
-
-            // Update timer every second
-            interval = setInterval(() => {
-                if (expirationTime) {
-                    const now = Date.now();
-                    const remaining = Math.max(0, Math.floor((expirationTime - now) / 1000));
-                    setTimeRemaining(remaining);
-                    
-                    if (remaining === 0) {
-                        handleInvoiceClose(true);
-                    }
-                }
-            }, 1000);
-
-            // Check invoice status every 5 seconds
-            const statusInterval = setInterval(async () => {
-                try {
-                    const response = await fetch(`${trading_api_url}/get_invoice/${invoiceData.id}`);
-                    const updatedInvoice = await response.json();
-                    
-                    if (updatedInvoice.status === "FAILED") {
-                        console.log("Order failed to place or invoice does not exist.");
-                        setErrorMessage("Order failed. Please try again.");
-                        setLoading(false);
-                        handleInvoiceClose(true);
-                    } else if (updatedInvoice.status === "COMPLETE") {
-                        console.log("Order complete!");
-                        handleInvoiceClose(false);
-                    } else {
-                        console.log("Updating invoice data:", updatedInvoice);
-                        // Preserve the expiration time when updating invoice data
-                        setInvoiceData({
-                            ...updatedInvoice,
-                            expiration_time: invoiceData.expiration_time
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error fetching invoice status:', error);
-                    setErrorMessage('Error fetching invoice status.');
-                    setLoading(false);
-                }
-            }, 5000);
-
-            return () => {
-                clearInterval(interval);
-                clearInterval(statusInterval);
-            };
-        }
-    }, [invoiceData, expirationTime]);
-
-    const handleCheckout = async () => {
-        if (!payoutAddress) {
-            setErrorMessage('Please enter a payout address.');
+    const handleCreateOrder = async () => {
+        if (!buyerAddress) {
+            setError('Please enter your EVR address');
             return;
         }
 
-        setProcessing(true);
-        setErrorMessage(null);
+        setLoading(true);
+        setError(null);
 
         try {
-            const orderItems = selectedItems.map(item => item.listingID);
-            const quantities = selectedItems.map(item => item.quantity * 100000000);
+            // Group items by listing ID
+            const listingOrders = items.reduce((acc: { [key: string]: OrderItem[] }, item) => {
+                if (!acc[item.listingId]) {
+                    acc[item.listingId] = [];
+                }
+                acc[item.listingId].push({
+                    asset_name: item.asset_name,
+                    quantity: item.quantity
+                });
+                return acc;
+            }, {});
 
-            const response = await fetch(`${trading_api_url}/place_order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    listing_id: orderItems,
-                    quantity: quantities,
-                    payout_address: payoutAddress,
-                    total_amount: totalAmountWithFeeSats
-                }),
+            // Create orders for each listing
+            const orderPromises = Object.entries(listingOrders).map(([listingId, orderItems]) => {
+                return fetch(`${trading_api_url}/listings/${listingId}/orders/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        buyer_address: buyerAddress,
+                        items: orderItems
+                    }),
+                });
             });
 
-            const data = await response.json();
+            const responses = await Promise.all(orderPromises);
+            const results = await Promise.all(responses.map(r => r.json()));
 
-            if (response.ok) {
-                setInvoiceData({
-                    ...data,
-                    payment_amount: data.payment_amount
-                });
-                setOrderId(data.id);
-                setCurrentStep(2);
-                setErrorMessage(null);
-            } else {
-                setErrorMessage(data.message || 'An error occurred while placing the order.');
+            // Check for any errors
+            const errors = results.filter(r => r.error);
+            if (errors.length > 0) {
+                throw new Error(errors[0].detail || 'Failed to create order');
             }
-        } catch (error) {
-            console.error('Checkout error:', error);
-            setErrorMessage('Failed to place the order. Please try again.');
+
+            setOrderData(results);
+            setCurrentStep(2);
+
+            // Start polling for order status
+            startOrderStatusPolling(results.map((r: any) => r.id));
+
+        } catch (err: any) {
+            console.error('Order creation error:', err);
+            if (err.detail?.includes('Insufficient balance')) {
+                setError('Insufficient balance available for this order');
+            } else {
+                setError(err.message || 'Failed to create order. Please try again.');
+            }
         } finally {
-            setProcessing(false);
+            setLoading(false);
         }
     };
 
-    const handleInvoiceClose = (expired: boolean = true) => {
-        setInvoiceData(null);
-        if (!expired) onCheckoutComplete();
-        setIsExpiredPopupOpen(expired);
+    const startOrderStatusPolling = (orderIds: string[]) => {
+        const pollInterval = setInterval(async () => {
+            try {
+                const statusPromises = orderIds.map(id =>
+                    fetch(`${trading_api_url}/orders/${id}`)
+                );
+                const responses = await Promise.all(statusPromises);
+                const statuses = await Promise.all(responses.map(r => r.json()));
+
+                // Check if all orders are complete
+                const allComplete = statuses.every(s => s.status === 'complete');
+                const anyFailed = statuses.some(s => s.status === 'failed');
+
+                if (allComplete) {
+                    clearInterval(pollInterval);
+                    onCheckoutComplete();
+                } else if (anyFailed) {
+                    clearInterval(pollInterval);
+                    setError('One or more orders failed to process');
+                }
+
+                // Update order data
+                setOrderData(statuses);
+
+            } catch (err) {
+                console.error('Error polling order status:', err);
+            }
+        }, 5000);
+
+        // Cleanup interval after 15 minutes
+        setTimeout(() => {
+            clearInterval(pollInterval);
+        }, 15 * 60 * 1000);
     };
 
-    const handleExpiredPopupClose = () => {
-        setIsExpiredPopupOpen(false);
-        setCurrentStep(1);
-    };
-
-    const formatTime = (seconds: number): string => {
-        if (seconds <= 0) return "00:00";
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    };
-
-    const getProgressPercentage = (): string => {
-        if (!expirationTime) return '360deg';
-        const now = Date.now();
-        const remaining = Math.max(0, Math.floor((expirationTime - now) / 1000));
-        // Calculate progress in degrees (360 to 0)
-        // 15 minutes = 900 seconds
-        const progress = (remaining / 900) * 360;
-        return `${progress}deg`;
-    };
+    const totals = calculateTotals();
 
     return (
         <div className="checkout-container">
             <div className="checkout-header">
                 <button className="back-button" onClick={onBack}>
-                    <span className="back-icon">←</span>
-                    Back to Cart
+                    <FiArrowLeft /> Back
                 </button>
                 <div className="checkout-steps">
                     <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
                         <div className="step-number">1</div>
-                        <span>Review Order</span>
+                        <span>Review</span>
                     </div>
-                    <div className={`step-connector ${currentStep >= 2 ? 'active' : ''}`}></div>
+                    <div className={`step-connector ${currentStep >= 2 ? 'active' : ''}`} />
                     <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
                         <div className="step-number">2</div>
                         <span>Payment</span>
@@ -204,134 +175,114 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                         <div className="order-summary">
                             <h3>Order Summary</h3>
                             <div className="order-items">
-                                {selectedItems.map((item, index) => (
+                                {items.map((item, index) => (
                                     <div key={index} className="order-item">
                                         <div className="item-details">
-                                            <h4>{item.assetName}</h4>
-                                            <p className="item-quantity">Quantity: {item.quantity}</p>
+                                            <h4>{item.name}</h4>
+                                            <p className="item-quantity">
+                                                {item.quantity} x {item.asset_name}
+                                            </p>
                                         </div>
                                         <div className="item-price">
-                                            {(item.unitPrice * item.quantity / 100000000).toFixed(8)} EVR
+                                            {(Number(item.unitPrice) * item.quantity / 100000000).toFixed(8)} EVR
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            
+
                             <div className="order-totals">
                                 <div className="total-line">
                                     <span>Subtotal</span>
-                                    <span>{totalAmountWithoutFeeEVR} EVR</span>
+                                    <span>{totals.subtotal} EVR</span>
                                 </div>
                                 <div className="total-line">
                                     <span>Network Fee (0.5%)</span>
-                                    <span>{feeEVR} EVR</span>
+                                    <span>{totals.fee} EVR</span>
                                 </div>
                                 <div className="total-line total">
                                     <span>Total</span>
-                                    <span>{totalAmountWithFeeEVR} EVR</span>
+                                    <span>{totals.total} EVR</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="payout-address-section">
-                            <h3>Payout Information</h3>
+                        <div className="buyer-address-section">
+                            <h3>Your Information</h3>
                             <div className="input-group">
-                                <label htmlFor="payoutAddress">EVR Payout Address</label>
+                                <label htmlFor="buyerAddress">Your EVR Address</label>
                                 <input
                                     type="text"
-                                    id="payoutAddress"
-                                    value={payoutAddress}
-                                    onChange={(e) => setPayoutAddress(e.target.value)}
+                                    id="buyerAddress"
+                                    value={buyerAddress}
+                                    onChange={(e) => setBuyerAddress(e.target.value)}
                                     placeholder="Enter your EVR address"
-                                    className={errorMessage ? 'error' : ''}
+                                    className={error ? 'error' : ''}
                                 />
-                                {errorMessage && <div className="error-message">{errorMessage}</div>}
+                                {error && <div className="error-message">{error}</div>}
                             </div>
                         </div>
 
                         <button
                             className="proceed-button"
-                            onClick={handleCheckout}
-                            disabled={processing || !payoutAddress}
+                            onClick={handleCreateOrder}
+                            disabled={loading || !buyerAddress}
                         >
-                            {processing ? 'Processing...' : 'Proceed to Payment'}
+                            {loading ? 'Processing...' : 'Create Order'}
                         </button>
                     </div>
                 ) : (
                     <div className="payment-section">
-                        {invoiceData && (
-                            <div className="invoice-status-container">
-                                <Debug sections={[
-                                    { title: 'Invoice Data', data: invoiceData }
-                                ]} />
+                        {orderData && (
+                            <div className="order-status-container">
+                                <div className="order-header">
+                                    <h2>Order Status</h2>
+                                </div>
 
-                                <div className="invoice-header">
-                                    <h2>Payment Details</h2>
-                                    <div className="timer-display">
-                                        <div className="timer-circle" style={{'--progress': `${getProgressPercentage()}`} as any}>
-                                            <div className="timer-circle-inner">
-                                                <span className="time-remaining">{formatTime(timeRemaining)}</span>
-                                                <span className="timer-label">remaining</span>
+                                <div className="order-details">
+                                    {orderData.map((order: any, index: number) => (
+                                        <div key={index} className="order-detail-item">
+                                            <div className="order-id">
+                                                Order ID: {order.id}
+                                                <button 
+                                                    className="copy-button"
+                                                    onClick={() => navigator.clipboard.writeText(order.id)}
+                                                >
+                                                    <FiCopy />
+                                                </button>
                                             </div>
+                                            <div className="order-status">
+                                                Status: <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                                    {order.status}
+                                                </span>
+                                            </div>
+                                            {order.payment_address && (
+                                                <div className="payment-address">
+                                                    Payment Address: 
+                                                    <div className="address-copy">
+                                                        <span>{order.payment_address}</span>
+                                                        <button 
+                                                            className="copy-button"
+                                                            onClick={() => navigator.clipboard.writeText(order.payment_address)}
+                                                        >
+                                                            <FiCopy />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
 
-                                <div className="invoice-details">
-                                    <div className="invoice-field">
-                                        <label>Order ID</label>
-                                        <div className="field-value">
-                                            <span>{invoiceData.id}</span>
-                                        </div>
+                                {error && (
+                                    <div className="error-message">
+                                        {error}
                                     </div>
-
-                                    <div className="invoice-field payment-address">
-                                        <label>Payment Address</label>
-                                        <div className="field-value with-copy">
-                                            <span>{invoiceData.payment_address}</span>
-                                            <button 
-                                                className="copy-button"
-                                                onClick={() => navigator.clipboard.writeText(invoiceData.payment_address)}
-                                            >
-                                                <FaCopy />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="invoice-field">
-                                        <label>Amount</label>
-                                        <div className="field-value">
-                                            <span>{(invoiceData.payment_amount / 100000000).toFixed(8)} EVR</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="invoice-field">
-                                        <label>Status</label>
-                                        <div className="field-value">
-                                            <span className={`status-badge ${invoiceData.status.toLowerCase()}`}>
-                                                {invoiceData.status}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="invoice-actions">
-                                    <button 
-                                        className="cancel-button"
-                                        onClick={() => handleInvoiceClose(true)}
-                                    >
-                                        Cancel Order
-                                    </button>
-                                </div>
+                                )}
                             </div>
                         )}
                     </div>
                 )}
             </div>
-
-            {isExpiredPopupOpen && (
-                <ExpiredInvoicePopup onClose={handleExpiredPopupClose} />
-            )}
         </div>
     );
 };

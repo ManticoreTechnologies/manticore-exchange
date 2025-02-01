@@ -167,14 +167,14 @@
     margin-top: var(--spacing-4);
 }
 
-.payout-address-section {
+.buyer-address-section {
     background-color: var(--background-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-6);
 }
 
-.payout-address-section h3 {
+.buyer-address-section h3 {
     color: var(--text-primary);
     font-size: var(--font-size-xl);
     margin-bottom: var(--spacing-4);
@@ -249,6 +249,122 @@
     height: 100%;
 }
 
+.order-status-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.order-header {
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.order-header h2 {
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    margin: 0;
+}
+
+.order-details {
+    padding: var(--spacing-6);
+}
+
+.order-detail-item {
+    background-color: var(--background-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.order-id {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-2);
+    font-family: var(--font-mono);
+}
+
+.order-status {
+    margin-bottom: var(--spacing-2);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+}
+
+.status-badge.pending {
+    background-color: var(--warning-color-transparent);
+    color: var(--warning-color);
+}
+
+.status-badge.complete {
+    background-color: var(--success-color-transparent);
+    color: var(--success-color);
+}
+
+.status-badge.failed {
+    background-color: var(--error-color-transparent);
+    color: var(--error-color);
+}
+
+.payment-address {
+    margin-top: var(--spacing-4);
+    color: var(--text-secondary);
+}
+
+.address-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--background-primary);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-2);
+}
+
+.address-copy span {
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-all);
+}
+
+.copy-button:hover {
+    background-color: var(--background-tertiary);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.copy-button:active {
+    transform: translateY(0);
+}
+
 /* Scrollbar Styles */
 .checkout-content::-webkit-scrollbar {
     width: var(--spacing-2);
@@ -277,213 +393,4 @@
 
 .checkout-review {
     animation: slideIn 0.3s ease-out;
-}
-
-/* Payment Section Styles */
-.invoice-status-container {
-    width: 100%;
-    max-width: 800px;
-    background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    animation: slideIn 0.3s ease-out;
-}
-
-.invoice-header {
-    padding: var(--spacing-6);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.invoice-header h2 {
-    color: var(--text-primary);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
-    margin: 0;
-}
-
-.checkout-container .timer-display {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.checkout-container .timer-circle {
-    position: relative;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: transparent;
-}
-
-.checkout-container .timer-circle::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        var(--accent-color) var(--progress),
-        transparent var(--progress)
-    );
-    mask: radial-gradient(transparent 85%, black 86%);
-    -webkit-mask: radial-gradient(transparent 85%, black 86%);
-    transform: rotate(180deg);
-    opacity: 0.8;
-}
-
-.checkout-container .timer-circle-inner {
-    position: absolute;
-    inset: 4px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-}
-
-.checkout-container .time-remaining {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    line-height: 1;
-    letter-spacing: -0.5px;
-}
-
-.checkout-container .timer-label {
-    font-size: 9px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-    opacity: 0.8;
-}
-
-.invoice-details {
-    padding: var(--spacing-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-4);
-}
-
-.invoice-field {
-    background-color: var(--background-tertiary);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-4);
-}
-
-.invoice-field label {
-    display: block;
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-2);
-}
-
-.field-value {
-    color: var(--text-primary);
-    font-size: var(--font-size-base);
-    font-family: var(--font-mono);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-}
-
-.field-value.with-copy {
-    justify-content: space-between;
-    background-color: var(--background-primary);
-    border-radius: var(--border-radius-sm);
-    padding: var(--spacing-2) var(--spacing-3);
-}
-
-.payment-address .field-value span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.copy-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    color: var(--text-secondary);
-    font-size: var(--font-size-base);
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    flex-shrink: 0;
-}
-
-.copy-button:hover {
-    background-color: var(--background-tertiary);
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-    transform: translateY(-1px);
-}
-
-.copy-button:active {
-    transform: translateY(0);
-}
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--spacing-1) var(--spacing-3);
-    border-radius: var(--border-radius-full);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-}
-
-.status-badge.pending {
-    background-color: var(--warning-color-transparent);
-    color: var(--warning-color);
-}
-
-.status-badge.complete {
-    background-color: var(--success-color-transparent);
-    color: var(--success-color);
-}
-
-.status-badge.failed {
-    background-color: var(--error-color-transparent);
-    color: var(--error-color);
-}
-
-.invoice-actions {
-    padding: var(--spacing-6);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: center;
-}
-
-.cancel-button {
-    padding: var(--spacing-3) var(--spacing-6);
-    background-color: var(--background-tertiary);
-    border: 1px solid var(--error-color);
-    border-radius: var(--border-radius-md);
-    color: var(--error-color);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    transition: var(--transition-all);
-}
-
-.cancel-button:hover {
-    background-color: var(--error-color);
-    color: var(--text-primary);
-}
-
-.debug-data {
-    display: none;
 }

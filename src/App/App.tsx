@@ -31,6 +31,7 @@ import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
 import Townhall from "./pages/Townhall/Townhall";
+import CartPage from "./pages/Trade/Cart/CartPage";
 
 import { MoonPayProvider } from '@moonpay/moonpay-react';
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/trade" element={<Trading />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/faucet" element={<Faucet />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/WelcomeToEvrmore" element={<WelcomeToEvrmore />} />

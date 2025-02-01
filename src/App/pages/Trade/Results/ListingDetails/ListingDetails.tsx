@@ -1,34 +1,42 @@
 /**
- * 
- * /listing/:id
- * ex. /listing/1039818192293855233
  {
-  "listing": {
-    "description": "A tome of dark magic, cursed to be forever lost to the ages",
-    "hearts": 0,
-    "id": "1039818192293855233",
-    "ipfs_hash": "QmXWBioKHKSj8f1xCQe6P8GLUxaPowtfAdxGzWkXP2NGoP",
-    "name": "Cymos' Infernal Tome",
-    "offerings": [
-      {
-        "asset_name": "INFERNA",
-        "created_at": "2025-01-20T18:28:52.434133",
-        "id": "1039818203116601345",
-        "ipfs_hash": "Qm1234567890abcdef",
-        "on_hold": 0.0,
-        "price": 1000.0,
-        "quantity": 0.0,
-        "sold": 0.0,
-        "updated_at": "2025-01-20T18:28:52.434133",
-        "visible": true
-      }
-    ],
-    "seller_address": "EW9wU7BDZy9X9uj2LfYJzfYnGz3rHmEMPt",
-    "tags": "magic, tome, dark"
-  },
-  "success": true
+  "id": "55f5489d-5de5-42d6-bcf5-bbd165ce357b",
+  "seller_address": "EWDv4CA1AWRtHpw6dMBi9JfhbUTkwMySiV",
+  "listing_address": "EeFAzLWKdbykXQTL9f5LuNEX8HDgUipK1C",
+  "deposit_address": "ES6gE5dKK9Yx6HdkF7hdvKet4oFZUxcV6o",
+  "name": "Super Cool Test Listing",
+  "description": "Test",
+  "image_ipfs_hash": null,
+  "status": "active",
+  "created_at": "2025-02-01T15:56:48.315203",
+  "updated_at": "2025-02-01T15:56:48.315203",
+  "prices": [
+    {
+      "asset_name": "CREDITS",
+      "price_evr": "1",
+      "price_asset_name": null,
+      "price_asset_amount": null,
+      "ipfs_hash": null
+    }
+  ],
+  "balances": [
+    {
+      "asset_name": "CREDITS",
+      "confirmed_balance": "10000.00000000",
+      "pending_balance": "0",
+      "last_confirmed_tx_hash": "8379dc0722cecb493d6fa1c8f10d3897a9837a343403b378bd12d424fbbe985f",
+      "last_confirmed_tx_time": "2025-02-01T11:03:01"
+    },
+    {
+      "asset_name": "CRONOS",
+      "confirmed_balance": "2.00000000",
+      "pending_balance": "0",
+      "last_confirmed_tx_hash": "997be49a579cbdb9469dc146a72e2ed8f43cded49c9dfe0aae678c3f91d7bb38",
+      "last_confirmed_tx_time": "2025-02-01T11:05:55"
+    }
+  ]
 }
-
+ * 
  */
 
 
@@ -134,12 +142,12 @@ const ListingDetails: React.FC = () => {
       const response = await fetch(`${PINATA_GATEWAY}${ipfsHash}`, { method: 'HEAD' });
       const contentType = response.headers.get('Content-Type');
       setAssetMediaStates(prev => ({
-        ...prev,
+      ...prev,
         [assetName]: {
           isVideo: contentType?.startsWith('video') || false,
           isLoaded: true
         }
-      }));
+    }));
     } catch (error) {
       console.error('Error checking media type:', error);
       setAssetMediaStates(prev => ({
@@ -174,7 +182,7 @@ const ListingDetails: React.FC = () => {
       
       return { ...prev, [assetName]: newQty };
     });
-  };
+    };
 
   const handleAddToCart = (assetName: string) => {
     if (!listing) return;
@@ -193,18 +201,18 @@ const ListingDetails: React.FC = () => {
       unitPrice: price.price_evr,
       asset_name: assetName,
       seller_address: listing.seller_address
-    };
+  };
 
     const updatedCart = [...cart, newItem];
     setCart(updatedCart);
     localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
-    
+
     setNotification({
       show: true,
       type: 'success',
       message: 'Item added to cart successfully!'
     });
-
+    
     setTimeout(() => {
       setNotification(prev => ({ ...prev, show: false }));
     }, 3000);
@@ -226,7 +234,7 @@ const ListingDetails: React.FC = () => {
       });
     }
   };
-
+    
   // Generate QR code when deposit address changes
   useEffect(() => {
     if (listing?.deposit_address) {
@@ -284,7 +292,7 @@ const ListingDetails: React.FC = () => {
         </div>
       </div>
     );
-  }
+    }
 
   return (
     <div className="listing-details">
@@ -318,9 +326,9 @@ const ListingDetails: React.FC = () => {
                   const target = e.target as HTMLImageElement;
                   target.src = ManticoreLogo;
                   target.className = "placeholder-image";
-                }}
+            }}
               />
-            ) : (
+        ) : (
               <img
                 src={ManticoreLogo}
                 alt="Manticore Logo"
@@ -336,35 +344,35 @@ const ListingDetails: React.FC = () => {
                 <span>Listed by</span>
                 <div className="seller-address">
                   <span>{truncateAddress(listing.seller_address)}</span>
-                  <button 
+            <button 
                     className="copy-button"
-                    onClick={() => {
+              onClick={() => {
                       navigator.clipboard.writeText(listing.seller_address);
                       setNotification({
                         show: true,
                         type: 'success',
                         message: 'Address copied!'
                       });
-                    }}
-                  >
+              }}
+            >
                     <FiCopy />
-                  </button>
+            </button>
                   <a 
                     href={`https://explorer.manticore.exchange/address/${listing.seller_address}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="explorer-link"
-                  >
+            >
                     <FiExternalLink />
                   </a>
-                </div>
+          </div>
               </div>
-            </div>
+      </div>
 
             <div className="listing-description">
               <h2>Description</h2>
               <p>{listing.description}</p>
-            </div>
+      </div>
 
             <div className="listing-details-info">
               <div className="detail-item">
@@ -376,15 +384,15 @@ const ListingDetails: React.FC = () => {
                 <span className="detail-value">
                   {new Date(listing.created_at).toLocaleDateString()}
                 </span>
-              </div>
+                </div>
               <div className="detail-item">
                 <span className="detail-label">Status</span>
                 <span className={`detail-value status-${listing.status.toLowerCase()}`}>
                   {listing.status}
                 </span>
-              </div>
-            </div>
-          </div>
+                </div>
+                </div>
+                </div>
         </section>
 
         <section className="listing-assets">
@@ -408,23 +416,23 @@ const ListingDetails: React.FC = () => {
                             muted
                             loop
                             playsInline
-                          />
-                        ) : (
+                />
+            ) : (
                           <img
                             src={`${PINATA_GATEWAY}${price.ipfs_hash}`}
                             alt={balance.asset_name}
                             className="asset-image"
                           />
-                        )}
-                      </div>
+            )}
+              </div>
                     )}
                     <div className="asset-info">
                       <h3>{balance.asset_name}</h3>
                       <span className="asset-price">
                         {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR
                       </span>
-                    </div>
-                  </div>
+              </div>
+              </div>
 
                   <div className="asset-availability">
                     <div className="availability-indicator">
@@ -435,11 +443,11 @@ const ListingDetails: React.FC = () => {
                           backgroundColor: available > 0 ? 'var(--accent-color)' : 'var(--color-error)'
                         }}
                       />
-                    </div>
+            </div>
                     <span className="availability-text">
                       {available} available
                     </span>
-                  </div>
+            </div>
 
                   <div className="asset-controls">
                     <div className="quantity-controls">
@@ -458,18 +466,19 @@ const ListingDetails: React.FC = () => {
                       >
                         +
                       </button>
-                    </div>
+          </div>
 
                     <button 
                       className="add-to-cart-button"
                       onClick={() => handleAddToCart(balance.asset_name)}
-                      disabled={available <= 0}
+                      disabled={available <= 0 || !price}
                     >
                       <FiShoppingCart />
-                      {available <= 0 ? 'Out' : 'Add'}
+                      {available <= 0 ? 'Out' : !price ? 'N/A' : 'Add'}
                     </button>
-                  </div>
-                </div>
+        </div>
+
+            </div>
               );
             })}
           </div>
@@ -482,8 +491,8 @@ const ListingDetails: React.FC = () => {
               <img
                 src={qrCodeData}
                 alt="Deposit Address QR Code"
-              />
-            </div>
+                      />
+                </div>
             <div 
               className="qr-code-address"
               onClick={() => {
@@ -497,7 +506,7 @@ const ListingDetails: React.FC = () => {
               title="Click to copy address"
             >
               {listing.deposit_address}
-            </div>
+              </div>
           </div>
         )}
       </main>

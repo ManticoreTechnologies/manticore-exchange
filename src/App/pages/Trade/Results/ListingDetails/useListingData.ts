@@ -13,8 +13,8 @@ const useListingData = (id: string) => {
       })
       .catch(error => console.error('Error fetching listing:', error));
   }, [id]);
-
+      
   return { listing, likeCount, setLikeCount };
-};
+  };
 
 export default useListingData; 

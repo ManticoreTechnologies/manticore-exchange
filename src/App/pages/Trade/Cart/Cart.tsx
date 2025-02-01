@@ -3,27 +3,34 @@ import './Cart.css';
 import placeholderImage from '@/images/enhanced_logo.png';
 import Checkout from '../Checkout/Checkout';
 
+interface OrderItem {
+    asset_name: string;
+    quantity: number;
+}
+
+interface CartItem {
+    listingId: string;
+    name: string;
+    description: string;
+    image_ipfs_hash: string | null;
+    quantity: number;
+    unitPrice: string;
+    asset_name: string;
+    seller_address: string;
+}
+
 interface CartProps {
-    cart: Array<{
-        id: string;
-        name: string;
-        description: string;
-        image_ipfs_hash: string | null;
-        quantity: number;
-        unitPrice: string;
-        asset_name: string;
-    }>;
+    cart: CartItem[];
     onClose: () => void;
     onRemove: (index: number) => void;
     onClear: () => void;
-    onCheckout: (items: any[]) => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear, onCheckout }) => {
+const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear }) => {
     const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
     const PINATA_GATEWAY = "https://rose-decent-prawn-420.mypinata.cloud/ipfs/";
 
-    const getImageUrl = (item: any) => {
+    const getImageUrl = (item: CartItem) => {
         if (!item.image_ipfs_hash) return placeholderImage;
         return `${PINATA_GATEWAY}${item.image_ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
     };
@@ -62,7 +69,7 @@ const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear, onCheckou
     if (isCheckingOut) {
         return (
             <Checkout
-                selectedItems={cart}
+                items={cart}
                 onCheckoutComplete={handleCheckoutComplete}
                 onBack={handleBack}
             />
