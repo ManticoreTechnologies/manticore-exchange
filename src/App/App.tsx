@@ -32,6 +32,7 @@ import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
 import Townhall from "./pages/Townhall/Townhall";
 import CartPage from "./pages/Trade/Cart/CartPage";
+import OrderStatus from './pages/Orders/OrderStatus';
 
 import { MoonPayProvider } from '@moonpay/moonpay-react';
 
@@ -78,6 +79,7 @@ const App: React.FC = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="town-hall" element={<Townhall />} />
+          <Route path="/orders/:orderId" element={<OrderStatus />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

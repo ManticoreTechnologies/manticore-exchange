@@ -4,12 +4,18 @@ import { Link } from 'react-router-dom';
 import './Footer.css';
 import Ping from '@/App/pages/TradeX/Ping/Ping';
 import ThemeSettings from '@/components/ThemeSettings/ThemeSettings';
+import OrderToaster from '@/App/components/OrderToaster/OrderToaster';
 
 const Footer: React.FC = () => {
   return (
     <div className="footer">
-      <div className="ping-container">
-        <Ping />
+      <div className="left-section">
+        <div className="ping-container">
+          <Ping />
+        </div>
+        <div className="order-toaster-container">
+          <OrderToaster />
+        </div>
       </div>
       <p className="footer-text">
         © {new Date().getFullYear()} Manticore Technologies

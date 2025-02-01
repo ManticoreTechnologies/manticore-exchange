@@ -19,11 +19,24 @@
     z-index: var(--z-sticky);
 }
 
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
 .ping-container {
     display: flex;
     align-items: center;
     height: 100%;
     font-size: 0.6rem;
+}
+
+.order-toaster-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: var(--spacing-4);
 }
 
 .footer-text {
@@ -62,6 +75,10 @@
     
     .ping-container {
         margin-right: auto;
+    }
+
+    .order-toaster-container {
+        margin-left: var(--spacing-2);
     }
 
     .footer-text {

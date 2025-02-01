@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Cart from './Cart';
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 
 interface CartItem {
     listingId: string;
@@ -25,10 +26,6 @@ const CartPage: React.FC = () => {
         }
     }, []);
 
-    const handleClose = () => {
-        navigate('/trade');
-    };
-
     const handleRemove = (index: number) => {
         const newCart = [...cart];
         newCart.splice(index, 1);
@@ -41,12 +38,16 @@ const CartPage: React.FC = () => {
         localStorage.removeItem('manticore_cart');
     };
 
+    const handleBack = () => {
+        navigate(-1);
+    };
+
     return (
         <Cart
             cart={cart}
-            onClose={handleClose}
             onRemove={handleRemove}
             onClear={handleClear}
+            onBack={handleBack}
         />
     );
 };

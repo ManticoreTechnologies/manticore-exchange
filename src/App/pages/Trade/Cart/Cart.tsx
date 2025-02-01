@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import './Cart.css';
 import placeholderImage from '@/images/enhanced_logo.png';
 import Checkout from '../Checkout/Checkout';
-
-interface OrderItem {
-    asset_name: string;
-    quantity: number;
-}
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 
 interface CartItem {
     listingId: string;
@@ -21,13 +18,14 @@ interface CartItem {
 
 interface CartProps {
     cart: CartItem[];
-    onClose: () => void;
     onRemove: (index: number) => void;
     onClear: () => void;
+    onBack: () => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear }) => {
+const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
     const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
+    const navigate = useNavigate();
     const PINATA_GATEWAY = "https://rose-decent-prawn-420.mypinata.cloud/ipfs/";
 
     const getImageUrl = (item: CartItem) => {
@@ -42,9 +40,9 @@ const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear }) => {
             total + (Number(item.unitPrice) * item.quantity), 0);
         const fee = subtotal * 0.005; // 0.5% fee
         return {
-            subtotal: subtotal.toFixed(8),
-            fee: fee.toFixed(8),
-            total: (subtotal + fee).toFixed(8)
+            subtotal: subtotal.toString(),
+            fee: fee.toString(),
+            total: (subtotal + fee).toString()
         };
     };
 
@@ -57,7 +55,7 @@ const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear }) => {
     const handleCheckoutComplete = () => {
         setIsCheckingOut(false);
         onClear();
-        onClose();
+        navigate('/trade');
     };
 
     const handleBack = () => {
@@ -77,70 +75,99 @@ const Cart: React.FC<CartProps> = ({ cart, onClose, onRemove, onClear }) => {
     }
 
     return (
-        <div className="cart">
-            <div className="cart-header">
-                <h2>Your Cart</h2>
-                <button className="close-cart-button" onClick={onClose}>×</button>
+        <div className="cart-page">
+            <div className="cart-page-header">
+                <button className="back-button" onClick={onBack}>
+                    <FiArrowLeft /> Back
+                </button>
+                <h1>Shopping Cart</h1>
             </div>
 
-            <div className="cart-items-container">
-                {cart.length === 0 ? (
-                    <div className="empty-cart">
-                        <p>Your cart is empty</p>
-                    </div>
-                ) : (
-                    <ul className="cart-items">
-                        {cart.map((item, index) => (
-                            <li key={index} className="cart-item">
-                                <img 
-                                    src={getImageUrl(item)} 
-                                    alt={item.asset_name}
-                                    className="cart-item-image"
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.src = placeholderImage;
-                                    }}
-                                />
-                                <div className="cart-item-info">
-                                    <div className="cart-item-name">{item.asset_name}</div>
-                                    <div className="cart-item-description">
-                                        {truncateDescription(item.description)}
-                                    </div>
-                                    <div className="cart-item-details">
-                                        <div className="cart-item-price">
-                                            Unit Price: {(Number(item.unitPrice) / 100000000).toFixed(8)} EVR
-                                        </div>
-                                        <div className="cart-item-quantity">
-                                            Quantity: {item.quantity}
-                                        </div>
-                                    </div>
-                                </div>
-                                <button onClick={() => onRemove(index)} className="remove-item-button">×</button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-
-            <div className="cart-footer">
-                <div className="cart-summary">
-                    <div className="cart-subtotal">Subtotal: {totals.subtotal} EVR</div>
-                    <div className="cart-fee">Fee (0.5%): {totals.fee} EVR</div>
-                    <div className="cart-total">Total: {totals.total} EVR</div>
-                </div>
-                
-                <div className="cart-buttons">
+            {cart.length === 0 ? (
+                <div className="empty-cart">
+                    <p>Your cart is empty</p>
                     <button 
-                        className="checkout-button" 
-                        onClick={() => setIsCheckingOut(true)}
-                        disabled={cart.length === 0}
+                        className="continue-shopping-button"
+                        onClick={() => navigate('/trade')}
                     >
-                        Proceed to Checkout
+                        Continue Shopping
                     </button>
-                    <button className="clear-cart-button" onClick={onClear}>Clear Cart</button>
-                    <button className="continue-shopping-button" onClick={onClose}>Continue Shopping</button>
                 </div>
-            </div>
+            ) : (
+                <div className="cart-content">
+                    <div className="cart-items-section">
+                        <ul className="cart-items">
+                            {cart.map((item, index) => (
+                                <li key={index} className="cart-item">
+                                    <img 
+                                        src={getImageUrl(item)} 
+                                        alt={item.asset_name}
+                                        className="cart-item-image"
+                                        onError={(e) => {
+                                            const target = e.target as HTMLImageElement;
+                                            target.src = placeholderImage;
+                                        }}
+                                    />
+                                    <div className="cart-item-info">
+                                        <div className="cart-item-name">{item.asset_name}</div>
+                                        <div className="cart-item-description">
+                                            {truncateDescription(item.description)}
+                                        </div>
+                                        <div className="cart-item-details">
+                                            <div className="cart-item-price">
+                                                Unit Price: {item.unitPrice} EVR
+                                            </div>
+                                            <div className="cart-item-quantity">
+                                                Quantity: {item.quantity}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => onRemove(index)} className="remove-item-button">×</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="cart-summary-container">
+                        <div className="cart-summary">
+                            <h2>Order Summary</h2>
+                            <div className="cart-totals">
+                                <div className="cart-subtotal">
+                                    <span>Subtotal</span>
+                                    <span>{totals.subtotal} EVR</span>
+                                </div>
+                                <div className="cart-fee">
+                                    <span>Network Fee (0.5%)</span>
+                                    <span>{totals.fee} EVR</span>
+                                </div>
+                                <div className="cart-total">
+                                    <span>Total</span>
+                                    <span>{totals.total} EVR</span>
+                                </div>
+                            </div>
+                            
+                            <div className="cart-actions">
+                                <button 
+                                    className="checkout-button" 
+                                    onClick={() => setIsCheckingOut(true)}
+                                    disabled={cart.length === 0}
+                                >
+                                    Proceed to Checkout
+                                </button>
+                                <button className="clear-cart-button" onClick={onClear}>
+                                    Clear Cart
+                                </button>
+                                <button 
+                                    className="continue-shopping-button" 
+                                    onClick={() => navigate('/trade')}
+                                >
+                                    Continue Shopping
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

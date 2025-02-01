@@ -5,6 +5,7 @@ import logo from '@/images/enhanced_logo_old.png';
 import Dropdown from "./Dropdown";
 import { useNavigate } from "react-router-dom";
 import { MoonPayBuyWidget } from '@moonpay/moonpay-react';       
+import { FiShoppingCart } from 'react-icons/fi';
 
 // Theme toggle button
 //@ts-ignore
@@ -38,6 +39,7 @@ const Navbar: React.FC = () => {
   const [showProfile, setShowProfile] = useState(true);
   const [showMore, setShowMore] = useState(true);
   const [visible, setVisible] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,6 +57,32 @@ const Navbar: React.FC = () => {
     handleResize();
 
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = localStorage.getItem('manticore_cart');
+      if (cart) {
+        const cartItems = JSON.parse(cart);
+        setCartCount(cartItems.length);
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    // Initial count
+    updateCartCount();
+
+    // Listen for storage changes
+    window.addEventListener('storage', updateCartCount);
+    
+    // Custom event for cart updates
+    window.addEventListener('cartUpdated', updateCartCount);
+
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
   }, []);
 
   const handleMenuToggle = () => {
@@ -125,6 +153,12 @@ const Navbar: React.FC = () => {
             </NavLink>
           )}
         
+          <NavLink to="/cart" className="nav-link cart-link">
+            <FiShoppingCart />
+            {cartCount > 0 && (
+              <span className="cart-badge">{cartCount}</span>
+            )}
+          </NavLink>
 
           </div>
       </div>

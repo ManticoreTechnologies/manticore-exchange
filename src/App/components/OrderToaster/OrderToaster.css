@@ -1,0 +1,203 @@
+.minimized-toaster {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    cursor: pointer;
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.minimized-toaster:hover {
+    background-color: var(--background-tertiary);
+}
+
+.minimized-toaster .toaster-icon-container {
+    margin: 0;
+}
+
+.minimized-toaster .toaster-icon {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+}
+
+.minimized-toaster:hover .toaster-icon {
+    color: var(--accent-color);
+}
+
+.minimized-toaster .order-count-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 11px;
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-medium);
+    box-shadow: 0 0 0 2px var(--background-secondary);
+}
+
+.order-toaster {
+    position: absolute;
+    bottom: calc(var(--footer-height) + var(--spacing-4));
+    left: var(--spacing-4);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    z-index: calc(var(--z-sticky) + 1);
+    transition: all 0.3s ease-out;
+    max-width: 360px;
+    width: calc(100% - var(--spacing-8));
+    animation: slideIn 0.3s ease-out;
+}
+
+.order-toaster-header {
+    padding: var(--spacing-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.order-toaster-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.toaster-icon-container {
+    position: relative;
+}
+
+.toaster-icon {
+    font-size: var(--font-size-xl);
+    color: var(--accent-color);
+}
+
+.toaster-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.toaster-title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+.toaster-message {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.close-toaster {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-full);
+    transition: all 0.2s ease;
+}
+
+.close-toaster:hover {
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
+}
+
+.order-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--spacing-2);
+}
+
+.order-item {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--border-radius-md);
+    background-color: var(--background-tertiary);
+    margin-bottom: var(--spacing-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.order-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    background-color: var(--background-hover);
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.order-id {
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.order-status {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.view-order-icon {
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.order-item:hover .view-order-icon {
+    transform: translateX(4px);
+    color: var(--accent-color);
+}
+
+/* Scrollbar Styles */
+.order-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-list::-webkit-scrollbar-track {
+    background: var(--background-tertiary);
+}
+
+.order-list::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 3px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes badgePop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+} 

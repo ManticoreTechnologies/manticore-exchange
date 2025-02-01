@@ -11,14 +11,17 @@
     overflow: hidden;
 }
 
+.checkout-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-6);
+}
+
 .checkout-header {
-    padding: var(--spacing-4) var(--spacing-6);
-    background-color: var(--background-secondary);
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-6);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
+    gap: var(--spacing-4);
 }
 
 .back-button {
@@ -90,29 +93,36 @@
 }
 
 .checkout-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: var(--spacing-6);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--spacing-6);
+}
+
+@media (max-width: 1024px) {
+    .checkout-content {
+        grid-template-columns: 1fr;
+    }
 }
 
 .checkout-review {
-    max-width: 800px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-6);
+    animation-name: slideIn;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
 }
 
 .order-summary {
     background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-6);
 }
 
 .order-summary h3 {
-    color: var(--text-primary);
     font-size: var(--font-size-xl);
+    color: var(--text-primary);
     margin-bottom: var(--spacing-4);
 }
 
@@ -169,14 +179,13 @@
 
 .buyer-address-section {
     background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-6);
 }
 
 .buyer-address-section h3 {
-    color: var(--text-primary);
     font-size: var(--font-size-xl);
+    color: var(--text-primary);
     margin-bottom: var(--spacing-4);
 }
 
@@ -241,19 +250,8 @@
     cursor: not-allowed;
 }
 
-.payment-section {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: var(--spacing-6);
-    height: 100%;
-}
-
 .order-status-container {
-    width: 100%;
-    max-width: 800px;
     background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
 }
@@ -264,8 +262,8 @@
 }
 
 .order-header h2 {
+    font-size: var(--font-size-xl);
     color: var(--text-primary);
-    font-size: var(--font-size-2xl);
     margin: 0;
 }
 
@@ -391,6 +389,79 @@
     }
 }
 
-.checkout-review {
-    animation: slideIn 0.3s ease-out;
+@media (max-width: 768px) {
+    .checkout-page {
+        padding: var(--spacing-4);
+    }
+
+    .checkout-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-item {
+        flex-direction: column;
+    }
+
+    .item-price {
+        margin-top: var(--spacing-2);
+    }
+}
+
+.orders-toaster {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-4);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    z-index: 1000;
+    animation-name: slideInToaster;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+.orders-toaster:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    background-color: var(--background-tertiary);
+}
+
+.toaster-icon {
+    font-size: var(--font-size-xl);
+    color: var(--accent-color);
+}
+
+.toaster-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.toaster-title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+.toaster-message {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+@keyframes slideInToaster {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
