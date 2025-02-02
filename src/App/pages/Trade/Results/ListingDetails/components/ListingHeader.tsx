@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiShare2, FiSettings } from 'react-icons/fi';
 
 interface ListingHeaderProps {
-  cartItemCount: number;
   onShare: () => void;
   onManageListing: () => void;
 }

@@ -66,6 +66,17 @@ const IPFSUploader = () => {
             <li>Include the IPFS hash in the asset's metadata</li>
             <li>The file will be permanently linked to your Evrmore asset</li>
           </ol>
+          
+          <div className="manager-button-container">
+            <a 
+              href="https://ipfs.manticore.exchange/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="manager-button"
+            >
+              Open IPFS Manager
+            </a>
+          </div>
         </div>
 
         <div className="upload-section">

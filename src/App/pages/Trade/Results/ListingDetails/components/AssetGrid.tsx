@@ -11,6 +11,7 @@ interface AssetGridProps {
   onEditListing: () => void;
   selectedAsset: string | null;
   onSelectAsset: (assetName: string) => void;
+  onAddToCart: (assetName: string) => void;
 }
 
 const AssetGrid: React.FC<AssetGridProps> = ({
@@ -21,14 +22,22 @@ const AssetGrid: React.FC<AssetGridProps> = ({
   onQuantityChange,
   onEditListing,
   selectedAsset,
-  onSelectAsset
+  onSelectAsset,
+  onAddToCart
 }) => {
+  // Filter balances to only show those that have prices
+  const balancesWithPrices = balances.filter(balance => 
+    prices.some(price => price.asset_name === balance.asset_name)
+  );
+
   return (
     <div className="listing-assets">
       <h2>Available Assets</h2>
       <div className="assets-grid">
-        {balances.map((balance, index) => {
+        {balancesWithPrices.map((balance, index) => {
           const price = prices.find(p => p.asset_name === balance.asset_name);
+          const isSelected = selectedAsset === balance.asset_name;
+          
           return (
             <AssetCard
               key={`${balance.asset_name}-${index}`}
@@ -38,8 +47,9 @@ const AssetGrid: React.FC<AssetGridProps> = ({
               pinataGateway={pinataGateway}
               onQuantityChange={(increment) => onQuantityChange(balance.asset_name, increment)}
               onEditListing={onEditListing}
+              onAddToCart={() => onAddToCart(balance.asset_name)}
               onSelectAsset={() => onSelectAsset(balance.asset_name)}
-              isSelected={selectedAsset === balance.asset_name}
+              isSelected={isSelected}
             />
           );
         })}

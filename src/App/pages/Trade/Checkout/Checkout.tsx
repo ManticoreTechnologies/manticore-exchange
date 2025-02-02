@@ -81,19 +81,22 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
 
         try {
             // Group items by listing ID
-            const listingOrders = items.reduce((acc: { [key: string]: { asset_name: string, amount: number }[] }, item) => {
+            const listingOrders = items.reduce((acc: { [key: string]: CartItem[] }, item) => {
                 if (!acc[item.listingId]) {
                     acc[item.listingId] = [];
                 }
-                acc[item.listingId].push({
-                    asset_name: item.asset_name,
-                    amount: item.quantity  // Changed from quantity to amount to match API requirements
-                });
+                acc[item.listingId].push(item);
                 return acc;
             }, {});
 
             // Create orders for each listing
-            const orderPromises = Object.entries(listingOrders).map(([listingId, orderItems]) => {
+            const orderPromises = Object.entries(listingOrders).map(([listingId, listingItems]) => {
+                // Format items according to backend requirements
+                const formattedItems = listingItems.map(item => ({
+                    asset_name: item.asset_name,
+                    amount: item.quantity.toString() // Convert to string as per backend format
+                }));
+
                 return fetch(`${trading_api_url}/listings/${listingId}/orders/`, {
                     method: 'POST',
                     headers: {
@@ -101,7 +104,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
                     },
                     body: JSON.stringify({
                         buyer_address: buyerAddress,
-                        items: orderItems
+                        items: formattedItems
                     }),
                 }).then(async response => {
                     const data = await response.json();

@@ -1,31 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCopy } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiCheckCircle, FiAlertCircle, FiClock } from 'react-icons/fi';
 import './OrderStatus.css';
+
+interface OrderItem {
+    asset_name: string;
+    amount: string;
+    price_evr: string;
+    fee_evr: string;
+}
 
 interface OrderDetails {
     id: string;
     status: string;
-    payment_address?: string;
+    buyer_address: string;
+    payment_address: string;
+    total_price_evr: string;
+    total_fee_evr: string;
+    total_payment_evr: string;
+    items: OrderItem[];
+    created_at: string;
+    updated_at: string;
     error?: string;
-    items?: Array<{
-        asset_name: string;
-        amount: number;
-        price_evr?: string;
-    }>;
-    created_at?: string;
-    updated_at?: string;
-    listing_id?: string;
-    buyer_address?: string;
-    total_price_evr?: string;
-    total_payment_evr?: string;
-    total_fee_evr?: string;
+}
+
+interface Balance {
+    confirmed_balance: string;
+    pending_balance: string;
+}
+
+interface PayoutInfo {
+    is_completed: boolean;
+    failure_count: number;
+    last_attempt: string;
+    completed_at: string;
+    total_fees_paid: string;
+}
+
+interface FulfillmentItem {
+    amount: string;
+    fulfilled_at: string;
+    tx_hash: string;
+}
+
+interface OrderStatus {
+    order_id: string;
+    status: string;
+    total_required: string;
+    total_paid: string;
+    is_paid: boolean;
+    balances: {
+        EVR: Balance;
+    };
+    payout_info?: PayoutInfo;
+    fulfillment: {
+        [key: string]: FulfillmentItem;
+    };
 }
 
 const OrderStatus: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
     const [order, setOrder] = useState<OrderDetails | null>(null);
+    const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -34,12 +71,23 @@ const OrderStatus: React.FC = () => {
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
-                const response = await fetch(`${trading_api_url}/orders/${orderId}`);
-                if (!response.ok) {
+                setLoading(true);
+                const [orderResponse, statusResponse] = await Promise.all([
+                    fetch(`${trading_api_url}/orders/${orderId}`),
+                    fetch(`${trading_api_url}/orders/${orderId}/status`)
+                ]);
+
+                if (!orderResponse.ok || !statusResponse.ok) {
                     throw new Error('Failed to fetch order details');
                 }
-                const data = await response.json();
-                setOrder(data);
+
+                const [orderData, statusData] = await Promise.all([
+                    orderResponse.json(),
+                    statusResponse.json()
+                ]);
+
+                setOrder(orderData);
+                setOrderStatus(statusData);
             } catch (err) {
                 setError('Failed to load order details. Please try again later.');
                 console.error('Error fetching order details:', err);
@@ -55,10 +103,12 @@ const OrderStatus: React.FC = () => {
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'complete':
+            case 'completed':
                 return 'var(--success-color)';
             case 'pending':
+            case 'paid':
                 return 'var(--warning-color)';
+            case 'expired':
             case 'failed':
                 return 'var(--error-color)';
             default:
@@ -69,6 +119,10 @@ const OrderStatus: React.FC = () => {
     const handleCopyAddress = (address: string) => {
         navigator.clipboard.writeText(address);
         // You could add a toast notification here
+    };
+
+    const formatDateTime = (dateStr: string) => {
+        return new Date(dateStr).toLocaleString();
     };
 
     if (loading) {
@@ -108,78 +162,137 @@ const OrderStatus: React.FC = () => {
                         </div>
                     </div>
 
-                    {order.payment_address && (
-                        <div className="payment-info">
-                            <h3>Payment Information</h3>
-                            <div className="payment-details">
-                                <div className="payment-row">
-                                    <span className="label">Send EVR to:</span>
-                                    <div className="address-copy">
-                                        <span>{order.payment_address}</span>
-                                        <button 
-                                            onClick={() => handleCopyAddress(order.payment_address!)}
-                                            className="copy-button"
-                                            title="Copy address"
-                                        >
-                                            <FiCopy />
-                                        </button>
-                                    </div>
+                    {/* Payment Information */}
+                    <div className="payment-info">
+                        <h3>Payment Information</h3>
+                        <div className="payment-details">
+                            <div className="payment-row">
+                                <span className="label">Send EVR to:</span>
+                                <div className="address-copy">
+                                    <span>{order.payment_address}</span>
+                                    <button 
+                                        onClick={() => handleCopyAddress(order.payment_address)}
+                                        className="copy-button"
+                                        title="Copy address"
+                                    >
+                                        <FiCopy />
+                                    </button>
                                 </div>
-                                {order.total_payment_evr && (
+                            </div>
+                            {orderStatus && (
+                                <>
                                     <div className="payment-row">
-                                        <span className="label">Total to Pay:</span>
-                                        <span className="value">{order.total_payment_evr} EVR</span>
+                                        <span className="label">Total Required:</span>
+                                        <span className="value">{orderStatus.total_required} EVR</span>
                                     </div>
-                                )}
-                                {order.total_price_evr && (
                                     <div className="payment-row">
-                                        <span className="label">Item Total:</span>
-                                        <span className="value">{order.total_price_evr} EVR</span>
+                                        <span className="label">Total Paid:</span>
+                                        <span className="value">{orderStatus.total_paid} EVR</span>
                                     </div>
-                                )}
-                                {order.total_fee_evr && (
                                     <div className="payment-row">
-                                        <span className="label">Network Fee:</span>
-                                        <span className="value">{order.total_fee_evr} EVR</span>
+                                        <span className="label">Payment Status:</span>
+                                        <span className="value status-text">
+                                            {orderStatus.is_paid ? (
+                                                <><FiCheckCircle className="status-icon success" /> Paid</>
+                                            ) : (
+                                                <><FiClock className="status-icon pending" /> Awaiting Payment</>
+                                            )}
+                                        </span>
                                     </div>
-                                )}
+                                    <div className="payment-row">
+                                        <span className="label">EVR Balance:</span>
+                                        <span className="value">
+                                            {orderStatus.balances.EVR.confirmed_balance} EVR
+                                            {orderStatus.balances.EVR.pending_balance !== "0.0" && (
+                                                <span className="pending-balance">
+                                                    (+{orderStatus.balances.EVR.pending_balance} pending)
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                </>
+                            )}
+                            <div className="payment-row">
+                                <span className="label">Item Total:</span>
+                                <span className="value">{order.total_price_evr} EVR</span>
+                            </div>
+                            <div className="payment-row">
+                                <span className="label">Network Fee:</span>
+                                <span className="value">{order.total_fee_evr} EVR</span>
                             </div>
                         </div>
-                    )}
+                    </div>
 
-                    {order.items && order.items.length > 0 && (
-                        <div className="order-items">
-                            <h3>Items</h3>
-                            {order.items.map((item, index) => (
-                                <div key={index} className="order-item">
-                                    <div className="item-details">
-                                        <span className="item-name">{item.asset_name}</span>
-                                        <span className="item-quantity">x{item.amount}</span>
-                                    </div>
-                                    {item.price_evr && (
-                                        <span className="item-price">{item.price_evr} EVR</span>
+                    {/* Order Items */}
+                    <div className="order-items">
+                        <h3>Items</h3>
+                        {order.items.map((item, index) => (
+                            <div key={index} className="order-item">
+                                <div className="item-details">
+                                    <span className="item-name">{item.asset_name}</span>
+                                    <span className="item-quantity">x{item.amount}</span>
+                                </div>
+                                <div className="item-info">
+                                    <span className="item-price">{item.price_evr} EVR</span>
+                                    {orderStatus?.fulfillment[item.asset_name] && (
+                                        <div className="item-transfer-status">
+                                            <div className="status-text">
+                                                <FiCheckCircle className="status-icon success" />
+                                                Transferred
+                                                <button 
+                                                    onClick={() => handleCopyAddress(orderStatus.fulfillment[item.asset_name].tx_hash)}
+                                                    className="copy-button"
+                                                    title="Copy TX Hash"
+                                                >
+                                                    <FiCopy />
+                                                </button>
+                                                <div className="transfer-timestamp">
+                                                    {formatDateTime(orderStatus.fulfillment[item.asset_name].fulfilled_at)}
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            </div>
+                        ))}
+                    </div>
 
-                    {order.buyer_address && (
-                        <div className="buyer-info">
-                            <h3>Delivery Information</h3>
-                            <div className="address-copy">
-                                <span>{order.buyer_address}</span>
-                                <button 
-                                    onClick={() => handleCopyAddress(order.buyer_address!)}
-                                    className="copy-button"
-                                    title="Copy address"
-                                >
-                                    <FiCopy />
-                                </button>
+                    {/* Payout Information */}
+                    {orderStatus?.payout_info && (
+                        <div className="payout-info">
+                            <h3>Payout Information</h3>
+                            <div className="payout-details">
+                                <div className="payout-row">
+                                    <span className="label">Status:</span>
+                                    <span className="value status-text">
+                                        {orderStatus.payout_info.is_completed ? (
+                                            <><FiCheckCircle className="status-icon success" /> Completed</>
+                                        ) : (
+                                            <><FiAlertCircle className="status-icon error" /> Failed</>
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="payout-row">
+                                    <span className="label">Total Fees Paid:</span>
+                                    <span className="value">{orderStatus.payout_info.total_fees_paid} EVR</span>
+                                </div>
+                                {orderStatus.payout_info.completed_at && (
+                                    <div className="payout-row">
+                                        <span className="label">Completed:</span>
+                                        <span className="value">{formatDateTime(orderStatus.payout_info.completed_at)}</span>
+                                    </div>
+                                )}
+                                {orderStatus.payout_info.failure_count > 0 && (
+                                    <div className="payout-row">
+                                        <span className="label">Failed Attempts:</span>
+                                        <span className="value">{orderStatus.payout_info.failure_count}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
 
+                    {/* Error Display */}
                     {order.error && (
                         <div className="order-error">
                             <h3>Error</h3>
@@ -187,19 +300,16 @@ const OrderStatus: React.FC = () => {
                         </div>
                     )}
 
+                    {/* Timestamps */}
                     <div className="order-timestamps">
-                        {order.created_at && (
-                            <div className="timestamp">
-                                <span>Created:</span>
-                                <span>{new Date(order.created_at).toLocaleString()}</span>
-                            </div>
-                        )}
-                        {order.updated_at && (
-                            <div className="timestamp">
-                                <span>Last Updated:</span>
-                                <span>{new Date(order.updated_at).toLocaleString()}</span>
-                            </div>
-                        )}
+                        <div className="timestamp">
+                            <span>Created:</span>
+                            <span>{formatDateTime(order.created_at)}</span>
+                        </div>
+                        <div className="timestamp">
+                            <span>Last Updated:</span>
+                            <span>{formatDateTime(order.updated_at)}</span>
+                        </div>
                     </div>
                 </div>
             </div>

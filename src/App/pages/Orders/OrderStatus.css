@@ -62,14 +62,70 @@
     text-transform: uppercase;
 }
 
-.payment-info {
+.payment-info,
+.payout-info {
     margin-bottom: var(--spacing-6);
 }
 
-.payment-info h3 {
+.payment-info h3,
+.payout-info h3 {
     font-size: var(--font-size-lg);
     color: var(--text-primary);
     margin-bottom: var(--spacing-3);
+}
+
+.payment-details,
+.payout-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    background-color: var(--background-primary);
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius-md);
+}
+
+.payment-row,
+.payout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.payment-row .label,
+.payout-row .label {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    min-width: 120px;
+}
+
+.payment-row .value,
+.payout-row .value {
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.status-text {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.status-icon {
+    font-size: var(--font-size-lg);
+}
+
+.status-icon.success {
+    color: var(--success-color);
+}
+
+.status-icon.pending {
+    color: var(--warning-color);
+}
+
+.status-icon.error {
+    color: var(--error-color);
 }
 
 .address-copy {
@@ -79,6 +135,7 @@
     background-color: var(--background-primary);
     padding: var(--spacing-3) var(--spacing-4);
     border-radius: var(--border-radius-md);
+    flex: 1;
 }
 
 .address-copy span {
@@ -148,10 +205,22 @@
     border-radius: var(--border-radius-sm);
 }
 
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
 .item-price {
     font-family: var(--font-mono);
     color: var(--text-primary);
     font-weight: var(--font-weight-medium);
+}
+
+.item-transfer-status {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
 }
 
 .order-error {
@@ -200,48 +269,6 @@
     margin-bottom: var(--spacing-4);
 }
 
-.payment-details {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-    background-color: var(--background-primary);
-    padding: var(--spacing-4);
-    border-radius: var(--border-radius-md);
-}
-
-.payment-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-4);
-}
-
-.payment-row .label {
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    min-width: 100px;
-}
-
-.payment-row .value {
-    font-family: var(--font-mono);
-    color: var(--text-primary);
-    font-weight: var(--font-weight-medium);
-}
-
-.payment-row .address-copy {
-    flex: 1;
-}
-
-.buyer-info {
-    margin-bottom: var(--spacing-6);
-}
-
-.buyer-info h3 {
-    font-size: var(--font-size-lg);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-3);
-}
-
 @media (max-width: 768px) {
     .order-status-page {
         padding: var(--spacing-4);
@@ -253,6 +280,18 @@
         gap: var(--spacing-3);
     }
 
+    .payment-row,
+    .payout-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+
+    .payment-row .label,
+    .payout-row .label {
+        min-width: auto;
+    }
+
     .address-copy {
         flex-direction: column;
         gap: var(--spacing-3);
@@ -260,5 +299,11 @@
 
     .address-copy span {
         word-break: break-all;
+    }
+
+    .item-info {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--spacing-2);
     }
 } 

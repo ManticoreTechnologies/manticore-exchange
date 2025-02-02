@@ -106,10 +106,44 @@
   margin-bottom: var(--spacing-4);
 }
 
+.price-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+}
+
 .price-asset-name {
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
-  margin-bottom: var(--spacing-3);
+}
+
+.remove-price-button {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  cursor: pointer;
+  padding: var(--spacing-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+}
+
+.remove-price-button:hover {
+  color: var(--color-error-hover);
+  transform: scale(1.1);
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.balance-info {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .price-inputs {
@@ -118,17 +152,146 @@
   gap: var(--spacing-3);
 }
 
-.price-separator {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-  margin: var(--spacing-2) 0;
+.add-price-section {
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+  margin-top: var(--spacing-4);
 }
 
-.asset-price-inputs {
+.add-price-section h3 {
+  margin: 0 0 var(--spacing-4) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.add-price-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.add-price-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+  align-self: flex-start;
+}
+
+.add-price-button:hover:not(:disabled) {
+  background-color: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.add-price-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.add-price-button:disabled {
+  background-color: var(--color-disabled);
+  cursor: not-allowed;
+}
+
+.balances-section {
+  margin-top: var(--spacing-6);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-4);
+}
+
+.expand-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-3);
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.expand-button:hover {
+  background-color: var(--background-secondary);
+  border-radius: var(--border-radius-md);
+}
+
+.expand-button svg {
+  width: 1.2em;
+  height: 1.2em;
+  transition: transform var(--transition-normal);
+}
+
+.balances-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-3);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-4);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-md);
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3);
+  background: var(--background-primary);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.balance-item .balance-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.balance-item .balance-info strong {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.balance-item .balance-info span {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.form-group label {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.edit-input {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--background-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-normal);
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
 }
 
 .modal-actions {
@@ -137,13 +300,102 @@
   margin-top: var(--spacing-6);
 }
 
+.cancel-button,
+.save-button {
+  padding: var(--spacing-2) var(--spacing-6);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.cancel-button {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.cancel-button:hover {
+  background: var(--background-secondary);
+}
+
+.save-button {
+  background-color: var(--accent-color);
+  border: none;
+  color: var(--text-on-accent);
+}
+
+.save-button:hover {
+  background-color: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.save-button:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 640px) {
   .edit-listing-modal {
     padding: var(--spacing-4);
     width: 95%;
   }
 
-  .asset-price-inputs {
+  .balances-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.deposit-section {
+  margin: var(--spacing-4) 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.deposit-content {
+  padding: var(--spacing-4);
+  background-color: var(--background-color-light);
+}
+
+.qr-code {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.qr-code img {
+  max-width: 200px;
+  height: auto;
+  border-radius: var(--border-radius);
+}
+
+.deposit-address {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3);
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.deposit-address:hover {
+  background-color: var(--background-color-hover);
+}
+
+.deposit-address span {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  word-break: break-all;
+}
+
+.copy-icon {
+  margin-left: var(--spacing-2);
+  color: var(--text-color-secondary);
+}
+
+.deposit-address:hover .copy-icon {
+  color: var(--text-color);
 } 

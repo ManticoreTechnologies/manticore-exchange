@@ -159,6 +159,27 @@
     background: var(--background-primary);
 }
 
+.manager-button-container {
+    margin-top: var(--spacing-6);
+    text-align: center;
+}
+
+.manager-button {
+    display: inline-block;
+    padding: var(--spacing-3) var(--spacing-6);
+    background: var(--accent-color);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.manager-button:hover {
+    background: var(--hover-color);
+    transform: translateY(-1px);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 640px) {
     .ipfs-container {
@@ -181,5 +202,10 @@
     
     .upload-section {
         padding: var(--spacing-4);
+    }
+    
+    .manager-button {
+        width: 100%;
+        text-align: center;
     }
 }

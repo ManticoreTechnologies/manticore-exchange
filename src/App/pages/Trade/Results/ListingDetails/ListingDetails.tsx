@@ -59,6 +59,7 @@ import {
 import PriceHistory from './components/PriceHistory/PriceHistory';
 import SelectedAssetDisplay from './components/SelectedAssetDisplay/SelectedAssetDisplay';
 import EditListingModal from './components/EditListingModal/EditListingModal';
+import useCart from '@/App/hooks/useCart';
 
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
@@ -130,6 +131,7 @@ const ListingDetails: React.FC = () => {
       remove: []
     }
   });
+  const { addToCart } = useCart();
 
   // Fetch listing data
   useEffect(() => {
@@ -221,6 +223,39 @@ const ListingDetails: React.FC = () => {
 
   const handleEditListing = () => {
     setIsEditModalOpen(true);
+  };
+
+  const handleAddToCart = (assetName: string) => {
+    const asset = listing?.balances.find(b => b.asset_name === assetName);
+    const price = listing?.prices.find(p => p.asset_name === assetName);
+    const quantity = quantities[assetName] || 1;
+
+    if (!asset || !price || !listing) return;
+
+    const cartItem = {
+      listingId: listing.id,
+      name: listing.name,
+      description: listing.description,
+      image_ipfs_hash: listing.image_ipfs_hash,
+      quantity: quantity,
+      unitPrice: price.price_evr,
+      asset_name: assetName,
+      seller_address: listing.seller_address
+    };
+
+    addToCart(cartItem);
+
+    // Show success notification
+    setNotification({
+      show: true,
+      type: 'success',
+      message: `Added ${quantity} ${assetName} to cart`
+    });
+
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, show: false }));
+    }, 3000);
   };
 
   const handleShare = async () => {
@@ -351,7 +386,6 @@ const ListingDetails: React.FC = () => {
   return (
     <div className="listing-details">
       <ListingHeader 
-        cartItemCount={0} 
         onShare={handleShare} 
         onManageListing={handleEditListing}
       />
@@ -382,7 +416,7 @@ const ListingDetails: React.FC = () => {
         </section>
 
         <section className="listing-secondary">
-          <AssetGrid 
+          <AssetGrid
             balances={listing?.balances || []}
             prices={listing?.prices || []}
             quantities={quantities}
@@ -391,6 +425,7 @@ const ListingDetails: React.FC = () => {
             onEditListing={handleEditListing}
             selectedAsset={selectedAsset?.asset_name || null}
             onSelectAsset={handleAssetSelect}
+            onAddToCart={handleAddToCart}
           />
 
           {selectedAsset && (
@@ -406,32 +441,6 @@ const ListingDetails: React.FC = () => {
             listingId={listing?.id || ''}
             selectedAsset={selectedAsset?.asset_name || null}
           />
-
-          {qrCodeData && (
-            <div className="qr-code-container">
-              <div className="qr-code-label">Deposit Address</div>
-              <div className="qr-code">
-                <img
-                  src={qrCodeData}
-                  alt="Deposit Address QR Code"
-                />
-              </div>
-              <div 
-                className="qr-code-address"
-                onClick={() => {
-                  navigator.clipboard.writeText(listing?.deposit_address || '');
-                  setNotification({
-                    show: true,
-                    type: 'success',
-                    message: 'Address copied to clipboard!'
-                  });
-                }}
-                title="Click to copy address"
-              >
-                {listing?.deposit_address}
-              </div>
-            </div>
-          )}
         </section>
       </main>
 
@@ -440,7 +449,22 @@ const ListingDetails: React.FC = () => {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           onSubmit={handleEditSubmit}
-          listing={listing}
+          listing={{
+            name: listing.name,
+            description: listing.description,
+            prices: listing.prices,
+            balances: listing.balances,
+            deposit_address: listing.deposit_address,
+            qrCodeData: qrCodeData
+          }}
+          onCopyAddress={() => {
+            navigator.clipboard.writeText(listing.deposit_address);
+            setNotification({
+              show: true,
+              type: 'success',
+              message: 'Address copied to clipboard!'
+            });
+          }}
         />
       )}
 

@@ -16,6 +16,7 @@ interface AssetCardProps {
   onQuantityChange: (increment: boolean) => void;
   onEditListing: () => void;
   onSelectAsset: () => void;
+  onAddToCart: () => void;
   isSelected: boolean;
 }
 
@@ -27,9 +28,13 @@ const AssetCard: React.FC<AssetCardProps> = ({
   onQuantityChange,
   onEditListing,
   onSelectAsset,
+  onAddToCart,
   isSelected
 }) => {
   const available = Number(asset.confirmed_balance);
+
+  // If there's no price, we shouldn't render the card at all
+  if (!price) return null;
 
   return (
     <div 
@@ -38,18 +43,18 @@ const AssetCard: React.FC<AssetCardProps> = ({
     >
       <div className="asset-header">
         {asset.ipfs_hash && (
-          <div className="asset-media">
-            <img
+        <div className="asset-media">
+          <img
               src={`${pinataGateway}${asset.ipfs_hash}`}
-              alt={asset.asset_name}
+            alt={asset.asset_name}
               className="asset-image"
-            />
-          </div>
-        )}
-        <div className="asset-info">
-          <h3>{asset.asset_name}</h3>
+          />
+        </div>
+      )}
+      <div className="asset-info">
+        <h3>{asset.asset_name}</h3>
           <span className="asset-price">
-            {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR
+            {formatEvrAmount(price.price_evr)} EVR
           </span>
         </div>
       </div>
@@ -68,7 +73,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
           {available} available
         </span>
       </div>
-
+      
       <div className="asset-controls">
         <div className="quantity-controls">
           <button 
@@ -93,17 +98,29 @@ const AssetCard: React.FC<AssetCardProps> = ({
             +
           </button>
         </div>
-
-        <button 
-          className="edit-listing-button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onEditListing();
-          }}
-        >
-          <FiEdit3 />
-          Edit
-        </button>
+        
+        <div className="action-buttons">
+          <button 
+            className="add-to-cart-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart();
+            }}
+          >
+            Add to Cart
+          </button>
+          
+          <button 
+            className="edit-listing-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditListing();
+            }}
+          >
+            <FiEdit3 />
+            Edit
+          </button>
+        </div>
       </div>
     </div>
   );
