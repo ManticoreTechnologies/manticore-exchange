@@ -18,6 +18,8 @@ const SelectedAssetDisplay: React.FC<SelectedAssetDisplayProps> = ({
   ipfsGateway,
   onClose
 }) => {
+    console.log(asset);
+    
   return (
     <div className="selected-asset-display">
       <div className="selected-asset-content">

@@ -11,9 +11,15 @@ interface OrderDetails {
     items?: Array<{
         asset_name: string;
         amount: number;
+        price_evr?: string;
     }>;
     created_at?: string;
     updated_at?: string;
+    listing_id?: string;
+    buyer_address?: string;
+    total_price_evr?: string;
+    total_payment_evr?: string;
+    total_fee_evr?: string;
 }
 
 const OrderStatus: React.FC = () => {
@@ -104,15 +110,39 @@ const OrderStatus: React.FC = () => {
 
                     {order.payment_address && (
                         <div className="payment-info">
-                            <h3>Payment Address</h3>
-                            <div className="address-copy">
-                                <span>{order.payment_address}</span>
-                                <button 
-                                    onClick={() => handleCopyAddress(order.payment_address!)}
-                                    className="copy-button"
-                                >
-                                    <FiCopy />
-                                </button>
+                            <h3>Payment Information</h3>
+                            <div className="payment-details">
+                                <div className="payment-row">
+                                    <span className="label">Send EVR to:</span>
+                                    <div className="address-copy">
+                                        <span>{order.payment_address}</span>
+                                        <button 
+                                            onClick={() => handleCopyAddress(order.payment_address!)}
+                                            className="copy-button"
+                                            title="Copy address"
+                                        >
+                                            <FiCopy />
+                                        </button>
+                                    </div>
+                                </div>
+                                {order.total_payment_evr && (
+                                    <div className="payment-row">
+                                        <span className="label">Total to Pay:</span>
+                                        <span className="value">{order.total_payment_evr} EVR</span>
+                                    </div>
+                                )}
+                                {order.total_price_evr && (
+                                    <div className="payment-row">
+                                        <span className="label">Item Total:</span>
+                                        <span className="value">{order.total_price_evr} EVR</span>
+                                    </div>
+                                )}
+                                {order.total_fee_evr && (
+                                    <div className="payment-row">
+                                        <span className="label">Network Fee:</span>
+                                        <span className="value">{order.total_fee_evr} EVR</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -122,10 +152,31 @@ const OrderStatus: React.FC = () => {
                             <h3>Items</h3>
                             {order.items.map((item, index) => (
                                 <div key={index} className="order-item">
-                                    <span>{item.asset_name}</span>
-                                    <span>x{item.amount}</span>
+                                    <div className="item-details">
+                                        <span className="item-name">{item.asset_name}</span>
+                                        <span className="item-quantity">x{item.amount}</span>
+                                    </div>
+                                    {item.price_evr && (
+                                        <span className="item-price">{item.price_evr} EVR</span>
+                                    )}
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {order.buyer_address && (
+                        <div className="buyer-info">
+                            <h3>Delivery Information</h3>
+                            <div className="address-copy">
+                                <span>{order.buyer_address}</span>
+                                <button 
+                                    onClick={() => handleCopyAddress(order.buyer_address!)}
+                                    className="copy-button"
+                                    title="Copy address"
+                                >
+                                    <FiCopy />
+                                </button>
+                            </div>
                         </div>
                     )}
 

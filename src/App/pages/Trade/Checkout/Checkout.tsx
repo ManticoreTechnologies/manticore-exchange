@@ -19,6 +19,17 @@ interface OrderResponse {
     status: string;
     payment_address?: string;
     error?: string;
+    items?: Array<{
+        asset_name: string;
+        amount: number;
+        price_evr?: string;
+    }>;
+    total_price_evr?: string;
+    total_payment_evr?: string;
+    total_fee_evr?: string;
+    buyer_address?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface CheckoutProps {
@@ -298,38 +309,99 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
                 ) : (
                     <div className="order-status-container">
                         <div className="order-header">
-                            <h2>Order Status</h2>
+                            <h2>Orders Created Successfully!</h2>
+                            <p className="order-subtitle">Please complete the payment to receive your items</p>
                         </div>
 
                         <div className="order-details">
-                            {orderData.map((order: any, index: number) => (
+                            {orderData.map((order: OrderResponse, index: number) => (
                                 <div key={index} className="order-detail-item">
                                     <div className="order-id">
-                                        Order ID: {order.id}
+                                        <span>Order #{order.id}</span>
                                         <button 
                                             className="copy-button"
                                             onClick={() => navigator.clipboard.writeText(order.id)}
+                                            title="Copy Order ID"
                                         >
                                             <FiCopy />
                                         </button>
                                     </div>
+
                                     <div className="order-status">
                                         Status: <span className={`status-badge ${order.status.toLowerCase()}`}>
                                             {order.status}
                                         </span>
                                     </div>
+
+                                    {order.items && order.items.length > 0 && (
+                                        <div className="order-items-list">
+                                            <h4>Items</h4>
+                                            {order.items.map((item, idx) => (
+                                                <div key={idx} className="order-item-detail">
+                                                    <span>{item.asset_name}</span>
+                                                    <span>x{item.amount}</span>
+                                                    {item.price_evr && (
+                                                        <span className="item-price">{item.price_evr} EVR</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
                                     {order.payment_address && (
-                                        <div className="payment-address">
-                                            Payment Address: 
-                                            <div className="address-copy">
-                                                <span>{order.payment_address}</span>
-                                                <button 
-                                                    className="copy-button"
-                                                    onClick={() => navigator.clipboard.writeText(order.payment_address)}
-                                                >
-                                                    <FiCopy />
-                                                </button>
+                                        <div className="payment-info">
+                                            <h4>Payment Details</h4>
+                                            <div className="payment-row">
+                                                <span className="label">Send payment to:</span>
+                                                <div className="address-copy">
+                                                    <span>{order.payment_address}</span>
+                                                    <button 
+                                                        className="copy-button"
+                                                        onClick={() => navigator.clipboard.writeText(order.payment_address!)}
+                                                        title="Copy Payment Address"
+                                                    >
+                                                        <FiCopy />
+                                                    </button>
+                                                </div>
                                             </div>
+                                            {order.total_payment_evr && (
+                                                <div className="payment-row">
+                                                    <span className="label">Total to Pay:</span>
+                                                    <span className="value highlight">{order.total_payment_evr} EVR</span>
+                                                </div>
+                                            )}
+                                            {order.total_price_evr && (
+                                                <div className="payment-row">
+                                                    <span className="label">Items Total:</span>
+                                                    <span className="value">{order.total_price_evr} EVR</span>
+                                                </div>
+                                            )}
+                                            {order.total_fee_evr && (
+                                                <div className="payment-row">
+                                                    <span className="label">Network Fee:</span>
+                                                    <span className="value">{order.total_fee_evr} EVR</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="delivery-info">
+                                        <h4>Delivery Information</h4>
+                                        <div className="address-copy">
+                                            <span>{order.buyer_address}</span>
+                                            <button 
+                                                className="copy-button"
+                                                onClick={() => navigator.clipboard.writeText(order.buyer_address!)}
+                                                title="Copy Delivery Address"
+                                            >
+                                                <FiCopy />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {order.created_at && (
+                                        <div className="order-timestamp">
+                                            Created: {new Date(order.created_at).toLocaleString()}
                                         </div>
                                     )}
                                 </div>
@@ -343,6 +415,18 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
                                 ))}
                             </div>
                         )}
+
+                        <div className="order-actions">
+                            <p className="order-note">
+                                * Your orders have been saved. You can access them anytime from the orders menu.
+                            </p>
+                            <button 
+                                className="proceed-button"
+                                onClick={onCheckoutComplete}
+                            >
+                                Continue Shopping
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
