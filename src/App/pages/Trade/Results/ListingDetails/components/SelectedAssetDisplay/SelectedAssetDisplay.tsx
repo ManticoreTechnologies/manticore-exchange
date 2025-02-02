@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiExternalLink } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import { Balance, Price } from '../../types';
 import { formatEvrAmount } from '@/utils/formatting';
 import './SelectedAssetDisplay.css';
@@ -35,7 +36,16 @@ const SelectedAssetDisplay: React.FC<SelectedAssetDisplayProps> = ({
         </div>
         
         <div className="selected-asset-info">
-          <h3>{asset.asset_name}</h3>
+          <div className="selected-asset-header">
+            <h3>{asset.asset_name}</h3>
+            <Link 
+              to={`/asset/%23${encodeURIComponent(asset.asset_name)}`} 
+              className="view-asset-link"
+            >
+              <FiExternalLink />
+              <span>View Asset</span>
+            </Link>
+          </div>
           <div className="selected-asset-details">
             <span className="price">
               {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR

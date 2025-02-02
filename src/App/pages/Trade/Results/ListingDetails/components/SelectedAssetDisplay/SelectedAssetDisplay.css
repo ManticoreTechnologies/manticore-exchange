@@ -77,4 +77,30 @@
 .close-selection:hover {
   background: var(--background-tertiary);
   color: var(--text-primary);
+}
+
+.selected-asset-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.view-asset-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.view-asset-link:hover {
+  background: var(--background-tertiary);
+}
+
+.view-asset-link svg {
+  font-size: var(--font-size-base);
 } 

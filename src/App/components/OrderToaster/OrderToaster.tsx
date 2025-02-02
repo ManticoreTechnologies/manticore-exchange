@@ -16,8 +16,10 @@ const OrderToaster: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const navigate = useNavigate();
 
+    const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
+
     useEffect(() => {
-        const loadOrders = () => {
+        const loadOrders = async () => {
             const existingOrders = Cookies.get('manticore_orders');
             if (existingOrders) {
                 try {
@@ -26,10 +28,39 @@ const OrderToaster: React.FC = () => {
                         const validOrders = parsedOrders.filter(order => 
                             order && order.id && order.status
                         );
-                        setOrders(validOrders);
+
+                        // Fetch latest status for each order
+                        const updatedOrders = await Promise.all(
+                            validOrders.map(async (order) => {
+                                try {
+                                    const response = await fetch(`${trading_api_url}/orders/${order.id}`);
+                                    if (!response.ok) {
+                                        console.error(`Failed to fetch status for order ${order.id}`);
+                                        return order; // Keep existing order data on error
+                                    }
+                                    return await response.json();
+                                } catch (error) {
+                                    console.error(`Error fetching order ${order.id}:`, error);
+                                    return order; // Keep existing order data on error
+                                }
+                            })
+                        );
+
+                        // Filter out completed/failed orders after 1 hour
+                        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+                        const activeOrders = updatedOrders.filter(order => {
+                            const isActive = order.status.toLowerCase() === 'pending';
+                            const isRecent = !order.updated_at || new Date(order.updated_at) > oneHourAgo;
+                            return isActive || isRecent;
+                        });
                         
-                        if (validOrders.length === 0) {
+                        setOrders(activeOrders);
+                        
+                        // Update cookies with latest order data
+                        if (activeOrders.length === 0) {
                             Cookies.remove('manticore_orders');
+                        } else {
+                            Cookies.set('manticore_orders', JSON.stringify(activeOrders));
                         }
                     }
                 } catch (error) {
@@ -43,9 +74,10 @@ const OrderToaster: React.FC = () => {
         };
 
         loadOrders();
-        const interval = setInterval(loadOrders, 60000);
+        // Poll for updates every 30 seconds
+        const interval = setInterval(loadOrders, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [trading_api_url]);
 
     const handleOrderClick = (orderId: string) => {
         navigate(`/orders/${orderId}`);
