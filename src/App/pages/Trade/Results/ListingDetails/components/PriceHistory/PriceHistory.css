@@ -1,0 +1,39 @@
+.price-history {
+  margin-top: var(--spacing-6);
+}
+
+.price-history h2 {
+  margin-bottom: var(--spacing-4);
+  color: var(--text-primary);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: var(--text-muted);
+}
+
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: var(--color-error);
+}
+
+.price-chart-title {
+  display: flex;
+  align-items: center;
+}
+
+.selected-asset {
+  color: var(--accent-color);
+  font-weight: var(--font-weight-bold);
+}
+
+.title-separator {
+  margin: 0 var(--spacing-2);
+  color: var(--text-muted);
+} 

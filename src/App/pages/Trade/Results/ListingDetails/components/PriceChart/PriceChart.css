@@ -1,0 +1,44 @@
+.price-chart {
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
+  height: 400px;
+  margin-bottom: var(--spacing-4);
+}
+
+.price-chart-container {
+  margin-top: var(--spacing-4);
+}
+
+.price-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.time-range-selector {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.time-range-button {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--background-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.time-range-button:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.time-range-button.active {
+  background: var(--accent-color);
+  color: var(--background-primary);
+  border-color: var(--accent-color);
+} 

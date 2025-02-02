@@ -48,6 +48,17 @@ import QRCode from 'qrcode';
 import './ListingDetails.css';
 import ManticoreLogo from '@/images/enhanced_logo.png';
 import { formatEvrAmount, truncateAddress } from '@/utils/formatting';
+import {
+  AssetHistory,
+  TransactionHistory,
+  ListingHeader,
+  ListingInfo,
+  ListingMedia,
+  AssetGrid
+} from './components';
+import { Listing, Balance, Price } from './types';
+import PriceHistory from './components/PriceHistory/PriceHistory';
+import SelectedAssetDisplay from './components/SelectedAssetDisplay/SelectedAssetDisplay';
 
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
@@ -98,6 +109,7 @@ const ListingDetails: React.FC = () => {
   }>({ show: false, type: 'success', message: '' });
   const [assetMediaStates, setAssetMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
   const [qrCodeData, setQrCodeData] = useState<string>('');
+  const [selectedAsset, setSelectedAsset] = useState<Balance | null>(null);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -255,6 +267,15 @@ const ListingDetails: React.FC = () => {
     }
   }, [listing?.deposit_address]);
 
+  const handleAssetSelect = (assetName: string) => {
+    if (selectedAsset?.asset_name === assetName) {
+      setSelectedAsset(null); // Deselect if clicking the same asset
+    } else {
+      const asset = listing?.balances.find(b => b.asset_name === assetName) || null;
+      setSelectedAsset(asset);
+    }
+  };
+
   if (loading) {
     return (
       <div className="listing-details">
@@ -296,219 +317,89 @@ const ListingDetails: React.FC = () => {
 
   return (
     <div className="listing-details">
-      <header className="details-header">
-        <button className="action-button back-button" onClick={() => navigate('/trade')}>
-          <FiArrowLeft /> Back to Listings
-        </button>
-        <div className="header-actions">
-          <button className="action-button share-button" onClick={handleShare}>
-            <FiShare2 /> Share
-          </button>
-          <button 
-            className="action-button cart-button" 
-            onClick={() => navigate('/cart')}
-            data-count={cart.length || ''}
-          >
-            <FiShoppingCart /> Cart
-          </button>
-        </div>
-      </header>
+      <ListingHeader 
+        cartItemCount={cart.length} 
+        onShare={handleShare} 
+      />
 
       <main className="listing-content">
         <section className="listing-primary">
-          <div className="listing-media">
-            {listing.image_ipfs_hash ? (
-              <img
-                src={`${PINATA_GATEWAY}${listing.image_ipfs_hash}`}
-                alt={listing.name}
-                className="listing-image"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = ManticoreLogo;
-                  target.className = "placeholder-image";
+          <ListingMedia 
+            imageHash={listing?.image_ipfs_hash} 
+            name={listing?.name || ''} 
+            pinataGateway={PINATA_GATEWAY} 
+          />
+          
+          <ListingInfo 
+            name={listing?.name || ''}
+            description={listing?.description || ''}
+            sellerAddress={listing?.seller_address || ''}
+            id={listing?.id || ''}
+            createdAt={listing?.created_at || ''}
+            status={listing?.status || ''}
+            onCopyAddress={() => {
+              navigator.clipboard.writeText(listing?.seller_address || '');
+              setNotification({
+                show: true,
+                type: 'success',
+                message: 'Address copied!'
+              });
             }}
-              />
-        ) : (
-              <img
-                src={ManticoreLogo}
-                alt="Manticore Logo"
-                className="placeholder-image"
-              />
-            )}
-          </div>
-
-          <div className="listing-info">
-            <div className="listing-header">
-              <h1>{listing.name}</h1>
-              <div className="seller-info">
-                <span>Listed by</span>
-                <div className="seller-address">
-                  <span>{truncateAddress(listing.seller_address)}</span>
-            <button 
-                    className="copy-button"
-              onClick={() => {
-                      navigator.clipboard.writeText(listing.seller_address);
-                      setNotification({
-                        show: true,
-                        type: 'success',
-                        message: 'Address copied!'
-                      });
-              }}
-            >
-                    <FiCopy />
-            </button>
-                  <a 
-                    href={`https://explorer.manticore.exchange/address/${listing.seller_address}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="explorer-link"
-            >
-                    <FiExternalLink />
-                  </a>
-          </div>
-              </div>
-      </div>
-
-            <div className="listing-description">
-              <h2>Description</h2>
-              <p>{listing.description}</p>
-      </div>
-
-            <div className="listing-details-info">
-              <div className="detail-item">
-                <span className="detail-label">Listing ID</span>
-                <span className="detail-value">{listing.id}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Created</span>
-                <span className="detail-value">
-                  {new Date(listing.created_at).toLocaleDateString()}
-                </span>
-                </div>
-              <div className="detail-item">
-                <span className="detail-label">Status</span>
-                <span className={`detail-value status-${listing.status.toLowerCase()}`}>
-                  {listing.status}
-                </span>
-                </div>
-                </div>
-                </div>
+          />
         </section>
 
-        <section className="listing-assets">
-          <h2>Available Assets</h2>
-          <div className="assets-grid">
-            {listing.balances.map((balance, index) => {
-              const price = listing.prices.find(p => p.asset_name === balance.asset_name);
-              const available = Number(balance.confirmed_balance);
-              const quantity = quantities[balance.asset_name] || 1;
+        <section className="listing-secondary">
+          <AssetGrid 
+            balances={listing?.balances || []}
+            prices={listing?.prices || []}
+            quantities={quantities}
+            pinataGateway={PINATA_GATEWAY}
+            onQuantityChange={handleQuantityChange}
+            onAddToCart={handleAddToCart}
+            selectedAsset={selectedAsset?.asset_name || null}
+            onSelectAsset={handleAssetSelect}
+          />
 
-              return (
-                <div key={`${balance.asset_name}-${index}`} className="asset-card">
-                  <div className="asset-header">
-                    {price?.ipfs_hash && (
-                      <div className="asset-media">
-                        {assetMediaStates[balance.asset_name]?.isVideo ? (
-                          <video
-                            src={`${PINATA_GATEWAY}${price.ipfs_hash}`}
-                            className="asset-video"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                />
-            ) : (
-                          <img
-                            src={`${PINATA_GATEWAY}${price.ipfs_hash}`}
-                            alt={balance.asset_name}
-                            className="asset-image"
-                          />
-            )}
-              </div>
-                    )}
-                    <div className="asset-info">
-                      <h3>{balance.asset_name}</h3>
-                      <span className="asset-price">
-                        {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR
-                      </span>
-              </div>
-              </div>
+          {selectedAsset && (
+            <SelectedAssetDisplay
+              asset={selectedAsset}
+              price={listing?.prices.find(p => p.asset_name === selectedAsset.asset_name)}
+              ipfsGateway={PINATA_GATEWAY}
+              onClose={() => setSelectedAsset(null)}
+            />
+          )}
 
-                  <div className="asset-availability">
-                    <div className="availability-indicator">
-                      <div 
-                        className="availability-bar"
-                        style={{ 
-                          width: `${Math.min((available / (available + 1)) * 100, 100)}%`,
-                          backgroundColor: available > 0 ? 'var(--accent-color)' : 'var(--color-error)'
-                        }}
-                      />
-            </div>
-                    <span className="availability-text">
-                      {available} available
-                    </span>
-            </div>
+          <PriceHistory 
+            listingId={listing?.id || ''}
+            selectedAsset={selectedAsset?.asset_name || null}
+          />
 
-                  <div className="asset-controls">
-                    <div className="quantity-controls">
-                      <button 
-                        className="quantity-button"
-                        onClick={() => handleQuantityChange(balance.asset_name, false)}
-                        disabled={quantity <= 1}
-                      >
-                        −
-                      </button>
-                      <span className="quantity-display">{quantity}</span>
-                      <button 
-                        className="quantity-button"
-                        onClick={() => handleQuantityChange(balance.asset_name, true)}
-                        disabled={quantity >= available}
-                      >
-                        +
-                      </button>
-          </div>
-
-                    <button 
-                      className="add-to-cart-button"
-                      onClick={() => handleAddToCart(balance.asset_name)}
-                      disabled={available <= 0 || !price}
-                    >
-                      <FiShoppingCart />
-                      {available <= 0 ? 'Out' : !price ? 'N/A' : 'Add'}
-                    </button>
-        </div>
-
-            </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {qrCodeData && (
-          <div className="qr-code-container">
-            <div className="qr-code-label">Deposit Address</div>
-            <div className="qr-code">
-              <img
-                src={qrCodeData}
-                alt="Deposit Address QR Code"
+          {qrCodeData && (
+            <div className="qr-code-container">
+              <div className="qr-code-label">Deposit Address</div>
+              <div className="qr-code">
+                <img
+                  src={qrCodeData}
+                  alt="Deposit Address QR Code"
                       />
                 </div>
-            <div 
-              className="qr-code-address"
-              onClick={() => {
-                navigator.clipboard.writeText(listing.deposit_address);
-                setNotification({
-                  show: true,
-                  type: 'success',
-                  message: 'Address copied to clipboard!'
-                });
-              }}
-              title="Click to copy address"
-            >
-              {listing.deposit_address}
-              </div>
-          </div>
-        )}
+              <div 
+                className="qr-code-address"
+                onClick={() => {
+                  navigator.clipboard.writeText(listing.deposit_address);
+                  setNotification({
+                    show: true,
+                    type: 'success',
+                    message: 'Address copied to clipboard!'
+                  });
+                }}
+                title="Click to copy address"
+              >
+                {listing.deposit_address}
+                </div>
+            </div>
+          )}
+        </section>
       </main>
 
       {notification.show && (

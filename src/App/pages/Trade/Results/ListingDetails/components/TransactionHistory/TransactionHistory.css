@@ -1,0 +1,64 @@
+.transaction-history {
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.transaction-graph {
+  background: var(--background-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.transaction-table-container {
+  overflow-x: auto;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: var(--spacing-3);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.transaction-table th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+}
+
+.transaction-type {
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.transaction-type.in {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.transaction-type.out {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.tx-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.tx-link:hover {
+  text-decoration: underline;
+} 
