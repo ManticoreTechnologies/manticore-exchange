@@ -8,10 +8,20 @@ interface PriceHistoryProps {
   selectedAsset?: string | null;
 }
 
+interface PriceData {
+  time: string;
+  asset_name: string;
+  num_sales: number;
+  min_price: string;
+  max_price: string;
+  avg_price: string;
+  volume: string;
+}
+
 type TimeRange = '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL';
 
 const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset }) => {
-  const [priceData, setPriceData] = useState<any[]>([]);
+  const [priceData, setPriceData] = useState<PriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('1M');
@@ -20,11 +30,18 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
     const fetchPriceHistory = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${
-            import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'
-          }:8000/listings/${listingId}/prices${selectedAsset ? `?asset=${selectedAsset}` : ''}&range=${timeRange}`
-        );
+        const baseUrl = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${
+          import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'
+        }:8000/listings/${encodeURIComponent(listingId)}/prices`;
+
+        const params = new URLSearchParams();
+        if (selectedAsset) {
+          params.append('asset', selectedAsset);
+        }
+        params.append('range', timeRange);
+
+        const url = `${baseUrl}?${params.toString()}`;
+        const response = await axios.get<PriceData[]>(url);
         setPriceData(response.data);
       } catch (err) {
         setError('Failed to load price history');
@@ -44,6 +61,8 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
   if (error) {
     return <div className="error-message">{error}</div>;
   }
+
+  const hasData = priceData.length > 0;
 
   return (
     <div className="price-chart-container">
@@ -73,11 +92,39 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
           ))}
         </div>
       </div>
-      <PriceChart 
-        data={priceData}
-        assetName={selectedAsset || undefined}
-        isIndex={!selectedAsset}
-      />
+      <div className="price-history-content">
+        <PriceChart 
+          data={priceData}
+          assetName={selectedAsset || undefined}
+          isIndex={!selectedAsset}
+        />
+        <div className="price-table">
+          {hasData ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Price</th>
+                  <th>Volume</th>
+                  <th>Sales</th>
+                </tr>
+              </thead>
+              <tbody>
+                {priceData.map((price) => (
+                  <tr key={price.time}>
+                    <td>{new Date(price.time).toLocaleDateString()}</td>
+                    <td>{Number(price.avg_price).toFixed(2)}</td>
+                    <td>{Number(price.volume).toLocaleString()}</td>
+                    <td>{price.num_sales.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="no-data-message">No sales data available</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

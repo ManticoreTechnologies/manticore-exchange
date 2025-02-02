@@ -36,4 +36,52 @@
 .title-separator {
   margin: 0 var(--spacing-2);
   color: var(--text-muted);
+}
+
+.price-history-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.price-table {
+  background: var(--surface-02);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
+}
+
+.price-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.price-table th,
+.price-table td {
+  padding: var(--spacing-2);
+  text-align: right;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.price-table th {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.price-table td:first-child,
+.price-table th:first-child {
+  text-align: left;
+}
+
+.price-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.no-data-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: var(--font-size-lg);
 } 

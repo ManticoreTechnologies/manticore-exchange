@@ -8,46 +8,40 @@ import {
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { Line } from 'react-chartjs-2';
-import { formatEvrAmount } from '@/utils/formatting';
+import { PriceData } from '../PriceHistory/PriceHistory';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  TimeScale,
   Title,
   Tooltip,
-  Legend,
-  TimeScale
+  Legend
 );
-
-interface PriceData {
-  timestamp: string;
-  price: string;
-}
 
 interface PriceChartProps {
   data: PriceData[];
   assetName?: string;
-  isIndex?: boolean;
+  isIndex: boolean;
 }
 
-const PriceChart: React.FC<PriceChartProps> = ({ data, assetName, isIndex = false }) => {
+const PriceChart: React.FC<PriceChartProps> = ({ data, assetName, isIndex }) => {
   const chartData = {
-    labels: data.map(d => new Date(d.timestamp)),
     datasets: [
       {
-        label: isIndex ? 'Listing Index' : `${assetName} Price`,
-        data: data.map(d => parseFloat(d.price)),
-        borderColor: isIndex ? 'rgb(75, 192, 192)' : 'rgb(255, 99, 132)',
-        backgroundColor: isIndex ? 'rgba(75, 192, 192, 0.5)' : 'rgba(255, 99, 132, 0.5)',
-        tension: 0.4,
-        pointRadius: 2,
-        pointHoverRadius: 5,
+        label: assetName || 'Price Index',
+        data: data.map(item => ({
+          x: new Date(item.time),
+          y: Number(item.avg_price)
+        })),
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
       }
     ]
   };
@@ -55,34 +49,11 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, assetName, isIndex = fals
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: isIndex ? 'Listing Price Index' : `${assetName} Price History`,
-      },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            return `Price: ${formatEvrAmount(context.raw.toString())} EVR`;
-          }
-        }
-      }
-    },
     scales: {
       x: {
-        type: 'timeseries' as const,
+        type: 'time' as const,
         time: {
-          unit: 'day' as const,
-          displayFormats: {
-            day: 'MMM d, yyyy'
-          }
+          unit: 'day' as const
         },
         title: {
           display: true,
@@ -92,17 +63,19 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, assetName, isIndex = fals
       y: {
         title: {
           display: true,
-          text: 'Price (EVR)'
-        },
-        ticks: {
-          callback: (value: number) => formatEvrAmount(value.toString())
+          text: 'Price'
         }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
       }
     }
   };
 
   return (
-    <div className="price-chart">
+    <div style={{ height: '400px' }}>
       <Line data={chartData} options={options} />
     </div>
   );
