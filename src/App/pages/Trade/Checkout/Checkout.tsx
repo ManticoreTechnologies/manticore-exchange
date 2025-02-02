@@ -44,20 +44,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [orderData, setOrderData] = useState<OrderResponse[]>([]);
-    const [showToaster, setShowToaster] = useState<boolean>(false);
 
     const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
-
-    useEffect(() => {
-        // Check for existing orders in cookies on mount
-        const existingOrders = Cookies.get('manticore_orders');
-        if (existingOrders) {
-            const orders = JSON.parse(existingOrders);
-            if (orders.length > 0) {
-                setShowToaster(true);
-            }
-        }
-    }, []);
 
     const saveOrdersToCookies = (orders: OrderResponse[]) => {
         const existingOrders = Cookies.get('manticore_orders');
@@ -69,7 +57,6 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
         }
         
         Cookies.set('manticore_orders', JSON.stringify(allOrders), { expires: 7 }); // Expires in 7 days
-        setShowToaster(true);
     };
 
     const calculateTotals = () => {
@@ -430,17 +417,6 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
                     </div>
                 )}
             </div>
-            {showToaster && (
-                <div className="orders-toaster">
-                    <FiShoppingBag className="toaster-icon" />
-                    <div className="toaster-content">
-                        <div className="toaster-title">Active Orders</div>
-                        <div className="toaster-message">
-                            Click to view your orders
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

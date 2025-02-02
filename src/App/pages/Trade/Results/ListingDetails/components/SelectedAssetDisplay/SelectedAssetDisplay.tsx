@@ -18,8 +18,8 @@ const SelectedAssetDisplay: React.FC<SelectedAssetDisplayProps> = ({
   ipfsGateway,
   onClose
 }) => {
-    console.log(asset);
-    
+    console.log(price);
+
   return (
     <div className="selected-asset-display">
       <div className="selected-asset-content">
@@ -49,12 +49,26 @@ const SelectedAssetDisplay: React.FC<SelectedAssetDisplayProps> = ({
             </Link>
           </div>
           <div className="selected-asset-details">
-            <span className="price">
-              {price ? formatEvrAmount(price.price_evr) : 'N/A'} EVR
-            </span>
-            <span className="balance">
-              Balance: {asset.confirmed_balance}
-            </span>
+            <div className="price-info">
+              <span className="label">Price:</span>
+              <span className="price">
+                {price ? `${formatEvrAmount(price.price_evr)} EVR` : 'N/A'}
+              </span>
+            </div>
+            <div className="balance-info">
+              <span className="label">Balance:</span>
+              <span className="balance">
+                {formatEvrAmount(asset.confirmed_balance)}
+              </span>
+            </div>
+            {asset.pending_balance !== "0" && (
+              <div className="pending-info">
+                <span className="label">Pending:</span>
+                <span className="pending">
+                  {formatEvrAmount(asset.pending_balance)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

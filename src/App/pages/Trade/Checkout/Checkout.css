@@ -440,64 +440,7 @@
     }
 }
 
-.orders-toaster {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-4);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    z-index: 1000;
-    animation-name: slideInToaster;
-    animation-duration: 0.3s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: forwards;
-}
-
-.orders-toaster:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-xl);
-    background-color: var(--background-tertiary);
-}
-
-.toaster-icon {
-    font-size: var(--font-size-xl);
-    color: var(--accent-color);
-}
-
-.toaster-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-}
-
-.toaster-title {
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-primary);
-}
-
-.toaster-message {
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-}
-
-@keyframes slideInToaster {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Remove toaster styles */
 .order-subtitle {
     color: var(--text-secondary);
     font-size: var(--font-size-base);

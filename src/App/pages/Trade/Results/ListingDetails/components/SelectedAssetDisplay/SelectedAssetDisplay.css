@@ -50,10 +50,32 @@
 
 .selected-asset-details {
   display: flex;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-2);
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.price-info,
+.balance-info,
+.pending-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-width: 70px;
+}
+
+.price,
+.balance,
+.pending {
+  font-family: var(--font-mono);
+}
+
+.pending {
+  color: var(--color-warning);
 }
 
 .selected-asset-details .price {

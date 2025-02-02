@@ -56,7 +56,6 @@ import {
   ListingMedia,
   AssetGrid
 } from './components';
-import { Listing, Balance, Price } from './types';
 import PriceHistory from './components/PriceHistory/PriceHistory';
 import SelectedAssetDisplay from './components/SelectedAssetDisplay/SelectedAssetDisplay';
 
@@ -363,7 +362,7 @@ const ListingDetails: React.FC = () => {
           {selectedAsset && (
             <SelectedAssetDisplay
               asset={selectedAsset}
-              price={listing?.prices.find(p => p.asset_name === selectedAsset.asset_name)}
+              price={listing.prices.find(p => p.asset_name === selectedAsset.asset_name)}
               ipfsGateway={PINATA_GATEWAY}
               onClose={() => setSelectedAsset(null)}
             />
