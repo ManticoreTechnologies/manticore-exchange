@@ -34,8 +34,8 @@ const api = {
   },
   node: async <T = unknown>(endpoint: string, body: object): Promise<T> => {
     try {
-      console.log(`${apiUrl}/evrmore/rpc/${endpoint}`, body);
-      const response = await axios.post<T>(`${apiUrl}/evrmore/rpc/${endpoint}`, body);
+      console.log(`${apiUrl}/evrmore/${endpoint}`, body);
+      const response = await axios.post<T>(`${apiUrl}/evrmore/${endpoint}`, body);
       console.log(response.data);
       return response.data; // Return only the JSON data
     } catch (error) {

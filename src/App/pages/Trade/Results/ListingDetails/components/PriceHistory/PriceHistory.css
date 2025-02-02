@@ -1,10 +1,15 @@
-.price-history {
-  margin-top: var(--spacing-6);
+.sales-history {
+  background: var(--surface-01);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
 }
 
-.price-history h2 {
-  margin-bottom: var(--spacing-4);
+.sales-history h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
+  margin: 0;
 }
 
 .loading-spinner {
@@ -21,9 +26,19 @@
   align-items: center;
   height: 400px;
   color: var(--color-error);
+  background: var(--surface-02);
+  border-radius: var(--border-radius-lg);
 }
 
-.price-chart-title {
+.sales-chart-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sales-chart-title {
   display: flex;
   align-items: center;
 }
@@ -38,43 +53,85 @@
   color: var(--text-muted);
 }
 
-.price-history-content {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-4);
+.time-range-selector {
+  display: flex;
+  gap: var(--spacing-1);
+  margin-left: auto;
+  background: var(--surface-02);
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-lg);
 }
 
-.price-table {
+.time-range-button {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: none;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-range-button:hover {
+  color: var(--text-primary);
+  background: var(--surface-03);
+}
+
+.time-range-button.active {
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+}
+
+.sales-history-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--spacing-6);
+}
+
+.sales-table {
   background: var(--surface-02);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-4);
+  height: fit-content;
 }
 
-.price-table table {
+.sales-table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.price-table th,
-.price-table td {
-  padding: var(--spacing-2);
+.sales-table th,
+.sales-table td {
+  padding: var(--spacing-3);
   text-align: right;
   border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
 }
 
-.price-table th {
+.sales-table th {
   color: var(--text-muted);
   font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.price-table td:first-child,
-.price-table th:first-child {
+.sales-table td {
+  color: var(--text-primary);
+}
+
+.sales-table td:first-child,
+.sales-table th:first-child {
   text-align: left;
 }
 
-.price-table tbody tr:last-child td {
+.sales-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.sales-table tbody tr:hover {
+  background: var(--surface-03);
 }
 
 .no-data-message {
@@ -84,38 +141,7 @@
   height: 200px;
   color: var(--text-muted);
   font-size: var(--font-size-lg);
-}
-
-.time-range-selector {
-  display: flex;
-  gap: var(--spacing-2);
-  margin-left: auto;
-}
-
-.time-range-button {
-  padding: var(--spacing-1) var(--spacing-2);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  background: var(--surface-01);
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.time-range-button:hover {
   background: var(--surface-02);
-  color: var(--text-primary);
-}
-
-.time-range-button.active {
-  background: var(--accent-color);
-  color: var(--text-on-accent);
-  border-color: var(--accent-color);
-}
-
-.price-chart-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  border: 1px dashed var(--border-color);
 } 

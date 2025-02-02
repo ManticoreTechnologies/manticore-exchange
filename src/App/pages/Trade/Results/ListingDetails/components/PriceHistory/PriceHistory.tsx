@@ -29,7 +29,7 @@ const TIME_RANGES = [
 
 type TimeRange = typeof TIME_RANGES[number]['value'];
 
-const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset }) => {
+const SalesHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset }) => {
   const [priceData, setPriceData] = useState<PriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,18 +78,18 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
   const hasData = priceData.length > 0;
 
   return (
-    <div className="price-chart-container">
-      <div className="price-chart-header">
-        <div className="price-chart-title">
+    <div className="sales-history">
+      <div className="sales-chart-header">
+        <div className="sales-chart-title">
           <h2>
             {selectedAsset ? (
               <>
                 <span className="selected-asset">{selectedAsset}</span>
                 <span className="title-separator">•</span>
-                <span>Price History</span>
+                <span>Sales History</span>
               </>
             ) : (
-              'Listing Price Index'
+              'Sales History'
             )}
           </h2>
         </div>
@@ -105,18 +105,18 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
           ))}
         </div>
       </div>
-      <div className="price-history-content">
+      <div className="sales-history-content">
         <PriceChart 
           data={priceData}
           assetName={selectedAsset || undefined}
           isIndex={!selectedAsset}
         />
-        <div className="price-table">
+        <div className="sales-table">
           {hasData ? (
             <table>
               <thead>
                 <tr>
-                  <th>Time</th>
+                  <th>Date</th>
                   <th>Price</th>
                   <th>Volume</th>
                   <th>Sales</th>
@@ -142,4 +142,4 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
   );
 };
 
-export default PriceHistory; 
+export default SalesHistory; 
