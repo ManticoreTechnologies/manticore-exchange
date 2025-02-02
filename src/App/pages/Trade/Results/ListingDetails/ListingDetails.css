@@ -1449,3 +1449,94 @@
 .qr-code-address:hover {
   background: var(--background-hover);
 }
+
+.edit-button {
+  background-color: var(--background-tertiary);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.edit-button:hover {
+  background-color: var(--accent-color);
+  color: var(--background-primary);
+}
+
+.edit-button.active {
+  background-color: var(--accent-color);
+  color: var(--background-primary);
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.form-group label {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.edit-input {
+  width: 100%;
+  padding: var(--spacing-3);
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-normal);
+}
+
+.edit-input:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+textarea.edit-input {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.save-button,
+.cancel-button {
+  flex: 1;
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.save-button {
+  background-color: var(--accent-color);
+  color: var(--background-primary);
+  border: none;
+}
+
+.save-button:hover {
+  filter: brightness(1.1);
+}
+
+.cancel-button {
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.cancel-button:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}

@@ -1,17 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiShoppingCart, FiShare2 } from 'react-icons/fi';
+import { FiArrowLeft, FiShare2, FiSettings } from 'react-icons/fi';
 
 interface ListingHeaderProps {
   cartItemCount: number;
   onShare: () => void;
+  onManageListing: () => void;
 }
 
-const ListingHeader: React.FC<ListingHeaderProps> = ({ cartItemCount, onShare }) => {
+const ListingHeader: React.FC<ListingHeaderProps> = ({ onShare, onManageListing }) => {
   const navigate = useNavigate();
 
   return (
-    <header className="details-header">
+    <div className="details-header">
       <button className="action-button back-button" onClick={() => navigate('/trade')}>
         <FiArrowLeft /> Back to Listings
       </button>
@@ -20,14 +21,13 @@ const ListingHeader: React.FC<ListingHeaderProps> = ({ cartItemCount, onShare })
           <FiShare2 /> Share
         </button>
         <button 
-          className="action-button cart-button" 
-          onClick={() => navigate('/cart')}
-          data-count={cartItemCount || ''}
+          className="action-button manage-button" 
+          onClick={onManageListing}
         >
-          <FiShoppingCart /> Cart
+          <FiSettings /> Manage Listing
         </button>
       </div>
-    </header>
+    </div>
   );
 };
 

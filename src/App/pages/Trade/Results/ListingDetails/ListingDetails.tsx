@@ -43,7 +43,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink, FiEdit3 } from 'react-icons/fi';
 import QRCode from 'qrcode';
 import './ListingDetails.css';
 import ManticoreLogo from '@/images/enhanced_logo.png';
@@ -58,6 +58,7 @@ import {
 } from './components';
 import PriceHistory from './components/PriceHistory/PriceHistory';
 import SelectedAssetDisplay from './components/SelectedAssetDisplay/SelectedAssetDisplay';
+import EditListingModal from './components/EditListingModal/EditListingModal';
 
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
@@ -93,13 +94,24 @@ interface Listing {
   balances: Balance[];
 }
 
+interface ListingUpdates {
+  name: string;
+  description: string;
+  prices: {
+    add_or_update: {
+      asset_name: string;
+      price_evr: string;
+    }[];
+    remove: string[];
+  };
+}
+
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<any[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [notification, setNotification] = useState<{
     show: boolean;
@@ -109,14 +121,15 @@ const ListingDetails: React.FC = () => {
   const [assetMediaStates, setAssetMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
   const [qrCodeData, setQrCodeData] = useState<string>('');
   const [selectedAsset, setSelectedAsset] = useState<Balance | null>(null);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('manticore_cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState<ListingUpdates>({
+    name: '',
+    description: '',
+    prices: {
+      add_or_update: [],
+      remove: []
     }
-  }, []);
+  });
 
   // Fetch listing data
   useEffect(() => {
@@ -133,6 +146,17 @@ const ListingDetails: React.FC = () => {
             initialQuantities[balance.asset_name] = 1;
           });
           setQuantities(initialQuantities);
+          setEditForm({
+            name: response.data.name,
+            description: response.data.description,
+            prices: {
+              add_or_update: response.data.prices.map((p: Price) => ({
+                asset_name: p.asset_name,
+                price_evr: p.price_evr
+              })),
+              remove: []
+            }
+          });
         }
       } catch (err) {
         setError('Failed to load listing details. Please try again later.');
@@ -189,44 +213,14 @@ const ListingDetails: React.FC = () => {
       const available = balance ? Number(balance.confirmed_balance) : 0;
       
       let newQty = increment ? currentQty + 1 : currentQty - 1;
-      newQty = Math.max(1, Math.min(newQty, available)); // Clamp between 1 and available
+      newQty = Math.max(1, Math.min(newQty, available));
       
       return { ...prev, [assetName]: newQty };
     });
-    };
-
-  const handleAddToCart = (assetName: string) => {
-    if (!listing) return;
-
-    const price = listing.prices.find(p => p.asset_name === assetName);
-    const quantity = quantities[assetName] || 1;
-
-    if (!price) return;
-
-    const newItem = {
-      listingId: listing.id,
-      name: listing.name,
-      description: listing.description,
-      image_ipfs_hash: listing.image_ipfs_hash,
-      quantity,
-      unitPrice: price.price_evr,
-      asset_name: assetName,
-      seller_address: listing.seller_address
   };
 
-    const updatedCart = [...cart, newItem];
-    setCart(updatedCart);
-    localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
-
-    setNotification({
-      show: true,
-      type: 'success',
-      message: 'Item added to cart successfully!'
-    });
-    
-    setTimeout(() => {
-      setNotification(prev => ({ ...prev, show: false }));
-    }, 3000);
+  const handleEditListing = () => {
+    setIsEditModalOpen(true);
   };
 
   const handleShare = async () => {
@@ -275,6 +269,46 @@ const ListingDetails: React.FC = () => {
     }
   };
 
+  const handleEditSubmit = async (updates: ListingUpdates) => {
+    if (!listing) return;
+
+    try {
+      const response = await axios.patch(
+        `${trading_api_url}/listings/${listing.id}`,
+        {
+          name: updates.name,
+          description: updates.description,
+          prices: {
+            add_or_update: updates.prices.add_or_update,
+            remove: updates.prices.remove
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data) {
+        setListing({ ...listing, ...response.data });
+        setIsEditModalOpen(false);
+        setNotification({
+          show: true,
+          type: 'success',
+          message: 'Listing updated successfully!'
+        });
+      }
+    } catch (err) {
+      console.error('Error updating listing:', err);
+      setNotification({
+        show: true,
+        type: 'error',
+        message: 'Failed to update listing. Please try again.'
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="listing-details">
@@ -317,10 +351,10 @@ const ListingDetails: React.FC = () => {
   return (
     <div className="listing-details">
       <ListingHeader 
-        cartItemCount={cart.length} 
+        cartItemCount={0} 
         onShare={handleShare} 
+        onManageListing={handleEditListing}
       />
-
       <main className="listing-content">
         <section className="listing-primary">
           <ListingMedia 
@@ -354,7 +388,7 @@ const ListingDetails: React.FC = () => {
             quantities={quantities}
             pinataGateway={PINATA_GATEWAY}
             onQuantityChange={handleQuantityChange}
-            onAddToCart={handleAddToCart}
+            onEditListing={handleEditListing}
             selectedAsset={selectedAsset?.asset_name || null}
             onSelectAsset={handleAssetSelect}
           />
@@ -362,7 +396,7 @@ const ListingDetails: React.FC = () => {
           {selectedAsset && (
             <SelectedAssetDisplay
               asset={selectedAsset}
-              price={listing.prices.find(p => p.asset_name === selectedAsset.asset_name)}
+              price={listing?.prices.find(p => p.asset_name === selectedAsset.asset_name)}
               ipfsGateway={PINATA_GATEWAY}
               onClose={() => setSelectedAsset(null)}
             />
@@ -380,12 +414,12 @@ const ListingDetails: React.FC = () => {
                 <img
                   src={qrCodeData}
                   alt="Deposit Address QR Code"
-                      />
-                </div>
+                />
+              </div>
               <div 
                 className="qr-code-address"
                 onClick={() => {
-                  navigator.clipboard.writeText(listing.deposit_address);
+                  navigator.clipboard.writeText(listing?.deposit_address || '');
                   setNotification({
                     show: true,
                     type: 'success',
@@ -394,12 +428,21 @@ const ListingDetails: React.FC = () => {
                 }}
                 title="Click to copy address"
               >
-                {listing.deposit_address}
-                </div>
+                {listing?.deposit_address}
+              </div>
             </div>
           )}
         </section>
       </main>
+
+      {listing && (
+        <EditListingModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleEditSubmit}
+          listing={listing}
+        />
+      )}
 
       {notification.show && (
         <div className={`notification notification-${notification.type}`}>
