@@ -111,11 +111,11 @@ const OrderToaster: React.FC = () => {
                     >
                         <div className="order-info">
                             <div className="order-id">Order #{order.id.slice(-6)}</div>
-                            <div 
-                                className="order-status"
-                                style={{ color: getStatusColor(order.status) }}
-                            >
-                                {order.status}
+                                <div 
+                                    className="order-status"
+                                    style={{ color: getStatusColor(order.status) }}
+                                >
+                                    {order.status}
                             </div>
                         </div>
                         <FiChevronRight className="view-order-icon" />
