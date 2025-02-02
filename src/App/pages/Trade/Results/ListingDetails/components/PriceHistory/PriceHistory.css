@@ -84,4 +84,38 @@
   height: 200px;
   color: var(--text-muted);
   font-size: var(--font-size-lg);
+}
+
+.time-range-selector {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-left: auto;
+}
+
+.time-range-button {
+  padding: var(--spacing-1) var(--spacing-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--surface-01);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-range-button:hover {
+  background: var(--surface-02);
+  color: var(--text-primary);
+}
+
+.time-range-button.active {
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border-color: var(--accent-color);
+}
+
+.price-chart-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
 } 

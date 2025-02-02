@@ -18,7 +18,16 @@ interface PriceData {
   volume: string;
 }
 
-type TimeRange = '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL';
+const TIME_RANGES = [
+  { value: '1D', label: '1D' },
+  { value: '1W', label: '1W' },
+  { value: '1M', label: '1M' },
+  { value: '3M', label: '3M' },
+  { value: '1Y', label: '1Y' },
+  { value: 'ALL', label: 'ALL' }
+] as const;
+
+type TimeRange = typeof TIME_RANGES[number]['value'];
 
 const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset }) => {
   const [priceData, setPriceData] = useState<PriceData[]>([]);
@@ -54,6 +63,10 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
     fetchPriceHistory();
   }, [listingId, selectedAsset, timeRange]);
 
+  const handleTimeRangeChange = (range: TimeRange) => {
+    setTimeRange(range);
+  };
+
   if (loading) {
     return <div className="loading-spinner">Loading price history...</div>;
   }
@@ -81,13 +94,13 @@ const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
           </h2>
         </div>
         <div className="time-range-selector">
-          {(['1D', '1W', '1M', '3M', '1Y', 'ALL'] as TimeRange[]).map((range) => (
+          {TIME_RANGES.map(({ value, label }) => (
             <button
-              key={range}
-              className={`time-range-button ${timeRange === range ? 'active' : ''}`}
-              onClick={() => setTimeRange(range)}
+              key={value}
+              className={`time-range-button ${timeRange === value ? 'active' : ''}`}
+              onClick={() => handleTimeRangeChange(value)}
             >
-              {range}
+              {label}
             </button>
           ))}
         </div>
