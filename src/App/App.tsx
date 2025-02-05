@@ -40,7 +40,7 @@ import { MoonPayProvider } from '@moonpay/moonpay-react';
 import Home from "./pages/Home/Home";
 import Search from "./pages/Search/Search";
 import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
-
+import Launch from "./pages/Launch/Launch";
 
 const App: React.FC = () => {
 
@@ -80,6 +80,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="town-hall" element={<Townhall />} />
           <Route path="/orders/:orderId" element={<OrderStatus />} />
+        <Route path="/launch" element={<Launch />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

@@ -24,8 +24,7 @@ ul, ol {
 
 /* Remove default styles from links */
 a {
-    text-decoration: none;
-    color: inherit;
+    text-decoration: none; 
 }
 
 /* Make images easier to work with */
