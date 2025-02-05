@@ -1,3 +1,32 @@
+/*
+{
+  "order_id": "1339c530-ccc9-433c-8166-d9efc575c0ba",
+  "status": "pending",
+  "total_required": "101.00",
+  "total_paid": "0",
+  "is_paid": false,
+  "balances": {
+    "CREDITS": {
+      "confirmed_balance": "0",
+      "pending_balance": "0"
+    }
+  },
+  "payout_info": {
+    "is_completed": false,
+    "failure_count": 0,
+    "last_attempt": null,
+    "completed_at": null,
+    "total_fees_paid": "0"
+  },
+  "fulfillment": {
+    "CREDITS": {
+      "amount": "1",
+      "fulfilled_at": null,
+      "tx_hash": null
+    }
+  }
+}
+*/
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCopy, FiCheckCircle, FiAlertCircle, FiClock } from 'react-icons/fi';
@@ -32,15 +61,15 @@ interface Balance {
 interface PayoutInfo {
     is_completed: boolean;
     failure_count: number;
-    last_attempt: string;
-    completed_at: string;
+    last_attempt: string | null;
+    completed_at: string | null;
     total_fees_paid: string;
 }
 
 interface FulfillmentItem {
     amount: string;
-    fulfilled_at: string;
-    tx_hash: string;
+    fulfilled_at: string | null;
+    tx_hash: string | null;
 }
 
 interface OrderStatus {
@@ -50,7 +79,7 @@ interface OrderStatus {
     total_paid: string;
     is_paid: boolean;
     balances: {
-        EVR: Balance;
+        [key: string]: Balance;
     };
     payout_info?: PayoutInfo;
     fulfillment: {
@@ -199,17 +228,19 @@ const OrderStatus: React.FC = () => {
                                             )}
                                         </span>
                                     </div>
-                                    <div className="payment-row">
-                                        <span className="label">EVR Balance:</span>
-                                        <span className="value">
-                                            {orderStatus.balances.EVR.confirmed_balance} EVR
-                                            {orderStatus.balances.EVR.pending_balance !== "0.0" && (
-                                                <span className="pending-balance">
-                                                    (+{orderStatus.balances.EVR.pending_balance} pending)
-                                                </span>
-                                            )}
-                                        </span>
-                                    </div>
+                                    {Object.entries(orderStatus.balances).map(([asset, balance]) => (
+                                        <div key={asset} className="payment-row">
+                                            <span className="label">{asset} Balance:</span>
+                                            <span className="value">
+                                                {balance.confirmed_balance} {asset}
+                                                {balance.pending_balance !== "0" && (
+                                                    <span className="pending-balance">
+                                                        (+{balance.pending_balance} pending)
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </>
                             )}
                             <div className="payment-row">
@@ -237,18 +268,29 @@ const OrderStatus: React.FC = () => {
                                     {orderStatus?.fulfillment[item.asset_name] && (
                                         <div className="item-transfer-status">
                                             <div className="status-text">
-                                                <FiCheckCircle className="status-icon success" />
-                                                Transferred
-                                                <button 
-                                                    onClick={() => handleCopyAddress(orderStatus.fulfillment[item.asset_name].tx_hash)}
-                                                    className="copy-button"
-                                                    title="Copy TX Hash"
-                                                >
-                                                    <FiCopy />
-                                                </button>
-                                                <div className="transfer-timestamp">
-                                                    {formatDateTime(orderStatus.fulfillment[item.asset_name].fulfilled_at)}
-                                                </div>
+                                                {orderStatus.fulfillment[item.asset_name].fulfilled_at ? (
+                                                    <>
+                                                        <FiCheckCircle className="status-icon success" />
+                                                        Transferred
+                                                        {orderStatus.fulfillment[item.asset_name].tx_hash && (
+                                                            <button 
+                                                                onClick={() => handleCopyAddress(orderStatus.fulfillment[item.asset_name].tx_hash!)}
+                                                                className="copy-button"
+                                                                title="Copy TX Hash"
+                                                            >
+                                                                <FiCopy />
+                                                            </button>
+                                                        )}
+                                                        <div className="transfer-timestamp">
+                                                            {formatDateTime(orderStatus.fulfillment[item.asset_name].fulfilled_at!)}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FiClock className="status-icon pending" />
+                                                        Pending Transfer
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     )}
@@ -268,7 +310,7 @@ const OrderStatus: React.FC = () => {
                                         {orderStatus.payout_info.is_completed ? (
                                             <><FiCheckCircle className="status-icon success" /> Completed</>
                                         ) : (
-                                            <><FiAlertCircle className="status-icon error" /> Failed</>
+                                            <><FiClock className="status-icon pending" /> Pending</>
                                         )}
                                     </span>
                                 </div>
@@ -280,6 +322,12 @@ const OrderStatus: React.FC = () => {
                                     <div className="payout-row">
                                         <span className="label">Completed:</span>
                                         <span className="value">{formatDateTime(orderStatus.payout_info.completed_at)}</span>
+                                    </div>
+                                )}
+                                {orderStatus.payout_info.last_attempt && (
+                                    <div className="payout-row">
+                                        <span className="label">Last Attempt:</span>
+                                        <span className="value">{formatDateTime(orderStatus.payout_info.last_attempt)}</span>
                                     </div>
                                 )}
                                 {orderStatus.payout_info.failure_count > 0 && (
