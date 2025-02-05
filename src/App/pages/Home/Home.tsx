@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine } from 'react-icons/fa'; 
+import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket } from 'react-icons/fa'; 
 import HomeHero from '../../../components/HomeHero/HomeHero';
 import InfoCard from '../../../components/Cards/InfoCard';
 import { FaFaucetDrip } from 'react-icons/fa6';
+import LaunchPadBanner from '../../../components/LaunchPadBanner/LaunchPadBanner';
 import './Home.css';
 
 // Import the logo
@@ -23,6 +24,8 @@ const Home: React.FC = () => {
         logo = {manticore_logo}
         body="Your premier destination for trading digital assets on the Evrmore blockchain."
       />
+
+      <LaunchPadBanner />
 
       {/* Info Cards */}
       <div className="infocards">
@@ -82,6 +85,13 @@ const Home: React.FC = () => {
         title="Profile" 
         action="View Profile" 
         body="Manage your account, view your assets, and access exclusive features with your Manticore profile."
+      />
+      <InfoCard 
+        FaIcon={FaRocket}
+        to="/launch"
+        title="Launch Pad"
+        action="Launch Now"
+        body="Create and launch your own EVR Assets with customizable parameters including supply, price, and vesting schedules."
       />
 
       </div>
