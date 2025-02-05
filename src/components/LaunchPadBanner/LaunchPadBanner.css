@@ -16,6 +16,93 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
+/* Light theme overrides */
+[data-theme="light"] .launch-pad-banner {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(245, 245, 245, 0.98) 100%
+  );
+  border: 1px solid var(--color-primary-200);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Evrmore theme overrides */
+[data-theme="evrmore"] .launch-pad-banner {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 250, 252, 0.98) 100%
+  );
+  border: 1px solid var(--evrmore-blue-light);
+}
+
+/* Theme-specific color adjustments */
+[data-theme="light"] .rocket-icon,
+[data-theme="light"] .banner-text ul li::before {
+  color: var(--color-primary-600);
+}
+
+[data-theme="evrmore"] .rocket-icon,
+[data-theme="evrmore"] .banner-text ul li::before {
+  color: var(--evrmore-blue);
+}
+
+[data-theme="light"] .banner-text p,
+[data-theme="evrmore"] .banner-text p {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .banner-text ul li,
+[data-theme="evrmore"] .banner-text ul li {
+  color: var(--text-secondary);
+}
+
+/* CTA button theme adjustments */
+[data-theme="light"] .launch-cta {
+  background: var(--color-primary-600);
+  color: white;
+}
+
+[data-theme="light"] .launch-cta:hover {
+  background: var(--color-primary-700);
+}
+
+[data-theme="evrmore"] .launch-cta {
+  background: var(--evrmore-blue);
+  color: white;
+}
+
+[data-theme="evrmore"] .launch-cta:hover {
+  background: var(--evrmore-blue-dark);
+}
+
+/* SVG graphic theme adjustments */
+[data-theme="light"] .orbit {
+  stroke: var(--color-primary-400);
+}
+
+[data-theme="light"] .rocket-body,
+[data-theme="light"] .center-circle {
+  fill: var(--color-primary-500);
+}
+
+[data-theme="evrmore"] .orbit {
+  stroke: var(--evrmore-blue-light);
+}
+
+[data-theme="evrmore"] .rocket-body,
+[data-theme="evrmore"] .center-circle {
+  fill: var(--evrmore-blue);
+}
+
+/* Drop shadow adjustments for themes */
+[data-theme="light"] .launch-graphic {
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.1));
+}
+
+[data-theme="evrmore"] .launch-graphic {
+  filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.1));
+}
+
 .banner-content {
   max-width: var(--max-width-7xl);
   margin: 0 auto;
