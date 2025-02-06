@@ -151,11 +151,45 @@
     font-family: var(--font-mono);
     color: var(--text-primary);
     font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.status-icon {
+    font-size: var(--font-size-md);
+}
+
+.status-icon.success {
+    color: var(--success-color);
+}
+
+.status-icon.error {
+    color: var(--error-color);
+}
+
+.status-icon.pending {
+    color: var(--warning-color);
 }
 
 .order-status {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.payment-progress {
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+}
+
+.payout-status {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-style: italic;
 }
 
 .view-order-icon {

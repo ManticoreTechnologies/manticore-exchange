@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiSearch } from 'react-icons/fi';
 import useCart from '@/App/hooks/useCart';
 import './Navbar.css';
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC = memo(() => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
 
@@ -39,6 +39,6 @@ const Navbar: React.FC = () => {
       </div>
     </nav>
   );
-};
+});
 
 export default Navbar; 

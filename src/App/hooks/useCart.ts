@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface CartItem {
   listingId: string;
@@ -11,61 +11,105 @@ export interface CartItem {
   seller_address: string;
 }
 
+// Create a custom event for cart updates
+const CART_UPDATED_EVENT = 'cartUpdated';
+const cartUpdateEvent = new Event(CART_UPDATED_EVENT);
+
 export const useCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartCount, setCartCount] = useState(0);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
+  // Function to load cart data
+  const loadCart = useCallback(() => {
     const savedCart = localStorage.getItem('manticore_cart');
     if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+      try {
+        const items = JSON.parse(savedCart);
+        setCartItems(items);
+        const totalCount = items.reduce((total: number, item: CartItem) => total + item.quantity, 0);
+        setCartCount(totalCount);
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        localStorage.removeItem('manticore_cart');
+        setCartItems([]);
+        setCartCount(0);
+      }
+    } else {
+      setCartItems([]);
+      setCartCount(0);
     }
   }, []);
 
-  const addToCart = (item: CartItem) => {
+  // Load initial cart and set up listeners
+  useEffect(() => {
+    loadCart();
+
+    // Listen for custom event
+    const handleCartUpdate = () => loadCart();
+    window.addEventListener(CART_UPDATED_EVENT, handleCartUpdate);
+
+    // Listen for storage changes (other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'manticore_cart') {
+        loadCart();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener(CART_UPDATED_EVENT, handleCartUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [loadCart]);
+
+  const addToCart = useCallback((item: CartItem) => {
     setCartItems(prevItems => {
-      // Check if item already exists
       const existingItemIndex = prevItems.findIndex(
         i => i.listingId === item.listingId && i.asset_name === item.asset_name
       );
 
       let newItems;
       if (existingItemIndex !== -1) {
-        // Update quantity if item exists
         newItems = [...prevItems];
         newItems[existingItemIndex].quantity += item.quantity;
       } else {
-        // Add new item if it doesn't exist
         newItems = [...prevItems, item];
       }
 
-      // Save to localStorage
+      // Save to localStorage and dispatch event
       localStorage.setItem('manticore_cart', JSON.stringify(newItems));
+      window.dispatchEvent(cartUpdateEvent);
+
       return newItems;
     });
-  };
+  }, []);
 
-  const removeFromCart = (listingId: string, assetName: string) => {
+  const removeFromCart = useCallback((listingId: string, assetName: string) => {
     setCartItems(prevItems => {
       const newItems = prevItems.filter(
         item => !(item.listingId === listingId && item.asset_name === assetName)
       );
+      
+      // Save to localStorage and dispatch event
       localStorage.setItem('manticore_cart', JSON.stringify(newItems));
+      window.dispatchEvent(cartUpdateEvent);
+
       return newItems;
     });
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
     localStorage.removeItem('manticore_cart');
-  };
+    window.dispatchEvent(cartUpdateEvent);
+  }, []);
 
   return {
     cartItems,
     addToCart,
     removeFromCart,
     clearCart,
-    cartCount: cartItems.length
+    cartCount
   };
 };
 
