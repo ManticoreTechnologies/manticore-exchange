@@ -87,7 +87,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               e.stopPropagation();
               onQuantityChange(false);
             }}
-            disabled={quantity - (1 / Math.pow(10, units)) < (1 / Math.pow(10, units))}
+            disabled={quantity <= 1 / Math.pow(10, units)}
           >
             −
           </button>

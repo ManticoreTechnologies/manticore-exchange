@@ -883,3 +883,122 @@
     }
 }
 
+/* Add these new styles */
+
+.tags-input-container {
+    margin-bottom: var(--spacing-3);
+}
+
+.tag-input {
+    width: 100%;
+    padding: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+    background: var(--background-tertiary);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-1);
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-sm);
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-normal);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: lowercase;
+    height: 24px;
+}
+
+.tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.1);
+}
+
+.remove-tag {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0;
+    margin-left: var(--spacing-1);
+    font-size: var(--font-size-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+    opacity: 0.8;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.remove-tag:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Style tags differently in the review section */
+.review-step .tags-container .tag,
+.listing-details .tags-container .tag {
+    background: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-2);
+}
+
+/* Add a subtle animation when tags are added */
+@keyframes tagAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tag {
+    animation: tagAppear 0.2s ease-out;
+}
+
+/* Update mobile styles */
+@media (max-width: 480px) {
+    .tag {
+        font-size: var(--font-size-xs);
+        height: 20px;
+        padding: 0 var(--spacing-2);
+    }
+    
+    .remove-tag {
+        width: 14px;
+        height: 14px;
+        font-size: var(--font-size-sm);
+    }
+}
+

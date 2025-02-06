@@ -41,8 +41,9 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
     const [listingDetails, setListingDetails] = useState({
         name: '',
         description: '',
-        image_ipfs_hash: '', // Optional IPFS hash for image
-        seller_address: userAddress, // Initialize with provided address
+        image_ipfs_hash: '',
+        seller_address: userAddress,
+        tags: [] as string[],
     });
     const [assetPrices, setAssetPrices] = useState<AssetPrice[]>([{ 
         asset_name: '', 
@@ -54,6 +55,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
     const [listingResponse, setListingResponse] = useState<any>(null);
     const [slideDirection, setSlideDirection] = useState<'in' | 'out'>('in');
     const [notification, setNotification] = useState<{ show: boolean; type: string; message: string }>({ show: false, type: '', message: '' });
+    const [tagInput, setTagInput] = useState('');
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
@@ -96,6 +98,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 name: listingDetails.name.trim(),
                 description: listingDetails.description.trim(),
                 image_ipfs_hash: listingDetails.image_ipfs_hash.trim() || undefined,
+                tags: listingDetails.tags,
                 prices
             });
 
@@ -177,6 +180,27 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
         }
     };
 
+    const handleTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && tagInput.trim()) {
+            e.preventDefault();
+            const newTag = tagInput.trim().toLowerCase();
+            if (!listingDetails.tags.includes(newTag)) {
+                setListingDetails(prev => ({
+                    ...prev,
+                    tags: [...prev.tags, newTag]
+                }));
+            }
+            setTagInput('');
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setListingDetails(prev => ({
+            ...prev,
+            tags: prev.tags.filter(tag => tag !== tagToRemove)
+        }));
+    };
+
     const renderErrorMessage = () => {
         if (!errorMessage) return null;
         
@@ -240,6 +264,30 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 onChange={handleInputChange}
                 className="evr-address-input"
             />
+            <div className="tags-input-container">
+                <input
+                    type="text"
+                    placeholder="Add tags (press Enter)"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInput}
+                    className="tag-input"
+                />
+                <div className="tags-container">
+                    {listingDetails.tags.map((tag) => (
+                        <span key={tag} className="tag">
+                            {tag}
+                            <button 
+                                onClick={() => removeTag(tag)}
+                                className="remove-tag"
+                                type="button"
+                            >
+                                ×
+                            </button>
+                        </span>
+                    ))}
+                </div>
+            </div>
         </>
     );
 
@@ -295,6 +343,16 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             <div className="listing-details">
                 <p><strong>Name:</strong> {listingDetails.name}</p>
                 <p><strong>Description:</strong> {listingDetails.description}</p>
+                {listingDetails.tags.length > 0 && (
+                    <div className="tags-list">
+                        <strong>Tags:</strong>
+                        <div className="tags-container">
+                            {listingDetails.tags.map((tag) => (
+                                <span key={tag} className="tag">{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 <div className="asset-prices-list">
                     <strong>Assets and Prices:</strong>
                     {assetPrices.map((ap, index) => (
