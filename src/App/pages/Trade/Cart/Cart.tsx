@@ -4,6 +4,7 @@ import placeholderImage from '@/images/enhanced_logo.png';
 import Checkout from '../Checkout/Checkout';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import useCart from '@/App/hooks/useCart';
 
 interface CartItem {
     listingId: string;
@@ -17,15 +18,13 @@ interface CartItem {
 }
 
 interface CartProps {
-    cart: CartItem[];
-    onRemove: (index: number) => void;
-    onClear: () => void;
     onBack: () => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
+const Cart: React.FC<CartProps> = ({ onBack }) => {
     const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
     const navigate = useNavigate();
+    const { clearCart, removeFromCart, cartItems } = useCart();
     const PINATA_GATEWAY = "https://rose-decent-prawn-420.mypinata.cloud/ipfs/";
 
     const getImageUrl = (item: CartItem) => {
@@ -34,9 +33,9 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
     };
 
     const calculateTotal = () => {
-        if (!cart || cart.length === 0) return { subtotal: "0", fee: "0", total: "0" };
+        if (!cartItems || cartItems.length === 0) return { subtotal: "0", fee: "0", total: "0" };
         
-        const subtotal = cart.reduce((total, item) => 
+        const subtotal = cartItems.reduce((total, item) => 
             total + (Number(item.unitPrice) * item.quantity), 0);
         const fee = subtotal * 0.005; // 0.5% fee
         return {
@@ -54,7 +53,7 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
 
     const handleCheckoutComplete = () => {
         setIsCheckingOut(false);
-        onClear();
+        clearCart();
         navigate('/trade');
     };
 
@@ -62,12 +61,20 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
         setIsCheckingOut(false);
     };
 
+    const handleClearCart = () => {
+        clearCart();
+    };
+
+    const handleRemoveItem = (listingId: string, assetName: string) => {
+        removeFromCart(listingId, assetName);
+    };
+
     const totals = calculateTotal();
 
     if (isCheckingOut) {
         return (
             <Checkout
-                items={cart}
+                items={cartItems}
                 onCheckoutComplete={handleCheckoutComplete}
                 onBack={handleBack}
             />
@@ -83,7 +90,7 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
                 <h1>Shopping Cart</h1>
             </div>
 
-            {cart.length === 0 ? (
+            {cartItems.length === 0 ? (
                 <div className="empty-cart">
                     <p>Your cart is empty</p>
                     <button 
@@ -97,8 +104,8 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
                 <div className="cart-content">
                     <div className="cart-items-section">
                         <ul className="cart-items">
-                            {cart.map((item, index) => (
-                                <li key={index} className="cart-item">
+                            {cartItems.map((item, index) => (
+                                <li key={`${item.listingId}-${item.asset_name}`} className="cart-item">
                                     <img 
                                         src={getImageUrl(item)} 
                                         alt={item.asset_name}
@@ -122,7 +129,12 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={() => onRemove(index)} className="remove-item-button">×</button>
+                                    <button 
+                                        onClick={() => handleRemoveItem(item.listingId, item.asset_name)} 
+                                        className="remove-item-button"
+                                    >
+                                        ×
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -150,11 +162,11 @@ const Cart: React.FC<CartProps> = ({ cart, onRemove, onClear, onBack }) => {
                                 <button 
                                     className="checkout-button" 
                                     onClick={() => setIsCheckingOut(true)}
-                                    disabled={cart.length === 0}
+                                    disabled={cartItems.length === 0}
                                 >
                                     Proceed to Checkout
                                 </button>
-                                <button className="clear-cart-button" onClick={onClear}>
+                                <button className="clear-cart-button" onClick={handleClearCart}>
                                     Clear Cart
                                 </button>
                                 <button 
