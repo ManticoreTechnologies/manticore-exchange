@@ -10,8 +10,10 @@ interface AssetGridProps {
   pinataGateway: string;
   onQuantityChange: (assetName: string, increment: boolean) => void;
   onAddToCart: (assetName: string) => void;
+  onEditListing: () => void;
   selectedAsset: string | null;
   onSelectAsset: (assetName: string) => void;
+  formatAmount: (amount: string | number, units: number) => string;
 }
 
 const AssetGrid: React.FC<AssetGridProps> = ({
@@ -21,8 +23,10 @@ const AssetGrid: React.FC<AssetGridProps> = ({
   pinataGateway,
   onQuantityChange,
   onAddToCart,
+  onEditListing,
   selectedAsset,
-  onSelectAsset
+  onSelectAsset,
+  formatAmount
 }) => {
   return (
     <div className="listing-assets">
@@ -41,8 +45,10 @@ const AssetGrid: React.FC<AssetGridProps> = ({
               pinataGateway={pinataGateway}
               onQuantityChange={(increment) => onQuantityChange(balance.asset_name, increment)}
               onAddToCart={() => onAddToCart(balance.asset_name)}
+              onEditListing={onEditListing}
               onSelectAsset={() => onSelectAsset(balance.asset_name)}
               isSelected={isSelected}
+              formatAmount={formatAmount}
             />
           );
         })}

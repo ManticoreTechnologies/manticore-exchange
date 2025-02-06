@@ -1,0 +1,73 @@
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4);
+    background: var(--background-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--background-tertiary);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-all);
+
+    &:hover {
+        background: var(--background-hover);
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.back-button {
+    color: var(--text-secondary);
+    
+    &:hover {
+        color: var(--text-primary);
+    }
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.share-button {
+    background: var(--background-secondary);
+}
+
+.manage-button {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+
+    &:hover {
+        background: var(--accent-color-hover);
+    }
+}
+
+/* Theme-specific styles */
+[data-theme='evrmore'] {
+    & .manage-button {
+        background: var(--evrmore-blue);
+        border-color: var(--evrmore-blue);
+        box-shadow: 0 0 10px rgba(0, 102, 255, 0.2);
+
+        &:hover {
+            background: var(--evrmore-blue-light);
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.3);
+        }
+    }
+} 

@@ -48,6 +48,7 @@ import QRCode from 'qrcode';
 import './ListingDetails.css';
 import ManticoreLogo from '@/images/enhanced_logo.png';
 import { formatEvrAmount, truncateAddress } from '@/utils/formatting';
+import { Balance, Price, Listing } from './types';
 import {
   AssetHistory,
   TransactionHistory,
@@ -64,37 +65,6 @@ import useCart from '@/App/hooks/useCart';
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
 
-interface Balance {
-  asset_name: string;
-  confirmed_balance: string;
-  pending_balance: string;
-  last_confirmed_tx_hash: string | null;
-  last_confirmed_tx_time: string | null;
-}
-
-interface Price {
-  asset_name: string;
-  price_evr: string;
-  price_asset_name: string | null;
-  price_asset_amount: string | null;
-  ipfs_hash: string | null;
-}
-
-interface Listing {
-  id: string;
-  seller_address: string;
-  listing_address: string;
-  deposit_address: string;
-  name: string;
-  description: string;
-  image_ipfs_hash: string | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  prices: Price[];
-  balances: Balance[];
-}
-
 interface ListingUpdates {
   name: string;
   description: string;
@@ -106,6 +76,19 @@ interface ListingUpdates {
     remove: string[];
   };
 }
+
+// Add a helper function to format amounts according to units
+const formatAmount = (amount: string | number, units: number): string => {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return num.toFixed(units);
+};
+
+// Add a helper function to validate quantity against units
+const validateQuantity = (quantity: number, balance: Balance): boolean => {
+  const minAmount = 1 / Math.pow(10, balance.units);
+  const maxAmount = parseFloat(balance.confirmed_balance);
+  return quantity >= minAmount && quantity <= maxAmount;
+};
 
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -142,10 +125,10 @@ const ListingDetails: React.FC = () => {
         if (response.data) {
           console.log(response.data);
           setListing(response.data);
-          // Initialize quantities for each asset
+          // Initialize quantities for each asset with minimum unit amount
           const initialQuantities: Record<string, number> = {};
           response.data.balances.forEach((balance: Balance) => {
-            initialQuantities[balance.asset_name] = 1;
+            initialQuantities[balance.asset_name] = 1 / Math.pow(10, balance.units);
           });
           setQuantities(initialQuantities);
           setEditForm({
@@ -210,16 +193,43 @@ const ListingDetails: React.FC = () => {
 
   const handleQuantityChange = (assetName: string, increment: boolean) => {
     setQuantities(prev => {
-      const currentQty = prev[assetName] || 1;
+      const currentQty = prev[assetName] || 0;
       const balance = listing?.balances.find(b => b.asset_name === assetName);
-      const available = balance ? Number(balance.confirmed_balance) : 0;
+      if (!balance) return prev;
+
+      const units = balance.units;
+      const step = 1 / Math.pow(10, units);
+      const available = parseFloat(balance.confirmed_balance);
       
-      let newQty = increment ? currentQty + 1 : currentQty - 1;
-      newQty = Math.max(1, Math.min(newQty, available));
+      // Calculate new quantity with precise decimal handling
+      let newQty;
+      if (increment) {
+        // For increment, add exactly one unit
+        newQty = Math.min(available, currentQty + step);
+      } else {
+        // For decrement, subtract exactly one unit
+        newQty = Math.max(step, currentQty - step);
+      }
+
+      // Format to exact number of decimal places to avoid floating point issues
+      newQty = parseFloat(newQty.toFixed(units));
       
       return { ...prev, [assetName]: newQty };
     });
   };
+
+  // Initialize quantities with minimum unit amount
+  useEffect(() => {
+    if (listing) {
+      const initialQuantities: Record<string, number> = {};
+      listing.balances.forEach((balance: Balance) => {
+        // Start with exactly one unit
+        const step = 1 / Math.pow(10, balance.units);
+        initialQuantities[balance.asset_name] = step;
+      });
+      setQuantities(initialQuantities);
+    }
+  }, [listing]);
 
   const handleEditListing = () => {
     setIsEditModalOpen(true);
@@ -228,9 +238,18 @@ const ListingDetails: React.FC = () => {
   const handleAddToCart = (assetName: string) => {
     const asset = listing?.balances.find(b => b.asset_name === assetName);
     const price = listing?.prices.find(p => p.asset_name === assetName);
-    const quantity = quantities[assetName] || 1;
+    const quantity = quantities[assetName] || 0;
 
     if (!asset || !price || !listing) return;
+
+    if (!validateQuantity(quantity, asset)) {
+      setNotification({
+        show: true,
+        type: 'error',
+        message: `Invalid quantity. Must be between ${formatAmount(1 / Math.pow(10, asset.units), asset.units)} and ${formatAmount(asset.confirmed_balance, asset.units)} ${assetName}`
+      });
+      return;
+    }
 
     const cartItem = {
       listingId: listing.id,
@@ -240,19 +259,18 @@ const ListingDetails: React.FC = () => {
       quantity: quantity,
       unitPrice: price.price_evr,
       asset_name: assetName,
-      seller_address: listing.seller_address
+      seller_address: listing.seller_address,
+      units: asset.units
     };
 
     addToCart(cartItem);
 
-    // Show success notification
     setNotification({
       show: true,
       type: 'success',
-      message: `Added ${quantity} ${assetName} to cart`
+      message: `Added ${formatAmount(quantity, asset.units)} ${assetName} to cart`
     });
 
-    // Hide notification after 3 seconds
     setTimeout(() => {
       setNotification(prev => ({ ...prev, show: false }));
     }, 3000);
@@ -347,8 +365,8 @@ const ListingDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="listing-details">
-        <div className="details-header">
-          <button className="action-button back-button" onClick={() => navigate('/trade')}>
+        <div className="listing-details-header">
+          <button className="listing-details-action-button listing-details-back-button" onClick={() => navigate('/trade')}>
             <FiArrowLeft /> Back to Listings
           </button>
         </div>
@@ -363,8 +381,8 @@ const ListingDetails: React.FC = () => {
   if (error || !listing) {
     return (
       <div className="listing-details">
-        <div className="details-header">
-          <button className="action-button back-button" onClick={() => navigate('/trade')}>
+        <div className="listing-details-header">
+          <button className="listing-details-action-button listing-details-back-button" onClick={() => navigate('/trade')}>
             <FiArrowLeft /> Back to Listings
           </button>
         </div>
@@ -381,67 +399,80 @@ const ListingDetails: React.FC = () => {
         </div>
       </div>
     );
-    }
+  }
 
   return (
     <div className="listing-details">
-      <ListingHeader 
-        onShare={handleShare} 
-        onManageListing={handleEditListing}
-      />
-      <main className="listing-details-content">
-        <section className="listing-details-primary">
-          <ListingMedia 
-            imageHash={listing?.image_ipfs_hash} 
-            name={listing?.name || ''} 
-            pinataGateway={PINATA_GATEWAY} 
-          />
-          
-          <ListingInfo 
-            name={listing?.name || ''}
-            description={listing?.description || ''}
-            sellerAddress={listing?.seller_address || ''}
-            id={listing?.id || ''}
-            createdAt={listing?.created_at || ''}
-            status={listing?.status || ''}
-            onCopyAddress={() => {
-              navigator.clipboard.writeText(listing?.seller_address || '');
-              setNotification({
-                show: true,
-                type: 'success',
-                message: 'Address copied!'
-              });
-            }}
-          />
-        </section>
+      <div className="listing-details-header">
+        <button className="listing-details-action-button listing-details-back-button" onClick={() => navigate('/trade')}>
+          <FiArrowLeft /> Back to Listings
+        </button>
+        <div className="listing-details-header-actions">
+          <button className="listing-details-action-button listing-details-share-button" onClick={handleShare}>
+            <FiShare2 /> Share
+          </button>
+          <button className="listing-details-action-button listing-details-manage-button" onClick={handleEditListing}>
+            <FiEdit3 /> Manage Listing
+          </button>
+        </div>
+      </div>
 
-        <section className="listing-details-secondary">
-          <AssetGrid
-            balances={listing?.balances || []}
-            prices={listing?.prices || []}
-            quantities={quantities}
-            pinataGateway={PINATA_GATEWAY}
-            onQuantityChange={handleQuantityChange}
-            onEditListing={handleEditListing}
-            selectedAsset={selectedAsset?.asset_name || null}
-            onSelectAsset={handleAssetSelect}
-            onAddToCart={handleAddToCart}
-          />
-
-          {selectedAsset && (
-            <SelectedAssetDisplay
-              asset={selectedAsset}
-              price={listing?.prices.find(p => p.asset_name === selectedAsset.asset_name)}
-              ipfsGateway={PINATA_GATEWAY}
-              onClose={() => setSelectedAsset(null)}
+      <main className="listing-details-main">
+        <div className="listing-details-content">
+          <section className="listing-details-primary">
+            <ListingMedia 
+              imageHash={listing?.image_ipfs_hash} 
+              name={listing?.name || ''} 
+              pinataGateway={PINATA_GATEWAY} 
             />
-          )}
+            
+            <ListingInfo 
+              name={listing?.name || ''}
+              description={listing?.description || ''}
+              sellerAddress={listing?.seller_address || ''}
+              id={listing?.id || ''}
+              createdAt={listing?.created_at || ''}
+              status={listing?.status || ''}
+              onCopyAddress={() => {
+                navigator.clipboard.writeText(listing?.seller_address || '');
+                setNotification({
+                  show: true,
+                  type: 'success',
+                  message: 'Address copied!'
+                });
+              }}
+            />
+          </section>
 
-          <PriceHistory 
-            listingId={listing?.id || ''}
-            selectedAsset={selectedAsset?.asset_name || null}
-          />
-        </section>
+          <section className="listing-details-secondary">
+            <AssetGrid
+              balances={listing?.balances || []}
+              prices={listing?.prices || []}
+              quantities={quantities}
+              pinataGateway={PINATA_GATEWAY}
+              onQuantityChange={handleQuantityChange}
+              onEditListing={handleEditListing}
+              selectedAsset={selectedAsset?.asset_name || null}
+              onSelectAsset={handleAssetSelect}
+              onAddToCart={handleAddToCart}
+              formatAmount={formatAmount}
+            />
+
+            {selectedAsset && (
+              <SelectedAssetDisplay
+                asset={selectedAsset}
+                price={listing?.prices.find(p => p.asset_name === selectedAsset.asset_name)}
+                ipfsGateway={PINATA_GATEWAY}
+                onClose={() => setSelectedAsset(null)}
+              />
+            )}
+
+            <PriceHistory 
+              listingId={listing?.id || ''}
+              selectedAsset={selectedAsset?.asset_name || null}
+            />
+          </section>
+        </div>
       </main>
 
       {listing && (

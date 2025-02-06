@@ -10,6 +10,7 @@ interface FeaturedListing {
     asset_name: string;
     highlight?: string;
     image_hash: string | null;
+    balance?: string;
 }
 
 interface FeaturedListingsProps {
@@ -87,16 +88,28 @@ const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListing
                                 </div>
                             )}
                             <div className="listing-info">
-                                <div className="store-name">{listing.store_name}</div>
-                                <div className="listing-title">{listing.title}</div>
-                                <div className="listing-details">
-                                    <span className="asset-name">{listing.asset_name}</span>
-                                    <span className="price">{listing.price} EVR</span>
+                                <div className="listing-header">
+                                    <div className="store-name">{listing.store_name}</div>
+                                    <div className="listing-title">{listing.title}</div>
                                 </div>
-                                {listing.highlight && (
-                                    <div className="highlight">{listing.highlight}</div>
-                                )}
+                                <div className="listing-details">
+                                    <div className="listing-meta">
+                                        <div className="asset-info">
+                                            <span className="asset-name">{listing.asset_name}</span>
+                                            <span className="asset-balance">
+                                                Balance: {listing.balance || '0.00000000'}
+                                            </span>
+                                        </div>
+                                        <div className="price-info">
+                                            <div className="price">{listing.price} EVR</div>
+                                            <span className="price-label">Fixed Price</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            {listing.highlight && (
+                                <div className="highlight">{listing.highlight}</div>
+                            )}
                         </div>
                     </div>
                 ))}

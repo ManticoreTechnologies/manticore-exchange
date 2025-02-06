@@ -7,9 +7,11 @@ interface AssetCardProps {
     asset_name: string;
     confirmed_balance: string;
     ipfs_hash?: string | null;
+    units: number;
   };
   price?: {
     price_evr: string;
+    units: number;
   };
   quantity: number;
   pinataGateway: string;
@@ -18,6 +20,7 @@ interface AssetCardProps {
   onSelectAsset: () => void;
   onAddToCart: () => void;
   isSelected: boolean;
+  formatAmount: (amount: string | number, units: number) => string;
 }
 
 const AssetCard: React.FC<AssetCardProps> = ({
@@ -29,9 +32,11 @@ const AssetCard: React.FC<AssetCardProps> = ({
   onEditListing,
   onSelectAsset,
   onAddToCart,
-  isSelected
+  isSelected,
+  formatAmount
 }) => {
   const available = Number(asset.confirmed_balance);
+  const units = asset.units || 8;
 
   // If there's no price, we shouldn't render the card at all
   if (!price) return null;
@@ -54,7 +59,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
       <div className="asset-info">
         <h3>{asset.asset_name}</h3>
           <span className="asset-price">
-            {formatEvrAmount(price.price_evr)} EVR
+            {formatAmount(price.price_evr, price.units)} EVR
           </span>
         </div>
       </div>
@@ -70,7 +75,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
           />
         </div>
         <span className="availability-text">
-          {available} available
+          {formatAmount(available, units)} available
         </span>
       </div>
       
@@ -82,11 +87,11 @@ const AssetCard: React.FC<AssetCardProps> = ({
               e.stopPropagation();
               onQuantityChange(false);
             }}
-            disabled={quantity <= 1}
+            disabled={quantity - (1 / Math.pow(10, units)) < (1 / Math.pow(10, units))}
           >
             −
           </button>
-          <span className="quantity-display">{quantity}</span>
+          <span className="quantity-display">{formatAmount(quantity, units)}</span>
           <button 
             className="quantity-button"
             onClick={(e) => {

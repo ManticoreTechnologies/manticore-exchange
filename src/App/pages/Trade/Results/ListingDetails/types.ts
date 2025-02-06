@@ -2,16 +2,18 @@ export interface Balance {
   asset_name: string;
   confirmed_balance: string;
   pending_balance: string;
-  last_confirmed_tx_hash: string | null;
-  last_confirmed_tx_time: string | null;
+  last_confirmed_tx_hash?: string | null;
+  last_confirmed_tx_time?: string | null;
+  units: number;
 }
 
 export interface Price {
   asset_name: string;
   price_evr: string;
-  price_asset_name: string | null;
-  price_asset_amount: string | null;
-  ipfs_hash: string | null;
+  price_asset_name?: string | null;
+  price_asset_amount?: string | null;
+  ipfs_hash?: string | null;
+  units: number;
 }
 
 export interface Listing {
