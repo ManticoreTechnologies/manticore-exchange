@@ -25,6 +25,7 @@ interface Listing {
     created_at: string;
     balances: Balance[];
     prices: Price[];
+    tags?: string[];
 }
 
 interface ResultsGridProps {
@@ -69,17 +70,20 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({
                             total + parseFloat(balance.confirmed_balance), 0),
                         // Include the raw balances and prices for reference
                         balances: result.balances,
-                        prices: result.prices
+                        prices: result.prices,
+                        tags: result.tags
                     };
 
                     return (
-                        <TradingResultCard
-                            key={listing.id}
-                            {...listing}
-                            addToCart={() => addToCart(listing)}
-                            buyNow={() => buyNow(listing)}
-                            showDetails={() => showDetails(listing)}
-                        />
+                        <div className="listing-card">
+                            <TradingResultCard
+                                key={listing.id}
+                                {...listing}
+                                addToCart={() => addToCart(listing)}
+                                buyNow={() => buyNow(listing)}
+                                showDetails={() => showDetails(listing)}
+                            />
+                        </div>
                     );
                 })}
             </div>

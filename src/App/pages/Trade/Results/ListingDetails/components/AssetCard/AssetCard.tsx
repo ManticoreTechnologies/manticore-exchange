@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FiEdit3 } from 'react-icons/fi';
 import { formatEvrAmount } from '@/utils/formatting';
-
+console.log("ASSET CARD");
 interface AssetCardProps {
   asset: {
     asset_name: string;
@@ -11,7 +11,6 @@ interface AssetCardProps {
   };
   price?: {
     price_evr: string;
-    units: number;
   };
   quantity: number;
   pinataGateway: string;
@@ -20,7 +19,6 @@ interface AssetCardProps {
   onSelectAsset: () => void;
   onAddToCart: () => void;
   isSelected: boolean;
-  formatAmount: (amount: string | number, units: number) => string;
 }
 
 const AssetCard: React.FC<AssetCardProps> = ({
@@ -32,12 +30,13 @@ const AssetCard: React.FC<AssetCardProps> = ({
   onEditListing,
   onSelectAsset,
   onAddToCart,
-  isSelected,
-  formatAmount
+  isSelected
 }) => {
   const available = Number(asset.confirmed_balance);
-  const units = asset.units || 8;
 
+  useEffect(() => {
+    console.log(asset);
+  }, []);
   // If there's no price, we shouldn't render the card at all
   if (!price) return null;
 
@@ -59,7 +58,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
       <div className="asset-info">
         <h3>{asset.asset_name}</h3>
           <span className="asset-price">
-            {formatAmount(price.price_evr, price.units)} EVR
+            {formatEvrAmount(price.price_evr)} EVR
           </span>
         </div>
       </div>
@@ -75,7 +74,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
           />
         </div>
         <span className="availability-text">
-          {formatAmount(available, units)} available
+          {available} available
         </span>
       </div>
       
@@ -87,11 +86,11 @@ const AssetCard: React.FC<AssetCardProps> = ({
               e.stopPropagation();
               onQuantityChange(false);
             }}
-            disabled={quantity <= 1 / Math.pow(10, units)}
+            disabled={quantity <= 1/(asset.units*100)}
           >
             −
           </button>
-          <span className="quantity-display">{formatAmount(quantity, units)}</span>
+          <span className="quantity-display">{quantity}</span>
           <button 
             className="quantity-button"
             onClick={(e) => {

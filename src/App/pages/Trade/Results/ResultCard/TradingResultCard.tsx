@@ -36,6 +36,7 @@ interface TradingResultCardProps {
     addToCart: () => void;
     buyNow: () => void;
     showDetails: () => void;
+    tags: string[];
 }
 
 const TradingResultCard: React.FC<TradingResultCardProps> = ({
@@ -53,7 +54,8 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     prices,
     addToCart,
     buyNow,
-    showDetails
+    showDetails,
+    tags
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
@@ -207,16 +209,12 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                         }}
                     />
                 )}
-                {prices.length > 1 && (
-                    <div className="trading-result-card__assets-count">
-                        {prices.length} assets
-                    </div>
-                )}
             </div>
+
             <div className="trading-result-card__content">
                 <h3 className="trading-result-card__title">{name}</h3>
                 <p className="trading-result-card__description">{description}</p>
-                <div className="trading-result-card__prices" ref={pricesRef}>
+                <div className="trading-result-card__prices">
                     {renderPriceItems()}
                 </div>
             </div>

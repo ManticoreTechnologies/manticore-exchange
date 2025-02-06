@@ -35,7 +35,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({
         {balances.map((balance, index) => {
           const price = prices.find(p => p.asset_name === balance.asset_name);
           const isSelected = selectedAsset === balance.asset_name;
-          
+          console.log("BALANCE: ",balance);
           return (
             <AssetCard
               key={`${balance.asset_name}-${index}`}

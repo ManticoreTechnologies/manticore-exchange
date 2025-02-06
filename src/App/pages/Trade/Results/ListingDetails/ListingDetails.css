@@ -1122,7 +1122,7 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
   line-height: 1.2;
 }
 
@@ -1618,4 +1618,39 @@ textarea.edit-input {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
+}
+
+/* Add these styles */
+.listing-tags-section {
+  margin-top: var(--spacing-6);
+}
+
+.listing-tags-section h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.listing-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.listing-tag {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--background-tertiary);
+  color: var(--text-secondary);
+  border-radius: var(--border-radius-full);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+
+.listing-tag:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-1px);
 }

@@ -41,7 +41,7 @@ import Home from "./pages/Home/Home";
 import Search from "./pages/Search/Search";
 import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
 import Launch from "./pages/Launch/Launch";
-
+import Learn from "./pages/Learn/Learn";
 const App: React.FC = () => {
 
   return (
@@ -80,7 +80,8 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="town-hall" element={<Townhall />} />
           <Route path="/orders/:orderId" element={<OrderStatus />} />
-        <Route path="/launch" element={<Launch />} />
+          <Route path="/launch" element={<Launch />} />
+          <Route path="/learn" element={<Learn />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

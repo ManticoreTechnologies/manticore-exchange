@@ -7,6 +7,7 @@ interface AssetCardProps {
     asset_name: string;
     confirmed_balance: string;
     ipfs_hash?: string | null;
+    units: number;
   };
   price?: {
     price_evr: string;
@@ -21,6 +22,7 @@ interface AssetCardProps {
 
 const AssetCard: React.FC<AssetCardProps> = ({
   asset,
+  units,
   price,
   quantity,
   pinataGateway,
@@ -77,7 +79,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               e.stopPropagation();
               onQuantityChange(false);
             }}
-            disabled={quantity <= 1}
+            disabled={quantity <= 1/Math.pow(10, units)}
           >
             −
           </button>

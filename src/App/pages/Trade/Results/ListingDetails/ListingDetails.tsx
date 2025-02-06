@@ -433,6 +433,7 @@ const ListingDetails: React.FC = () => {
               id={listing?.id || ''}
               createdAt={listing?.created_at || ''}
               status={listing?.status || ''}
+              tags={listing?.tags || []}
               onCopyAddress={() => {
                 navigator.clipboard.writeText(listing?.seller_address || '');
                 setNotification({

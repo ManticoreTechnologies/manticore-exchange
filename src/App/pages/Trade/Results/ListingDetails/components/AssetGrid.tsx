@@ -43,6 +43,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({
               key={`${balance.asset_name}-${index}`}
               asset={balance}
               price={price}
+              units={balance.units}
               quantity={quantities[balance.asset_name] || 1}
               pinataGateway={pinataGateway}
               onQuantityChange={(increment) => onQuantityChange(balance.asset_name, increment)}
