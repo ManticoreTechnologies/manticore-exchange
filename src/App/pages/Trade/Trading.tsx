@@ -15,6 +15,37 @@ import ManageListing from './ManageListing/ManageListing';
 import TradingDetails from './Results/TradingDetails/TradingDetails';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
 
+interface ListingPrice {
+    asset_name: string;
+    price_evr: string;
+    price_asset_name: string | null;
+    price_asset_amount: string | null;
+    ipfs_hash: string;
+}
+
+interface ListingBalance {
+    asset_name: string;
+    confirmed_balance: string;
+    pending_balance: string;
+    last_confirmed_tx_hash: string | null;
+    last_confirmed_tx_time: string | null;
+}
+
+interface Listing {
+    id: string;
+    seller_address: string;
+    listing_address: string;
+    deposit_address: string;
+    name: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    status: string;
+    image_ipfs_hash: string | null;
+    prices: ListingPrice[];
+    balances: ListingBalance[];
+}
+
 const Trading: React.FC = () => {
     const [listings, setListings] = useState<any[]>([]);
     const [cartVisible, setCartVisible] = useState<boolean>(false);
@@ -44,6 +75,10 @@ const Trading: React.FC = () => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalResults, setTotalResults] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10); // Add this new state
+    const [tags, setTags] = useState<string[]>([]);
+    const [minPrice, setMinPrice] = useState<string>('');
+    const [maxPrice, setMaxPrice] = useState<string>('');
+    const [featuredListings, setFeaturedListings] = useState<any[]>([]);
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -80,11 +115,31 @@ const Trading: React.FC = () => {
                     url += `&search_term=${encodeURIComponent(searchQuery)}`;
                 }
                 
-                // Add filter params if they exist
-                if (filterType === 'seller') {
-                    url += `&seller_address=${encodeURIComponent(filterQuery)}`;
-                } else if (filterType === 'asset') {
-                    url += `&asset_name=${encodeURIComponent(filterQuery)}`;
+                // Add filter params based on filterType
+                if (filterType && filterQuery) {
+                    switch(filterType) {
+                        case 'seller':
+                            url += `&seller_address=${encodeURIComponent(filterQuery)}`;
+                            break;
+                        case 'asset':
+                            url += `&asset_name=${encodeURIComponent(filterQuery)}`;
+                            break;
+                    }
+                }
+
+                // Add tags if they exist
+                if (tags.length > 0) {
+                    tags.forEach(tag => {
+                        url += `&tags=${encodeURIComponent(tag.trim())}`;
+                    });
+                }
+
+                // Add price filters if they exist
+                if (minPrice) {
+                    url += `&min_price_evr=${encodeURIComponent(minPrice)}`;
+                }
+                if (maxPrice) {
+                    url += `&max_price_evr=${encodeURIComponent(maxPrice)}`;
                 }
 
                 console.log('Fetching listings with URL:', url);
@@ -107,13 +162,34 @@ const Trading: React.FC = () => {
                 if (Array.isArray(listings)) {
                     setListings(listings);
                     setSearchResults(listings);
+                    
+                    // Updated featured listings mapping
+                    const featured = listings.slice(0, 3).map(listing => {
+                        const price = listing.prices?.[0]?.price_evr || '0';
+                        const assetName = listing.balances?.[0]?.asset_name || '';
+                        const imageHash = listing.image_ipfs_hash || listing.prices?.[0]?.ipfs_hash || null;
+                        
+                        return {
+                            id: listing.id,
+                            title: listing.name,
+                            store_name: listing.name,
+                            asset_name: assetName,
+                            price: price,
+                            highlight: isNewListing(listing.created_at) ? 'New' : undefined,
+                            image_hash: imageHash
+                        };
+                    });
+                    
+                    setFeaturedListings(featured);
                 } else {
                     console.error('Unexpected listings format:', listings);
                     setListings([]);
+                    setFeaturedListings([]);
                 }
             } catch (error) {
                 console.error('Error fetching listings:', error);
                 setListings([]);
+                setFeaturedListings([]);
             } finally {
                 setLoading(false);
             }
@@ -125,7 +201,15 @@ const Trading: React.FC = () => {
             setCart(JSON.parse(savedCart));
         }
         fetchListings();
-    }, [currentPage, pageSize, searchQuery, filterType, filterQuery]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice]);
+
+    // Helper function to check if a listing is new (less than 24 hours old)
+    const isNewListing = (createdAt: string): boolean => {
+        const created = new Date(createdAt);
+        const now = new Date();
+        const diffInHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+        return diffInHours < 24;
+    };
 
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
@@ -328,6 +412,25 @@ const Trading: React.FC = () => {
         }
     };
 
+    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const tagString = e.target.value;
+        const tagArray = tagString.split(',').map(tag => tag.trim()).filter(tag => tag);
+        setTags(tagArray);
+    };
+
+    const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMinPrice(e.target.value);
+    };
+
+    const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMaxPrice(e.target.value);
+    };
+
+    const handleFeaturedClick = (listing: any) => {
+        // Navigate to the listing details or handle the click as needed
+        navigate(`/listing/${listing.id}`);
+    };
+
     return (
         <div className="trading-page">
             <TradingHeader 
@@ -340,6 +443,14 @@ const Trading: React.FC = () => {
                 handleFilter={(e) => setFilterQuery(e.target.value)}
                 filterType={filterType}
                 handleFilterTypeChange={(e) => setFilterType(e.target.value)}
+                tags={tags}
+                handleTagsChange={handleTagsChange}
+                minPrice={minPrice}
+                handleMinPriceChange={handleMinPriceChange}
+                maxPrice={maxPrice}
+                handleMaxPriceChange={handleMaxPriceChange}
+                featuredListings={featuredListings}
+                onFeaturedClick={handleFeaturedClick}
             />
             {loading ? (
                 <div className="loading-container">

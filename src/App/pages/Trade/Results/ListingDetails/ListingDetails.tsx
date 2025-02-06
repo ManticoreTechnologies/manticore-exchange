@@ -389,8 +389,8 @@ const ListingDetails: React.FC = () => {
         onShare={handleShare} 
         onManageListing={handleEditListing}
       />
-      <main className="listing-content">
-        <section className="listing-primary">
+      <main className="listing-details-content">
+        <section className="listing-details-primary">
           <ListingMedia 
             imageHash={listing?.image_ipfs_hash} 
             name={listing?.name || ''} 
@@ -415,7 +415,7 @@ const ListingDetails: React.FC = () => {
           />
         </section>
 
-        <section className="listing-secondary">
+        <section className="listing-details-secondary">
           <AssetGrid
             balances={listing?.balances || []}
             prices={listing?.prices || []}
@@ -469,7 +469,7 @@ const ListingDetails: React.FC = () => {
       )}
 
       {notification.show && (
-        <div className={`notification notification-${notification.type}`}>
+        <div className={`listing-details-notification listing-details-notification-${notification.type}`}>
           {notification.message}
         </div>
       )}
