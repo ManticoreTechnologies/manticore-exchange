@@ -43,7 +43,7 @@ const Trading: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalResults, setTotalResults] = useState<number>(0);
-    const [pageSize, setPageSize] = useState<number>(50); // Add this new state
+    const [pageSize, setPageSize] = useState<number>(10); // Add this new state
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -80,27 +80,41 @@ const Trading: React.FC = () => {
                     url += `&search_term=${encodeURIComponent(searchQuery)}`;
                 }
                 
+                // Add filter params if they exist
+                if (filterType === 'seller') {
+                    url += `&seller_address=${encodeURIComponent(filterQuery)}`;
+                } else if (filterType === 'asset') {
+                    url += `&asset_name=${encodeURIComponent(filterQuery)}`;
+                }
+
+                console.log('Fetching listings with URL:', url);
                 const response = await axios.get(url);
-                console.log('API Response:', response.data);
                 
-                // The response is now directly an array of listings
-                if (Array.isArray(response.data)) {
-                    setListings(response.data);
-                    setSearchResults(response.data);
-                    
-                    // Calculate total pages based on array length and pageSize
-                    const totalItems = response.data.length;
-                    setTotalResults(totalItems);
-                    setTotalPages(Math.ceil(totalItems / pageSize));
-                    setLoading(false);
+                // Log the entire response to see what we're getting
+                console.log('Full API Response:', response.data);
+                
+                const { listings, total_count, total_pages, current_page } = response.data;
+                
+                console.log('Total Count:', total_count);
+                console.log('Total Pages:', total_pages);
+                console.log('Current Page:', current_page);
+                
+                // Update state with the pagination info from backend
+                setTotalResults(total_count);
+                setTotalPages(total_pages);
+                setCurrentPage(current_page);
+                
+                if (Array.isArray(listings)) {
+                    setListings(listings);
+                    setSearchResults(listings);
                 } else {
-                    console.error('Unexpected response format:', response.data);
+                    console.error('Unexpected listings format:', listings);
                     setListings([]);
-                    setLoading(false);
                 }
             } catch (error) {
                 console.error('Error fetching listings:', error);
                 setListings([]);
+            } finally {
                 setLoading(false);
             }
         };
@@ -111,7 +125,7 @@ const Trading: React.FC = () => {
             setCart(JSON.parse(savedCart));
         }
         fetchListings();
-    }, [currentPage, pageSize, searchQuery]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery]);
 
     const addToCart = (listing: any, quantity: number) => {
         const itemWithQuantity = { ...listing, quantity };
@@ -305,8 +319,13 @@ const Trading: React.FC = () => {
     }, [cartVisible]);
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        window.scrollTo(0, 0); // Scroll to top when page changes
+        console.log('Changing to page:', page);
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+            window.scrollTo(0, 0);
+        } else {
+            console.warn('Invalid page number:', page);
+        }
     };
 
     return (

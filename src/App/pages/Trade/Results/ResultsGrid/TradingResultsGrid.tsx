@@ -1,6 +1,7 @@
 import React from 'react';
 import TradingResultCard from '../ResultCard/TradingResultCard';
 import './ResultsGrid.css';
+import Pagination from '../../Components/Pagination';
 
 interface Balance {
     asset_name: string;
@@ -83,32 +84,13 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({
                 })}
             </div>
             
-            {totalPages > 1 && (
-                <div className="pagination">
-                    <button 
-                        className="pagination-button"
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </button>
-                    
-                    <div className="pagination-info">
-                        Page {currentPage} of {totalPages}
-                        <span className="total-results">
-                            ({totalResults} total results)
-                        </span>
-                    </div>
-
-                    <button 
-                        className="pagination-button"
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalResults={totalResults}
+                pageSize={10}
+                onPageChange={onPageChange}
+            />
         </div>
     );
 };
