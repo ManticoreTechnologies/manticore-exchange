@@ -1,15 +1,26 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FiCpu, FiCode, FiDatabase, FiLayers, FiAward, FiBox, FiFileText, FiGitBranch } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { Link, Routes, Route } from 'react-router-dom';
+import { 
+  FiCpu, FiCode, FiDatabase, FiLayers, 
+  FiAward, FiBox, FiFileText, FiGitBranch,
+  FiArrowRight, FiStar, FiClock, FiTrendingUp
+} from 'react-icons/fi';
 import './Learn.css';
+
+// Import concept components
+import WhyEvrmore from './concepts/WhyEvrmore/WhyEvrmore';
+import NodeCommands from './concepts/NodeCommands/NodeCommands';
 
 interface LearningPath {
   id: string;
   title: string;
   description: string;
-  concepts: Concept[];
   icon: React.ReactNode;
   level: string;
+  duration: string;
+  progress: number;
+  concepts: Concept[];
+  totalXP: number;
 }
 
 interface Concept {
@@ -24,275 +35,284 @@ interface Concept {
 }
 
 const Learn = () => {
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  
   const learningPaths: LearningPath[] = [
     {
-      id: 'evrmore-fundamentals',
-      title: 'Evrmore Fundamentals',
-      description: 'Discover what makes Evrmore unique and powerful',
+      id: 'getting-started',
+      title: 'Getting Started',
+      description: 'Begin your journey with Evrmore fundamentals',
       icon: <FiDatabase />,
       level: 'Beginner',
+      duration: '2-3 hours',
+      progress: 0,
+      totalXP: 1500,
       concepts: [
         {
           id: 'why-evrmore',
           title: 'Why Evrmore?',
-          description: 'Understand Evrmore\'s unique features and advantages',
-          duration: '20 minutes',
+          description: 'Discover what makes Evrmore unique and powerful',
+          duration: '20 min',
           xp: 500,
           difficulty: 'Beginner',
-          path: '/learn/why-evrmore',
+          path: '/learn/why-evrmore'
         },
         {
           id: 'blockchain-basics',
           title: 'Blockchain Fundamentals',
           description: 'Learn the core concepts of blockchain technology',
-          duration: '30 minutes',
-          xp: 800,
-          difficulty: 'Beginner',
-          path: '/learn/blockchain-basics',
-        },
-        {
-          id: 'consensus-mechanism',
-          title: 'Consensus & Mining',
-          description: 'Understanding how Evrmore achieves consensus and secures the network',
-          duration: '45 minutes',
-          xp: 1000,
-          difficulty: 'Intermediate',
-          path: '/learn/consensus-mechanism',
-        }
-      ],
-    },
-    {
-      id: 'node-operations',
-      title: 'Node Setup & Operations',
-      description: 'Get started with running your own Evrmore node',
-      icon: <FiCpu />,
-      level: 'Beginner to Intermediate',
-      concepts: [
-        {
-          id: 'node-preparation',
-          title: 'Preparing for Node Setup',
-          description: 'Understanding system requirements and preliminary setup',
-          duration: '20 minutes',
+          duration: '30 min',
           xp: 500,
           difficulty: 'Beginner',
-          path: '/learn/node-preparation',
+          path: '/learn/blockchain-basics'
         },
         {
-          id: 'node-deployment',
-          title: 'Deploying Your Node',
-          description: 'Step-by-step guide to setting up your Evrmore node',
-          duration: '45 minutes',
-          xp: 1000,
-          difficulty: 'Intermediate',
-          path: '/learn/node-deployment',
-        },
+          id: 'node-setup',
+          title: 'Setting Up Your Node',
+          description: 'Get started with your own Evrmore node',
+          duration: '45 min',
+          xp: 500,
+          difficulty: 'Beginner',
+          path: '/learn/node-setup'
+        }
+      ]
+    },
+    {
+      id: 'node-mastery',
+      title: 'Node Mastery',
+      description: 'Master Evrmore node operations and commands',
+      icon: <FiCpu />,
+      level: 'Intermediate',
+      duration: '4-5 hours',
+      progress: 0,
+      totalXP: 2000,
+      concepts: [
         {
           id: 'node-commands',
           title: 'Essential Node Commands',
-          description: 'Master the core commands for interacting with your node',
-          duration: '60 minutes',
-          xp: 1200,
+          description: 'Learn to interact with your node through RPC commands',
+          duration: '60 min',
+          xp: 750,
           difficulty: 'Intermediate',
-          path: '/learn/node-commands',
+          path: '/learn/node-commands'
         },
         {
           id: 'node-maintenance',
           title: 'Node Maintenance',
-          description: 'Best practices for maintaining and securing your node',
-          duration: '30 minutes',
-          xp: 800,
+          description: 'Keep your node running smoothly',
+          duration: '45 min',
+          xp: 500,
           difficulty: 'Intermediate',
-          path: '/learn/node-maintenance',
+          path: '/learn/node-maintenance'
+        },
+        {
+          id: 'node-security',
+          title: 'Node Security',
+          description: 'Best practices for securing your node',
+          duration: '45 min',
+          xp: 750,
+          difficulty: 'Advanced',
+          path: '/learn/node-security'
         }
-      ],
+      ]
     },
     {
       id: 'asset-system',
       title: 'Asset System',
-      description: 'Master Evrmore\'s native asset system',
+      description: 'Create and manage Evrmore native assets',
       icon: <FiBox />,
       level: 'Intermediate',
+      duration: '5-6 hours',
+      progress: 0,
+      totalXP: 2500,
       concepts: [
         {
           id: 'asset-basics',
           title: 'Asset Fundamentals',
-          description: 'Understanding Evrmore\'s native asset system and capabilities',
-          duration: '45 minutes',
-          xp: 900,
+          description: 'Understanding Evrmore\'s native asset system',
+          duration: '45 min',
+          xp: 750,
           difficulty: 'Intermediate',
-          path: '/learn/asset-basics',
+          path: '/learn/asset-basics'
         },
         {
-          id: 'asset-operations',
-          title: 'Basic Asset Operations',
-          description: 'Learn how to create, manage, and transfer assets',
-          duration: '60 minutes',
+          id: 'asset-creation',
+          title: 'Creating Assets',
+          description: 'Learn to create and issue your own assets',
+          duration: '60 min',
           xp: 1000,
           difficulty: 'Intermediate',
-          path: '/learn/asset-operations',
+          path: '/learn/asset-creation'
         },
         {
-          id: 'asset-metadata',
-          title: 'Asset Metadata & IPFS',
-          description: 'Working with asset metadata and IPFS integration',
-          duration: '45 minutes',
-          xp: 1100,
-          difficulty: 'Intermediate',
-          path: '/learn/asset-metadata',
+          id: 'asset-management',
+          title: 'Asset Management',
+          description: 'Advanced asset operations and management',
+          duration: '60 min',
+          xp: 750,
+          difficulty: 'Advanced',
+          path: '/learn/asset-management'
         }
-      ],
-    },
-    {
-      id: 'asset-scripting',
-      title: 'Asset Scripting',
-      description: 'Master Evrmore\'s specialized asset scripting system',
-      icon: <FiCode />,
-      level: 'Advanced',
-      concepts: [
-        {
-          id: 'script-fundamentals',
-          title: 'Script Fundamentals',
-          description: 'Introduction to Evrmore\'s asset script system',
-          duration: '60 minutes',
-          xp: 1200,
-          difficulty: 'Advanced',
-          path: '/learn/script-fundamentals',
-        },
-        {
-          id: 'script-types',
-          title: 'Asset Script Types',
-          description: 'Understanding different types of asset scripts and their uses',
-          duration: '75 minutes',
-          xp: 1300,
-          difficulty: 'Advanced',
-          path: '/learn/script-types',
-        },
-        {
-          id: 'advanced-scripting',
-          title: 'Advanced Scripting',
-          description: 'Master complex asset scripts and combinations',
-          duration: '90 minutes',
-          xp: 1500,
-          difficulty: 'Advanced',
-          path: '/learn/advanced-scripting',
-        }
-      ],
+      ]
     },
     {
       id: 'development',
-      title: 'Application Development',
-      description: 'Build applications on top of Evrmore',
-      icon: <FiGitBranch />,
+      title: 'Development',
+      description: 'Build applications on Evrmore',
+      icon: <FiCode />,
       level: 'Advanced',
+      duration: '8-10 hours',
+      progress: 0,
+      totalXP: 3000,
       concepts: [
         {
-          id: 'rpc-basics',
-          title: 'RPC Interface',
-          description: 'Learn to interact with Evrmore nodes via RPC',
-          duration: '60 minutes',
-          xp: 1100,
-          difficulty: 'Advanced',
-          path: '/learn/rpc-basics',
+          id: 'dev-setup',
+          title: 'Development Environment',
+          description: 'Set up your Evrmore development environment',
+          duration: '45 min',
+          xp: 750,
+          difficulty: 'Intermediate',
+          path: '/learn/dev-setup'
         },
         {
-          id: 'asset-integration',
-          title: 'Asset Integration',
-          description: 'Integrate Evrmore assets into your applications',
-          duration: '75 minutes',
-          xp: 1300,
+          id: 'api-integration',
+          title: 'API Integration',
+          description: 'Integrate Evrmore into your applications',
+          duration: '90 min',
+          xp: 1250,
           difficulty: 'Advanced',
-          path: '/learn/asset-integration',
+          path: '/learn/api-integration'
         },
         {
           id: 'building-dapps',
           title: 'Building dApps',
-          description: 'Create decentralized applications using Evrmore',
-          duration: '90 minutes',
-          xp: 1500,
+          description: 'Create decentralized applications on Evrmore',
+          duration: '120 min',
+          xp: 1000,
           difficulty: 'Advanced',
-          path: '/learn/building-dapps',
+          path: '/learn/building-dapps'
         }
-      ],
+      ]
     }
   ];
 
   return (
-    <div className="learn-page">
-      <div className="learn-header">
-        <h1 className="learn-title">Learn Evrmore</h1>
-        <p className="learn-subtitle">
-          Master the fundamentals of Evrmore through interactive lessons and hands-on exercises.
-        </p>
-      </div>
-
-      <div className="learning-paths">
-        {learningPaths.map((path) => (
-          <div key={path.id} className="learning-path-card">
-            <div className="path-icon">{path.icon}</div>
-            <div className="path-content">
-              <h2 className="path-title">{path.title}</h2>
-              <p className="path-description">{path.description}</p>
-              <div className="path-meta">
-                <span className="path-level">{path.level}</span>
-                <span className="path-concepts">{path.concepts.length} concepts</span>
+    <Routes>
+      <Route path="/" element={
+        <div className="learn-container">
+          <div className="learn-header">
+            <h1>Learn Evrmore</h1>
+            <p>Master Evrmore through interactive lessons and hands-on exercises</p>
+            
+            <div className="learning-stats">
+              <div className="stat-item">
+                <FiAward className="stat-icon" />
+                <div className="stat-content">
+                  <span className="stat-value">0 XP</span>
+                  <span className="stat-label">Total Experience</span>
+                </div>
+              </div>
+              <div className="stat-item">
+                <FiStar className="stat-icon" />
+                <div className="stat-content">
+                  <span className="stat-value">Level 1</span>
+                  <span className="stat-label">Current Level</span>
+                </div>
+              </div>
+              <div className="stat-item">
+                <FiTrendingUp className="stat-icon" />
+                <div className="stat-content">
+                  <span className="stat-value">0%</span>
+                  <span className="stat-label">Overall Progress</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="path-concepts">
-              {path.concepts.map((concept) => (
-                <Link 
-                  key={concept.id}
-                  to={concept.path}
-                  className="concept-link"
-                >
-                  <div className="concept-card">
-                    <div className="concept-header">
-                      <h3 className="concept-title">{concept.title}</h3>
-                      {concept.completed && (
-                        <div className="completion-badge">
-                          <FiAward />
-                        </div>
-                      )}
-                    </div>
-                    <p className="concept-description">{concept.description}</p>
-                    <div className="concept-meta">
-                      <span className="concept-duration">{concept.duration}</span>
-                      <span className="concept-xp">+{concept.xp} XP</span>
-                      <span className="concept-difficulty">{concept.difficulty}</span>
-                    </div>
+          <div className="learning-paths">
+            {learningPaths.map((path) => (
+              <div 
+                key={path.id}
+                className={`learning-path ${selectedPath === path.id ? 'selected' : ''}`}
+                onClick={() => setSelectedPath(path.id)}
+              >
+                <div className="path-header">
+                  <div className="path-icon">{path.icon}</div>
+                  <div className="path-info">
+                    <h2>{path.title}</h2>
+                    <p>{path.description}</p>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+                </div>
 
-      <div className="learning-stats">
-        <div className="stats-card">
-          <div className="stats-icon">
-            <FiLayers />
-          </div>
-          <div className="stats-content">
-            <h3>Your Progress</h3>
-            <div className="stats-numbers">
-              <div className="stat-item">
-                <span className="stat-value">0</span>
-                <span className="stat-label">Completed</span>
+                <div className="path-meta">
+                  <div className="meta-item">
+                    <FiClock className="meta-icon" />
+                    <span>{path.duration}</span>
+                  </div>
+                  <div className="meta-item">
+                    <FiStar className="meta-icon" />
+                    <span>{path.level}</span>
+                  </div>
+                  <div className="meta-item">
+                    <FiAward className="meta-icon" />
+                    <span>{path.totalXP} XP</span>
+                  </div>
+                </div>
+
+                <div className="path-progress">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${path.progress}%` }}
+                    />
+                  </div>
+                  <span className="progress-text">{path.progress}% Complete</span>
+                </div>
+
+                <div className="path-concepts">
+                  {path.concepts.map((concept) => (
+                    <Link 
+                      key={concept.id}
+                      to={concept.path}
+                      className="concept-card"
+                    >
+                      <div className="concept-content">
+                        <h3>{concept.title}</h3>
+                        <p>{concept.description}</p>
+                      </div>
+                      
+                      <div className="concept-meta">
+                        <span className="concept-duration">
+                          <FiClock className="meta-icon" />
+                          {concept.duration}
+                        </span>
+                        <span className="concept-xp">
+                          <FiAward className="meta-icon" />
+                          {concept.xp} XP
+                        </span>
+                        <span className="concept-difficulty">
+                          <FiStar className="meta-icon" />
+                          {concept.difficulty}
+                        </span>
+                      </div>
+
+                      <div className="concept-arrow">
+                        <FiArrowRight />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="stat-item">
-                <span className="stat-value">0 XP</span>
-                <span className="stat-label">Total XP</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-value">Level 1</span>
-                <span className="stat-label">Current Level</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
-    </div>
+      } />
+      
+      {/* Concept Routes */}
+      <Route path="why-evrmore" element={<WhyEvrmore />} />
+      <Route path="node-commands" element={<NodeCommands />} />
+      {/* Add more concept routes as needed */}
+    </Routes>
   );
 };
 

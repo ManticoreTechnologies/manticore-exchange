@@ -81,7 +81,7 @@ const App: React.FC = () => {
           <Route path="town-hall" element={<Townhall />} />
           <Route path="/orders/:orderId" element={<OrderStatus />} />
           <Route path="/launch" element={<Launch />} />
-          <Route path="/learn" element={<Learn />} />
+          <Route path="/learn/*" element={<Learn />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
