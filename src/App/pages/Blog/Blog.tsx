@@ -44,15 +44,25 @@ const BlogPage: React.FC = () => {
 
   return (
     <div className="blog-container">
-      <div className="blog-buttons">
+      <header className="blog-header">
+        <h1>EVRMORE Blog</h1>
+        <p>Discover the latest updates, insights, and developments in the EVRMORE ecosystem.</p>
+      </header>
+      
+      <div className="blog-grid">
+        {posts.map((post, index) => (
+          <NavLink to={post.link} key={index} className="blog-card">
+            <div className="blog-card-content">
+              <h2>{post.title}</h2>
+              <p className="author">By {post.author} • {post.date}</p>
+              <p className="summary">{post.summary}</p>
+              <div className="blog-card-footer">
+                <span className="read-more">Read More →</span>
+              </div>
+            </div>
+          </NavLink>
+        ))}
       </div>
-      {posts.map((post, index) => (
-        <NavLink to={post.link} key={index} className="blog-card">
-          <h2>{post.title}</h2>
-          <p className="author">By {post.author} on {post.date}</p>
-          <p className="summary">{post.summary}</p>
-        </NavLink>
-      ))}
     </div>
   );
 };
