@@ -1,0 +1,19 @@
+.network-visualization {
+    background: var(--background-secondary);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.network-visualization line {
+    stroke-linecap: round;
+}
+
+.network-visualization circle {
+    cursor: pointer;
+    transition: r 0.3s ease;
+}
+
+.network-visualization circle:hover {
+    r: 8;
+} 
