@@ -33,6 +33,8 @@ interface TradingHeaderProps {
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({
     createListing,
+    toggleCartVisibility,
+    cart,
     searchQuery,
     handleSearch,
     filterQuery,
@@ -57,100 +59,100 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
 
     return (
         <div className="trading-header">
-            <div className="trading-header-main">
-                <div className="title-section">
+            <div className="trading-header-content">
+                <div className="header-left">
                     <div className="title-with-icon">
                         <h1 className="trading-title">Trading</h1>
                         <RiExchangeFill className="trading-icon" />
                     </div>
-                    <p className="trading-subtitle">Buy and sell assets on the marketplace</p>
+                    
+                    <button className="create-listing-button" onClick={createListing}>
+                        <FiPlus className="create-icon" />
+                        <span>Create Listing</span>
+                    </button>
                 </div>
 
-                <div className="header-actions">
-                    <div className="header-actions-left">
-                        <button className="create-listing-button" onClick={createListing}>
-                            <FiPlus className="create-icon" />
-                            <span>Create New Listing</span>
-                        </button>
-
-                        <div className="search-bar-main">
-                            <div className="search-input-wrapper">
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={handleSearch}
-                                    placeholder="Search listings..."
-                                    aria-label="Search input"
-                                />
-                            </div>
-                            <button 
-                                className={`filter-toggle-button ${showFilters ? 'active' : ''}`}
-                                onClick={() => setShowFilters(!showFilters)}
-                            >
-                                <FiFilter />
-                                <span className="filter-text">Filters</span>
-                                {showFilters ? <FiChevronUp /> : <FiChevronDown />}
-                            </button>
+                <div className="header-center">
+                    <div className="search-bar-main">
+                        <div className="search-input-wrapper">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={handleSearch}
+                                placeholder="Search listings..."
+                                aria-label="Search input"
+                            />
                         </div>
+                        <button 
+                            className={`filter-toggle-button ${showFilters ? 'active' : ''}`}
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
+                            <FiFilter />
+                            <span>Filters</span>
+                            {showFilters ? <FiChevronUp /> : <FiChevronDown />}
+                        </button>
                     </div>
-
-                    <FeaturedListings 
-                        listings={featuredListings}
-                        onListingClick={onFeaturedClick}
-                    />
                 </div>
             </div>
 
-            <div className={`filters-section ${showFilters ? 'show' : ''}`}>
+            {/* Filter panel slides down when active */}
+            <div className={`filters-panel ${showFilters ? 'show' : ''}`}>
                 <div className="filters-wrapper">
-                    <div className="filter-group">
-                        <select 
-                            value={filterType} 
-                            onChange={handleFilterTypeChange} 
-                            className="search-select"
-                        >
-                            <option value="">Filter Type</option>
-                            <option value="seller">Seller Address</option>
-                            <option value="asset">Asset Name</option>
-                            <option value="tags">Tags</option>
-                        </select>
+                    <div className="filter-row">
+                        <div className="filter-group">
+                            <label>Filter Type</label>
+                            <select 
+                                value={filterType} 
+                                onChange={handleFilterTypeChange} 
+                                className="search-select"
+                            >
+                                <option value="">All</option>
+                                <option value="seller">Seller Address</option>
+                                <option value="asset">Asset Name</option>
+                                <option value="tags">Tags</option>
+                            </select>
+                        </div>
 
-                        {filterType === 'tags' ? (
-                            <input
-                                type="text"
-                                value={tags.join(', ')}
-                                onChange={handleTagsChange}
-                                placeholder="Enter tags (comma separated)"
-                                className="filter-input"
-                            />
-                        ) : (
-                            <input
-                                type="text"
-                                value={filterQuery}
-                                onChange={handleFilter}
-                                placeholder={`Filter by ${filterType}...`}
-                                className="filter-input"
-                            />
-                        )}
-                    </div>
+                        <div className="filter-group">
+                            <label>Filter Value</label>
+                            {filterType === 'tags' ? (
+                                <input
+                                    type="text"
+                                    value={tags.join(', ')}
+                                    onChange={handleTagsChange}
+                                    placeholder="Enter tags (comma separated)"
+                                    className="filter-input"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={filterQuery}
+                                    onChange={handleFilter}
+                                    placeholder={`Filter by ${filterType || 'keyword'}...`}
+                                    className="filter-input"
+                                />
+                            )}
+                        </div>
 
-                    <div className="price-group">
-                        <span className="price-label">Price Range (EVR)</span>
-                        <div className="price-filters">
-                            <input
-                                type="number"
-                                value={minPrice}
-                                onChange={handleMinPriceChange}
-                                placeholder="Min"
-                                className="price-input"
-                            />
-                            <input
-                                type="number"
-                                value={maxPrice}
-                                onChange={handleMaxPriceChange}
-                                placeholder="Max"
-                                className="price-input"
-                            />
+                        <div className="filter-group">
+                            <label>Price Range (EVR)</label>
+                            <div className="price-inputs">
+                                <input
+                                    type="number"
+                                    value={minPrice}
+                                    onChange={handleMinPriceChange}
+                                    placeholder="Min"
+                                    className="price-input"
+                                />
+                                <span className="price-separator">to</span>
+                                <input
+                                    type="number"
+                                    value={maxPrice}
+                                    onChange={handleMaxPriceChange}
+                                    placeholder="Max"
+                                    className="price-input"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

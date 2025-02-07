@@ -1,0 +1,338 @@
+/* I'll provide the CSS in the next message due to length limitations */ 
+
+.blockchain-basics {
+  --block-color: var(--manticore-red);
+  --block-glow: rgba(255, 0, 0, 0.2);
+  --block-border: rgba(255, 0, 0, 0.1);
+}
+
+/* Core Concepts Section */
+.core-concepts-section {
+  margin: var(--spacing-16) 0;
+}
+
+.concepts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.concept-card {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-6);
+  border: 1px solid var(--block-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.concept-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+              var(--block-glow) 0%, 
+              transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.concept-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--block-color);
+  box-shadow: 0 20px 40px var(--block-glow);
+}
+
+.concept-card:hover::before {
+  opacity: 1;
+}
+
+.concept-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--block-color) 0%, #ff3333 100%);
+  color: white;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-xl);
+  transition: transform 0.3s ease;
+}
+
+.concept-card:hover .concept-icon {
+  transform: scale(1.1);
+}
+
+.concept-details {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-4) 0 0;
+}
+
+.concept-details li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  transition: transform 0.2s ease;
+}
+
+.concept-details li:hover {
+  transform: translateX(5px);
+  color: var(--text-primary);
+}
+
+.check-icon {
+  color: var(--block-color);
+  flex-shrink: 0;
+}
+
+/* Blockchain Visualization */
+.blockchain-visualization {
+  margin: var(--spacing-16) 0;
+  padding: var(--spacing-8);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-2xl);
+  border: 1px solid var(--block-border);
+  overflow: hidden;
+}
+
+.visualization-container {
+  overflow-x: auto;
+  padding: var(--spacing-4);
+}
+
+.block-chain {
+  display: flex;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  animation: slideChain 30s linear infinite;
+}
+
+@keyframes slideChain {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.block {
+  min-width: 200px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--block-border);
+  padding: var(--spacing-4);
+  animation: blockPulse 3s infinite ease-in-out;
+  position: relative;
+}
+
+.block::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: var(--block-color);
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.block:last-child::after {
+  display: none;
+}
+
+@keyframes blockPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--block-border);
+}
+
+.block-icon {
+  color: var(--block-color);
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.transaction {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.transaction-icon {
+  color: var(--block-color);
+}
+
+/* Evrmore Specifics */
+.evrmore-specifics {
+  margin: var(--spacing-16) 0;
+}
+
+.specifics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.specific-card {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-6);
+  border: 1px solid var(--block-border);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.specific-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--block-color);
+  box-shadow: 0 20px 40px var(--block-glow);
+}
+
+.specific-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--block-color) 0%, #ff3333 100%);
+  color: white;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-xl);
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-4) 0 0;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  transition: transform 0.2s ease;
+}
+
+.benefits-list li:hover {
+  transform: translateX(5px);
+  color: var(--text-primary);
+}
+
+/* Practical Applications */
+.practical-applications {
+  margin: var(--spacing-16) 0;
+}
+
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.application-card {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-6);
+  border: 1px solid var(--block-border);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.application-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--block-color);
+  box-shadow: 0 20px 40px var(--block-glow);
+}
+
+.application-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--block-color) 0%, #ff3333 100%);
+  color: white;
+  border-radius: var(--border-radius-full);
+  margin: 0 auto var(--spacing-4);
+  font-size: var(--font-size-2xl);
+}
+
+/* Theme-specific styles */
+:root[data-theme="light"] .blockchain-basics {
+  --block-color: #ff3333;
+  --block-glow: rgba(255, 51, 51, 0.1);
+  --block-border: rgba(255, 51, 51, 0.2);
+}
+
+:root[data-theme="dark"] .blockchain-basics {
+  --block-color: var(--manticore-red);
+  --block-glow: rgba(255, 0, 0, 0.2);
+  --block-border: rgba(255, 0, 0, 0.1);
+}
+
+:root[data-theme="evrmore"] .blockchain-basics {
+  --block-color: #ff0000;
+  --block-glow: rgba(255, 0, 0, 0.3);
+  --block-border: rgba(255, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .concepts-grid,
+  .specifics-grid,
+  .applications-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .block {
+    min-width: 150px;
+  }
+
+  .visualization-container {
+    margin: 0 -var(--spacing-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block-chain,
+  .block,
+  .concept-card,
+  .specific-card,
+  .application-card {
+    animation: none;
+    transition: none;
+  }
+
+  .concept-card:hover,
+  .specific-card:hover,
+  .application-card:hover {
+    transform: none;
+  }
+} 

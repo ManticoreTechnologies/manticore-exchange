@@ -14,6 +14,7 @@ import InvoiceToaster from './InvoiceToaster/InvoiceToaster'; // Import InvoiceT
 import ManageListing from './ManageListing/ManageListing';
 import TradingDetails from './Results/TradingDetails/TradingDetails';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
+import FeaturedListings from './TradingHeader/FeaturedListings'; // Add this import
 
 interface ListingPrice {
     asset_name: string;
@@ -44,6 +45,17 @@ interface Listing {
     image_ipfs_hash: string | null;
     prices: ListingPrice[];
     balances: ListingBalance[];
+}
+
+interface FeaturedListing {
+    id: string;
+    title: string;
+    store_name: string;
+    price: string;
+    asset_name: string;
+    highlight?: string;
+    image_hash: string | null;
+    balance?: string;
 }
 
 const Trading: React.FC = () => {
@@ -78,7 +90,7 @@ const Trading: React.FC = () => {
     const [tags, setTags] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
-    const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+    const [featuredListings, setFeaturedListings] = useState<FeaturedListing[]>([]);
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -426,8 +438,15 @@ const Trading: React.FC = () => {
         setMaxPrice(e.target.value);
     };
 
+    const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilterQuery(e.target.value);
+    };
+
+    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterType(e.target.value);
+    };
+
     const handleFeaturedClick = (listing: any) => {
-        // Navigate to the listing details or handle the click as needed
         navigate(`/listing/${listing.id}`);
     };
 
@@ -440,18 +459,26 @@ const Trading: React.FC = () => {
                 searchQuery={searchQuery}
                 handleSearch={handleSearch}
                 filterQuery={filterQuery}
-                handleFilter={(e) => setFilterQuery(e.target.value)}
+                handleFilter={handleFilter}
                 filterType={filterType}
-                handleFilterTypeChange={(e) => setFilterType(e.target.value)}
+                handleFilterTypeChange={handleFilterTypeChange}
                 tags={tags}
                 handleTagsChange={handleTagsChange}
                 minPrice={minPrice}
                 handleMinPriceChange={handleMinPriceChange}
                 maxPrice={maxPrice}
                 handleMaxPriceChange={handleMaxPriceChange}
-                featuredListings={featuredListings}
-                onFeaturedClick={handleFeaturedClick}
             />
+
+            {/* Featured listings now outside header */}
+            <div className="featured-section">
+                <FeaturedListings 
+                    listings={featuredListings}
+                    onListingClick={handleFeaturedClick}
+                />
+            </div>
+
+            {/* Rest of the content */}
             {loading ? (
                 <div className="loading-container">
                     <div className="loading-spinner"></div>

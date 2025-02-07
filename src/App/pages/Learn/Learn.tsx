@@ -10,6 +10,7 @@ import './Learn.css';
 // Import concept components
 import WhyEvrmore from './concepts/WhyEvrmore/WhyEvrmore';
 import NodeCommands from './concepts/NodeCommands/NodeCommands';
+import BlockchainBasics from './concepts/BlockchainBasics/BlockchainBasics';
 
 interface LearningPath {
   id: string;
@@ -311,6 +312,7 @@ const Learn = () => {
       {/* Concept Routes */}
       <Route path="why-evrmore" element={<WhyEvrmore />} />
       <Route path="node-commands" element={<NodeCommands />} />
+      <Route path="blockchain-basics" element={<BlockchainBasics />} />
       {/* Add more concept routes as needed */}
     </Routes>
   );

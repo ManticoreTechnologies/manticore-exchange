@@ -1,165 +1,220 @@
 import React, { useState } from 'react';
-import { FiBox, FiCpu, FiLock, FiTrendingUp, FiZap, FiAward } from 'react-icons/fi';
+import { FiCheck, FiAward } from 'react-icons/fi';
+import {
+  FaNetworkWired, FaShieldAlt, FaChartLine,
+  FaCoins, FaCubes, FaExchangeAlt
+} from 'react-icons/fa';
+import {
+  ParallelProcessing,
+  SecurityVisualization,
+  DeFiOperations
+} from './components';
 import './WhyEvrmore.css';
 
+// Types
 interface Feature {
   id: string;
   title: string;
-  description: string;
   icon: React.ReactNode;
+  description: string;
   details: string[];
+  animation?: string;
 }
 
-const WhyEvrmore = () => {
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
-  const [progress, setProgress] = useState<number>(0);
+interface ComparisonItem {
+  id: string;
+  title: string;
+  weaknesses: string[];
+  advantages: string[];
+}
 
-  const features: Feature[] = [
-    {
-      id: 'asset-system',
-      title: 'Native Asset System',
-      description: 'A powerful and flexible asset system built directly into the blockchain',
-      icon: <FiBox />,
-      details: [
-        'Create and manage digital assets without smart contracts',
-        'Built-in asset scripting capabilities for advanced functionality',
-        'Efficient and secure asset operations',
-        'Native support for NFTs and fungible tokens',
-        'Asset metadata with IPFS integration'
-      ]
-    },
-    {
-      id: 'specialized-scripting',
-      title: 'Specialized Asset Scripts',
-      description: 'Purpose-built scripting system for secure and efficient asset operations',
-      icon: <FiLock />,
-      details: [
-        'Hardcoded, specialized scripts for maximum security',
-        'No general-purpose smart contracts to reduce attack vectors',
-        'Optimized for asset operations and management',
-        'Predictable and reliable execution',
-        'Lower resource requirements compared to general smart contracts'
-      ]
-    },
-    {
-      id: 'performance',
-      title: 'High Performance',
-      description: 'Optimized blockchain architecture for speed and efficiency',
-      icon: <FiZap />,
-      details: [
-        'Fast block confirmation times',
-        'Efficient transaction processing',
-        'Optimized memory usage',
-        'Scalable architecture',
-        'Low transaction fees'
-      ]
-    },
-    {
-      id: 'decentralization',
-      title: 'True Decentralization',
-      description: 'Built for long-term sustainability and decentralization',
-      icon: <FiCpu />,
-      details: [
-        'Fair launch with no pre-mine',
-        'Community-driven development',
-        'Resistant to centralization',
-        'Open-source development',
-        'Active community governance'
-      ]
-    },
-    {
-      id: 'future-proof',
-      title: 'Future-Proof Design',
-      description: 'Built to evolve and adapt to future needs',
-      icon: <FiTrendingUp />,
-      details: [
-        'Regular protocol improvements',
-        'Backward compatibility focus',
-        'Sustainable development model',
-        'Long-term vision',
-        'Active development community'
-      ]
-    }
-  ];
+interface VisualizationStep {
+  id: string;
+  title: string;
+  description: string;
+  animation: string;
+  content: React.ReactNode;
+}
 
-  const handleFeatureClick = (featureId: string) => {
-    setSelectedFeature(featureId);
-    // Update progress when a feature is explored
-    const newProgress = Math.min(100, progress + 20);
-    setProgress(newProgress);
-  };
+// Data
+const utxoFeatures: Feature[] = [
+  {
+    id: 'parallel-processing',
+    title: 'Parallel Transaction Processing',
+    icon: <FaNetworkWired />,
+    description: 'Process multiple transactions simultaneously',
+    details: [
+      'Independent UTXO processing',
+      'Higher throughput',
+      'Better scalability',
+      'Reduced bottlenecks'
+    ],
+    animation: 'slideParallel'
+  },
+  {
+    id: 'asset-security',
+    title: 'Native Asset Security',
+    icon: <FaShieldAlt />,
+    description: 'Built-in asset protocol with specialized scripts',
+    details: [
+      'Hardcoded asset logic',
+      'No smart contract vulnerabilities',
+      'Predictable behavior',
+      'Enhanced security'
+    ],
+    animation: 'pulseShield'
+  },
+  {
+    id: 'defi-optimization',
+    title: 'DeFi Optimization',
+    icon: <FaChartLine />,
+    description: 'Purpose-built for financial operations',
+    details: [
+      'Efficient atomic swaps',
+      'Native asset management',
+      'Predictable fees',
+      'Simplified state tracking'
+    ],
+    animation: 'floatChart'
+  }
+];
 
-  return (
-    <div className="concept-page">
-      <div className="concept-header">
-        <h1 className="concept-title">Why Evrmore?</h1>
-        <p className="concept-description">
-          Discover what makes Evrmore a unique and powerful blockchain platform for
-          creating and managing digital assets.
-        </p>
-
-        <div className="progress-bar">
-          <div 
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-
-      <div className="features-grid">
-        {features.map((feature) => (
-          <div
-            key={feature.id}
-            className={`feature-card ${selectedFeature === feature.id ? 'active' : ''}`}
-            onClick={() => handleFeatureClick(feature.id)}
-          >
-            <div className="feature-icon">{feature.icon}</div>
-            <h3 className="feature-title">{feature.title}</h3>
-            <p className="feature-description">{feature.description}</p>
+const utxoVisualizations: VisualizationStep[] = [
+  {
+    id: 'parallel-processing',
+    title: 'Parallel Processing Power',
+    description: 'Multiple transactions processed simultaneously',
+    animation: 'parallelFlow',
+    content: (
+      <div className="parallel-lanes">
+        {Array.from({ length: 3 }).map((_, laneIndex) => (
+          <div key={laneIndex} className="processing-lane">
+            <div className="lane-transactions">
+              {Array.from({ length: 4 }).map((_, txIndex) => (
+                <div 
+                  key={txIndex} 
+                  className="transaction-block"
+                  style={{ animationDelay: `${laneIndex * 0.5 + txIndex * 1.5}s` }}
+                />
+              ))}
+            </div>
           </div>
         ))}
       </div>
-
-      {selectedFeature && (
-        <div className="feature-details">
-          <h2 className="details-title">
-            {features.find(f => f.id === selectedFeature)?.title}
-          </h2>
-          <ul className="details-list">
-            {features
-              .find(f => f.id === selectedFeature)
-              ?.details.map((detail, index) => (
-                <li key={index} className="detail-item">
-                  {detail}
-                </li>
-              ))}
-          </ul>
+    )
+  },
+  {
+    id: 'asset-security',
+    title: 'Built-in Asset Security',
+    description: 'Specialized scripts protect asset operations',
+    animation: 'securityShield',
+    content: (
+      <div className="security-visualization">
+        <div className="security-layers">
+          {['Asset Protocol', 'UTXO Model', 'Network Security'].map((layer, index) => (
+            <div key={index} className="security-layer">
+              <div className="layer-icon">
+                {index === 0 ? <FaCoins /> : index === 1 ? <FaCubes /> : <FaShieldAlt />}
+              </div>
+              <span>{layer}</span>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
+    )
+  },
+  {
+    id: 'defi-operations',
+    title: 'DeFi Operations',
+    description: 'Efficient and secure financial transactions',
+    animation: 'defiFlow',
+    content: (
+      <div className="defi-visualization">
+        <div className="atomic-swap">
+          <div className="swap-assets">
+            <div className="asset asset-a">Asset A</div>
+            <div className="swap-arrows">
+              <FaExchangeAlt />
+            </div>
+            <div className="asset asset-b">Asset B</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+];
+
+const WhyEvrmore: React.FC = () => {
+  const [activeFeature, setActiveFeature] = useState<string>('parallel-processing');
+  const [progress, setProgress] = useState(0);
+
+  const handleFeatureSelect = (featureId: string) => {
+    setActiveFeature(featureId);
+    setProgress(prev => Math.min(100, prev + 20));
+  };
+
+  const renderVisualization = () => {
+    switch (activeFeature) {
+      case 'parallel-processing':
+        return <ParallelProcessing />;
+      case 'asset-security':
+        return <SecurityVisualization />;
+      case 'defi-optimization':
+        return <DeFiOperations />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="concept-container">
+      <header className="concept-header">
+        <h1>Why Choose Evrmore?</h1>
+        <p>Experience the power of UTXO-based DeFi with built-in security</p>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
+        </div>
+      </header>
+
+      <section className="features-section">
+        <div className="features-grid">
+          {utxoFeatures.map(feature => (
+            <div
+              key={feature.id}
+              className={`feature-card ${activeFeature === feature.id ? 'active' : ''}`}
+              onClick={() => handleFeatureSelect(feature.id)}
+            >
+              <div className={`feature-icon ${feature.animation}`}>{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+              <ul className="feature-details">
+                {feature.details.map((detail, index) => (
+                  <li key={index}>
+                    <FiCheck className="check-icon" />
+                    {detail}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="visualization-section">
+        {renderVisualization()}
+      </section>
 
       {progress >= 100 && (
-        <div className="achievement-unlocked">
+        <div className="achievement-popup">
           <div className="achievement-icon">
             <FiAward />
           </div>
           <div className="achievement-content">
-            <h3>Achievement Unlocked!</h3>
-            <p>Evrmore Explorer</p>
-            <span>+500 XP</span>
+            <h3>UTXO Master</h3>
+            <p>You've mastered the Evrmore advantage!</p>
           </div>
         </div>
       )}
-
-      <div className="next-steps">
-        <h3>Ready to dive deeper?</h3>
-        <p>
-          Now that you understand what makes Evrmore special, let's explore how
-          blockchain technology works and how Evrmore builds upon these foundations.
-        </p>
-        <button className="next-concept-button">
-          Next: Blockchain Fundamentals
-        </button>
-      </div>
     </div>
   );
 };
