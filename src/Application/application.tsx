@@ -27,6 +27,7 @@ import "./application.css";
 import { AuthProvider } from './contexts/AuthContext';
 import SignIn from "./pages/SignIn/SignIn";
 import RouteGuard from "./components/RouteGuard/RouteGuard";
+import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
 
 const Application: React.FC = () => {
     return (
@@ -41,6 +42,7 @@ const Application: React.FC = () => {
                                 <Route path="/signin" element={<SignIn />} />
                                 <Route path="/search" element={<Search />} />
                                 <Route path="/trade" element={<Trading />} />
+                                <Route path="/trade/listings/by-id/:id" element={<ListingDetails />} />
                                 <Route 
                                     path="/launch" 
                                     element={

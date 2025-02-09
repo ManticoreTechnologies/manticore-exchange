@@ -5,6 +5,14 @@ import Cookies from 'js-cookie';
 // Use the same API base configuration
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
 
+// Cookie configuration
+const COOKIE_CONFIG = {
+    secure: true,
+    sameSite: 'Strict' as const,
+    expires: 7, // 7 days
+    path: '/'
+};
+
 interface AuthContextType {
     isAuthenticated: boolean;
     userAddress: string | null;
@@ -12,6 +20,7 @@ interface AuthContextType {
     login: (address: string, signature: string, challengeId: string) => Promise<void>;
     logout: () => Promise<void>;
     requestChallenge: (address: string) => Promise<{ challengeId: string; message: string }>;
+    isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,47 +29,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [userAddress, setUserAddress] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     // Check for existing auth on mount
     useEffect(() => {
         const checkExistingAuth = async () => {
-            const savedToken = Cookies.get('auth_token');
-            const savedAddress = Cookies.get('user_address');
-            
-            if (savedToken && savedAddress) {
-                try {
-                    // Verify the token with the backend
-                    const response = await axios.get(`${API_BASE}/auth/verify`, {
-                        headers: { Authorization: `Bearer ${savedToken}` }
-                    });
-
-                    if (response.data.valid && response.data.address === savedAddress) {
-                        setToken(savedToken);
-                        setUserAddress(savedAddress);
-                        setIsAuthenticated(true);
+            try {
+                const savedToken = Cookies.get('auth_token');
+                const savedAddress = Cookies.get('user_address');
+                
+                if (savedToken && savedAddress) {
+                    try {
+                        // Verify the token with the backend
+                        const response = await axios.get(`${API_BASE}/auth/verify`, {
+                            headers: {
+                                'Authorization': `Bearer ${savedToken}`
+                            }
+                        });
                         
-                        // Set axios default authorization header
-                        axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
-                        return;
+                        if (response.data.valid && response.data.address === savedAddress) {
+                            // Set token in axios defaults AFTER successful verification
+                            axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+                            setToken(savedToken);
+                            setUserAddress(savedAddress);
+                            setIsAuthenticated(true);
+                        } else {
+                            handleLogout();
+                        }
+                    } catch (error) {
+                        console.error('Failed to verify token:', error);
+                        handleLogout();
                     }
-                } catch (error) {
-                    console.error('Failed to verify existing auth:', error);
+                } else {
+                    handleLogout();
                 }
-
-                // If verification fails, clear the cookies
-                Cookies.remove('auth_token');
-                Cookies.remove('user_address');
+            } catch (error) {
+                console.error('Failed to check existing auth:', error);
+                handleLogout();
+            } finally {
+                setIsLoading(false);
             }
-
-            // Reset state if no valid auth
-            setToken(null);
-            setUserAddress(null);
-            setIsAuthenticated(false);
-            delete axios.defaults.headers.common['Authorization'];
         };
 
         checkExistingAuth();
     }, []);
+
+    const handleLogout = () => {
+        // Clear cookies
+        Cookies.remove('auth_token', { path: '/' });
+        Cookies.remove('user_address', { path: '/' });
+        
+        // Clear axios default header
+        delete axios.defaults.headers.common['Authorization'];
+        
+        // Reset state
+        setToken(null);
+        setUserAddress(null);
+        setIsAuthenticated(false);
+    };
 
     const requestChallenge = async (address: string) => {
         try {
@@ -88,28 +114,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             const { token: newToken } = response.data;
 
-            // Set cookies with appropriate security settings
-            Cookies.set('auth_token', newToken, {
-                secure: true,
-                sameSite: 'Strict',
-                expires: 7 // 7 days
-            });
-            
-            Cookies.set('user_address', address, {
-                secure: true,
-                sameSite: 'Strict',
-                expires: 7
-            });
+            // Set cookies with secure settings
+            Cookies.set('auth_token', newToken, COOKIE_CONFIG);
+            Cookies.set('user_address', address, COOKIE_CONFIG);
 
+            // Configure axios defaults
+            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+            // Update state
             setToken(newToken);
             setUserAddress(address);
             setIsAuthenticated(true);
 
-            // Configure axios defaults for future requests
-            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-
         } catch (error) {
             console.error('Login error:', error);
+            handleLogout();
             throw error;
         }
     };
@@ -117,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => {
         try {
             if (token) {
+                // Attempt to notify backend of logout
                 await axios.post(`${API_BASE}/auth/logout`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -124,14 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            // Clear cookies and state regardless of logout API success
-            Cookies.remove('auth_token');
-            Cookies.remove('user_address');
-            delete axios.defaults.headers.common['Authorization'];
-            
-            setToken(null);
-            setUserAddress(null);
-            setIsAuthenticated(false);
+            handleLogout();
         }
     };
 
@@ -142,7 +155,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             token,
             login,
             logout,
-            requestChallenge
+            requestChallenge,
+            isLoading
         }}>
             {children}
         </AuthContext.Provider>

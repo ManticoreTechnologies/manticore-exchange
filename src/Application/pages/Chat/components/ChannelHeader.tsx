@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChatChannel, UserPresence, chatService } from '../../../services/ChatService';
+import { ChatChannel, chatService } from '../../../services/ChatService';
 
 interface ChannelHeaderProps {
     channel: ChatChannel;
@@ -45,6 +45,12 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel, userAddress }) =
                 {channel.description && (
                     <div className="channel-description">
                         {channel.description}
+                    </div>
+                )}
+
+                {channel.rules && (
+                    <div className="channel-rules">
+                        {channel.rules}
                     </div>
                 )}
             </div>

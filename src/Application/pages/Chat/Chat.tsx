@@ -5,28 +5,20 @@ import ChannelList from './components/ChannelList';
 import MessageItem from './components/MessageItem';
 import MessageInput from './components/MessageInput';
 import ChannelHeader from './components/ChannelHeader';
+import { Navigate, useLocation } from 'react-router-dom';
 import './Chat.css';
 
 const Chat: React.FC = () => {
-    const { userAddress, isAuthenticated } = useAuth();
+    const { userAddress, isAuthenticated, token } = useAuth();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [channels, setChannels] = useState<ChatChannel[]>([
-        { name: 'Global', type: 'global' },
-        { name: 'EVR', type: 'asset' },
-        { name: 'NFT', type: 'asset' },
-    ]);
-    const [selectedChannel, setSelectedChannel] = useState<ChatChannel>({ name: 'Global', type: 'global' });
+    const [channels, setChannels] = useState<ChatChannel[]>([]);
+    const [selectedChannel, setSelectedChannel] = useState<ChatChannel | null>(null);
     const [showChannelList, setShowChannelList] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+    const [isLoadingChannels, setIsLoadingChannels] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messageContainerRef = useRef<HTMLDivElement>(null);
-
-    // Initialize chat service when authenticated
-    useEffect(() => {
-        if (isAuthenticated && userAddress) {
-            chatService.initialize();
-        }
-    }, [isAuthenticated, userAddress]);
+    const location = useLocation();
 
     const scrollToBottom = (smooth = true) => {
         messagesEndRef.current?.scrollIntoView({ 
@@ -37,26 +29,38 @@ const Chat: React.FC = () => {
     // Load available channels
     useEffect(() => {
         const loadChannels = async () => {
+            if (!isAuthenticated) return;
+            
+            setIsLoadingChannels(true);
             try {
-                const availableChannels = await chatService.getChannels();
-                setChannels(availableChannels);
+                const [globalChannel, assetChannels] = await Promise.all([
+                    { name: 'Global', type: 'global' as const },
+                    chatService.getAssetChannels()
+                ]);
+                
+                setChannels([globalChannel, ...assetChannels]);
+                
+                // Set global channel as default if none selected
+                if (!selectedChannel) {
+                    setSelectedChannel(globalChannel);
+                }
             } catch (error) {
                 console.error('Failed to load channels:', error);
+            } finally {
+                setIsLoadingChannels(false);
             }
         };
 
-        if (isAuthenticated) {
-            loadChannels();
-        }
+        loadChannels();
     }, [isAuthenticated]);
 
     // Handle incoming messages
     useEffect(() => {
-        if (!isAuthenticated) return;
+        if (!isAuthenticated || !token) return;
 
         const unsubscribeMessage = chatService.onMessage((message: ChatMessage) => {
-            if (message.channel === selectedChannel.name || 
-                (selectedChannel.type === 'global' && !message.channel)) {
+            if (message.channel === selectedChannel?.name || 
+                (selectedChannel?.type === 'global' && !message.channel)) {
                 setMessages(prev => [...prev, message]);
                 scrollToBottom();
             }
@@ -72,19 +76,26 @@ const Chat: React.FC = () => {
             unsubscribeMessage();
             unsubscribeChannel();
         };
-    }, [selectedChannel, isAuthenticated]);
+    }, [selectedChannel, isAuthenticated, token]);
 
     // Load channel messages
     const loadChannelMessages = useCallback(async (channel: ChatChannel) => {
-        setIsLoading(true);
+        setIsLoadingMessages(true);
         try {
-            const channelMessages = await chatService.getChannelMessages(channel);
+            let channelMessages: ChatMessage[];
+            if (channel.type === 'global') {
+                channelMessages = await chatService.getGlobalMessages();
+            } else if (channel.type === 'asset') {
+                channelMessages = await chatService.getAssetMessages(channel.name);
+            } else {
+                channelMessages = [];
+            }
             setMessages(channelMessages);
             scrollToBottom(false);
         } catch (error) {
             console.error('Failed to load messages:', error);
         } finally {
-            setIsLoading(false);
+            setIsLoadingMessages(false);
         }
     }, []);
 
@@ -96,7 +107,7 @@ const Chat: React.FC = () => {
     }, [selectedChannel, loadChannelMessages, isAuthenticated]);
 
     const handleSendMessage = async (text: string, ipfsHash?: string) => {
-        if (!userAddress) return;
+        if (!userAddress || !selectedChannel) return;
 
         try {
             await chatService.sendMessage({
@@ -108,7 +119,6 @@ const Chat: React.FC = () => {
             });
         } catch (error) {
             console.error('Failed to send message:', error);
-            // TODO: Show error notification
         }
     };
 
@@ -145,16 +155,24 @@ const Chat: React.FC = () => {
     const handleReportMessage = async (messageId: string) => {
         try {
             await chatService.reportMessage(messageId, 'Inappropriate content');
-            // TODO: Show success notification
         } catch (error) {
             console.error('Failed to report message:', error);
         }
     };
 
-    const handleChannelSelect = (channel: ChatChannel) => {
+    const handleChannelSelect = async (channel: ChatChannel) => {
         setSelectedChannel(channel);
         if (window.innerWidth <= 768) {
             setShowChannelList(false);
+        }
+        
+        // Subscribe to asset channel if needed
+        if (channel.type === 'asset') {
+            try {
+                await chatService.subscribeToAssetChannel(channel.name);
+            } catch (error) {
+                console.error('Failed to subscribe to channel:', error);
+            }
         }
     };
 
@@ -167,12 +185,16 @@ const Chat: React.FC = () => {
         setShowChannelList(!showChannelList);
     };
 
-    // Show sign in message if not authenticated
-    if (!isAuthenticated || !userAddress) {
+    if (!isAuthenticated) {
+        return <Navigate to="/sign-in" state={{ from: location }} replace />;
+    }
+
+    if (isLoadingChannels) {
         return (
             <div className="chat-container">
-                <div className="chat-auth-message">
-                    Please sign in with your wallet to access the chat.
+                <div className="chat-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Loading channels...</p>
                 </div>
             </div>
         );
@@ -194,35 +216,42 @@ const Chat: React.FC = () => {
                     />
                 )}
 
-                <div className="chat-main">
-                    <ChannelHeader
-                        channel={selectedChannel}
-                        userAddress={userAddress}
-                    />
-                    
-                    <div className="messages-container" ref={messageContainerRef}>
-                        {isLoading ? (
-                            <div className="loading-messages">Loading messages...</div>
-                        ) : (
-                            messages.map((message) => (
-                                <MessageItem
-                                    key={message.id}
-                                    message={message}
-                                    currentUserAddress={userAddress}
-                                    onEdit={handleEditMessage}
-                                    onDelete={handleDeleteMessage}
-                                    onReport={handleReportMessage}
-                                />
-                            ))
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
+                {selectedChannel ? (
+                    <div className="chat-main">
+                        <ChannelHeader
+                            channel={selectedChannel}
+                            userAddress={userAddress || ''}
+                        />
+                        
+                        <div className="messages-container" ref={messageContainerRef}>
+                            {isLoadingMessages ? (
+                                <div className="loading-messages">Loading messages...</div>
+                            ) : (
+                                messages.map((message) => (
+                                    <MessageItem
+                                        key={message.id}
+                                        message={message}
+                                        currentUserAddress={userAddress || ''}
+                                        onEdit={handleEditMessage}
+                                        onDelete={handleDeleteMessage}
+                                        onReport={handleReportMessage}
+                                    />
+                                ))
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
 
-                    <MessageInput
-                        channelName={selectedChannel.name}
-                        onSend={handleSendMessage}
-                    />
-                </div>
+                        <MessageInput
+                            channelName={selectedChannel.name}
+                            channelType={selectedChannel.type}
+                            onSend={handleSendMessage}
+                        />
+                    </div>
+                ) : (
+                    <div className="chat-no-channel">
+                        <p>Select a channel to start chatting</p>
+                    </div>
+                )}
             </div>
         </div>
     );

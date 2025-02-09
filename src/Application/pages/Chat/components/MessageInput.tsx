@@ -3,10 +3,11 @@ import { chatService } from '../../../services/ChatService';
 
 interface MessageInputProps {
     channelName: string;
+    channelType: 'global' | 'asset' | 'direct';
     onSend: (text: string, ipfsHash?: string) => Promise<void>;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ channelName, onSend }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ channelName, channelType, onSend }) => {
     const [message, setMessage] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [attachment, setAttachment] = useState<{ name: string; ipfsHash: string } | null>(null);

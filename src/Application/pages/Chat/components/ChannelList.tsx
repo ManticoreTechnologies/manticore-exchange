@@ -3,7 +3,7 @@ import { ChatChannel } from '../../../services/ChatService';
 
 interface ChannelListProps {
     channels: ChatChannel[];
-    selectedChannel: ChatChannel;
+    selectedChannel: ChatChannel | null;
     onChannelSelect: (channel: ChatChannel) => void;
     onAddChannel: () => void;
 }
@@ -28,6 +28,32 @@ const ChannelList: React.FC<ChannelListProps> = ({
         return acc;
     }, {} as Record<string, ChatChannel[]>);
 
+    const getChannelIcon = (type: string) => {
+        switch (type) {
+            case 'global':
+                return '🌐';
+            case 'asset':
+                return '🪙';
+            case 'direct':
+                return '👤';
+            default:
+                return '📢';
+        }
+    };
+
+    const getGroupTitle = (type: string) => {
+        switch (type) {
+            case 'global':
+                return 'Global';
+            case 'asset':
+                return 'Asset Channels';
+            case 'direct':
+                return 'Direct Messages';
+            default:
+                return type.charAt(0).toUpperCase() + type.slice(1);
+        }
+    };
+
     return (
         <div className="channels-sidebar">
             <div className="channels-header">
@@ -49,17 +75,16 @@ const ChannelList: React.FC<ChannelListProps> = ({
                 {Object.entries(groupedChannels).map(([type, channels]) => (
                     <div key={type} className="channel-group">
                         <div className="channel-group-header">
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                            {getGroupTitle(type)}
                         </div>
                         {channels.map((channel) => (
                             <div
                                 key={`${channel.type}-${channel.name}`}
-                                className={`channel-item ${selectedChannel.name === channel.name ? 'active' : ''}`}
+                                className={`channel-item ${selectedChannel?.name === channel.name ? 'active' : ''}`}
                                 onClick={() => onChannelSelect(channel)}
                             >
                                 <span className="channel-icon">
-                                    {channel.type === 'global' ? '🌐' : 
-                                     channel.type === 'asset' ? '🪙' : '👤'}
+                                    {getChannelIcon(channel.type)}
                                 </span>
                                 <span className="channel-name">
                                     {channel.name}

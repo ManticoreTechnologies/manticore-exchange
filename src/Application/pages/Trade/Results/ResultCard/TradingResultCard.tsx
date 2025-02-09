@@ -1,25 +1,7 @@
-import React, {
-    useState, useEffect,
-    // @ts-ignore
-    useRef
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import './TradingResultCard.css';
-import placeholderImage from '@/images/Placeholder.png'
-// @ts-ignore
-import ResultPopup from '../ResultPopup/ResultPopup';
-//@ts-ignore
-import LoadingSpinner from '@/components/Spinners/LoadingSpinner'; // Import the loading spinner
-// @ts-ignore
-import GraphemeSplitter from 'grapheme-splitter'; // Import the library
+import placeholderImage from '@/Application/logos/white-manticore.png';
 
-//@ts-ignore
-import SearchResultCard from '../Search/ResultCard/ResultCard';
-//@ts-ignore
-import ResultCard from '@/App/pages/Search/Results/ResultCard/ResultCard';
-// @ts-ignore
-import ManageListing from '@/App/pages/Trade/ManageListing/ManageListing';
-// @ts-ignore
-import { useNavigate } from 'react-router-dom';
 interface TradingResultCardProps {
     id: string;
     name: string;
@@ -60,17 +42,10 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
     const [priceMediaStates, setPriceMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
-    const [scrollPaused, setScrollPaused] = useState(false);
-    const pricesRef = useRef<HTMLDivElement>(null);
-
-    const convertToEVR = (satoshis: number): string => {
-        return (satoshis / 100000000).toFixed(8).replace(/\.?0+$/, '');
-    };
 
     const getMediaSrc = (hash: string | null | undefined) => {
-        return hash
-            ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`
-            : placeholderImage;
+        if (!hash) return placeholderImage;
+        return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
     };
 
     useEffect(() => {
@@ -78,9 +53,8 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
             fetch(getMediaSrc(ipfsHash), { method: 'HEAD' })
                 .then((response) => {
                     const contentType = response.headers.get('Content-Type');
-                    if (contentType && contentType.startsWith('video')) {
-                        setIsVideo(true);
-                    }
+                    setIsVideo(contentType?.startsWith('video') || false);
+                    setIsLoaded(true);
                 })
                 .catch(() => setIsLoaded(true));
         }
@@ -112,42 +86,22 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
         });
     }, [ipfsHash, prices]);
 
-    const renderPriceItem = (price: any, index: number) => {
+    const renderPriceItem = (price: any) => {
         const mediaState = priceMediaStates[price.asset_name];
         const balance = balances.find(b => b.asset_name === price.asset_name);
         
         return (
-            <div key={index} className="trading-asset-item">
-                <div className="trading-asset-media">
-                    {mediaState?.isVideo ? (
-                        <video
-                            className="trading-asset-video"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                        >
-                            <source src={getMediaSrc(price.ipfs_hash)} type="video/mp4" />
-                        </video>
-                    ) : (
-                        <img
-                            src={getMediaSrc(price.ipfs_hash)}
-                            alt={`${price.asset_name} media`}
-                            className="trading-asset-image"
-                            onError={(e) => {
-                                e.currentTarget.src = placeholderImage;
-                            }}
-                        />
-                    )}
-                </div>
-                <div className="trading-asset-details">
-                    <div className="trading-asset-info">
-                        <span className="trading-asset-name" title={price.asset_name}>{price.asset_name}</span>
-                        <span className="trading-asset-amount">{Number(price.price_evr)} EVR</span>
-                    </div>
+            <div key={price.asset_name} className="trading-asset-item">
+                <div className="trading-asset-info">
+                    <span className="trading-asset-name" title={price.asset_name}>
+                        {price.asset_name}
+                    </span>
+                    <span className="trading-asset-amount">
+                        {Number(price.price_evr).toLocaleString()} EVR
+                    </span>
                     {balance && (
                         <span className="trading-asset-balance" title={`${Number(balance.confirmed_balance)} available`}>
-                            {Number(balance.confirmed_balance)}
+                            {Number(balance.confirmed_balance).toLocaleString()} available
                         </span>
                     )}
                 </div>
@@ -155,30 +109,10 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
         );
     };
 
-    const renderPriceItems = () => {
-        // Only duplicate prices if there's more than one asset
-        const displayPrices = prices.length > 1 ? [...prices, ...prices] : prices;
-        
-        return (
-            <div 
-                className="trading-asset-container"
-                onMouseEnter={() => setScrollPaused(true)}
-                onMouseLeave={() => setScrollPaused(false)}
-                style={{ 
-                    animationPlayState: scrollPaused ? 'paused' : 'running',
-                    // Only apply animation if there's more than one asset
-                    animation: prices.length > 1 ? `scrollAssets linear infinite ${Math.max(prices.length * 4, 10)}s` : 'none'
-                }}
-            >
-                {displayPrices.map((price, index) => renderPriceItem(price, index))}
-            </div>
-        );
-    };
-
     return (
         <div 
             className="trading-result-card"
-            onClick={() => showDetails()}
+            onClick={showDetails}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -187,6 +121,10 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 }
             }}
         >
+            <div className="trading-result-card__status" data-status={status}>
+                {status}
+            </div>
+
             <div className="trading-result-card__media">
                 {isVideo ? (
                     <video
@@ -206,6 +144,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                         onLoad={() => setIsLoaded(true)}
                         onError={(e) => {
                             e.currentTarget.src = placeholderImage;
+                            setIsLoaded(true);
                         }}
                     />
                 )}
@@ -214,8 +153,11 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
             <div className="trading-result-card__content">
                 <h3 className="trading-result-card__title">{name}</h3>
                 <p className="trading-result-card__description">{description}</p>
+                
                 <div className="trading-result-card__prices">
-                    {renderPriceItems()}
+                    <div className="trading-asset-container">
+                        {prices.map(price => renderPriceItem(price))}
+                    </div>
                 </div>
             </div>
         </div>

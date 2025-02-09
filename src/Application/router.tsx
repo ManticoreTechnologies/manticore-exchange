@@ -4,6 +4,7 @@ import SignIn from './pages/SignIn/SignIn';
 import Profile from './pages/Profile/Profile';
 import Trading from './pages/Trade/Trading';
 import CreateListingPage from './pages/Trade/CreateListingPage/CreateListingPage';
+import ListingDetails from './pages/Trade/Results/ListingDetails/ListingDetails';
 import { PrivateRoute } from './components/PrivateRoute';
 
 export const router = createBrowserRouter([
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
                         <CreateListingPage />
                     </PrivateRoute>
                 )
+            },
+            {
+                path: 'trade/listings/by-id/:id',
+                element: <ListingDetails />
             },
             {
                 path: 'profile',

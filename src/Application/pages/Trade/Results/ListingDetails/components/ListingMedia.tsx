@@ -1,5 +1,5 @@
 import React from 'react';
-import ManticoreLogo from '@/images/enhanced_logo.png';
+import ManticoreLogo from '@/Application/logos/white-manticore.png';
 
 interface ListingMediaProps {
   imageHash: string | null;

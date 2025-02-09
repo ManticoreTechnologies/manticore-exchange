@@ -1,5 +1,6 @@
 import React from 'react';
 import { Listing } from '../../types';
+import TradingResultCard from '../ResultCard/TradingResultCard';
 import './TradingResultsGrid.css';
 import Pagination from '../../Components/Pagination';
 
@@ -26,66 +27,31 @@ const TradingResultsGrid: React.FC<TradingResultsGridProps> = ({
 }) => {
     return (
         <div className="trading-results">
-            <div className="results-grid">
+            <div className="trading-results-grid">
                 {results.map((listing) => (
-                    <div key={listing.id} className="result-card" onClick={() => showDetails(listing)}>
-                        <div className="result-image">
-                            {listing.image_ipfs_hash ? (
-                                <img 
-                                    src={`https://ipfs.io/ipfs/${listing.image_ipfs_hash}`} 
-                                    alt={listing.name}
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.src = '/placeholder.png';
-                                    }}
-                                />
-                            ) : (
-                                <div className="placeholder-image">No Image</div>
-                            )}
-                        </div>
-                        <div className="result-info">
-                            <h3>{listing.name}</h3>
-                            <p className="description">{listing.description}</p>
-                            <div className="price-info">
-                                <span className="price">
-                                    {listing.prices[0]?.price_evr || '0'} EVR
-                                </span>
-                                <span className="asset">
-                                    {listing.balances[0]?.asset_name || 'Unknown'}
-                                </span>
-                            </div>
-                            <div className="listing-status">
-                                <span className={`status ${listing.status.toLowerCase()}`}>
-                                    {listing.status}
-                                </span>
-                                {listing.balances[0]?.confirmed_balance && (
-                                    <span className="quantity">
-                                        Qty: {listing.balances[0].confirmed_balance}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="result-actions">
-                            <button 
-                                className="action-button add-to-cart"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    addToCart(listing);
-                                }}
-                            >
-                                Add to Cart
-                            </button>
-                            <button 
-                                className="action-button buy-now"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    buyNow(listing);
-                                }}
-                            >
-                                Buy Now
-                            </button>
-                        </div>
-                    </div>
+                    <TradingResultCard
+                        key={listing.id}
+                        id={listing.id}
+                        name={listing.name}
+                        description={listing.description}
+                        seller={listing.seller_address}
+                        listingAddress={listing.listing_address}
+                        ipfsHash={listing.image_ipfs_hash}
+                        status={listing.status}
+                        createdAt={listing.created_at}
+                        unitPrice={listing.prices[0]?.price_evr || '0'}
+                        quantity={Number(listing.balances[0]?.confirmed_balance || 0)}
+                        balances={listing.balances}
+                        prices={listing.prices.map(price => ({
+                            asset_name: price.asset_name,
+                            price_evr: price.price_evr,
+                            ipfs_hash: price.ipfs_hash || undefined
+                        }))}
+                        addToCart={() => addToCart(listing)}
+                        buyNow={() => buyNow(listing)}
+                        showDetails={() => showDetails(listing)}
+                        tags={listing.tags || []}
+                    />
                 ))}
             </div>
             

@@ -525,7 +525,7 @@ const Trading: React.FC = () => {
     };
 
     const showDetails = (listing: any) => {
-        navigate(`/listing/${listing.id}`);
+        navigate(`/trade/listings/by-id/${listing.id}`);
     };
 
     const closeDetails = () => {
@@ -592,7 +592,7 @@ const Trading: React.FC = () => {
     };
 
     const handleFeaturedClick = (listing: any) => {
-        navigate(`/listing/${listing.id}`);
+        navigate(`/trade/listings/by-id/${listing.id}`);
     };
 
     return (
