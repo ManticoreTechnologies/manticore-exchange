@@ -21,6 +21,7 @@ import Profile from "./pages/Profile/Profile";
 import Cart from "./pages/Trade/Cart/Cart";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
+import Chat from "./pages/Chat/Chat";
 import "./application.css";
 import { AuthProvider } from './contexts/AuthContext';
 import SignIn from "./pages/SignIn/SignIn";
@@ -56,6 +57,14 @@ const Application: React.FC = () => {
                                 <Route path="/about" element={<About />} />
                                 <Route path="/contact" element={<Contact />} />
                                 <Route path="/cart" element={<Cart onBack={() => {}} />} />
+                                <Route 
+                                    path="/chat" 
+                                    element={
+                                        <RouteGuard>
+                                            <Chat />
+                                        </RouteGuard>
+                                    } 
+                                />
                             </Routes>
                         </div>
                         <Footer />
