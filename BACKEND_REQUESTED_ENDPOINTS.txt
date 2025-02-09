@@ -1,0 +1,203 @@
+# Additional Backend Endpoints for Manticore Exchange
+
+## 1. Real-time Status Updates
+
+### Listing Status Stream
+```
+GET /listings/{listing_id}/status/stream
+- WebSocket endpoint for real-time listing status updates
+- Provides instant updates on balance changes, orders, and price updates
+- Critical for responsive UI and accurate trading state
+```
+
+### Order Status Stream
+```
+GET /orders/{order_id}/status/stream
+- WebSocket endpoint for real-time order status updates
+- Provides instant updates on payment status, confirmations, and fulfillment
+```
+
+## 2. Order Management
+
+### Cancel Order
+```
+POST /orders/{order_id}/cancel
+- Allow buyers to cancel unfulfilled orders
+- Important for user control and error handling
+```
+
+### Order History
+```
+GET /orders/{order_id}/history
+- Get detailed order history including status changes
+- Important for transparency and support
+```
+
+### Dispute Order
+```
+POST /orders/{order_id}/dispute
+- Allow buyers to open disputes
+- Critical for consumer protection
+```
+
+## 3. Seller Management
+
+### Pause Listing
+```
+POST /listings/{listing_id}/pause
+- Temporarily pause a listing from accepting new orders
+- Useful for inventory management
+```
+
+### Resume Listing
+```
+POST /listings/{listing_id}/resume
+- Resume a paused listing
+- Complete the pause/resume flow
+```
+
+### Listing Analytics
+```
+GET /listings/{listing_id}/analytics
+- Get detailed analytics about listing performance
+- Sales history, views, conversion rates
+```
+
+## 4. Batch Operations
+
+### Batch Update Listings
+```
+POST /listings/batch-update
+- Update multiple listings at once
+- Efficient for sellers managing many listings
+```
+
+### Batch Order Status
+```
+POST /orders/batch-status
+- Get status updates for multiple orders
+- Efficient for buyers tracking multiple purchases
+```
+
+## 5. Price Management
+
+### Auto-Update Prices
+```
+POST /listings/{listing_id}/prices/auto-update
+- Enable automatic price updates based on market conditions
+- Important for dynamic pricing
+```
+
+### Price History
+```
+GET /listings/{listing_id}/price-history
+- Get historical price data for a listing
+- Important for price transparency
+```
+
+## 6. Inventory Management
+
+### Restock Listing
+```
+POST /listings/{listing_id}/restock
+- Add new inventory to a listing
+- Important for managing asset supply
+```
+
+### Inventory History
+```
+GET /listings/{listing_id}/inventory-history
+- Track inventory changes over time
+- Important for audit and planning
+```
+
+## 7. Security and Verification
+
+### Verify Listing
+```
+POST /listings/{listing_id}/verify
+- Verify listing authenticity and seller credentials
+- Build trust in the marketplace
+```
+
+### Seller Reputation
+```
+GET /sellers/{seller_address}/reputation
+- Get seller reputation metrics
+- Important for buyer confidence
+```
+
+## 8. Notifications
+
+### Notification Settings
+```
+POST /notifications/settings
+- Configure notification preferences
+- Keep users informed of important events
+```
+
+### Notification Stream
+```
+GET /notifications/stream
+- WebSocket endpoint for real-time notifications
+- Critical for user engagement
+```
+
+## 9. Rate Limiting and Health
+
+### System Health
+```
+GET /system/health
+- Get system health status
+- Important for reliability monitoring
+```
+
+### Rate Limits
+```
+GET /system/limits
+- Get current rate limits and usage
+- Important for API consumers
+```
+
+## 10. Market Data
+
+### Market Statistics
+```
+GET /market/stats
+- Get market-wide statistics
+- Important for market analysis
+```
+
+### Trending Items
+```
+GET /market/trending
+- Get trending listings and categories
+- Improve discovery
+```
+
+## Implementation Notes
+
+1. All endpoints should:
+   - Return standardized error responses
+   - Include proper rate limiting
+   - Support pagination where applicable
+   - Include proper authentication/authorization
+   - Log all activities for audit purposes
+
+2. WebSocket endpoints should:
+   - Support automatic reconnection
+   - Include heartbeat mechanism
+   - Handle connection limits properly
+   - Include proper error handling
+
+3. Security considerations:
+   - All endpoints must verify seller ownership
+   - Rate limiting must be enforced
+   - Input validation must be thorough
+   - Authentication tokens must be properly validated
+
+4. Performance considerations:
+   - Caching should be implemented where appropriate
+   - Database queries should be optimized
+   - Batch operations should be atomic
+   - Real-time updates should be efficient 
