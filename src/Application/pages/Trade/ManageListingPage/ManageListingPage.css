@@ -1,0 +1,18 @@
+.manage-listing-page {
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    background: var(--background-primary);
+    padding: var(--spacing-6);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.manage-listing-page-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+} 

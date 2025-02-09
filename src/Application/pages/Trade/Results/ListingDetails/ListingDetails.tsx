@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink, FiEdit3 } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink, FiEdit3, FiSettings } from 'react-icons/fi';
 import QRCode from 'qrcode';
 import './ListingDetails.css';
 import ManticoreLogo from '@/Application/logos/white-manticore.png';
@@ -18,22 +18,26 @@ import PriceHistory from './components/PriceHistory/PriceHistory';
 import SelectedAssetDisplay from './components/SelectedAssetDisplay/SelectedAssetDisplay';
 import EditListingModal from './components/EditListingModal/EditListingModal';
 import useCart from '@/Application/hooks/useCart';
+import { useAuth } from '@/Application/contexts/AuthContext';
 import { formatDistance } from 'date-fns';
 import placeholderImage from '@/Application/logos/white-manticore.png';
+import UnAuthenticated from '@/Application/components/UnAuthenticated/UnAuthenticated';
 
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
 const PINATA_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
 
 interface ListingUpdates {
-  name: string;
-  description: string;
-  prices: {
-    add_or_update: {
-      asset_name: string;
-      price_evr: string;
-    }[];
-    remove: string[];
-  };
+  name?: string;
+  description?: string;
+  image_ipfs_hash?: string;
+  payout_address?: string;
+  tags?: string[];
+  prices?: Array<{
+    asset_name: string;
+    price_evr?: string;
+    price_asset_name?: string;
+    price_asset_amount?: string;
+  }>;
 }
 
 // Add a helper function to format amounts according to units
@@ -87,6 +91,7 @@ interface ListingDetails {
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated, userAddress, token } = useAuth();
   const [listing, setListing] = useState<ListingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -103,23 +108,21 @@ const ListingDetails: React.FC = () => {
   const [editForm, setEditForm] = useState<ListingUpdates>({
     name: '',
     description: '',
-    prices: {
-      add_or_update: [],
-      remove: []
-    }
+    prices: []
   });
   const { addToCart } = useCart();
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
   const [mediaLoaded, setMediaLoaded] = useState(false);
+  const [showManageSection, setShowManageSection] = useState(false);
 
   // Fetch listing data
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${trading_api_url}/listings/by-id/${id}`);
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const response = await axios.get(`${trading_api_url}/listings/by-id/${id}`, { headers });
         if (response.data) {
-          console.log(response.data);
           setListing(response.data);
           // Initialize quantities for each asset with minimum unit amount
           const initialQuantities: Record<string, number> = {};
@@ -130,13 +133,10 @@ const ListingDetails: React.FC = () => {
           setEditForm({
             name: response.data.name,
             description: response.data.description,
-            prices: {
-              add_or_update: response.data.prices.map((p: Price) => ({
+            prices: response.data.prices.map((p: Price) => ({
                 asset_name: p.asset_name,
                 price_evr: p.price_evr
-              })),
-              remove: []
-            }
+            }))
           });
         }
       } catch (err) {
@@ -150,7 +150,7 @@ const ListingDetails: React.FC = () => {
     if (id) {
       fetchListing();
     }
-  }, [id]);
+  }, [id, token]);
 
   // Add this function to check media type
   const checkMediaType = async (ipfsHash: string, assetName: string) => {
@@ -267,21 +267,28 @@ const ListingDetails: React.FC = () => {
   };
 
   const handleEditSubmit = async (updates: ListingUpdates) => {
-    if (!listing) return;
+    if (!listing || !token) return;
 
     try {
+      const apiUpdates: ListingUpdates = {
+        name: updates.name,
+        description: updates.description,
+        payout_address: updates.payout_address,
+        tags: updates.tags,
+        image_ipfs_hash: listing.image_ipfs_hash || undefined
+      };
+
+      // Only include prices if there are changes
+      if (updates.prices?.length) {
+        apiUpdates.prices = updates.prices;
+      }
+
       const response = await axios.patch(
         `${trading_api_url}/listings/${listing.id}`,
-        {
-          name: updates.name,
-          description: updates.description,
-          prices: {
-            add_or_update: updates.prices.add_or_update,
-            remove: updates.prices.remove
-          }
-        },
+        apiUpdates,
         {
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -298,10 +305,23 @@ const ListingDetails: React.FC = () => {
       }
     } catch (err) {
       console.error('Error updating listing:', err);
+      let errorMessage = 'Failed to update listing. Please try again.';
+      
+      // Handle validation errors
+      if (axios.isAxiosError(err) && err.response?.status === 422) {
+        const validationErrors = err.response.data?.detail;
+        if (Array.isArray(validationErrors)) {
+          errorMessage = validationErrors.map(err => {
+            const field = err.loc[err.loc.length - 1];
+            return `${field}: ${err.msg}`;
+          }).join('\n');
+        }
+      }
+      
       setNotification({
         show: true,
         type: 'error',
-        message: 'Failed to update listing. Please try again.'
+        message: errorMessage
       });
     }
   };
@@ -310,6 +330,27 @@ const ListingDetails: React.FC = () => {
     if (!listing?.image_ipfs_hash) return placeholderImage;
     return `https://ipfs.io/ipfs/${listing.image_ipfs_hash}`;
   };
+
+  const handleManageListing = async () => {
+    if (!isAuthenticated) {
+        const returnUrl = encodeURIComponent(`/trade/listings/manage/${id}`);
+        navigate(`/signin?returnUrl=${returnUrl}`);
+        return;
+    }
+
+    if (!isListingOwner) {
+        setNotification({
+            show: true,
+            type: 'error',
+            message: 'You must be the listing owner to manage this listing'
+        });
+        return;
+    }
+
+    navigate(`/trade/listings/manage/${id}`);
+  };
+
+  const isListingOwner = isAuthenticated && userAddress && listing?.seller_address.toLowerCase() === userAddress.toLowerCase() ? true : false;
 
   if (loading) {
     return (
@@ -336,34 +377,20 @@ const ListingDetails: React.FC = () => {
   return (
     <div className="listing-details">
       <div className="listing-details-container">
-        <div className="listing-details-header">
-          <h1 className="listing-details-title">{listing.name}</h1>
-          <div className="listing-details-actions">
-            <button 
-              className="listing-details-button listing-details-button--secondary"
-              onClick={() => navigate('/trade')}
-            >
-              Back to Listings
-            </button>
-          </div>
-        </div>
+        <ListingHeader 
+          onShare={handleShare} 
+          onManageListing={handleManageListing}
+          isOwner={isListingOwner}
+        />
 
         <div className="listing-details-content">
           <div className="listing-details-media">
-            <div className="listing-media-container">
-              <div className="listing-media">
-                <img
-                  src={getMediaSrc()}
-                  alt={listing.name}
-                  className={`listing-image ${mediaLoaded ? 'loaded' : ''}`}
-                  onLoad={() => setMediaLoaded(true)}
-                  onError={(e) => {
-                    e.currentTarget.src = placeholderImage;
-                    setMediaLoaded(true);
-                  }}
-                />
-              </div>
-            </div>
+            <ListingMedia
+              imageUrl={getMediaSrc()}
+              altText={listing.name}
+              onLoad={() => setMediaLoaded(true)}
+              mediaLoaded={mediaLoaded}
+            />
           </div>
 
           <div className="listing-info">
@@ -376,6 +403,74 @@ const ListingDetails: React.FC = () => {
               <h3 className="listing-info-section-title">Description</h3>
               <p className="listing-description">{listing.description}</p>
             </div>
+
+            {isAuthenticated && !isListingOwner && showManageSection && (
+              <div className="listing-error-message">
+                You must be the listing owner to manage this listing
+              </div>
+            )}
+
+            {isListingOwner && showManageSection && (
+              <div className="listing-management-section">
+                <h3 className="listing-info-section-title">Management</h3>
+                
+                <div className="listing-addresses">
+                  <div className="address-item">
+                    <h4>Deposit Address</h4>
+                    <div className="address-content">
+                      {qrCodeData && (
+                        <div className="qr-code">
+                          <img src={qrCodeData} alt="Deposit Address QR Code" />
+                        </div>
+                      )}
+                      <div 
+                        className="address-display"
+                        onClick={() => {
+                          navigator.clipboard.writeText(listing.deposit_address);
+                          setNotification({
+                            show: true,
+                            type: 'success',
+                            message: 'Deposit address copied!'
+                          });
+                        }}
+                      >
+                        <span>{listing.deposit_address}</span>
+                        <FiCopy className="copy-icon" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="address-item">
+                    <h4>Payout Address</h4>
+                    <div className="address-content">
+                      <div 
+                        className="address-display"
+                        onClick={() => {
+                          navigator.clipboard.writeText(listing.payout_address);
+                          setNotification({
+                            show: true,
+                            type: 'success',
+                            message: 'Payout address copied!'
+                          });
+                        }}
+                      >
+                        <span>{listing.payout_address}</span>
+                        <FiCopy className="copy-icon" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="management-actions">
+                  <button 
+                    className="edit-listing-button"
+                    onClick={() => setIsEditModalOpen(true)}
+                  >
+                    <FiEdit3 /> Edit Listing
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="listing-info-section">
               <h3 className="listing-info-section-title">Pricing</h3>
@@ -456,6 +551,7 @@ const ListingDetails: React.FC = () => {
             prices: listing.prices,
             balances: listing.balances,
             deposit_address: listing.deposit_address,
+            payout_address: listing.payout_address,
             qrCodeData: qrCodeData
           }}
           onCopyAddress={() => {

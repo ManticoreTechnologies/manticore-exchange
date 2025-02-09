@@ -1,33 +1,33 @@
 import React from 'react';
-import ManticoreLogo from '@/Application/logos/white-manticore.png';
+import placeholderImage from '@/Application/logos/white-manticore.png';
 
 interface ListingMediaProps {
-  imageHash: string | null;
-  name: string;
-  pinataGateway: string;
+  imageUrl: string;
+  altText: string;
+  onLoad: () => void;
+  mediaLoaded: boolean;
 }
 
-const ListingMedia: React.FC<ListingMediaProps> = ({ imageHash, name, pinataGateway }) => {
+const ListingMedia: React.FC<ListingMediaProps> = ({
+  imageUrl,
+  altText,
+  onLoad,
+  mediaLoaded
+}) => {
   return (
-    <div className="listing-media">
-      {imageHash ? (
+    <div className="listing-media-container">
+      <div className="listing-media">
         <img
-          src={`${pinataGateway}${imageHash}`}
-          alt={name}
-          className="listing-image"
+          src={imageUrl}
+          alt={altText}
+          className={`listing-image ${mediaLoaded ? 'loaded' : ''}`}
+          onLoad={onLoad}
           onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = ManticoreLogo;
-            target.className = "placeholder-image";
+            e.currentTarget.src = placeholderImage;
+            onLoad();
           }}
         />
-      ) : (
-        <img
-          src={ManticoreLogo}
-          alt="Manticore Logo"
-          className="placeholder-image"
-        />
-      )}
+      </div>
     </div>
   );
 };

@@ -1,17 +1,21 @@
+.manage-listing-container {
+    width: 100%;
+    height: 100%;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-6);
+}
+
 /* Popup container */
 .manage-listing-popup {
     width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--modal-overlay);
-    transition: var(--transition-opacity);
-    z-index: var(--z-modal);
+    padding: var(--spacing-4);
     opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 /* Popup content */
@@ -19,207 +23,296 @@
     background: var(--background-primary);
     padding: var(--spacing-8);
     border-radius: var(--border-radius-lg);
-    width: var(--max-width-lg);
-    max-width: 90%;
-    box-shadow: var(--shadow-2xl);
+    width: 100%;
+    box-shadow: var(--shadow-md);
     position: relative;
-    overflow: hidden;
-    transition: var(--transition-transform);
-    transform: translateY(0);
     border: 1px solid var(--border-color);
 }
 
-/* Closing animation for popup */
+/* Closing animation */
 .manage-listing-popup.closing {
     opacity: 0;
-    transform: translateY(calc(-1 * var(--spacing-5)));
+}
+
+.manage-listing-popup.closing .manage-listing-content {
+    transform: translateY(20px);
 }
 
 /* Headings */
-.manage-listing-popup .manage-listing-content h2 {
-    margin-top: 0;
+.manage-listing-content h2 {
+    margin: 0 0 var(--spacing-6) 0;
     font-size: var(--font-size-2xl);
     color: var(--text-primary);
-    text-align: left;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--spacing-4);
+    font-weight: var(--font-weight-bold);
 }
 
-/* Form labels */
-.manage-listing-popup .manage-listing-content label {
-    color: var(--text-primary);
+/* Form elements */
+.manage-listing-content label {
     display: block;
-    margin: var(--spacing-4) 0 var(--spacing-2);
-    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+    font-weight: var(--font-weight-medium);
 }
 
-/* Inputs and Textareas */
-.manage-listing-popup .manage-listing-content input,
-.manage-listing-popup .manage-listing-content textarea {
+.manage-listing-content input,
+.manage-listing-content textarea {
     width: 100%;
     padding: var(--spacing-3);
-    margin-bottom: var(--spacing-4);
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
     color: var(--text-primary);
     font-size: var(--font-size-base);
-    outline: none;
-    box-sizing: border-box;
     transition: var(--transition-all);
-    border-radius: var(--border-radius-md);
 }
 
-.manage-listing-popup .manage-listing-content input:focus,
-.manage-listing-popup .manage-listing-content textarea:focus {
-    box-shadow: var(--input-focus-ring);
+.manage-listing-content input:focus,
+.manage-listing-content textarea:focus {
     border-color: var(--accent-color);
+    box-shadow: var(--input-focus-ring);
+    outline: none;
 }
 
 /* Buttons */
-.manage-listing-popup .manage-listing-content button {
+.manage-listing-content .button-group {
+    display: flex;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-6);
+    flex-wrap: wrap;
+}
+
+.manage-listing-content button {
     padding: var(--spacing-3) var(--spacing-6);
     border: none;
     border-radius: var(--border-radius-md);
-    font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
     cursor: pointer;
     transition: var(--transition-all);
-    background: var(--button-primary-bg);
+    background: var(--accent-color);
     color: var(--text-primary);
-    margin-top: var(--spacing-6);
+    min-width: 120px;
 }
 
-.manage-listing-popup .manage-listing-content button:disabled {
-    background: var(--button-secondary-bg);
+.manage-listing-content button:hover:not(:disabled) {
+    background: var(--accent-color-hover);
+    transform: translateY(-1px);
+}
+
+.manage-listing-content button:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.manage-listing-popup .manage-listing-content button:not(:disabled):hover {
-    transform: scale(1.05);
-    background: var(--button-primary-hover);
-    box-shadow: var(--shadow-md);
-}
-
-/* Refund button */
-.manage-listing-popup .manage-listing-content .refund-button {
-    background: var(--color-success);
-    color: var(--background-primary);
-}
-
-.manage-listing-popup .manage-listing-content .refund-button:hover {
-    background: var(--color-success-dark);
-}
-
-/* Error message styling */
-.manage-listing-popup .manage-listing-content .error-message {
-    color: var(--color-error);
-    font-size: var(--font-size-sm);
-    margin-top: var(--spacing-4);
-    padding: var(--spacing-3);
-    background: var(--background-secondary);
-    border-left: 4px solid var(--color-error);
-    border-radius: var(--border-radius-md);
-}
-
-/* Listing address styling */
-.manage-listing-popup .manage-listing-content .listing-address h3 {
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-2);
-    font-size: var(--font-size-lg);
-}
-
-.manage-listing-popup .manage-listing-content .listing-address p {
-    color: var(--text-secondary);
-    word-break: break-all;
-    font-size: var(--font-size-base);
 }
 
 /* Close button */
-.manage-listing-popup .manage-listing-content .manage-listing-close-button {
+.manage-listing-close-button {
     position: absolute;
-    width: auto;
-    height: auto;
-    right: var(--spacing-4);
     top: var(--spacing-4);
+    right: var(--spacing-4);
     background: transparent;
     border: none;
+    color: var(--text-muted);
     font-size: var(--font-size-xl);
     cursor: pointer;
-    color: var(--text-muted);
+    padding: var(--spacing-2);
     transition: var(--transition-all);
-    outline: none;
-    margin: 0;
-    padding: var(--spacing-1);
-    line-height: 1;
+    z-index: 2;
+}
+
+.manage-listing-close-button:hover {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+/* Available Balances */
+.available-balances {
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    border: 1px solid var(--border-color);
+}
+
+.available-balances h3 {
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-4) 0;
     display: flex;
     align-items: center;
-    justify-content: center;
-    z-index: 1;
-    text-align: center;
-    box-shadow: none;
-    text-decoration: none;
-    min-width: unset;
+    gap: var(--spacing-2);
 }
 
-.manage-listing-popup .manage-listing-content .manage-listing-close-button:hover {
-    transform: scale(1.2);
-    color: var(--color-error);
+.balance-list {
+    display: grid;
+    gap: var(--spacing-3);
 }
 
-.manage-listing-popup .manage-listing-content .manage-listing-close-button:focus {
-    outline: none;
-    box-shadow: none;
-    border: none;
-}
-
-/* Manage listing button */
-.manage-listing-button {
-    position: relative;
-    z-index: 0;
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
+.balance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4);
+    background: var(--background-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    padding: var(--spacing-1);
-    font-size: var(--font-size-base);
     transition: var(--transition-all);
 }
 
-.manage-listing-button:hover {
-    transform: scale(1.1);
-    color: var(--accent-color);
+.balance-item:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
-/* Popup confirmation buttons */
-.manage-listing-popup .manage-listing-content .confirm-button,
-.manage-listing-popup .manage-listing-content .cancel-button {
-    margin: var(--spacing-2);
-    padding: var(--spacing-3) var(--spacing-5);
+.balance-item .asset-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.balance-item .asset-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+}
+
+.balance-item .asset-amount {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-lg);
+}
+
+/* Withdrawal Modal */
+.withdrawal-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--background-primary);
+    padding: var(--spacing-6);
+    border-radius: var(--border-radius-lg);
+    width: 90%;
+    max-width: 400px;
+    z-index: calc(var(--z-modal) + 200);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-2xl);
+}
+
+.withdrawal-modal h3 {
+    margin: 0 0 var(--spacing-4) 0;
+    color: var(--text-primary);
+    font-size: var(--font-size-xl);
+}
+
+.withdrawal-modal .input-group {
+    margin-bottom: var(--spacing-4);
+}
+
+.withdrawal-modal .input-group label {
+    display: block;
+    margin-bottom: var(--spacing-2);
+    color: var(--text-secondary);
+}
+
+.withdrawal-modal .input-group input {
+    width: 100%;
+    padding: var(--spacing-3);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-lg);
+}
+
+.withdrawal-modal .button-group {
+    display: flex;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-6);
+}
+
+.withdrawal-modal .withdraw-button {
+    flex: 1;
+    padding: var(--spacing-3);
+    background: var(--color-success);
+    color: var(--text-primary);
     border: none;
     border-radius: var(--border-radius-md);
     cursor: pointer;
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-bold);
     transition: var(--transition-all);
+    font-weight: var(--font-weight-semibold);
 }
 
-.manage-listing-popup .manage-listing-content .confirm-button {
-    background: var(--color-success);
-    color: var(--background-primary);
-}
-
-.manage-listing-popup .manage-listing-content .cancel-button {
-    background: var(--color-error);
-    color: var(--background-primary);
-}
-
-.manage-listing-popup .manage-listing-content .confirm-button:hover {
+.withdrawal-modal .withdraw-button:hover:not(:disabled) {
     background: var(--color-success-dark);
-    transform: scale(1.05);
+    transform: translateY(-1px);
 }
 
-.manage-listing-popup .manage-listing-content .cancel-button:hover {
-    background: var(--color-error-dark);
-    transform: scale(1.05);
+.withdrawal-modal .withdraw-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.withdrawal-modal .cancel-button {
+    padding: var(--spacing-3) var(--spacing-6);
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-all);
+    font-weight: var(--font-weight-semibold);
+}
+
+.withdrawal-modal .cancel-button:hover {
+    background: var(--background-tertiary);
+    transform: translateY(-1px);
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-4);
+    margin: var(--spacing-6) 0;
+}
+
+/* Messages */
+.error-message {
+    color: var(--color-error);
+    background: var(--background-secondary);
+    border-left: 4px solid var(--color-error);
+    padding: var(--spacing-3);
+    margin-top: var(--spacing-4);
+    border-radius: var(--border-radius-md);
+}
+
+.success-message {
+    color: var(--color-success);
+    background: var(--background-secondary);
+    border-left: 4px solid var(--color-success);
+    padding: var(--spacing-3);
+    margin-top: var(--spacing-4);
+    border-radius: var(--border-radius-md);
+}
+
+/* Back button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: var(--transition-all);
+    margin-bottom: var(--spacing-4);
+}
+
+.back-button:hover {
+    color: var(--text-primary);
+    transform: translateX(-2px);
 }

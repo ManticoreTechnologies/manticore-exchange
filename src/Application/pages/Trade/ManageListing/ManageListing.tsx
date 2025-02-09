@@ -1,52 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-//@ts-ignore
-import { FiTool } from 'react-icons/fi';
+import { FiTool, FiDollarSign, FiArrowLeft } from 'react-icons/fi';
+import { useAuth } from '@/Application/contexts/AuthContext';
 import './ManageListing.css';
 
-interface ManageListingProps {
-    initialListingId?: string; // Optional prop for initial listing ID
+interface Balance {
+    asset_name: string;
+    confirmed_balance: string;
+    pending_balance: string;
+    units: number;
+    last_confirmed_tx_hash: string | null;
+    last_confirmed_tx_time: string | null;
 }
 
-const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) => {
-    console.log('ManageListing component mounted'); // Debugging log
+interface ManageListingProps {
+    initialListingId: string;
+    onClose: () => void;
+}
 
-    const [isManagingListing, setIsManagingListing] = useState<boolean>(false); 
-    const [isClosing, setIsClosing] = useState<boolean>(false);
-    const [listingId, setListingId] = useState<string>(initialListingId); // Use initialListingId if provided
-    const [password, setPassword] = useState<string>(''); // Always prompt for password
-    const [confirmPassword, setConfirmPassword] = useState<string>(''); 
-    const [refundConfirmPassword, setRefundConfirmPassword] = useState<string>(''); // New state for refund confirmation password
+const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose }) => {
+    const { token } = useAuth();
+    const [listingId] = useState<string>(initialListingId);
+    const [password, setPassword] = useState<string>('');
     const [listingData, setListingData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null); 
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState<boolean>(false); 
-    const [showRefundConfirmation, setShowRefundConfirmation] = useState<boolean>(false); // New state for refund confirmation
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [showWithdrawModal, setShowWithdrawModal] = useState<boolean>(false);
+    const [selectedAsset, setSelectedAsset] = useState<Balance | null>(null);
+    const [withdrawAmount, setWithdrawAmount] = useState<string>('');
 
-    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
-    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
-    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
+    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'localhost';
+    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '8000';
+    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'http';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
     useEffect(() => {
-        if (initialListingId) {
-            setIsManagingListing(true);
+        if (initialListingId && token) {
+            handleFetchListing();
         }
-    }, [initialListingId]);
+    }, [initialListingId, token]);
 
     const handleFetchListing = async () => {
         setIsLoading(true);
         setError(null);
         setSuccessMessage(null);
         try {
-            const response = await axios.post(`${trading_api_url}/manage`, {
-                listing_id: listingId,
-                password,
-                action: 'fetch',
+            const response = await axios.get(`${trading_api_url}/listings/by-id/${listingId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
+            
             const fetchedListingData = response.data;
-            fetchedListingData.unit_price = (fetchedListingData.unit_price / 100000000).toFixed(8); // Convert unit price from satoshis to EVR
+            // Add balances if they don't exist
+            if (!fetchedListingData.balances) {
+                fetchedListingData.balances = [
+                    { asset_name: 'EVR', amount: fetchedListingData.evr_balance || 0 },
+                    { asset_name: 'BTC', amount: fetchedListingData.btc_balance || 0 }
+                ];
+            }
+            
             setListingData(fetchedListingData);
         } catch (error: any) {
             console.error('Error fetching listing:', error);
@@ -61,16 +75,20 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
         setError(null);
         setSuccessMessage(null);
         try {
-            const unitPriceInSatoshis = Math.floor(Number(listingData.unit_price) * 100000000); // Convert the unit price to satoshis
-            const response = await axios.post(`${trading_api_url}/manage`, {
-                listing_id: listingId,
-                password,
-                action: 'update',
-                unit_price: unitPriceInSatoshis,
-                description: listingData.description,
-                ipfs_hash: listingData.ipfs_hash,
-            });
-            setSuccessMessage(response.data.message);
+            const response = await axios.patch(
+                `${trading_api_url}/listings/${listingId}`,
+                {
+                    description: listingData.description,
+                    ipfs_hash: listingData.ipfs_hash,
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            setSuccessMessage('Listing updated successfully');
+            setListingData(response.data);
         } catch (error: any) {
             console.error('Error updating listing:', error);
             setError(error.response?.data?.message || 'Failed to update listing.');
@@ -79,114 +97,109 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
         }
     };
 
-    const handleCancelListing = async () => {
-        if (password !== confirmPassword) {
-            setError('Passwords do not match. Please confirm your password.');
-            return;
-        }
+    const handleWithdraw = async () => {
+        if (!selectedAsset || !withdrawAmount) return;
+
         setIsLoading(true);
         setError(null);
         setSuccessMessage(null);
+
         try {
-            const response = await axios.post(`${trading_api_url}/manage`, {
-                listing_id: listingId,
-                password,
-                action: 'cancel',
-            });
-            setSuccessMessage(response.data.message);
-            setShowCancelConfirmation(false);
-            setListingData(null);
+            const response = await axios.post(
+                `${trading_api_url}/listings/${listingId}/withdraw`,
+                {
+                    asset_name: selectedAsset.asset_name,
+                    amount: parseFloat(withdrawAmount)
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            setSuccessMessage(`Successfully withdrew ${withdrawAmount} ${selectedAsset.asset_name}. Transaction ID: ${response.data.transaction_id}`);
+            setShowWithdrawModal(false);
+            
+            // Refresh listing data
+            await handleFetchListing();
         } catch (error: any) {
-            console.error('Error canceling listing:', error);
-            setError(error.response?.data?.message || 'Failed to cancel listing.');
+            console.error('Error withdrawing assets:', error);
+            setError(error.response?.data?.detail || 'Failed to withdraw assets.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleRefundSurplus = async () => {
-        if (password !== refundConfirmPassword) {
-            setError('Passwords do not match for refund. Please confirm your password.');
-            return;
+    const handleBalanceClick = (balance: Balance) => {
+        setSelectedAsset(balance);
+        setWithdrawAmount('');
+        setShowWithdrawModal(true);
+    };
+
+    const renderBalances = () => {
+        if (!listingData?.balances || listingData.balances.length === 0) {
+            return null;
         }
-        setIsLoading(true);
-        setError(null);
-        setSuccessMessage(null);
-        try {
-            const response = await axios.post(`${trading_api_url}/manage`, {
-                listing_id: listingId,
-                password,
-                action: 'refund',
-            });
-            setSuccessMessage(`Surplus refunded successfully! TXID: ${response.data.refund_txid}`);
-            setShowRefundConfirmation(false); // Close refund confirmation modal
-        } catch (error: any) {
-            console.error('Error refunding surplus:', error);
-            setError(error.response?.data?.message || 'Failed to refund surplus.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setListingData((prev: any) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-//@ts-ignore
-    const handleOpenPopup = () => {
-        setIsClosing(false);
-        setIsManagingListing(true);
-    };
-
-    const handleClosePopup = () => {
-        setIsClosing(true);
-        setTimeout(() => {
-            setIsManagingListing(false);
-            setShowCancelConfirmation(false);
-            setError(null);
-            setSuccessMessage(null);
-        }, 300);
-    };
-
-    const openCancelConfirmation = () => {
-        setShowCancelConfirmation(true);
-    };
-
-    const openRefundConfirmation = () => {
-        setShowRefundConfirmation(true);
+        return (
+            <div className="available-balances">
+                <h3>
+                    <FiDollarSign />
+                    Available Balances
+                </h3>
+                <div className="balance-list">
+                    {listingData.balances.map((balance: Balance) => (
+                        <div 
+                            key={balance.asset_name} 
+                            className="balance-item"
+                            onClick={() => handleBalanceClick(balance)}
+                        >
+                            <div className="asset-info">
+                                <span className="asset-name">{balance.asset_name}</span>
+                                <span className="withdraw-hint">Click to withdraw</span>
+                            </div>
+                            <span className="asset-amount">
+                                {parseFloat(balance.confirmed_balance).toFixed(8)}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     };
 
     return (
-        <div>
+        <div className="manage-listing-container">
+            <button className="back-button" onClick={onClose}>
+                <FiArrowLeft /> Back to Trading
+            </button>
+            
+            <div className="manage-listing-content">
+                {isLoading ? (
+                    <div className="loading-container">
+                        <div className="loading-spinner"></div>
+                        <p>Loading listing details...</p>
+                    </div>
+                ) : listingData ? (
+                    <div>
+                        <h2>Manage Listing</h2>
+                        
+                        {renderBalances()}
 
-            {isManagingListing && (
-                <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
-                    <div className="manage-listing-content">
-                        <button className="manage-listing-close-button" onClick={handleClosePopup}>✕</button>
-                        {listingData ? (
+                        <div className="form-grid">
                             <div>
-                                <h2>Manage Listing</h2>
-                                <label htmlFor="unit_price">Unit Price</label>
-                                <input
-                                    id="unit_price"
-                                    type="text"
-                                    name="unit_price"
-                                    placeholder="Update Unit Price"
-                                    value={listingData.unit_price}
-                                    onChange={handleInputChange}
-                                />
                                 <label htmlFor="description">Description</label>
                                 <textarea
                                     id="description"
                                     name="description"
                                     placeholder="Update Description"
                                     value={listingData.description}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => setListingData({ ...listingData, description: e.target.value })}
                                 />
+                            </div>
+                            <div>
                                 <label htmlFor="ipfs_hash">IPFS Hash</label>
                                 <input
                                     id="ipfs_hash"
@@ -194,109 +207,68 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId = '' }) 
                                     name="ipfs_hash"
                                     placeholder="Update IPFS Hash"
                                     value={listingData.ipfs_hash}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => setListingData({ ...listingData, ipfs_hash: e.target.value })}
                                 />
-                                <button onClick={handleUpdateListing} disabled={isLoading}>
-                                    {isLoading ? 'Updating...' : 'Update Listing'}
-                                </button>
-                                <button onClick={openCancelConfirmation} className="cancel-button" disabled={isLoading || listingData.listing_status === 'ACTIVE'}>
-                                    {isLoading ? 'Canceling...' : 'Cancel Listing'}
-                                </button>
-                                <button onClick={openRefundConfirmation} className="refund-button" disabled={isLoading}>
-                                    {isLoading ? 'Refunding...' : 'Refund Assets'}
-                                </button>
-                                {listingData.listing_status==='ACTIVE' && <p className="error-message">Active listings cannot be cancelled. Refund this listing to cancel it.</p>}
-                                <div className="listing-address">
-                                    <h3>Refill Address</h3>
-                                    <p>{listingData.listing_address}</p>
-                                </div>
-                                {successMessage && <p className="success-message">{successMessage}</p>}
-                                {error && <p className="error-message">{error}</p>}
                             </div>
-                        ) : (
-                            <div>
-                                <h2>Enter Listing ID and Password</h2>
-                                <label htmlFor="listingId">Listing ID</label>
-                                <input
-                                    id="listingId"
-                                    type="text"
-                                    name="listingId"
-                                    placeholder="Listing ID"
-                                    value={listingId}
-                                    onChange={(e) => setListingId(e.target.value)}
-                                    disabled={Boolean(initialListingId)} // Disable input if initial ID is provided
-                                />
-                                <label htmlFor="password">Password</label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                                <button onClick={handleFetchListing} disabled={isLoading || !listingId || !password}>
-                                    {isLoading ? 'Loading...' : 'Fetch Listing'}
-                                </button>
-                                {successMessage && <p className="success-message">{successMessage}</p>}
-                                {error && <p className="error-message">{error}</p>}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
+                        </div>
 
-            {/* Cancel Confirmation */}
-            {showCancelConfirmation && (
-                <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
-                    <div className="manage-listing-content">
-                        <h2>Confirm Cancelation</h2>
-                        <p>All assets will be refunded to the payout address. Please confirm your password to proceed.</p>
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            id="confirmPassword"
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        <button onClick={handleCancelListing} disabled={isLoading}>
-                            {isLoading ? 'Canceling...' : 'Confirm Cancelation'}
-                        </button>
-                        <button onClick={() => setShowCancelConfirmation(false)} className="cancel-button">
-                            Back
-                        </button>
+                        <div className="listing-address">
+                            <h3>Refill Address</h3>
+                            <p>{listingData.listing_address}</p>
+                        </div>
+
+                        <div className="button-group">
+                            <button onClick={handleUpdateListing} disabled={isLoading}>
+                                {isLoading ? 'Updating...' : 'Update Listing'}
+                            </button>
+                        </div>
+
                         {successMessage && <p className="success-message">{successMessage}</p>}
                         {error && <p className="error-message">{error}</p>}
                     </div>
-                </div>
-            )}
-
-            {/* Refund Confirmation */}
-            {showRefundConfirmation && (
-                <div className={`manage-listing-popup ${isClosing ? 'closing' : ''}`}>
-                    <div className="manage-listing-content">
-                        <h2>Confirm Refund</h2>
-                        <p>Please confirm your password to refund the assets to the payout address.</p>
-                        <label htmlFor="refundConfirmPassword">Confirm Password</label>
-                        <input
-                            id="refundConfirmPassword"
-                            type="password"
-                            name="refundConfirmPassword"
-                            placeholder="Confirm Password"
-                            value={refundConfirmPassword}
-                            onChange={(e) => setRefundConfirmPassword(e.target.value)}
-                        />
-                        <button onClick={handleRefundSurplus} disabled={isLoading}>
-                            {isLoading ? 'Refunding...' : 'Confirm Refund'}
-                        </button>
-                        <button onClick={() => setShowRefundConfirmation(false)} className="cancel-button">
-                            Back
-                        </button>
-                        {successMessage && <p className="success-message">{successMessage}</p>}
-                        {error && <p className="error-message">{error}</p>}
+                ) : (
+                    <div className="error-message">
+                        Failed to load listing details
                     </div>
+                )}
+            </div>
+
+            {showWithdrawModal && selectedAsset && (
+                <div className="withdrawal-modal">
+                    <h3>Withdraw {selectedAsset.asset_name}</h3>
+                    <div className="input-group">
+                        <label>
+                            Available Balance: {parseFloat(selectedAsset.confirmed_balance).toFixed(8)} {selectedAsset.asset_name}
+                        </label>
+                        <input
+                            type="number"
+                            step={`${1 / Math.pow(10, selectedAsset.units)}`}
+                            value={withdrawAmount}
+                            onChange={(e) => setWithdrawAmount(e.target.value)}
+                            placeholder={`Enter amount to withdraw`}
+                            max={parseFloat(selectedAsset.confirmed_balance)}
+                        />
+                    </div>
+                    <div className="button-group">
+                        <button 
+                            className="withdraw-button"
+                            onClick={handleWithdraw}
+                            disabled={
+                                isLoading || 
+                                !withdrawAmount || 
+                                parseFloat(withdrawAmount) > parseFloat(selectedAsset.confirmed_balance)
+                            }
+                        >
+                            {isLoading ? 'Processing...' : 'Withdraw'}
+                        </button>
+                        <button 
+                            className="cancel-button"
+                            onClick={() => setShowWithdrawModal(false)}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                    {error && <p className="error-message">{error}</p>}
                 </div>
             )}
         </div>

@@ -18,15 +18,17 @@ interface Balance {
 }
 
 interface ListingUpdates {
-  name: string;
-  description: string;
-  prices: {
-    add_or_update: {
-      asset_name: string;
-      price_evr: string;
-    }[];
-    remove: string[];
-  };
+  name?: string;
+  description?: string;
+  image_ipfs_hash?: string;
+  payout_address?: string;
+  tags?: string[];
+  prices?: Array<{
+    asset_name: string;
+    price_evr?: string;
+    price_asset_name?: string;
+    price_asset_amount?: string;
+  }>;
 }
 
 interface EditListingModalProps {
@@ -39,7 +41,9 @@ interface EditListingModalProps {
     prices: Price[];
     balances: Balance[];
     deposit_address: string;
+    payout_address: string;
     qrCodeData?: string;
+    tags?: string[];
   };
   onCopyAddress: () => void;
 }
@@ -54,13 +58,12 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
   const [formData, setFormData] = useState<ListingUpdates>({
     name: listing.name,
     description: listing.description,
-    prices: {
-      add_or_update: listing.prices.map(price => ({
-        asset_name: price.asset_name,
-        price_evr: price.price_evr
-      })),
-      remove: []
-    }
+    payout_address: listing.payout_address,
+    tags: listing.tags || [],
+    prices: listing.prices.map(price => ({
+      asset_name: price.asset_name,
+      price_evr: price.price_evr
+    }))
   });
 
   const [newPrice, setNewPrice] = useState({
@@ -76,13 +79,12 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
       setFormData({
         name: listing.name,
         description: listing.description,
-        prices: {
-          add_or_update: listing.prices.map(price => ({
-            asset_name: price.asset_name,
-            price_evr: price.price_evr
-          })),
-          remove: []
-        }
+        payout_address: listing.payout_address,
+        tags: listing.tags || [],
+        prices: listing.prices.map(price => ({
+          asset_name: price.asset_name,
+          price_evr: price.price_evr
+        }))
       });
       setNewPrice({
         asset_name: '',
@@ -99,22 +101,16 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
   const handlePriceChange = (index: number, value: string) => {
     setFormData(prev => ({
       ...prev,
-      prices: {
-        ...prev.prices,
-        add_or_update: prev.prices.add_or_update.map((price, i) => 
-          i === index ? { ...price, price_evr: value } : price
-        )
-      }
+      prices: prev.prices?.map((price, i) => 
+        i === index ? { ...price, price_evr: value } : price
+      )
     }));
   };
 
   const handleRemovePrice = (assetName: string) => {
     setFormData(prev => ({
       ...prev,
-      prices: {
-        add_or_update: prev.prices.add_or_update.filter(p => p.asset_name !== assetName),
-        remove: [...prev.prices.remove, assetName]
-      }
+      prices: prev.prices?.filter(p => p.asset_name !== assetName)
     }));
   };
 
@@ -122,29 +118,29 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
     if (!newPrice.asset_name || !newPrice.price_evr) return;
 
     // Check if price already exists
-    const existingPriceIndex = formData.prices.add_or_update.findIndex(
+    const existingPriceIndex = formData.prices?.findIndex(
       p => p.asset_name === newPrice.asset_name
     );
 
-    if (existingPriceIndex !== -1) {
+    if (existingPriceIndex !== undefined && existingPriceIndex !== -1) {
       // Update existing price
       setFormData(prev => ({
         ...prev,
-        prices: {
-          ...prev.prices,
-          add_or_update: prev.prices.add_or_update.map((p, i) => 
-            i === existingPriceIndex ? { ...newPrice } : p
-          )
-        }
+        prices: prev.prices?.map((p, i) => 
+          i === existingPriceIndex ? { 
+            asset_name: newPrice.asset_name,
+            price_evr: newPrice.price_evr
+          } : p
+        )
       }));
     } else {
       // Add new price
       setFormData(prev => ({
         ...prev,
-        prices: {
-          ...prev.prices,
-          add_or_update: [...prev.prices.add_or_update, newPrice]
-        }
+        prices: [...(prev.prices || []), { 
+          asset_name: newPrice.asset_name,
+          price_evr: newPrice.price_evr
+        }]
       }));
     }
 
@@ -176,12 +172,12 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Listing Name</label>
+            <label htmlFor="name">Name</label>
             <input
               id="name"
               type="text"
               value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="edit-input"
             />
           </div>
@@ -191,9 +187,36 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
             <textarea
               id="description"
               value={formData.description}
-              onChange={e => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="edit-input"
               rows={4}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="payout_address">Payout Address</label>
+            <input
+              id="payout_address"
+              type="text"
+              value={formData.payout_address}
+              onChange={(e) => setFormData({ ...formData, payout_address: e.target.value })}
+              className="edit-input"
+              placeholder="EVR address for receiving payments"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tags">Tags (comma separated)</label>
+            <input
+              id="tags"
+              type="text"
+              value={formData.tags?.join(', ')}
+              onChange={(e) => setFormData({
+                ...formData,
+                tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
+              })}
+              className="edit-input"
+              placeholder="tag1, tag2, tag3"
             />
           </div>
 
@@ -231,7 +254,7 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
 
           <div className="form-group">
             <label>Asset Prices</label>
-            {formData.prices.add_or_update.map((price, index) => {
+            {formData.prices?.map((price, index) => {
               const balance = listing.balances.find(b => b.asset_name === price.asset_name);
               const originalPrice = listing.prices.find(p => p.asset_name === price.asset_name);
               return (

@@ -10,90 +10,106 @@
 */
 
 .ping-indicator {
-
-    /* Set absolute position, relative to the parent */
     position: absolute;
-
-    /* Center the ping indicator vertically */
     top: 50%;
     transform: translateY(-50%);
-
-    /* Set the background color */
     background-color: transparent;
-
-    /* Display the ping indicator inline flex */
     display: inline-flex;
-
-    
-
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
 }
 
 .ping-time {
-
-    /* Display the ping time inline flex */
     display: inline-flex;
-
-    /* Align the ping time items to the center */
     align-items: center;
-
-    /* Justify the ping time content to the flex-end */
     justify-content: flex-end;
-
-    /* Set the color */
     color: var(--text-color);
-
-
+    font-size: 0.85em;
+    min-width: 50px;
+    cursor: help;
 }
 
-/* Satus icon, only shows when disconnected */
-.ping-indicator .status-icon {
-
-    /* Set the position to relative */
-    position: relative; 
-
-    /* Set the margin top */    
+.status-icon {
+    position: relative;
     margin-top: 1px;
-
-    /* Set the margin right */
-    margin-right: 5px;
-}
-
-/* Styling for the signal strength bars */
-.ping-indicator .signal-strength {
-
-    /* Display the signal strength flex */
     display: flex;
+    align-items: center;
+}
 
-    /* Align the signal strength items to the flex-end */
+.status-icon.disconnected {
+    color: #ff4444;
+}
+
+.status-icon.error {
+    color: #ffa500;
+}
+
+.signal-strength {
+    display: flex;
     align-items: flex-end;
-
-    /* Set the margin left */
     margin-left: 5px;
-
-    /* Set the margin right, keep the ping text close to the signal strength bars */
-    margin-right: 0px;
-
-    margin-bottom: calc(var(--footer-height, 15px) * 0.06);
+    gap: 2px;
+    padding: 2px 0;
+    height: 16px;
 }
 
-.ping-indicator .signal-strength .bar {
-
-    /* width of each bar */
-    width: calc(var(--footer-height, 15px) * 0.11);
-
-    /* Spacing between bars */
-    margin-right: 1px;
-
-    /* Set the background color for inactive bars */
-    background-color: #ccc;
-
-    transition: background-color 0.3s ease, height 0.3s ease;
+.signal-strength .bar {
+    width: 4px;
+    background-color: rgba(204, 204, 204, 0.3);
+    transition: all 0.3s ease;
+    border-radius: 1px;
 }
 
-.ping-indicator .signal-strength .bar.active {
-
-    /* Set the background color for active bars */
+/* Signal strength states */
+.signal-strength.excellent .bar.active {
     background-color: #4caf50;
+}
+
+.signal-strength.excellent .bar {
+    background-color: rgba(76, 175, 80, 0.3);
+}
+
+.signal-strength.good .bar.active {
+    background-color: #8bc34a;
+}
+
+.signal-strength.fair .bar.active {
+    background-color: #ffc107;
+}
+
+.signal-strength.poor .bar.active {
+    background-color: #ff9800;
+}
+
+.signal-strength.weak .bar.active {
+    background-color: #f44336;
+}
+
+/* Hover effects */
+.ping-time:hover {
+    color: var(--accent-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ping-indicator {
+        gap: 3px;
+        padding: 0 5px;
+    }
+
+    .signal-strength {
+        gap: 1px;
+    }
+
+    .signal-strength .bar {
+        width: 3px;
+    }
+
+    .ping-time {
+        font-size: 0.75em;
+        min-width: 45px;
+    }
 }
 
 /*

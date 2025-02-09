@@ -1383,3 +1383,284 @@
     justify-content: flex-end;
   }
 }
+
+.listing-management-section {
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+}
+
+.listing-addresses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.address-item {
+  background: var(--background-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+}
+
+.address-item h4 {
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-3) 0;
+  font-size: var(--font-size-lg);
+}
+
+.address-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.qr-code {
+  display: flex;
+  justify-content: center;
+  background: white;
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-md);
+}
+
+.qr-code img {
+  max-width: 200px;
+  height: auto;
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.address-display:hover {
+  background: var(--background-hover);
+}
+
+.address-display span {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  word-break: break-all;
+}
+
+.copy-icon {
+  color: var(--text-muted);
+  margin-left: var(--spacing-2);
+  flex-shrink: 0;
+  transition: color var(--transition-normal);
+}
+
+.address-display:hover .copy-icon {
+  color: var(--text-primary);
+}
+
+.management-actions {
+  margin-top: var(--spacing-6);
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.edit-listing-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.edit-listing-button:hover {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.edit-listing-button:active {
+  transform: translateY(0);
+}
+
+.edit-listing-button svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+@media (max-width: 768px) {
+  .listing-addresses {
+    gap: var(--spacing-6);
+  }
+
+  .address-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+
+  .copy-icon {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+}
+
+.listing-error-message {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.listing-error-message::before {
+  content: '⚠️';
+}
+
+.form-group {
+  margin-bottom: var(--spacing-4);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: var(--transition-all);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color-light);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.price-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
+}
+
+.price-item span {
+  min-width: 100px;
+  font-weight: var(--font-weight-medium);
+}
+
+.price-item input {
+  flex: 1;
+}
+
+.remove-price-button {
+  padding: var(--spacing-1) var(--spacing-2);
+  color: var(--color-error);
+  background: var(--color-error-light);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.remove-price-button:hover {
+  background: var(--color-error);
+  color: white;
+}
+
+.add-price-form {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.add-price-form input {
+  flex: 1;
+}
+
+.add-price-form button {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.add-price-form button:hover {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.submit-button,
+.cancel-button {
+  padding: var(--spacing-2) var(--spacing-6);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.submit-button {
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+}
+
+.submit-button:hover {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.cancel-button {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.cancel-button:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
