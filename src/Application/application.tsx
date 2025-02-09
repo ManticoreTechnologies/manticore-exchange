@@ -22,6 +22,7 @@ import Cart from "./pages/Trade/Cart/Cart";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import Chat from "./pages/Chat/Chat";
+import Launch from "./pages/Launch/Launch";
 import "./application.css";
 import { AuthProvider } from './contexts/AuthContext';
 import SignIn from "./pages/SignIn/SignIn";
@@ -40,6 +41,14 @@ const Application: React.FC = () => {
                                 <Route path="/signin" element={<SignIn />} />
                                 <Route path="/search" element={<Search />} />
                                 <Route path="/trade" element={<Trading />} />
+                                <Route 
+                                    path="/launch" 
+                                    element={
+                                        <RouteGuard>
+                                            <Launch />
+                                        </RouteGuard>
+                                    } 
+                                />
                                 <Route 
                                     path="/trade/create" 
                                     element={
