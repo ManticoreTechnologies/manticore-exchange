@@ -618,14 +618,6 @@ const Trading: React.FC = () => {
                 onFeaturedClick={handleFeaturedClick}
             />
 
-            {/* Featured listings now outside header */}
-            <div className="featured-section">
-                <FeaturedListings 
-                    listings={featuredListings}
-                    onListingClick={handleFeaturedClick}
-                />
-            </div>
-
             {/* Rest of the content */}
             {loading ? (
                 <div className="loading-container">
