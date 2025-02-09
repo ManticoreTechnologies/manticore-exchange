@@ -109,7 +109,8 @@ const Navbar: React.FC = () => {
             toggleDropdown={handleMenuToggle} 
             showSearch={showSearch} 
             showTrade={showTrade} 
-            showFaucet={showFaucet} 
+            showFaucet={showFaucet}
+            showChat={false}
             showProfile={showProfile} 
           />
 

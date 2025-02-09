@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+// Use the same API base configuration
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+
 interface AuthContextType {
     isAuthenticated: boolean;
     userAddress: string | null;
@@ -18,29 +21,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [userAddress, setUserAddress] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
 
-    const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
-    const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '8000';
-    const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
-    const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
-
+    // Check for existing auth on mount
     useEffect(() => {
-        // Check for existing auth on mount
-        const savedToken = Cookies.get('auth_token');
-        const savedAddress = Cookies.get('user_address');
-        
-        if (savedToken && savedAddress) {
-            setToken(savedToken);
-            setUserAddress(savedAddress);
-            setIsAuthenticated(true);
+        const checkExistingAuth = async () => {
+            const savedToken = Cookies.get('auth_token');
+            const savedAddress = Cookies.get('user_address');
             
-            // Set axios default authorization header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
-        }
+            if (savedToken && savedAddress) {
+                try {
+                    // Verify the token with the backend
+                    const response = await axios.get(`${API_BASE}/auth/verify`, {
+                        headers: { Authorization: `Bearer ${savedToken}` }
+                    });
+
+                    if (response.data.valid && response.data.address === savedAddress) {
+                        setToken(savedToken);
+                        setUserAddress(savedAddress);
+                        setIsAuthenticated(true);
+                        
+                        // Set axios default authorization header
+                        axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Failed to verify existing auth:', error);
+                }
+
+                // If verification fails, clear the cookies
+                Cookies.remove('auth_token');
+                Cookies.remove('user_address');
+            }
+
+            // Reset state if no valid auth
+            setToken(null);
+            setUserAddress(null);
+            setIsAuthenticated(false);
+            delete axios.defaults.headers.common['Authorization'];
+        };
+
+        checkExistingAuth();
     }, []);
 
     const requestChallenge = async (address: string) => {
         try {
-            const response = await axios.post(`${trading_api_url}/auth/challenge`, {
+            const response = await axios.post(`${API_BASE}/auth/challenge`, {
                 address: address
             });
             
@@ -56,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (address: string, signature: string, challengeId: string) => {
         try {
-            const response = await axios.post(`${trading_api_url}/auth/login`, {
+            const response = await axios.post(`${API_BASE}/auth/login`, {
                 challenge_id: challengeId,
                 address: address,
                 signature: signature
@@ -93,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => {
         try {
             if (token) {
-                await axios.post(`${trading_api_url}/auth/logout`, {}, {
+                await axios.post(`${API_BASE}/auth/logout`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }

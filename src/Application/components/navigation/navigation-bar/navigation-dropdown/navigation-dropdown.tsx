@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch } from 'react-icons/fa';
+import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch, FaComments } from 'react-icons/fa';
 import './navigation-dropdown.css';
 
 interface DropdownProps {
@@ -10,9 +10,10 @@ interface DropdownProps {
   showFaucet: boolean;
   showProfile: boolean;
   showMore: boolean;
+  showChat: boolean;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile, showMore }) => {
+const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile, showMore, showChat }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
       </button>
       {isOpen && (
         <div className="manticore-nav-dropdown-content">
+          <a href="/chat"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a>
           <a href="/blog"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
           <a href="/roadmap"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
           <a href="/ipfs"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>

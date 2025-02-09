@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket } from 'react-icons/fa'; 
+import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket, FaComments } from 'react-icons/fa'; 
 import HomeHero from '../../components/heros/home-hero/home-hero';
 import InfoCard from '../../components/cards/info-cards/info-card';
 import { FaFaucetDrip } from 'react-icons/fa6';
@@ -56,6 +56,13 @@ const Home: React.FC = () => {
           title="Blog"
           action="Read Now"
           body="Stay updated with the latest news, insights, and updates from the Manticore Asset Exchange. Learn more about the future of digital assets and our platform."
+        />
+        <InfoCard 
+          FaIcon={FaComments}
+          to="/chat"
+          title="Chat"
+          action="Join Chat"
+          body="Connect with other traders, discuss assets, and stay updated with real-time community conversations in our secure chat platform."
         />
 
       <InfoCard 
