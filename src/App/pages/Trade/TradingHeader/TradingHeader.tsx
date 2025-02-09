@@ -21,6 +21,7 @@ interface TradingHeaderProps {
     handleMinPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     maxPrice: string;
     handleMaxPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isConnected: boolean;
     featuredListings: Array<{
         id: string;
         title: string;
@@ -47,6 +48,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
     handleMinPriceChange,
     maxPrice,
     handleMaxPriceChange,
+    isConnected,
     featuredListings,
     onFeaturedClick
 }) => {

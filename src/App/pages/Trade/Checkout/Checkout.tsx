@@ -3,14 +3,16 @@ import './Checkout.css';
 import { FiArrowLeft, FiCopy, FiShoppingBag } from 'react-icons/fi';
 import Cookies from 'js-cookie';
 
-interface CartItem {
+interface CheckoutItem {
+    id: string;
     listingId: string;
     name: string;
     description: string;
-    image_ipfs_hash: string | null;
     quantity: number;
-    unitPrice: string;
+    unitPrice: number;
+    totalPrice: number;
     asset_name: string;
+    image_ipfs_hash?: string;
     seller_address: string;
 }
 
@@ -33,12 +35,12 @@ interface OrderResponse {
 }
 
 interface CheckoutProps {
-    items: CartItem[];
+    selectedItems: CheckoutItem[];
     onCheckoutComplete: () => void;
     onBack: () => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }) => {
+const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, onBack }) => {
     const [currentStep, setCurrentStep] = useState<number>(1);
     const [buyerAddress, setBuyerAddress] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -60,7 +62,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
     };
 
     const calculateTotals = () => {
-        const subtotal = items.reduce((total, item) => 
+        const subtotal = selectedItems.reduce((total, item) => 
             total + (Number(item.unitPrice) * item.quantity), 0);
         const fee = subtotal * 0.005; // 0.5% fee
         return {
@@ -81,7 +83,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
 
         try {
             // Group items by listing ID
-            const listingOrders = items.reduce((acc: { [key: string]: CartItem[] }, item) => {
+            const listingOrders = selectedItems.reduce((acc: { [key: string]: CheckoutItem[] }, item) => {
                 if (!acc[item.listingId]) {
                     acc[item.listingId] = [];
                 }
@@ -241,7 +243,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onCheckoutComplete, onBack }
                         <div className="order-summary">
                             <h3>Order Summary</h3>
                             <div className="order-items">
-                                {items.map((item, index) => (
+                                {selectedItems.map((item, index) => (
                                     <div key={index} className="order-item">
                                         <div className="item-details">
                                             <h4>{item.name}</h4>

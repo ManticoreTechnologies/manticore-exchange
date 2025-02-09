@@ -2,6 +2,7 @@ import React from 'react';
 import TradingResultCard from '../ResultCard/TradingResultCard';
 import './ResultsGrid.css';
 import Pagination from '../../Components/Pagination';
+import { Listing } from '../../../Trade/types';
 
 interface Balance {
     asset_name: string;
@@ -14,25 +15,11 @@ interface Price {
     price_evr: string;
 }
 
-interface Listing {
-    id: string;
-    name: string;
-    description: string;
-    seller_address: string;
-    listing_address: string;
-    image_ipfs_hash: string | null;
-    status: string;
-    created_at: string;
-    balances: Balance[];
-    prices: Price[];
-    tags?: string[];
-}
-
 interface ResultsGridProps {
     results: Listing[];
-    addToCart: (listing: any) => void;
-    buyNow: (listing: any) => void;
-    showDetails: (listing: any) => void;
+    addToCart: (listing: Listing) => void;
+    buyNow: (listing: Listing) => void;
+    showDetails: (listing: Listing) => void;
     currentPage: number;
     totalPages: number;
     totalResults: number;
@@ -53,7 +40,6 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({
         <div className="trading-results-grid">
             <div className="trading-results-grid-container">
                 {results.map((result: Listing) => {
-                    // Transform the listing data to match expected format
                     const listing = {
                         id: result.id,
                         name: result.name,
@@ -63,25 +49,21 @@ const ResultsGrid: React.FC<ResultsGridProps> = ({
                         ipfsHash: result.image_ipfs_hash,
                         status: result.status,
                         createdAt: result.created_at,
-                        // Get the first price in EVR
                         unitPrice: result.prices[0]?.price_evr || "0",
-                        // Get the total balance from all assets
-                        quantity: result.balances.reduce((total, balance) => 
+                        quantity: result.balances.reduce((total: number, balance: { confirmed_balance: string }) => 
                             total + parseFloat(balance.confirmed_balance), 0),
-                        // Include the raw balances and prices for reference
                         balances: result.balances,
                         prices: result.prices,
-                        tags: result.tags
+                        tags: result.tags || []
                     };
 
                     return (
-                        <div className="listing-card">
+                        <div key={listing.id} className="listing-card">
                             <TradingResultCard
-                                key={listing.id}
                                 {...listing}
-                                addToCart={() => addToCart(listing)}
-                                buyNow={() => buyNow(listing)}
-                                showDetails={() => showDetails(listing)}
+                                addToCart={() => addToCart(result)}
+                                buyNow={() => buyNow(result)}
+                                showDetails={() => showDetails(result)}
                             />
                         </div>
                     );

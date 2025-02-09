@@ -10,7 +10,7 @@ import Roadmap from "./pages/Roadmap/Roadmap";
 import Trading from "./pages/Trade/Trading";
 import { ThemeProvider } from "@/context/ThemeContext";
 import WelcomeToEvrmore from "./pages/Blog/posts/WelcomeToEvrmore";
-import EvrmoreSocialCommerce from "./pages/Blog/posts/EvmoreSocialCommerce";
+import EvrmoreSocialCommerce from "./pages/Blog/posts/EvrmoreSocialCommerce";
 import WalletBasedAuthEvrmore from "./pages/Blog/posts/WalletBasedAuthEvrmore";
 import Faucet from "./pages/Faucet/Faucet";
 import IPFSUploader from "./pages/Ipfs/Ipfs";

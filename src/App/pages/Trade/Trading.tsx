@@ -1,84 +1,51 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import TradingResultsGrid from './Results/ResultsGrid/TradingResultsGrid';
 import Cart from './Cart/Cart';
-
-//@ts-ignore
 import Checkout from './Checkout/Checkout';
 import CreateListing from './CreateListing/CreateListing';  
 import './Trading.css';
 import axios from 'axios';
 import TradingHeader from './TradingHeader/TradingHeader';
-import InvoiceToaster from './InvoiceToaster/InvoiceToaster'; // Import InvoiceToaster
-
-//@ts-ignore
+import InvoiceToaster from './InvoiceToaster/InvoiceToaster';
 import ManageListing from './ManageListing/ManageListing';
 import TradingDetails from './Results/TradingDetails/TradingDetails';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
-import FeaturedListings from './TradingHeader/FeaturedListings'; // Add this import
-
-interface ListingPrice {
-    asset_name: string;
-    price_evr: string;
-    price_asset_name: string | null;
-    price_asset_amount: string | null;
-    ipfs_hash: string;
-}
-
-interface ListingBalance {
-    asset_name: string;
-    confirmed_balance: string;
-    pending_balance: string;
-    last_confirmed_tx_hash: string | null;
-    last_confirmed_tx_time: string | null;
-}
-
-interface Listing {
-    id: string;
-    seller_address: string;
-    listing_address: string;
-    deposit_address: string;
-    name: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-    status: string;
-    image_ipfs_hash: string | null;
-    prices: ListingPrice[];
-    balances: ListingBalance[];
-}
-
-interface FeaturedListing {
-    id: string;
-    title: string;
-    store_name: string;
-    price: string;
-    asset_name: string;
-    highlight?: string;
-    image_hash: string | null;
-    balance?: string;
-}
+import { useNavigate, useLocation } from 'react-router-dom';
+import FeaturedListings from './TradingHeader/FeaturedListings';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { debounce } from 'lodash';
+import Cookies from 'js-cookie';
+import {
+    Listing,
+    SelectedListing,
+    FeaturedListing,
+    WebSocketMessage,
+    WebSocketEvent,
+    WebSocketCloseEvent,
+    ListingUpdate,
+    OrderUpdate,
+    BalanceUpdate,
+    MarketUpdate,
+    CheckoutItem,
+    CartItem
+} from './types';
 
 const Trading: React.FC = () => {
-    const [listings, setListings] = useState<any[]>([]);
+    const [listings, setListings] = useState<Listing[]>([]);
     const [cartVisible, setCartVisible] = useState<boolean>(false);
-    //@ts-ignore
-    const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
-    
-//@ts-ignore
+    const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
     const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
     const [isCreatingListing, setIsCreatingListing] = useState<boolean>(false); 
-    const [cart, setCart] = useState<any[]>([]);
+    const [cart, setCart] = useState<CartItem[]>([]);
     const [quantityPopupVisible, setQuantityPopupVisible] = useState<boolean>(false);
-    const [selectedItem, setSelectedItem] = useState<any>(null);
+    const [selectedItem, setSelectedItem] = useState<SelectedListing | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [totalCost, setTotalCost] = useState<string>('0');
     const [quantityError, setQuantityError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>(''); // New state for search
-    const [showPopup, setShowPopup] = useState<boolean>(true); // New state for showing TradingDetails
-    const [selectedListing, setSelectedListing] = useState<any | null>(null); // New state for selected listing
-    const [searchResults, setSearchResults] = useState<any[]>([]); // New state for search results
-    //@ts-ignore
-    const [loading, setLoading] = useState<boolean>(false); // New state for loading indicator
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [showPopup, setShowPopup] = useState<boolean>(true);
+    const [selectedListing, setSelectedListing] = useState<SelectedListing | null>(null);
+    const [searchResults, setSearchResults] = useState<Listing[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [searchColumn, setSearchColumn] = useState<string>('asset_name');
     const [filterQuery, setFilterQuery] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
@@ -86,23 +53,136 @@ const Trading: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalResults, setTotalResults] = useState<number>(0);
-    const [pageSize, setPageSize] = useState<number>(10); // Add this new state
+    const [pageSize, setPageSize] = useState<number>(10);
     const [tags, setTags] = useState<string[]>([]);
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
     const [featuredListings, setFeaturedListings] = useState<FeaturedListing[]>([]);
+    const [wsConnected, setWsConnected] = useState<boolean>(false);
+    const [userAddress, setUserAddress] = useState<string>('');
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange';
-    // const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '668';
     const trading_api_port = 8000;
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
-    const navigate = useNavigate(); // Initialize useNavigate
-    const location = useLocation(); // Initialize useLocation
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // WebSocket setup with specific endpoints
+    const ws_host = import.meta.env.VITE_TRADING_API_HOST || 'localhost';
+    const ws_port = import.meta.env.VITE_TRADING_API_PORT || '8000';
+    const wsBaseUrl = `${trading_api_proto === 'https' ? 'wss' : 'ws'}://${ws_host}:${ws_port}/ws`;
+    
+    // Create separate WebSocket connections for different endpoints
+    const { sendMessage: sendListingMessage } = useWebSocket(`${wsBaseUrl}/listings`, {
+        onOpen: () => {
+            console.log('Listings WebSocket connected');
+            setWsConnected(true);
+        },
+        onClose: () => {
+            console.log('Listings WebSocket disconnected');
+            setWsConnected(false);
+        },
+        onMessage: (event: WebSocketEvent) => {
+            try {
+                const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'listing_update') {
+                    handleWebSocketMessage(message);
+                }
+            } catch (error) {
+                console.error('Error parsing listings WebSocket message:', error);
+            }
+        },
+        reconnectAttempts: 10,
+        reconnectInterval: 3000,
+        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+    });
+
+    const { sendMessage: sendOrderMessage } = useWebSocket(`${wsBaseUrl}/orders`, {
+        onOpen: () => {
+            console.log('Orders WebSocket connected');
+        },
+        onClose: () => {
+            console.log('Orders WebSocket disconnected');
+        },
+        onMessage: (event: WebSocketEvent) => {
+            try {
+                const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'order_update') {
+                    handleWebSocketMessage(message);
+                }
+            } catch (error) {
+                console.error('Error parsing orders WebSocket message:', error);
+            }
+        },
+        reconnectAttempts: 10,
+        reconnectInterval: 3000,
+        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+    });
+
+    const { sendMessage: sendMarketMessage } = useWebSocket(`${wsBaseUrl}/market`, {
+        onOpen: () => {
+            console.log('Market WebSocket connected');
+        },
+        onClose: () => {
+            console.log('Market WebSocket disconnected');
+        },
+        onMessage: (event: WebSocketEvent) => {
+            try {
+                const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'market_update') {
+                    handleWebSocketMessage(message);
+                }
+            } catch (error) {
+                console.error('Error parsing market WebSocket message:', error);
+            }
+        },
+        reconnectAttempts: 10,
+        reconnectInterval: 3000,
+        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+    });
+
+    // Update the handleWebSocketMessage callback to use the appropriate sendMessage function
+    const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
+        switch (message.type) {
+            case 'listing_update':
+                setListings(prevListings => 
+                    prevListings.map(listing => 
+                        listing.id === (message.data as ListingUpdate).id 
+                            ? { ...listing, ...(message.data as ListingUpdate) } 
+                            : listing
+                    )
+                );
+                break;
+            case 'order_update':
+                if (selectedListing && selectedListing.id === (message.data as OrderUpdate).listing_id) {
+                    setSelectedListing(prev => prev ? { ...prev, ...(message.data as OrderUpdate) } : null);
+                }
+                break;
+            case 'balance_update':
+                if (selectedListing && selectedListing.id === (message.data as BalanceUpdate).listing_id) {
+                    setSelectedListing(prev => prev ? {
+                        ...prev,
+                        balances: prev.balances.map(balance =>
+                            balance.asset_name === (message.data as BalanceUpdate).asset_name
+                                ? { ...balance, ...(message.data as BalanceUpdate) }
+                                : balance
+                        )
+                    } : null);
+                }
+                break;
+            case 'market_update':
+                const marketData = message.data as MarketUpdate;
+                if (marketData.trending) {
+                    setFeaturedListings(marketData.trending);
+                }
+                break;
+        }
+    }, [selectedListing]);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
@@ -116,104 +196,102 @@ const Trading: React.FC = () => {
     }, [location]);
 
     useEffect(() => {
-        const fetchListings = async () => {
-            try {
-                setLoading(true);
-                const offset = (currentPage - 1) * pageSize;
-                let url = `${trading_api_url}/listings/?limit=${pageSize}&offset=${offset}`;
-                
-                // Add search params if they exist
-                if (searchQuery) {
-                    url += `&search_term=${encodeURIComponent(searchQuery)}`;
-                }
-                
-                // Add filter params based on filterType
-                if (filterType && filterQuery) {
-                    switch(filterType) {
-                        case 'seller':
-                            url += `&seller_address=${encodeURIComponent(filterQuery)}`;
-                            break;
-                        case 'asset':
-                            url += `&asset_name=${encodeURIComponent(filterQuery)}`;
-                            break;
-                    }
-                }
+        // Get user address from cookies or local storage
+        const address = Cookies.get('user_address') || localStorage.getItem('user_address') || '';
+        setUserAddress(address);
+    }, []);
 
-                // Add tags if they exist
-                if (tags.length > 0) {
-                    tags.forEach(tag => {
-                        url += `&tags=${encodeURIComponent(tag.trim())}`;
-                    });
+    // Modify fetchListings to use proper types
+    const fetchListings = useCallback(async () => {
+        try {
+            setLoading(true);
+            const offset = (currentPage - 1) * pageSize;
+            let url = `${trading_api_url}/listings/?limit=${pageSize}&offset=${offset}`;
+            
+            // Add search and filter parameters
+            if (searchQuery) url += `&search_term=${encodeURIComponent(searchQuery)}`;
+            if (filterType && filterQuery) {
+                switch(filterType) {
+                    case 'seller':
+                        url += `&seller_address=${encodeURIComponent(filterQuery)}`;
+                        break;
+                    case 'asset':
+                        url += `&asset_name=${encodeURIComponent(filterQuery)}`;
+                        break;
                 }
-
-                // Add price filters if they exist
-                if (minPrice) {
-                    url += `&min_price_evr=${encodeURIComponent(minPrice)}`;
-                }
-                if (maxPrice) {
-                    url += `&max_price_evr=${encodeURIComponent(maxPrice)}`;
-                }
-
-                console.log('Fetching listings with URL:', url);
-                const response = await axios.get(url);
-                
-                // Log the entire response to see what we're getting
-                console.log('Full API Response:', response.data);
-                
-                const { listings, total_count, total_pages, current_page } = response.data;
-                
-                console.log('Total Count:', total_count);
-                console.log('Total Pages:', total_pages);
-                console.log('Current Page:', current_page);
-                
-                // Update state with the pagination info from backend
-                setTotalResults(total_count);
-                setTotalPages(total_pages);
-                setCurrentPage(current_page);
-                
-                if (Array.isArray(listings)) {
-                    setListings(listings);
-                    setSearchResults(listings);
-                    
-                    // Updated featured listings mapping
-                    const featured = listings.slice(0, 3).map(listing => {
-                        const price = listing.prices?.[0]?.price_evr || '0';
-                        const assetName = listing.balances?.[0]?.asset_name || '';
-                        const imageHash = listing.image_ipfs_hash || listing.prices?.[0]?.ipfs_hash || null;
-                        
-                        return {
-                            id: listing.id,
-                            title: listing.name,
-                            store_name: listing.name,
-                            asset_name: assetName,
-                            price: price,
-                            highlight: isNewListing(listing.created_at) ? 'New' : undefined,
-                            image_hash: imageHash
-                        };
-                    });
-                    
-                    setFeaturedListings(featured);
-                } else {
-                    console.error('Unexpected listings format:', listings);
-                    setListings([]);
-                    setFeaturedListings([]);
-                }
-            } catch (error) {
-                console.error('Error fetching listings:', error);
-                setListings([]);
-                setFeaturedListings([]);
-            } finally {
-                setLoading(false);
             }
-        };
+            if (tags.length > 0) {
+                tags.forEach(tag => url += `&tags=${encodeURIComponent(tag.trim())}`);
+            }
+            if (minPrice) url += `&min_price_evr=${encodeURIComponent(minPrice)}`;
+            if (maxPrice) url += `&max_price_evr=${encodeURIComponent(maxPrice)}`;
 
-        // Load cart from local storage
-        const savedCart = localStorage.getItem('manticore_cart');
-        if (savedCart) {
-            setCart(JSON.parse(savedCart));
+            const response = await axios.get(url);
+            const { listings: newListings, total_count, total_pages, current_page } = response.data;
+            
+            // Optimistic update with smooth transition
+            setListings(prevListings => {
+                const merged = [...prevListings];
+                newListings.forEach((newListing: Listing) => {
+                    const index = merged.findIndex(l => l.id === newListing.id);
+                    if (index >= 0) {
+                        merged[index] = { ...merged[index], ...newListing };
+                    } else {
+                        merged.push(newListing);
+                    }
+                });
+                return merged;
+            });
+            
+            setTotalResults(total_count);
+            setTotalPages(total_pages);
+            setCurrentPage(current_page);
+            
+            // Update featured listings with animation
+            const featured = newListings.slice(0, 3).map((listing: Listing) => ({
+                id: listing.id,
+                title: listing.name,
+                store_name: listing.name,
+                asset_name: listing.balances?.[0]?.asset_name || '',
+                price: listing.prices?.[0]?.price_evr || '0',
+                highlight: isNewListing(listing.created_at) ? 'New' : undefined,
+                image_hash: listing.image_ipfs_hash || listing.prices?.[0]?.ipfs_hash || null
+            }));
+            
+            setFeaturedListings(prev => {
+                const merged = [...prev];
+                featured.forEach((newFeatured: FeaturedListing) => {
+                    const index = merged.findIndex(f => f.id === newFeatured.id);
+                    if (index >= 0) {
+                        merged[index] = { ...merged[index], ...newFeatured };
+                    } else {
+                        merged.push(newFeatured);
+                    }
+                });
+                return merged;
+            });
+            
+        } catch (error) {
+            console.error('Error fetching listings:', error);
+            setListings([]);
+            setFeaturedListings([]);
+        } finally {
+            setLoading(false);
         }
-        fetchListings();
     }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice]);
+
+    // Add debounced search
+    const debouncedSearch = useCallback(
+        debounce((value: string) => {
+            setSearchQuery(value);
+        }, 300),
+        []
+    );
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        debouncedSearch(value);
+    };
 
     // Helper function to check if a listing is new (less than 24 hours old)
     const isNewListing = (createdAt: string): boolean => {
@@ -223,9 +301,8 @@ const Trading: React.FC = () => {
         return diffInHours < 24;
     };
 
-    const addToCart = (listing: any, quantity: number) => {
-        const itemWithQuantity = { ...listing, quantity };
-        const updatedCart = [...cart, itemWithQuantity];
+    const addToCart = (item: CartItem) => {
+        const updatedCart = [...cart, item];
         setCart(updatedCart);
         localStorage.setItem('manticore_cart', JSON.stringify(updatedCart));
         setQuantityPopupVisible(false);
@@ -243,7 +320,6 @@ const Trading: React.FC = () => {
     };
 
     const toggleCartVisibility = () => {
-
         setCartVisible(prev => !prev);
     };
 
@@ -268,14 +344,13 @@ const Trading: React.FC = () => {
             setIsCheckingOut(true);
         }
     };
-//@ts-ignore
+
     const handleCheckoutComplete = () => {
         setIsCheckingOut(false);
         setCheckoutItems([]);
         clearCart();
     };
 
-//@ts-ignore
     const handleBack = () => {
         setIsCheckingOut(false);
     };
@@ -301,14 +376,22 @@ const Trading: React.FC = () => {
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const qty = Math.max(0, parseFloat(e.target.value));
-        const cappedQty = parseFloat(qty.toFixed(selectedItem.units));
-        setQuantity(cappedQty);
-        if (selectedItem && cappedQty > selectedItem.quantity) {
-            setQuantityError(`Maximum available quantity is ${selectedItem.quantity}.`);
-        } else {
-            setQuantityError(null);
+        if (selectedItem) {
+            const cappedQty = parseFloat(qty.toFixed(8));
             setQuantity(cappedQty);
-            calculateTotalCost(parseFloat(selectedItem.unitPrice), cappedQty);
+
+            const maxQuantity = selectedItem.quantity || 
+                parseFloat(selectedItem.balances[0]?.confirmed_balance || '0');
+
+            if (cappedQty > maxQuantity) {
+                setQuantityError(`Maximum available quantity is ${maxQuantity}.`);
+            } else {
+                setQuantityError(null);
+                setQuantity(cappedQty);
+                const unitPrice = selectedItem.unitPrice || 
+                    parseFloat(selectedItem.prices[0]?.price_evr || '0');
+                calculateTotalCost(unitPrice, cappedQty);
+            }
         }
     };
 
@@ -321,63 +404,38 @@ const Trading: React.FC = () => {
     };
 
     const confirmAddToCart = () => {
-        if (selectedItem) {
-            if (quantity > selectedItem.availableQuantity) {
-                setQuantityError(`Cannot add more than the available quantity of ${selectedItem.availableQuantity}.`);
+        if (selectedItem && quantity > 0) {
+            const maxQuantity = selectedItem.quantity || 
+                parseFloat(selectedItem.balances[0]?.confirmed_balance || '0');
+
+            if (quantity > maxQuantity) {
+                setQuantityError(`Cannot add more than the available quantity of ${maxQuantity}.`);
                 return;
             }
-            addToCart(selectedItem, quantity);
+
+            const unitPrice = selectedItem.unitPrice || 
+                parseFloat(selectedItem.prices[0]?.price_evr || '0');
+
+            const assetName = selectedItem.asset_name || 
+                selectedItem.balances[0]?.asset_name || 
+                selectedItem.prices[0]?.asset_name || '';
+
+            const cartItem: CartItem = {
+                id: selectedItem.id,
+                listingId: selectedItem.listingId || selectedItem.id,
+                name: selectedItem.name,
+                description: selectedItem.description,
+                quantity: quantity,
+                unitPrice: unitPrice,
+                totalPrice: parseFloat(totalCost),
+                asset_name: assetName,
+                image_ipfs_hash: selectedItem.image_ipfs_hash,
+                seller_address: selectedItem.seller_address
+            };
+
+            addToCart(cartItem);
         }
     };
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-        setLoading(true);
-    };
-
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(async () => {
-            if (searchQuery || (filterType && filterQuery)) {
-                try {
-                    const offset = (currentPage - 1) * pageSize;
-                    let url = `${trading_api_url}/listings/?limit=${pageSize}&offset=${offset}`;
-                    
-                    if (searchQuery) {
-                        url += `&search_term=${encodeURIComponent(searchQuery)}`;
-                    }
-                    
-                    // Add other filters based on filterType
-                    if (filterType && filterQuery) {
-                        switch(filterType) {
-                            case 'seller':
-                                url += `&seller_address=${encodeURIComponent(filterQuery)}`;
-                                break;
-                            case 'asset':
-                                url += `&asset_name=${encodeURIComponent(filterQuery)}`;
-                                break;
-                        }
-                    }
-                    
-                    const response = await axios.get(url);
-                    
-                    if (Array.isArray(response.data)) {
-                        setSearchResults(response.data);
-                        setTotalResults(response.data.length);
-                        setTotalPages(Math.ceil(response.data.length / pageSize));
-                    }
-                } catch (error) {
-                    console.error('Error fetching search results:', error);
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                setSearchResults([]);
-                setLoading(false);
-            }
-        }, 500);
-
-        return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery, filterType, filterQuery, currentPage, pageSize]);
 
     const showDetails = (listing: any) => {
         navigate(`/listing/${listing.id}`);
@@ -468,6 +526,9 @@ const Trading: React.FC = () => {
                 handleMinPriceChange={handleMinPriceChange}
                 maxPrice={maxPrice}
                 handleMaxPriceChange={handleMaxPriceChange}
+                isConnected={wsConnected}
+                featuredListings={featuredListings}
+                onFeaturedClick={handleFeaturedClick}
             />
 
             {/* Featured listings now outside header */}
@@ -540,10 +601,11 @@ const Trading: React.FC = () => {
                 </div>
             )}
 
-            {isCreatingListing && (
+            {isCreatingListing && userAddress && (
                 <CreateListing 
                     onClose={() => setIsCreatingListing(false)} 
-                    onComplete={handleListingComplete} 
+                    onComplete={handleListingComplete}
+                    userAddress={userAddress}
                 />
             )}
             
