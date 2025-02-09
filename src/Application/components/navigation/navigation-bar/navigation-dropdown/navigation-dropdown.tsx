@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch } from 'react-icons/fa';
-import './Dropdown.css';
+import './navigation-dropdown.css';
 
 interface DropdownProps {
   isOpen: boolean;

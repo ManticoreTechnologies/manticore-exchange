@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import "./Navbar.css";
+import "./navigation-bar.css";
 import logo from '@/images/enhanced_logo_old.png';
-import Dropdown from "./Dropdown";
+import Dropdown from "./navigation-dropdown/navigation-dropdown";
 import { useNavigate } from "react-router-dom";
 import { MoonPayBuyWidget } from '@moonpay/moonpay-react';       
 import { FiShoppingCart } from 'react-icons/fi';

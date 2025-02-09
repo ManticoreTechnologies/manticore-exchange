@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket } from 'react-icons/fa'; 
-import HomeHero from '../../../components/HomeHero/HomeHero';
-import InfoCard from '../../../components/Cards/InfoCard';
+import HomeHero from '../../components/heros/home-hero/home-hero';
+import InfoCard from '../../components/cards/info-cards/info-card';
 import { FaFaucetDrip } from 'react-icons/fa6';
 import LaunchPadBanner from '../../../components/LaunchPadBanner/LaunchPadBanner';
-import './Home.css';
+import './home.css';
 
 // Import the logo
 import manticore_logo from '@/images/enhanced_logo.png'; 

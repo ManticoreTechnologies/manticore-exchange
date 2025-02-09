@@ -72,24 +72,41 @@ const Trading: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // WebSocket setup with specific endpoints
+    // WebSocket setup with heartbeat
     const ws_host = import.meta.env.VITE_TRADING_API_HOST || 'localhost';
     const ws_port = import.meta.env.VITE_TRADING_API_PORT || '8000';
-    const wsBaseUrl = `${trading_api_proto === 'https' ? 'wss' : 'ws'}://${ws_host}:${ws_port}/ws`;
+    const wsBaseUrl = `${trading_api_proto === 'https' ? 'wss' : 'ws'}://${ws_host}:${ws_port}`;
     
+    // Heartbeat interval (15 seconds)
+    const HEARTBEAT_INTERVAL = 15000;
+    const RECONNECT_INTERVAL = 3000;
+
     // Create separate WebSocket connections for different endpoints
-    const { sendMessage: sendListingMessage } = useWebSocket(`${wsBaseUrl}/listings`, {
+    const { sendMessage: sendListingMessage, lastMessage: lastListingMessage, readyState: listingReadyState } = useWebSocket(`${wsBaseUrl}/ws/listings`, {
         onOpen: () => {
             console.log('Listings WebSocket connected');
             setWsConnected(true);
+            // Start heartbeat
+            const interval = setInterval(() => {
+                sendListingMessage(JSON.stringify({ type: 'ping' }));
+            }, HEARTBEAT_INTERVAL);
+            return () => clearInterval(interval);
         },
         onClose: () => {
             console.log('Listings WebSocket disconnected');
             setWsConnected(false);
         },
+        onError: (error) => {
+            console.error('Listings WebSocket error:', error);
+            setWsConnected(false);
+        },
         onMessage: (event: WebSocketEvent) => {
             try {
                 const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'pong') {
+                    console.log('Received pong from listings');
+                    return;
+                }
                 if (message.type === 'listing_update') {
                     handleWebSocketMessage(message);
                 }
@@ -98,20 +115,37 @@ const Trading: React.FC = () => {
             }
         },
         reconnectAttempts: 10,
-        reconnectInterval: 3000,
+        reconnectInterval: RECONNECT_INTERVAL,
         shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+        heartbeat: {
+            message: JSON.stringify({ type: 'ping' }),
+            interval: HEARTBEAT_INTERVAL,
+            timeout: HEARTBEAT_INTERVAL * 2
+        }
     });
 
-    const { sendMessage: sendOrderMessage } = useWebSocket(`${wsBaseUrl}/orders`, {
+    const { sendMessage: sendOrderMessage, lastMessage: lastOrderMessage, readyState: orderReadyState } = useWebSocket(`${wsBaseUrl}/ws/orders`, {
         onOpen: () => {
             console.log('Orders WebSocket connected');
+            // Start heartbeat
+            const interval = setInterval(() => {
+                sendOrderMessage(JSON.stringify({ type: 'ping' }));
+            }, HEARTBEAT_INTERVAL);
+            return () => clearInterval(interval);
         },
         onClose: () => {
             console.log('Orders WebSocket disconnected');
         },
+        onError: (error) => {
+            console.error('Orders WebSocket error:', error);
+        },
         onMessage: (event: WebSocketEvent) => {
             try {
                 const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'pong') {
+                    console.log('Received pong from orders');
+                    return;
+                }
                 if (message.type === 'order_update') {
                     handleWebSocketMessage(message);
                 }
@@ -120,20 +154,37 @@ const Trading: React.FC = () => {
             }
         },
         reconnectAttempts: 10,
-        reconnectInterval: 3000,
+        reconnectInterval: RECONNECT_INTERVAL,
         shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+        heartbeat: {
+            message: JSON.stringify({ type: 'ping' }),
+            interval: HEARTBEAT_INTERVAL,
+            timeout: HEARTBEAT_INTERVAL * 2
+        }
     });
 
-    const { sendMessage: sendMarketMessage } = useWebSocket(`${wsBaseUrl}/market`, {
+    const { sendMessage: sendMarketMessage, lastMessage: lastMarketMessage, readyState: marketReadyState } = useWebSocket(`${wsBaseUrl}/ws/market`, {
         onOpen: () => {
             console.log('Market WebSocket connected');
+            // Start heartbeat
+            const interval = setInterval(() => {
+                sendMarketMessage(JSON.stringify({ type: 'ping' }));
+            }, HEARTBEAT_INTERVAL);
+            return () => clearInterval(interval);
         },
         onClose: () => {
             console.log('Market WebSocket disconnected');
         },
+        onError: (error) => {
+            console.error('Market WebSocket error:', error);
+        },
         onMessage: (event: WebSocketEvent) => {
             try {
                 const message: WebSocketMessage = JSON.parse(event.data);
+                if (message.type === 'pong') {
+                    console.log('Received pong from market');
+                    return;
+                }
                 if (message.type === 'market_update') {
                     handleWebSocketMessage(message);
                 }
@@ -142,8 +193,13 @@ const Trading: React.FC = () => {
             }
         },
         reconnectAttempts: 10,
-        reconnectInterval: 3000,
+        reconnectInterval: RECONNECT_INTERVAL,
         shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
+        heartbeat: {
+            message: JSON.stringify({ type: 'ping' }),
+            interval: HEARTBEAT_INTERVAL,
+            timeout: HEARTBEAT_INTERVAL * 2
+        }
     });
 
     // Update the handleWebSocketMessage callback to use the appropriate sendMessage function

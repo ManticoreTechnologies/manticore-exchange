@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaAirFreshener } from 'react-icons/fa'; // Import icons from react-icons
 import { IconType } from 'react-icons/lib';
-import './InfoCard.css'
+import './info-card.css'
 interface infocardprops{
     FaIcon?: IconType;
     to?: string;

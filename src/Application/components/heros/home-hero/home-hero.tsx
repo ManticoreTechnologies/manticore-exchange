@@ -1,8 +1,8 @@
 import React from 'react';
-import './HomeHero.css';
+import './home-hero.css';
 import manticore_logo from '@/images/enhanced_logo.png';
 import evrmore_logo from '@/images/evr_logo.svg';
-import HeroContent from './HeroContent';
+import HeroContent from './content';
 
 interface homeheroprops {
   title?: string;

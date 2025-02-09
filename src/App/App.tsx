@@ -5,10 +5,10 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "../components/Static/Navbar/Navbar";
 import BlogPage from "./pages/Blog/Blog";
-import Footer from "../components/Static/Footer/Footer";
+import Footer from "../Application/components/navigation/footer/footer";
 import Roadmap from "./pages/Roadmap/Roadmap";
 import Trading from "./pages/Trade/Trading";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider } from "@/Application/contexts/theme-context";
 import WelcomeToEvrmore from "./pages/Blog/posts/WelcomeToEvrmore";
 import EvrmoreSocialCommerce from "./pages/Blog/posts/EvrmoreSocialCommerce";
 import WalletBasedAuthEvrmore from "./pages/Blog/posts/WalletBasedAuthEvrmore";
@@ -37,7 +37,7 @@ import OrderStatus from './pages/Orders/OrderStatus';
 import { MoonPayProvider } from '@moonpay/moonpay-react';
 
 // Import the home page
-import Home from "./pages/Home/Home";
+import Home from "../Application/pages/home/home";
 import Search from "./pages/Search/Search";
 import ListingDetails from "./pages/Trade/Results/ListingDetails/ListingDetails";
 import Launch from "./pages/Launch/Launch";

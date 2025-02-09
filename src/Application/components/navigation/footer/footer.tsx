@@ -1,7 +1,7 @@
 // Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Footer.css';
+import './footer.css';
 import Ping from '@/App/pages/TradeX/Ping/Ping';
 import ThemeSettings from '@/components/ThemeSettings/ThemeSettings';
 import OrderToaster from '@/App/components/OrderToaster/OrderToaster';

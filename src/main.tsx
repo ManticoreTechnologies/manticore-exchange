@@ -1,8 +1,8 @@
 // src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App/App';
-import { ThemeProvider } from '@/context/ThemeContext';
+import Application from './Application/application';
+import { ThemeProvider } from '@/Application/contexts/theme-context';
 import '@coinbase/onchainkit/styles.css';
 
 // Import the global styles
@@ -20,7 +20,7 @@ if (rootElement) {
       
       <ThemeProvider>
       
-        <App />
+        <Application />
       
       </ThemeProvider>
 

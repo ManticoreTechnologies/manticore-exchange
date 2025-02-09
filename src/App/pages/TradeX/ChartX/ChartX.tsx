@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
 import './ChartX.css';
-import { useTheme } from '../../../../context/ThemeContext';
+import { useTheme } from '../../../../Application/contexts/theme-context';
 
 interface ChartXProps {
     tickerHistory: any;

@@ -1,6 +1,6 @@
 import React from 'react';
 import './Faucet.css';
-import HomeHero from '@/components/HomeHero/HomeHero';
+import HomeHero from '@/Application/components/heros/home-hero/home-hero';
 import FaucetBalances from './Balances/FaucetBalances';
 
 const Faucet: React.FC = () => {
