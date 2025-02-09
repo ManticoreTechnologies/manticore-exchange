@@ -26,7 +26,7 @@ import Markets from "./pages/TradeX/Markets/Markets";
 import Market from "./pages/TradeX/Market/Market";
 import Deposit from "./pages/TradeX/Deposit/Deposit";
 import Profile from "./pages/TradeX/Profile/Profile";
-import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvmoreAssets";
+import ExploringEvrmoreAssets from "./pages/Blog/posts/ExploringEvrmoreAssets";
 import BitcoinExplainer from "./pages/Blog/posts/BitcoinExplainer";
 import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
@@ -65,9 +65,6 @@ const App: React.FC = () => {
           <Route path="/blog/ExploringEvrmoreAssets" element={<ExploringEvrmoreAssets />} />
           <Route path="/blog/BitcoinExplainer" element={<BitcoinExplainer />} />
           <Route path="/roadmap" element={<Roadmap />} />
-          <Route path="/tradeX" element={<TradeX />} />
-          <Route path="/tradeX/markets" element={<Markets />} />
-          <Route path="/tradeX/market" element={<Market />} />
           <Route path="/deposit/:asset" element={<Deposit />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/signin" element={<SignIn />} />
