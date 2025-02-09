@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './Cart.css';
-import placeholderImage from '@/images/enhanced_logo.png';
+import placeholderImage from '@/Application/logos/white-manticore.png';
 import Checkout from '../Checkout/Checkout';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
-import useCart from '@/App/hooks/useCart';
+import { useCart } from '@/Application/hooks/useCart';
 
 interface CartItem {
     listingId: string;

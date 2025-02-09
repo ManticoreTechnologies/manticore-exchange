@@ -380,7 +380,7 @@ const Trading: React.FC = () => {
     };
 
     const createListing = () => {
-        setIsCreatingListing(true);
+        navigate('/trade/create');
     };
 
     const handleBuyNow = (item: any) => {

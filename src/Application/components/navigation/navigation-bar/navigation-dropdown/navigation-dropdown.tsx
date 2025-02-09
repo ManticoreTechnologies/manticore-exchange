@@ -31,9 +31,9 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
   }, [isOpen, toggleDropdown]);
 
   return (
-    <div className="dropdown" aria-expanded={isOpen} ref={dropdownRef}>
+    <div className="manticore-nav-dropdown" aria-expanded={isOpen} ref={dropdownRef}>
       <button 
-        className="dropdown-toggle" 
+        className="manticore-nav-dropdown-toggle" 
         onClick={toggleDropdown} 
         onKeyDown={(e) => e.key === 'Enter' && toggleDropdown()}
         aria-haspopup="true"
@@ -42,22 +42,22 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
         <p>{showMore ? "More" : ""}</p>
       </button>
       {isOpen && (
-        <div className="dropdown-content">
-          <a href="/blog"><FaBlog className='dropdown-icon'/> Blog</a>
-          <a href="/roadmap"><FaRoad className='dropdown-icon'/> Roadmap</a>
-          <a href="/ipfs"><FaDatabase className='dropdown-icon'/> IPFS</a>
-          <a href="/chart"><FaChartBar className='dropdown-icon'/> Chart</a>
+        <div className="manticore-nav-dropdown-content">
+          <a href="/blog"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
+          <a href="/roadmap"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
+          <a href="/ipfs"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
+          <a href="/chart"><FaChartBar className='manticore-nav-dropdown-icon'/> Chart</a>
           {!showProfile && (
-            <a href="/profile"><FaUser className='dropdown-icon'/> Profile</a>
+            <a href="/profile"><FaUser className='manticore-nav-dropdown-icon'/> Profile</a>
           )}
           {!showFaucet && (
-            <a href="/faucet"><FaTint className='dropdown-icon'/> Faucet</a>
+            <a href="/faucet"><FaTint className='manticore-nav-dropdown-icon'/> Faucet</a>
           )}
           {!showTrade && (
-            <a href="/trade"><FaExchangeAlt className='dropdown-icon'/> Trade</a>
+            <a href="/trade"><FaExchangeAlt className='manticore-nav-dropdown-icon'/> Trade</a>
           )}
           {!showSearch && (
-            <a href="/search"><FaSearch className='dropdown-icon'/> Search</a>
+            <a href="/search"><FaSearch className='manticore-nav-dropdown-icon'/> Search</a>
           )}
         </div>
       )}

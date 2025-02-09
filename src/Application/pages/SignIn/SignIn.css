@@ -1,0 +1,125 @@
+.sign-in {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    background: var(--background-primary);
+}
+
+.sign-in__container {
+    width: 100%;
+    max-width: 480px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-8);
+}
+
+.sign-in__content {
+    text-align: center;
+}
+
+.sign-in__content h1 {
+    color: var(--text-primary);
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-2);
+}
+
+.sign-in__subtitle {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-8);
+    font-size: var(--font-size-lg);
+}
+
+.sign-in__wallet-section {
+    margin-top: var(--spacing-6);
+}
+
+.sign-in__connect-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    width: 100%;
+    padding: var(--spacing-4);
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.sign-in__connect-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.sign-in__connect-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.sign-in__spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--text-primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.sign-in__error {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4);
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+}
+
+.sign-in__help {
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.sign-in__help p {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-2);
+}
+
+.sign-in__install-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.sign-in__install-link:hover {
+    text-decoration: underline;
+    filter: brightness(1.1);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .sign-in__container {
+        padding: var(--spacing-4);
+    }
+
+    .sign-in__content h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .sign-in__subtitle {
+        font-size: var(--font-size-base);
+    }
+} 

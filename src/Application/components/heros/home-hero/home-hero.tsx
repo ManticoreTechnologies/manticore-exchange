@@ -1,7 +1,7 @@
 import React from 'react';
 import './home-hero.css';
-import manticore_logo from '@/images/enhanced_logo.png';
-import evrmore_logo from '@/images/evr_logo.svg';
+import manticore_logo from '@/Application/logos/white-manticore.png';
+import evrmore_logo from '@/Application/logos/evr.svg';
 import HeroContent from './content';
 
 interface homeheroprops {

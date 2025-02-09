@@ -8,7 +8,7 @@ import LaunchPadBanner from '../../../components/LaunchPadBanner/LaunchPadBanner
 import './home.css';
 
 // Import the logo
-import manticore_logo from '@/images/enhanced_logo.png'; 
+import manticore_logo from '@/Application/logos/white-manticore.png'; 
 
 
 //@ts-ignore

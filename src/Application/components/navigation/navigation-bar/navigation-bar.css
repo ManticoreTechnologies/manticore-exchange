@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Tint&family=Gruppo&display=swap');
 
-.navbar {
+.manticore-nav-bar {
   background-color: var(--background-secondary);
   height: var(--header-height);
   position: relative;
@@ -15,7 +15,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.navbar-logo {
+.manticore-nav-bar-logo {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -23,7 +23,7 @@
   padding: var(--spacing-2);
 }
 
-.navbar-logo-img {
+.manticore-nav-bar-logo-img {
   position: relative;
   width: auto;
   max-height: 100%;
@@ -33,18 +33,19 @@
   transition: transform var(--transition-normal);
 }
 
-.navbar-logo-img:hover {
+.manticore-nav-bar-logo-img:hover {
   transform: scale(1.05);
 }
 
-.navbar-content {
+.manticore-nav-bar-content {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: var(--spacing-1);
+  width: 100%;
 }
 
-.navbar-logo-text {
+.manticore-nav-bar-logo-text {
   display: flex;
   font-size: var(--font-size-2xl);
   font-family: "Gruppo", var(--font-family-base);
@@ -64,86 +65,94 @@
   animation: gradient-animation 3s linear infinite;
 }
 
-.navbar-links {
-  position: absolute;
-  align-items: center;
-  flex-grow: 1;
-  right: var(--spacing-4);
+.manticore-nav-bar-links {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-2);
 }
 
-.navbar .nav-link-container {
-  position: relative;
-  padding: 0 var(--spacing-3);
-  display: inline-block;
-  margin-left: var(--spacing-2);
-  transition: transform var(--transition-normal);
-}
-
-.navbar .nav-link-container:hover {
-  transform: scale(1.05);
-}
-
-.navbar .nav-link-container p {
-  margin-left: var(--spacing-2);
-  display: inline-block;
-  transition: color var(--transition-normal);
+.manticore-nav-bar .nav-link {
   color: var(--text-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-normal);
 }
 
-.navbar .nav-link-container:hover p {
+.manticore-nav-bar .nav-link:hover {
   color: var(--accent-color);
 }
 
-@media (max-width: 440px) {
-  .navbar-links {
-    justify-content: center;
-    position: absolute;
-    right: 0%;
-    transform: translateX(-50%);
-  }
+.manticore-nav-bar .animated-link {
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.manticore-nav-bar .animated-link:hover {
+  transform: translateY(-2px);
+}
+
+.manticore-nav-bar-link-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-2);
+}
+
+.manticore-nav-bar-link-container i {
+  font-size: var(--font-size-lg);
+}
+
+.manticore-nav-bar-link-container p {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+.manticore-nav-bar-cart-link {
+  position: relative;
+  font-size: var(--font-size-xl);
+  padding: var(--spacing-2);
+}
+
+.manticore-nav-bar-cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 12px;
+  height: 12px;
+  font-size: 9px;
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-medium);
+  box-shadow: 0 0 0 1.5px var(--background-secondary);
+  transform: translate(25%, -25%);
+  padding: 0 2px;
+  animation: badgePop 0.3s ease-out;
 }
 
 @keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
-
-.cart-link {
-    position: relative;
-}
-
-.cart-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 12px;
-    height: 12px;
-    font-size: 9px;
-    background-color: var(--accent-color);
-    color: var(--text-primary);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: var(--font-weight-medium);
-    box-shadow: 0 0 0 1.5px var(--background-secondary);
-    transform: translate(25%, -25%);
-    padding: 0 2px;
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 @keyframes badgePop {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  0% { transform: scale(0) translate(25%, -25%); opacity: 0; }
+  100% { transform: scale(1) translate(25%, -25%); opacity: 1; }
+}
+
+@media (max-width: 440px) {
+  .manticore-nav-bar-links {
+    justify-content: flex-end;
+    padding-right: var(--spacing-2);
+  }
+  
+  .manticore-nav-bar-link-container p {
+    display: none;
+  }
 }

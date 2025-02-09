@@ -12,10 +12,11 @@ interface CreateListingProps {
 
 interface PriceSpec {
     asset_name: string;
-    price_evr?: number;
+    price_evr: number;
     price_asset_name?: string;
     price_asset_amount?: number;
     ipfs_hash?: string;
+    units?: number;
 }
 
 interface AssetPrice {
@@ -90,20 +91,25 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             const prices: PriceSpec[] = assetPrices.map(ap => ({
                 asset_name: ap.asset_name.trim(),
                 price_evr: Number(ap.price_evr),
-                ipfs_hash: ap.ipfs_hash.trim() || undefined
+                ipfs_hash: ap.ipfs_hash.trim() || undefined,
+                units: 8 // Default to 8 decimal places
             }));
 
-            const response = await axios.post(`${trading_api_url}/listings/`, {
+            const requestBody = {
                 seller_address: listingDetails.seller_address,
                 name: listingDetails.name.trim(),
                 description: listingDetails.description.trim(),
                 image_ipfs_hash: listingDetails.image_ipfs_hash.trim() || undefined,
                 tags: listingDetails.tags,
                 prices
-            });
+            };
 
-            setListingResponse(response.data);
-            setStep(4);
+            const response = await axios.post(`${trading_api_url}/listings/`, requestBody);
+
+            if (response.data) {
+                setListingResponse(response.data);
+                setStep(4);
+            }
         } catch (error) {
             console.error('Error creating listing:', error);
             

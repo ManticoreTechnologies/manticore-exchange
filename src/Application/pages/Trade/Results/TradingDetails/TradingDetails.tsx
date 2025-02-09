@@ -37,7 +37,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 // @ts-ignore
 import IsAuthenticated from '@/components/Authentication/IsAuthenticated';
-import CommentsSection from '@/components/Comments/CommentsSection';
+import CommentsSection from '@/Application/components/Comments/CommentsSection';
 
 const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 

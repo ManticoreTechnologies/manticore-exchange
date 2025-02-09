@@ -1,4 +1,4 @@
-import CommentsSection from "@/components/Comments/CommentsSection";
+import CommentsSection from "@/Application/components/Comments/CommentsSection";
 import { useEffect, useState } from "react";
 import useWebSocket from "@/hooks/useWebSocket";
 //@ts-ignore

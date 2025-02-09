@@ -2,9 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './footer.css';
-import Ping from '@/App/pages/TradeX/Ping/Ping';
-import ThemeSettings from '@/components/ThemeSettings/ThemeSettings';
-import OrderToaster from '@/App/components/OrderToaster/OrderToaster';
+import Ping from '@/Application/components/ping/ping';
+import ThemeSettings from '@/Application/components/theme-settings/theme-settings';
 
 const Footer: React.FC = () => {
   return (
@@ -12,9 +11,6 @@ const Footer: React.FC = () => {
       <div className="left-section">
         <div className="ping-container">
           <Ping />
-        </div>
-        <div className="order-toaster-container">
-          <OrderToaster />
         </div>
       </div>
       <p className="footer-text">
