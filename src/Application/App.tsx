@@ -1,9 +1,16 @@
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+import { AuthProvider } from './contexts/AuthContext';
+import './styles/themes.css';
 import CreateListingPage from './pages/Trade/CreateListingPage/CreateListingPage';
 
-// In your router configuration:
-<Routes>
-    {/* ... other routes ... */}
-    <Route path="/trade" element={<Trading />} />
-    <Route path="/trade/create" element={<CreateListingPage />} />
-    {/* ... other routes ... */}
-</Routes> 
+const App: React.FC = () => {
+    return (
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
+    );
+};
+
+export default App; 

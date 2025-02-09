@@ -32,6 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setToken(savedToken);
             setUserAddress(savedAddress);
             setIsAuthenticated(true);
+            
+            // Set axios default authorization header
+            axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
         }
     }, []);
 

@@ -3,13 +3,12 @@ import useWebSocket from '@/hooks/useWebSocket';
 import logo from '@/images/Placeholder.webp';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
-// @ts-ignore
 import UnAuthenticated from '../../components/UnAuthenticated/UnAuthenticated';
 import EditProfileModal from './EditProfileModal';
 import AssetsCarousel from './AssetsCarousel';
 import Debug from '@/App/components/Debug/Debug';
 import { FaEdit, FaHistory, FaSignOutAlt, FaCopy, FaStar } from 'react-icons/fa';
-import Cookies from 'js-cookie';
+import { useAuth } from '../../contexts/AuthContext';
 
 const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
@@ -27,9 +26,10 @@ const Profile: React.FC = () => {
     const [accountInfo, setAccountInfo] = useState<any>(null);
     const [balances, setBalances] = useState<any>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const { sendMessage, message, isConnected, isAuthenticated } = useWebSocket(wsUrl);
+    const { sendMessage, message, isConnected } = useWebSocket(wsUrl);
     const [imageUrl, setImageUrl] = useState<string | null>(logo);
     const [assetInfo, setAssetInfo] = useState<Record<string, Asset>>({});
+    const { isAuthenticated, userAddress, logout } = useAuth();
 
     // Function to fetch asset info in batch
     const fetchAssetInfo = (assets: string[]) => {
@@ -79,7 +79,6 @@ const Profile: React.FC = () => {
                     setBalances(balancesData);
                 } catch (error) {
                     console.error("Failed to parse balances JSON:", error);
-                    console.error("Received balances data:", balanceString);
                 }
             }
             else if (message.startsWith('favorite_added')) {
@@ -145,13 +144,13 @@ const Profile: React.FC = () => {
             });
     };
 
-    const handleLogout = () => {
-        // Remove authentication cookies
-        Cookies.remove('userSession', { sameSite: 'None', secure: true });
-        Cookies.remove('address', { sameSite: 'None', secure: true });
-        
-        // Refresh the page to reset the application state
-        window.location.reload();
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/signin');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     // Function to get asset info for carousel
@@ -165,129 +164,127 @@ const Profile: React.FC = () => {
         };
     };
 
+    if (!isAuthenticated) {
+        return <UnAuthenticated />;
+    }
+
     return (
-        <>
-            {!isAuthenticated ? (
-                <UnAuthenticated />
-            ) : (
-                <div className="tradex-profile">
-                    <Debug sections={[
-                        { title: 'Asset Info', data: assetInfo }
-                    ]} />
-                    
-                    <div className="tradex-profile__header">
-                        <div className="tradex-profile__image-container">
-                            <img src={imageUrl || ''} alt="Profile" className="tradex-profile__image" />
-                            <button className="tradex-profile__image-edit" onClick={() => setIsEditing(true)}>
-                                <FaEdit />
-                            </button>
-                        </div>
-
-                        <div className="tradex-profile__header-info">
-                            <h1 className="tradex-profile__name">{accountInfo?.friendly_name || 'User Profile'}</h1>
-                            <div 
-                                className="tradex-profile__address" 
-                                onClick={() => copyToClipboard(accountInfo?.address)}
-                            >
-                                {accountInfo?.address}
-                                <FaCopy />
-                            </div>
-                            <div className="tradex-profile__status">
-                                <div className={`tradex-profile__status-indicator ${accountInfo?.status !== 'online' ? 'tradex-profile__status-indicator--offline' : ''}`} />
-                                {accountInfo?.status || 'offline'}
-                            </div>
-                        </div>
-
-                        <div className="tradex-profile__actions">
-                            <button className="tradex-profile__action-button" onClick={() => setIsEditing(true)}>
-                                <FaEdit /> Edit Profile
-                            </button>
-                            <button className="tradex-profile__action-button">
-                                <FaHistory /> History
-                            </button>
-                            <button className="tradex-profile__action-button" onClick={handleLogout}>
-                                <FaSignOutAlt /> Logout
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="tradex-profile__content">
-                        <div className="tradex-profile__section">
-                            <div className="tradex-profile__section-header">
-                                <h2 className="tradex-profile__section-title">Assets & Balances</h2>
-                            </div>
-                            <div className="tradex-profile__assets-grid">
-                                {balances ? (
-                                    Object.entries(balances).map(([asset, balance]: any, index) => {
-                                        const info = assetInfo[asset.toUpperCase()];
-                                        return (
-                                            <div key={index} className="tradex-profile__asset-card">
-                                                <div className="tradex-profile__asset-card-header">
-                                                    <span className="tradex-profile__asset-name">{asset.toUpperCase()}</span>
-                                                    <span className="tradex-profile__asset-balance">{balance}</span>
-                                                </div>
-                                                <div className="tradex-profile__asset-description">
-                                                    {info ? `Supply: ${info.amount / Math.pow(10, info.units)}` : 'Loading...'}
-                                                </div>
-                                                <div className="tradex-profile__asset-actions">
-                                                    <button 
-                                                        className="tradex-profile__asset-button"
-                                                        onClick={() => navigate(`/trade/${asset}`)}
-                                                    >
-                                                        Trade
-                                                    </button>
-                                                    <button 
-                                                        className="tradex-profile__asset-button tradex-profile__asset-button--favorite"
-                                                        onClick={() => handleAddToFavorites(asset)}
-                                                    >
-                                                        <FaStar />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div className="tradex-profile__coming-soon">
-                                        <h3>Coming Soon</h3>
-                                        <p>While you enjoy our accountless trading platform, we're building additional account-based features for enhanced trading capabilities.</p>
-                                        <button 
-                                            className="tradex-profile__action-button tradex-profile__action-button--primary"
-                                            onClick={() => navigate('/trade')}
-                                        >
-                                            Trade Now
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="tradex-profile__section">
-                            <div className="tradex-profile__section-header">
-                                <h2 className="tradex-profile__section-title">Favorite Assets</h2>
-                            </div>
-                            <AssetsCarousel 
-                                favoriteAssets={
-                                    accountInfo?.favorite_assets 
-                                        ? Array.isArray(accountInfo.favorite_assets)
-                                            ? accountInfo.favorite_assets
-                                            : JSON.parse(accountInfo.favorite_assets)
-                                        : []
-                                }
-                                getAssetInfo={getAssetInfo}
-                            />
-                        </div>
-                    </div>
-
-                    {isEditing && (
-                        <EditProfileModal
-                            accountInfo={accountInfo}
-                            onSave={handleSave}
-                            onClose={() => setIsEditing(false)}
-                        />
-                    )}
+        <div className="tradex-profile">
+            <Debug sections={[
+                { title: 'Asset Info', data: assetInfo }
+            ]} />
+            
+            <div className="tradex-profile__header">
+                <div className="tradex-profile__image-container">
+                    <img src={imageUrl || ''} alt="Profile" className="tradex-profile__image" />
+                    <button className="tradex-profile__image-edit" onClick={() => setIsEditing(true)}>
+                        <FaEdit />
+                    </button>
                 </div>
+
+                <div className="tradex-profile__header-info">
+                    <h1 className="tradex-profile__name">{accountInfo?.friendly_name || 'User Profile'}</h1>
+                    <div 
+                        className="tradex-profile__address" 
+                        onClick={() => copyToClipboard(accountInfo?.address)}
+                    >
+                        {userAddress}
+                        <FaCopy />
+                    </div>
+                    <div className="tradex-profile__status">
+                        <div className={`tradex-profile__status-indicator ${accountInfo?.status !== 'online' ? 'tradex-profile__status-indicator--offline' : ''}`} />
+                        {accountInfo?.status || 'offline'}
+                    </div>
+                </div>
+
+                <div className="tradex-profile__actions">
+                    <button className="tradex-profile__action-button" onClick={() => setIsEditing(true)}>
+                        <FaEdit /> Edit Profile
+                    </button>
+                    <button className="tradex-profile__action-button">
+                        <FaHistory /> History
+                    </button>
+                    <button className="tradex-profile__action-button" onClick={handleLogout}>
+                        <FaSignOutAlt /> Logout
+                    </button>
+                </div>
+            </div>
+
+            <div className="tradex-profile__content">
+                <div className="tradex-profile__section">
+                    <div className="tradex-profile__section-header">
+                        <h2 className="tradex-profile__section-title">Assets & Balances</h2>
+                    </div>
+                    <div className="tradex-profile__assets-grid">
+                        {balances ? (
+                            Object.entries(balances).map(([asset, balance]: any, index) => {
+                                const info = assetInfo[asset.toUpperCase()];
+                                return (
+                                    <div key={index} className="tradex-profile__asset-card">
+                                        <div className="tradex-profile__asset-card-header">
+                                            <span className="tradex-profile__asset-name">{asset.toUpperCase()}</span>
+                                            <span className="tradex-profile__asset-balance">{balance}</span>
+                                        </div>
+                                        <div className="tradex-profile__asset-description">
+                                            {info ? `Supply: ${info.amount / Math.pow(10, info.units)}` : 'Loading...'}
+                                        </div>
+                                        <div className="tradex-profile__asset-actions">
+                                            <button 
+                                                className="tradex-profile__asset-button"
+                                                onClick={() => navigate(`/trade/${asset}`)}
+                                            >
+                                                Trade
+                                            </button>
+                                            <button 
+                                                className="tradex-profile__asset-button tradex-profile__asset-button--favorite"
+                                                onClick={() => handleAddToFavorites(asset)}
+                                            >
+                                                <FaStar />
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="tradex-profile__coming-soon">
+                                <h3>Coming Soon</h3>
+                                <p>While you enjoy our accountless trading platform, we're building additional account-based features for enhanced trading capabilities.</p>
+                                <button 
+                                    className="tradex-profile__action-button tradex-profile__action-button--primary"
+                                    onClick={() => navigate('/trade')}
+                                >
+                                    Trade Now
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="tradex-profile__section">
+                    <div className="tradex-profile__section-header">
+                        <h2 className="tradex-profile__section-title">Favorite Assets</h2>
+                    </div>
+                    <AssetsCarousel 
+                        favoriteAssets={
+                            accountInfo?.favorite_assets 
+                                ? Array.isArray(accountInfo.favorite_assets)
+                                    ? accountInfo.favorite_assets
+                                    : JSON.parse(accountInfo.favorite_assets)
+                                : []
+                        }
+                        getAssetInfo={getAssetInfo}
+                    />
+                </div>
+            </div>
+
+            {isEditing && (
+                <EditProfileModal
+                    accountInfo={accountInfo}
+                    onSave={handleSave}
+                    onClose={() => setIsEditing(false)}
+                />
             )}
-        </>
+        </div>
     );
 };
 
