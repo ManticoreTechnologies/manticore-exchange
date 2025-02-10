@@ -33,6 +33,9 @@ export interface Listing {
     created_at: string;
     updated_at: string;
     units: number;
+    isOwnedByUser?: boolean;
+    status?: string;
+    tags?: string[];
 }
 
 export interface SelectedListing extends Listing {

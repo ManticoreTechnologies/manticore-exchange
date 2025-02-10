@@ -12,7 +12,7 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
     if (!isAuthenticated) {
         // Redirect to sign-in page but save the attempted url
-        return <Navigate to="/sign-in" state={{ from: location }} replace />;
+        return <Navigate to="/signin" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;

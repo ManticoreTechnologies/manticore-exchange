@@ -51,6 +51,7 @@ const TradingResultsGrid: React.FC<TradingResultsGridProps> = ({
                         buyNow={() => buyNow(listing)}
                         showDetails={() => showDetails(listing)}
                         tags={listing.tags || []}
+                        isOwnedByUser={listing.isOwnedByUser}
                     />
                 ))}
             </div>

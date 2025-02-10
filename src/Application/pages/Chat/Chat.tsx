@@ -186,7 +186,7 @@ const Chat: React.FC = () => {
     };
 
     if (!isAuthenticated) {
-        return <Navigate to="/sign-in" state={{ from: location }} replace />;
+        return <Navigate to="/signin" state={{ from: location }} replace />;
     }
 
     if (isLoadingChannels) {

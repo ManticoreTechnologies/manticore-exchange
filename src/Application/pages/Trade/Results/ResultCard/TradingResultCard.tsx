@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TradingResultCard.css';
 import placeholderImage from '@/Application/logos/white-manticore.png';
+import { FiStar, FiKey } from 'react-icons/fi';
 
 interface TradingResultCardProps {
     id: string;
@@ -19,6 +20,7 @@ interface TradingResultCardProps {
     buyNow: () => void;
     showDetails: () => void;
     tags: string[];
+    isOwnedByUser?: boolean;
 }
 
 const TradingResultCard: React.FC<TradingResultCardProps> = ({
@@ -37,12 +39,13 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     addToCart,
     buyNow,
     showDetails,
-    tags
+    tags,
+    isOwnedByUser
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
     const [priceMediaStates, setPriceMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
-
+    console.log(isOwnedByUser);
     const getMediaSrc = (hash: string | null | undefined) => {
         if (!hash) return placeholderImage;
         return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
@@ -111,7 +114,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
 
     return (
         <div 
-            className="trading-result-card"
+            className={`trading-result-card ${isOwnedByUser ? 'owned-by-user' : ''}`}
             onClick={showDetails}
             role="button"
             tabIndex={0}
@@ -121,8 +124,15 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 }
             }}
         >
-            <div className="trading-result-card__status" data-status={status}>
-                {status}
+            <div className="trading-result-card__header">
+                {isOwnedByUser && (
+                    <div className="ownership-badge" title="Your Listing">
+                        <FiKey />
+                    </div>
+                )}
+                <div className="trading-result-card__status" data-status={status}>
+                    {status}
+                </div>
             </div>
 
             <div className="trading-result-card__media">

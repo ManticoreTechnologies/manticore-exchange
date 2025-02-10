@@ -5,7 +5,6 @@
     background: var(--background-primary);
     border-bottom: 1px solid var(--border-color);
     padding: var(--spacing-4);
-    margin-top: 140px; /* Space for featured listings */
 }
 
 .trading-header-content {
@@ -245,7 +244,6 @@
 
 @media (max-width: 768px) {
     .trading-header {
-        margin-top: 420px; /* Adjust space for stacked featured listings on mobile */
         padding: var(--spacing-3);
     }
 

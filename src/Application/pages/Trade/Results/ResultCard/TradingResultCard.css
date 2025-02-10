@@ -11,6 +11,15 @@
     flex-direction: column;
 }
 
+.trading-result-card.owned-by-user {
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 4px rgba(255, 51, 51, 0.05);
+}
+
+.trading-result-card.owned-by-user::before {
+    display: none;
+}
+
 .trading-result-card:hover {
     transform: translateY(-2px);
     border-color: var(--accent-color);
@@ -120,19 +129,77 @@
     color: var(--text-secondary);
 }
 
-.trading-result-card__status {
+.trading-result-card__header {
     position: absolute;
-    top: var(--spacing-3);
-    right: var(--spacing-3);
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+}
+
+.trading-result-card__status {
+    position: static;
+    margin-left: auto;
+}
+
+.ownership-badge {
+    position: static;
+    padding: var(--spacing-1);
+    background: var(--background-secondary);
+    color: var(--accent-color);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--accent-color);
+    opacity: 0.9;
+    transition: all 0.2s ease;
+}
+
+.ownership-badge:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(255, 51, 51, 0.1);
+}
+
+.ownership-badge svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+}
+
+.trading-result-card.owned-by-user {
+    border: 1px solid var(--accent-color);
+}
+
+/* Remove the before pseudo-element since we don't need it anymore */
+.trading-result-card.owned-by-user::before {
+    display: none;
+}
+
+/* Update the status styles to work with the new header */
+.trading-result-card__status {
     padding: var(--spacing-1) var(--spacing-2);
     border-radius: var(--border-radius-full);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
-    z-index: 1;
     display: flex;
     align-items: center;
     gap: var(--spacing-1);
+    backdrop-filter: blur(4px);
+}
+
+/* Remove the old absolute positioning styles for status */
+.trading-result-card__status {
+    position: static;
+    top: auto;
+    right: auto;
 }
 
 .trading-result-card__status::before {
@@ -347,5 +414,11 @@
 
     .trading-asset-amount {
         font-size: var(--font-size-xs);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.8;
     }
 }

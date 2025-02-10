@@ -13,7 +13,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import FeaturedListings from './TradingHeader/FeaturedListings';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { debounce } from 'lodash';
-import Cookies from 'js-cookie';
+import { useAuth } from '../../contexts/AuthContext';
 import {
     Listing,
     SelectedListing,
@@ -32,6 +32,7 @@ import {
 } from './types';
 
 const Trading: React.FC = () => {
+    const { userAddress } = useAuth();
     const [listings, setListings] = useState<Listing[]>([]);
     const [cartVisible, setCartVisible] = useState<boolean>(false);
     const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
@@ -61,7 +62,6 @@ const Trading: React.FC = () => {
     const [maxPrice, setMaxPrice] = useState<string>('');
     const [featuredListings, setFeaturedListings] = useState<FeaturedListing[]>([]);
     const [wsConnected, setWsConnected] = useState<boolean>(false);
-    const [userAddress, setUserAddress] = useState<string>('');
     const [homeListings, setHomeListings] = useState<any>(null);
 
     // @ts-ignore
@@ -255,11 +255,13 @@ const Trading: React.FC = () => {
         }
     }, [location]);
 
+    // Add effect to refetch listings when userAddress changes
     useEffect(() => {
-        // Get user address from cookies or local storage
-        const address = Cookies.get('user_address') || localStorage.getItem('user_address') || '';
-        setUserAddress(address);
-    }, []);
+        if (userAddress) {
+            console.log('User address changed, refetching listings');
+            fetchListings();
+        }
+    }, [userAddress]);
 
     // Add fetchHomeListings function
     const fetchHomeListings = useCallback(async () => {
@@ -327,6 +329,9 @@ const Trading: React.FC = () => {
             const offset = (currentPage - 1) * pageSize;
             let url = `${trading_api_url}/listings/search`;
             
+            // Add debug logging
+            console.log('Current user address from AuthContext:', userAddress);
+            
             // Add search and filter parameters
             const params = new URLSearchParams({
                 limit: pageSize.toString(),
@@ -356,14 +361,31 @@ const Trading: React.FC = () => {
             const response = await axios.get<ListingsResponse>(url);
             const { listings: fetchedListings, total_count, total_pages, current_page } = response.data;
             
+            // Add debug logging for listings
+            console.log('Fetched listings:', fetchedListings);
+            
+            // Add isOwnedByUser flag to listings
+            const processedListings = fetchedListings.map(listing => {
+                const isOwned = userAddress ? listing.seller_address === userAddress : false;
+                console.log(`Listing ${listing.id} ownership check:`, {
+                    seller: listing.seller_address,
+                    user: userAddress,
+                    isOwned
+                });
+                return {
+                    ...listing,
+                    isOwnedByUser: isOwned
+                };
+            });
+            
             // Update listings with the results
-            setListings(fetchedListings);
+            setListings(processedListings);
             setTotalResults(total_count);
             setTotalPages(total_pages);
             setCurrentPage(current_page);
             
             // Don't update featured listings during search
-            if (!searchQuery && fetchedListings.length > 0) {
+            if (!searchQuery && processedListings.length > 0) {
                 await fetchHomeListings(); // Fetch fresh featured listings instead
             }
             
@@ -374,7 +396,7 @@ const Trading: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, fetchHomeListings]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, fetchHomeListings, userAddress]);
 
     // Add effect to fetch listings on mount and when dependencies change
     useEffect(() => {
