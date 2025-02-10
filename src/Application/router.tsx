@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Outlet, Navigate } from 'react-router-dom';
 import SignIn from './pages/SignIn/SignIn';
 import Profile from './pages/Profile/Profile';
 import Trading from './pages/Trade/Trading';
@@ -21,15 +21,30 @@ import Chat from './pages/Chat/Chat';
 import Launch from './pages/Launch/Launch';
 import NavigationBar from './components/navigation/navigation-bar/navigation-bar';
 import Footer from './components/navigation/footer/footer';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 const RootLayout = () => {
     return (
         <div className="application">
             <NavigationBar />
             <div className="main">
-                <Outlet />
+                <ErrorBoundary>
+                    <Outlet />
+                </ErrorBoundary>
             </div>
             <Footer />
+        </div>
+    );
+};
+
+const NotFound = () => {
+    return (
+        <div className="error-container">
+            <h2>Page Not Found</h2>
+            <p>The page you're looking for doesn't exist or has been moved.</p>
+            <button onClick={() => window.location.href = '/trade'} className="back-button">
+                Back to Trading
+            </button>
         </div>
     );
 };
@@ -38,6 +53,7 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: <RootLayout />,
+        errorElement: <NotFound />,
         children: [
             {
                 index: true,
@@ -71,7 +87,9 @@ export const router = createBrowserRouter([
                 path: 'trade/listings/manage/:id',
                 element: (
                     <PrivateRoute>
-                        <ManageListingPage />
+                        <ErrorBoundary>
+                            <ManageListingPage />
+                        </ErrorBoundary>
                     </PrivateRoute>
                 )
             },
@@ -130,6 +148,10 @@ export const router = createBrowserRouter([
                         <Chat />
                     </PrivateRoute>
                 )
+            },
+            {
+                path: '*',
+                element: <NotFound />
             }
         ]
     }

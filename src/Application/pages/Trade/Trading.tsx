@@ -62,6 +62,7 @@ const Trading: React.FC = () => {
     const [featuredListings, setFeaturedListings] = useState<FeaturedListing[]>([]);
     const [wsConnected, setWsConnected] = useState<boolean>(false);
     const [userAddress, setUserAddress] = useState<string>('');
+    const [homeListings, setHomeListings] = useState<any>(null);
 
     // @ts-ignore
     const cartRef = useRef<HTMLDivElement>(null);
@@ -260,7 +261,66 @@ const Trading: React.FC = () => {
         setUserAddress(address);
     }, []);
 
-    // Modify fetchListings to use proper types and handle the API response correctly
+    // Add fetchHomeListings function
+    const fetchHomeListings = useCallback(async () => {
+        try {
+            const response = await axios.get(
+                `${trading_api_url}/listings/home`,
+                {
+                    params: {
+                        featured_count: 5,
+                        trending_count: 10,
+                        new_count: 10,
+                        trending_timeframe: '24h',
+                        new_hours: 24
+                    }
+                }
+            );
+            
+            if (response.data) {
+                const allFeaturedListings = [
+                    ...(response.data.featured?.listings || []).map((listing: Listing) => ({
+                        id: listing.id,
+                        title: listing.name,
+                        store_name: listing.name,
+                        asset_name: listing.balances[0]?.asset_name || '',
+                        price: listing.prices[0]?.price_evr || '0',
+                        image_hash: listing.image_ipfs_hash
+                    })),
+                    ...(response.data.new?.listings || []).map((listing: Listing) => ({
+                        id: listing.id,
+                        title: listing.name,
+                        store_name: listing.name,
+                        asset_name: listing.balances[0]?.asset_name || '',
+                        price: listing.prices[0]?.price_evr || '0',
+                        highlight: 'New',
+                        image_hash: listing.image_ipfs_hash
+                    })),
+                    ...(response.data.trending?.listings || []).map((listing: Listing) => ({
+                        id: listing.id,
+                        title: listing.name,
+                        store_name: listing.name,
+                        asset_name: listing.balances[0]?.asset_name || '',
+                        price: listing.prices[0]?.price_evr || '0',
+                        highlight: 'Trending',
+                        image_hash: listing.image_ipfs_hash
+                    }))
+                ];
+                
+                setFeaturedListings(allFeaturedListings);
+                setHomeListings(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching home listings:', error);
+        }
+    }, [trading_api_url]);
+
+    // Add effect to fetch home listings on mount
+    useEffect(() => {
+        fetchHomeListings();
+    }, [fetchHomeListings]);
+
+    // Update fetchListings dependencies
     const fetchListings = useCallback(async () => {
         try {
             setLoading(true);
@@ -302,47 +362,47 @@ const Trading: React.FC = () => {
             setTotalPages(total_pages);
             setCurrentPage(current_page);
             
-            // Update featured listings with the first 3 items
-            if (fetchedListings.length > 0) {
-                const featured = fetchedListings.slice(0, 3).map((listing: Listing) => ({
-                    id: listing.id,
-                    title: listing.name,
-                    store_name: listing.name,
-                    asset_name: listing.balances[0]?.asset_name || '',
-                    price: listing.prices[0]?.price_evr || '0',
-                    highlight: isNewListing(listing.created_at) ? 'New' : undefined,
-                    image_hash: listing.image_ipfs_hash
-                }));
-                
-                setFeaturedListings(featured);
+            // Don't update featured listings during search
+            if (!searchQuery && fetchedListings.length > 0) {
+                await fetchHomeListings(); // Fetch fresh featured listings instead
             }
             
         } catch (error) {
             console.error('Error fetching listings:', error);
             setListings([]);
-            setFeaturedListings([]);
+            // Don't clear featured listings on error
         } finally {
             setLoading(false);
         }
-    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, fetchHomeListings]);
 
     // Add effect to fetch listings on mount and when dependencies change
     useEffect(() => {
         fetchListings();
     }, [fetchListings]);
 
-    // Add debounced search
+    // Add debounced search function
     const debouncedSearch = useCallback(
         debounce((value: string) => {
             setSearchQuery(value);
-        }, 300),
-        []
+            fetchListings();
+        }, 500),
+        []  // Remove fetchListings from dependencies to prevent recreation
     );
 
+    // Update handleSearch to use debounced function
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        debouncedSearch(value);
+        setSearchQuery(value);  // Update the input value immediately for UI responsiveness
+        debouncedSearch(value); // Debounce the actual search
     };
+
+    // Separate effect for search query changes
+    useEffect(() => {
+        if (searchQuery !== undefined) {
+            fetchListings();
+        }
+    }, [searchQuery, currentPage, pageSize, filterType, filterQuery, tags, minPrice, maxPrice]);
 
     // Helper function to check if a listing is new (less than 24 hours old)
     const isNewListing = (createdAt: string): boolean => {

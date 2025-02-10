@@ -5,6 +5,7 @@
     background: var(--background-primary);
     border-bottom: 1px solid var(--border-color);
     padding: var(--spacing-4);
+    margin-top: 140px; /* Space for featured listings */
 }
 
 .trading-header-content {
@@ -13,6 +14,8 @@
     gap: var(--spacing-4);
     max-width: var(--container-xl);
     margin: 0 auto;
+    position: relative;
+    z-index: 2; /* Ensure header content stays above featured listings */
 }
 
 .header-left {
@@ -83,8 +86,8 @@
 }
 
 .search-input-wrapper {
-    flex: 1;
     position: relative;
+    width: 100%;
 }
 
 .search-input-wrapper input {
@@ -103,6 +106,33 @@
     border-color: var(--accent-color);
     box-shadow: 0 0 0 2px var(--accent-color-transparent);
     outline: none;
+}
+
+.search-input-wrapper .loading-spinner {
+    position: absolute;
+    right: var(--spacing-3);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--background-tertiary);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.search-input-wrapper.loading .loading-spinner {
+    opacity: 1;
+    visibility: visible;
+}
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
 }
 
 .filter-toggle-button {
@@ -215,6 +245,7 @@
 
 @media (max-width: 768px) {
     .trading-header {
+        margin-top: 420px; /* Adjust space for stacked featured listings on mobile */
         padding: var(--spacing-3);
     }
 

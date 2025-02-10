@@ -30,6 +30,7 @@ interface TradingHeaderProps {
         highlight?: string;
     }>;
     onFeaturedClick: (listing: any) => void;
+    loading: boolean;
 }
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({
@@ -50,7 +51,8 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
     handleMaxPriceChange,
     isConnected,
     featuredListings,
-    onFeaturedClick
+    onFeaturedClick,
+    loading
 }) => {
     const [showFilters, setShowFilters] = useState(false);
 
@@ -77,7 +79,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
 
                     <div className="header-center">
                         <div className="search-bar-main">
-                            <div className="search-input-wrapper">
+                            <div className={`search-input-wrapper ${loading ? 'loading' : ''}`}>
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -85,6 +87,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                                     placeholder="Search listings..."
                                     aria-label="Search input"
                                 />
+                                <div className="loading-spinner" />
                             </div>
                             <button 
                                 className={`filter-toggle-button ${showFilters ? 'active' : ''}`}

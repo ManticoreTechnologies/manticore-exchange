@@ -146,6 +146,7 @@
     position: relative;
     max-width: var(--container-xl);
     margin: 0 auto;
+    z-index: 1; /* Ensure featured listings stay above other content */
 }
 
 .fl_a7b3c9_carousel {
@@ -158,6 +159,7 @@
     height: 100%;
     border: 1px solid var(--border-subtle);
     transition: all 0.2s ease;
+    min-height: 140px; /* Ensure minimum height */
 }
 
 .fl_a7b3c9_carousel:hover {

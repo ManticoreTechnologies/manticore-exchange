@@ -332,12 +332,14 @@ const ListingDetails: React.FC = () => {
   };
 
   const handleManageListing = async () => {
-    if (!isAuthenticated) {
+    // Check for auth token first
+    if (!token) {
         const returnUrl = encodeURIComponent(`/trade/listings/manage/${id}`);
         navigate(`/signin?returnUrl=${returnUrl}`);
         return;
     }
 
+    // Only check ownership if user is authenticated
     if (!isListingOwner) {
         setNotification({
             show: true,
@@ -350,7 +352,7 @@ const ListingDetails: React.FC = () => {
     navigate(`/trade/listings/manage/${id}`);
   };
 
-  const isListingOwner = isAuthenticated && userAddress && listing?.seller_address.toLowerCase() === userAddress.toLowerCase() ? true : false;
+  const isListingOwner = Boolean(token && userAddress && listing?.seller_address.toLowerCase() === userAddress.toLowerCase());
 
   if (loading) {
     return (

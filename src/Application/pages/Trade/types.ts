@@ -27,18 +27,16 @@ export interface Listing {
     deposit_address: string;
     name: string;
     description: string;
-    image_ipfs_hash: string | null;
-    status: string;
-    tags: string[];
+    image_ipfs_hash: string;
+    balances: Balance[];
+    prices: Price[];
     created_at: string;
     updated_at: string;
-    prices: Price[];
-    balances: Balance[];
+    units: number;
 }
 
 export interface SelectedListing extends Listing {
-    quantity?: string;
-    unitPrice?: number;
+    units: number;
 }
 
 export interface CartItem {
@@ -54,8 +52,17 @@ export interface CartItem {
     seller_address: string;
 }
 
-export interface CheckoutItem extends CartItem {
-    status?: string;
+export interface CheckoutItem {
+    id: string;
+    listingId: string;
+    name: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    asset_name: string;
+    image_ipfs_hash: string | undefined;
+    seller_address: string;
 }
 
 export interface FeaturedListing {
