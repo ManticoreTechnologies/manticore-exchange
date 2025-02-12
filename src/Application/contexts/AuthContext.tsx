@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // Use the same API base configuration
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.0.0.2:8000';
 
 // Cookie configuration
 const COOKIE_CONFIG = {
@@ -39,33 +39,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const savedAddress = Cookies.get('user_address');
                 
                 if (savedToken && savedAddress) {
+                    // Set token in axios defaults before verification
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+                    
                     try {
-                        // Verify the token with the backend
-                        const response = await axios.get(`${API_BASE}/auth/verify`, {
-                            headers: {
-                                'Authorization': `Bearer ${savedToken}`
-                            }
-                        });
+                        const response = await axios.get(`${API_BASE}/auth/verify`);
                         
                         if (response.data.valid && response.data.address === savedAddress) {
-                            // Set token in axios defaults AFTER successful verification
-                            axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
                             setToken(savedToken);
                             setUserAddress(savedAddress);
                             setIsAuthenticated(true);
                         } else {
-                            handleLogout();
+                            await handleLogout();
                         }
                     } catch (error) {
-                        console.error('Failed to verify token:', error);
-                        handleLogout();
+                        console.error('Token verification failed:', error);
+                        await handleLogout();
                     }
                 } else {
-                    handleLogout();
+                    await handleLogout();
                 }
             } catch (error) {
-                console.error('Failed to check existing auth:', error);
-                handleLogout();
+                console.error('Auth check failed:', error);
+                await handleLogout();
             } finally {
                 setIsLoading(false);
             }
@@ -74,10 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkExistingAuth();
     }, []);
 
-    const handleLogout = () => {
-        // Clear cookies
-        Cookies.remove('auth_token', { path: '/' });
-        Cookies.remove('user_address', { path: '/' });
+    const handleLogout = async () => {
+        // Clear cookies with matching settings
+        Cookies.remove('auth_token', COOKIE_CONFIG);
+        Cookies.remove('user_address', COOKIE_CONFIG);
         
         // Clear axios default header
         delete axios.defaults.headers.common['Authorization'];
@@ -128,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         } catch (error) {
             console.error('Login error:', error);
-            handleLogout();
+            await handleLogout();
             throw error;
         }
     };

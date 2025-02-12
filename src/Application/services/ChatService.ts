@@ -2,8 +2,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // Constants for API and WebSocket configuration
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.0.0.2:8000';
 const WS_BASE = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}${API_BASE.replace(/^https?:/, '')}`;
+
+
+
 
 export interface ChatMessage {
     id: string;

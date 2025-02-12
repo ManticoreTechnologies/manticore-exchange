@@ -216,8 +216,37 @@ const ListingDetails: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', { listingId: id, quantity: selectedQuantity });
+    if (!listing || !selectedQuantity) return;
+
+    const price = listing.prices[0];
+    const balance = listing.balances[0];
+    
+    if (!price || !balance) {
+      setNotification({
+        show: true,
+        type: 'error',
+        message: 'Missing price or balance information'
+      });
+      return;
+    }
+
+    const cartItem = {
+      listingId: listing.id,
+      name: listing.name,
+      description: listing.description,
+      image_ipfs_hash: listing.image_ipfs_hash,
+      quantity: selectedQuantity,
+      unitPrice: price.price_evr,
+      asset_name: balance.asset_name,
+      seller_address: listing.seller_address
+    };
+
+    addToCart(cartItem);
+    setNotification({
+      show: true,
+      type: 'success',
+      message: 'Added to cart successfully!'
+    });
   };
 
   const handleShare = async () => {
@@ -538,6 +567,51 @@ const ListingDetails: React.FC = () => {
                 </div>
               </div>
             )}
+
+            <div className="listing-info-section">
+              <h3 className="listing-info-section-title">Price History</h3>
+              <PriceHistory 
+                listingId={listing.id}
+                timeframe="1M"
+              />
+            </div>
+
+            <div className="listing-info-section">
+              <h3 className="listing-info-section-title">Asset History</h3>
+              <AssetHistory 
+                listingId={listing.id}
+                timeframe="1M"
+              />
+            </div>
+
+            <div className="listing-info-section">
+              <h3 className="listing-info-section-title">Transaction History</h3>
+              <TransactionHistory 
+                listingId={listing.id}
+                timeframe="1M"
+              />
+            </div>
+
+            {selectedAsset && (
+              <div className="listing-info-section">
+                <h3 className="listing-info-section-title">Selected Asset Details</h3>
+                <SelectedAssetDisplay 
+                  asset={selectedAsset}
+                  onClose={() => setSelectedAsset(null)}
+                  ipfsGateway={PINATA_GATEWAY}
+                />
+              </div>
+            )}
+
+            <div className="listing-info-section">
+              <h3 className="listing-info-section-title">Available Assets</h3>
+              <AssetGrid 
+                assets={listing.balances}
+                selectedAsset={selectedAsset?.asset_name || null}
+                onAssetSelect={handleAssetSelect}
+              />
+            </div>
+
           </div>
         </div>
       </div>

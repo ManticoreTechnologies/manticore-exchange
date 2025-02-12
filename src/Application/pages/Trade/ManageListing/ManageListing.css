@@ -587,3 +587,170 @@
         opacity: 1;
     }
 }
+
+.transactions-section {
+    margin-top: var(--spacing-6);
+    padding: var(--spacing-4);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.transactions-section h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+    color: var(--text-primary);
+}
+
+.transactions-section h3 svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-color);
+}
+
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.transaction-item {
+    padding: var(--spacing-3);
+    background: var(--background-tertiary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+}
+
+.transaction-header .status {
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.status-completed {
+    background: var(--color-success-transparent);
+    color: var(--color-success);
+}
+
+.status-pending {
+    background: var(--color-warning-transparent);
+    color: var(--color-warning);
+}
+
+.status-failed {
+    background: var(--color-error-transparent);
+    color: var(--color-error);
+}
+
+.transaction-header .timestamp {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.transaction-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+}
+
+.transaction-details .amount {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+
+.transaction-details .address {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.transaction-id {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.loading {
+    text-align: center;
+    padding: var(--spacing-4);
+    color: var(--text-secondary);
+}
+
+.no-transactions {
+    text-align: center;
+    padding: var(--spacing-4);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.balances-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.rescan-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rescan-button:hover:not(:disabled) {
+    background: var(--background-hover);
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.rescan-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.rescan-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.rescan-button .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.transaction-message {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-2);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-sm);
+    border-left: 2px solid var(--accent-color);
+}

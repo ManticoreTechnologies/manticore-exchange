@@ -68,7 +68,7 @@ const Trading: React.FC = () => {
     const cartRef = useRef<HTMLDivElement>(null);
 
     // Update API endpoint configuration to use localhost:8000
-    const trading_api_host = 'localhost';
+    const trading_api_host = '10.0.0.2';
     const trading_api_port = 8000;
     const trading_api_proto = 'http';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;

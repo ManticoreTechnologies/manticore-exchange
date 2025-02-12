@@ -279,7 +279,6 @@
     padding: var(--spacing-4);
     width: 100%;
     max-width: var(--container-xl);
-    margin: var(--spacing-12) auto 0;
 }
 
 @media (max-width: 640px) {

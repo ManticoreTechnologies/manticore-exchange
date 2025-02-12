@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import useWebSocket from '@/hooks/useWebSocket';
+import axios from 'axios';
 import logo from '@/images/Placeholder.webp';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
-import UnAuthenticated from '../../components/UnAuthenticated/UnAuthenticated';
 import EditProfileModal from './EditProfileModal';
 import AssetsCarousel from './AssetsCarousel';
 import { FaEdit, FaHistory, FaSignOutAlt, FaCopy, FaStar, FaExclamationCircle, FaTrophy, FaMedal, FaChartLine } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
-
-const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}`;
 
 interface Asset {
     name: string;
@@ -53,124 +50,83 @@ interface AccountInfo {
 
 const Profile: React.FC = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, userAddress, token, isLoading: authLoading, logout } = useAuth();
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
     const [balances, setBalances] = useState<Record<string, string> | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { sendMessage, message, isConnected } = useWebSocket(wsUrl);
     const [imageUrl, setImageUrl] = useState<string | null>(logo);
     const [assetInfo, setAssetInfo] = useState<Record<string, Asset>>({});
-    const { isAuthenticated, userAddress, logout } = useAuth();
     const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
     const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [stats, setStats] = useState<TradingStats | null>(null);
 
-    // Function to fetch asset info in batch
-    const fetchAssetInfo = (assets: string[]) => {
-        if (assets.length > 0) {
-            const assetsString = assets.join(',');
-            sendMessage(`get_asset_info ${assetsString}`);
-        }
-    };
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.0.0.2:8000';
 
-    // Effect to fetch info for favorite assets
-    useEffect(() => {
-        if (accountInfo?.favorite_assets) {
-            const favorites = Array.isArray(accountInfo.favorite_assets) 
-                ? accountInfo.favorite_assets 
-                : JSON.parse(accountInfo.favorite_assets);
-            
-            fetchAssetInfo(favorites);
-        }
-    }, [accountInfo?.favorite_assets]);
-
-    // Handle received messages from WebSocket
-    useEffect(() => {
-        if (message) {
-            try {
-                if (message.startsWith('account_info')) {
-                    const jsonString = message.replace('account_info ', '').replace(/'/g, '"');
-                    const accountData = JSON.parse(jsonString);
-                    
-                    const profileImageUrl = accountData.profile_ipfs 
-                        ? `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${accountData.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO` 
-                        : logo;
-                    
-                    setImageUrl(profileImageUrl);
-                    setAccountInfo(accountData);
-                    setIsLoading(false);
-
-                    // Set achievements and stats if available
-                    if (accountData.achievements) {
-                        setAchievements(accountData.achievements);
-                    }
-                    if (accountData.stats) {
-                        setStats(accountData.stats);
-                    }
-                }
-                else if (message.startsWith('all_balances')) {
-                    const balanceString = message.replace('all_balances ', '').trim()
-                        .replace(/'/g, '"')
-                        .replace(/([{,]\s*)(\w+):/g, '$1"$2":');
-                    const balancesData = JSON.parse(balanceString);
-                    setBalances(balancesData);
-                }
-                else if (message.startsWith('favorite_added')) {
-                    const asset = message.replace('favorite_added ', '').trim();
-                    setAccountInfo(prev => prev ? {
-                        ...prev,
-                        favorite_assets: [...prev.favorite_assets, asset]
-                    } : null);
-                }
-                else if (message.startsWith('asset_info')) {
-                    const infoString = message.replace('asset_info ', '').trim()
-                        .replace(/'/g, '"')
-                        .replace(/([{,]\s*)(\w+):/g, '$1"$2":');
-                    const info = JSON.parse(infoString);
-                    setAssetInfo(prev => ({
-                        ...prev,
-                        ...info
-                    }));
-                }
-            } catch (error) {
-                console.error('Error processing WebSocket message:', error);
-                setError('Failed to process server response');
-            }
-        }
-    }, [message]);
-
-    // Request account info when connected and authenticated
-    useEffect(() => {
-        if (isConnected && isAuthenticated) {
+    const fetchProfileData = async () => {
+        try {
             setIsLoading(true);
-            setError(null);
-            sendMessage("get_account_info");
+            const response = await axios.get(`${API_BASE}/profile`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            const profileData = response.data;
+            setAccountInfo(profileData);
+            setBalances(profileData.balances);
+            setAchievements(profileData.achievements || []);
+            setStats(profileData.stats || null);
+            
+            if (profileData.profile_ipfs) {
+                setImageUrl(`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${profileData.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`);
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            setError('Failed to load profile data');
+        } finally {
+            setIsLoading(false);
         }
-    }, [isConnected, isAuthenticated]);
-
-    const handleSave = (updatedInfo: Partial<AccountInfo>) => {
-        setAccountInfo(prev => prev ? { ...prev, ...updatedInfo } : null);
-        
-        if (updatedInfo.profile_ipfs) {
-            const updatedImageUrl = `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${updatedInfo.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
-            setImageUrl(updatedImageUrl);
-            sendMessage(`set_profile_ipfs ${updatedInfo.profile_ipfs}`);
-        }
-        
-        if (updatedInfo.friendly_name) {
-            sendMessage(`set_friendly_name ${updatedInfo.friendly_name}`);
-        }
-        
-        if (updatedInfo.bio) {
-            sendMessage(`set_bio "${updatedInfo.bio}"`);
-        }
-        
-        setIsEditing(false);
     };
-    
-    const handleAddToFavorites = (asset: string) => {
-        sendMessage(`favorite_market ${asset}`);
+
+    useEffect(() => {
+        if (isAuthenticated && token) {
+            fetchProfileData();
+        }
+    }, [isAuthenticated, token]);
+
+    const handleSave = async (updatedInfo: Partial<AccountInfo>) => {
+        try {
+            const response = await axios.patch(`${API_BASE}/profile`, updatedInfo, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            setAccountInfo(prev => prev ? { ...prev, ...response.data } : null);
+            
+            if (response.data.profile_ipfs) {
+                setImageUrl(`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${response.data.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`);
+            }
+            
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            setError('Failed to update profile');
+        }
+    };
+
+    const handleAddToFavorites = async (asset: string) => {
+        try {
+            const response = await axios.post(`${API_BASE}/favorites`, 
+                { asset },
+                { headers: { Authorization: `Bearer ${token}` }}
+            );
+            setAccountInfo(prev => prev ? {
+                ...prev,
+                favorite_assets: [...prev.favorite_assets, asset]
+            } : null);
+        } catch (error) {
+            console.error('Error adding favorite:', error);
+            setError('Failed to add favorite');
+        }
     };
 
     const copyToClipboard = (text: string) => {
@@ -294,8 +250,28 @@ const Profile: React.FC = () => {
         );
     };
 
-    if (!isAuthenticated) {
-        return <UnAuthenticated />;
+    if (authLoading) {
+        return (
+            <div className="tradex-profile__loading">
+                <div className="tradex-profile__spinner"></div>
+                <p>Checking authentication...</p>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated || !token) {
+        return (
+            <div className="tradex-profile__error">
+                <FaExclamationCircle />
+                <p>Please sign in to view your profile</p>
+                <button 
+                    className="tradex-profile__action-button"
+                    onClick={() => navigate('/signin')}
+                >
+                    Sign In
+                </button>
+            </div>
+        );
     }
 
     if (isLoading) {
@@ -395,7 +371,7 @@ const Profile: React.FC = () => {
                         <h2>Assets & Balances</h2>
                         <button 
                             className="tradex-profile__refresh-button"
-                            onClick={() => sendMessage("get_account_info")}
+                            onClick={fetchProfileData}
                         >
                             Refresh
                         </button>

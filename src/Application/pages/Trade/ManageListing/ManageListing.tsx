@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiTool, FiDollarSign, FiArrowLeft, FiStar, FiCopy } from 'react-icons/fi';
+import { FiTool, FiDollarSign, FiArrowLeft, FiStar, FiCopy, FiClock, FiRefreshCw } from 'react-icons/fi';
 import { useAuth } from '@/Application/contexts/AuthContext';
 import './ManageListing.css';
 
@@ -38,16 +38,52 @@ interface Notification {
     message: string;
 }
 
+interface Transaction {
+    tx_hash: string;
+    asset_name: string;
+    amount: string;
+    address: string;
+    entry_type: string;
+    time: string;
+    confirmations: number;
+    fee: string;
+    abandoned: boolean;
+    trusted: boolean;
+    asset_message: string;
+    created_at: string;
+    updated_at: string;
+}
+
+interface TransactionResponse {
+    transactions: Transaction[];
+    total_count: number;
+    metadata: {
+        limit: number;
+        offset: number;
+        page: number;
+        total_pages: number;
+    };
+}
+
+interface ListingData {
+    id: string;
+    description: string;
+    ipfs_hash: string;
+    balances: Balance[];
+    listing_address: string;
+    // ... other listing fields
+}
+
 interface ManageListingProps {
     initialListingId: string;
     onClose: () => void;
 }
 
 const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose }) => {
-    const { token } = useAuth();
+    const { isAuthenticated, token, isLoading: authLoading } = useAuth();
     const [listingId] = useState<string>(initialListingId);
     const [password, setPassword] = useState<string>('');
-    const [listingData, setListingData] = useState<any>(null);
+    const [listingData, setListingData] = useState<ListingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null); 
@@ -64,11 +100,33 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose
         message: ''
     });
     const [pendingPayment, setPendingPayment] = useState<FeaturedPayment | null>(null);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+    const [transactionError, setTransactionError] = useState<string | null>(null);
+    const [isScanning, setIsScanning] = useState(false);
 
     const trading_api_host = import.meta.env.VITE_TRADING_API_HOST || 'localhost';
     const trading_api_port = import.meta.env.VITE_TRADING_API_PORT || '8000';
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'http';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
+
+    if (authLoading) {
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Checking authentication...</p>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated || !token) {
+        return (
+            <div className="error-message">
+                <p>Please authenticate to manage listings.</p>
+                <button onClick={onClose}>Return to Trading</button>
+            </div>
+        );
+    }
 
     useEffect(() => {
         if (initialListingId && token) {
@@ -349,6 +407,70 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose
         }
     }, [notification.show]);
 
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            setIsLoadingTransactions(true);
+            setTransactionError(null);
+            try {
+                const response = await axios.get<TransactionResponse>(
+                    `${trading_api_url}/listings/by-id/${listingId}/transactions`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+                setTransactions(response.data.transactions);
+            } catch (error: any) {
+                console.error('Error fetching transactions:', error);
+                setTransactionError(error.response?.data?.message || 'Failed to fetch transactions.');
+            } finally {
+                setIsLoadingTransactions(false);
+            }
+        };
+
+        if (listingId && token) {
+            fetchTransactions();
+        }
+    }, [listingId, token]);
+
+    const handleRescan = async () => {
+        setIsScanning(true);
+        setError(null);
+        try {
+            const response = await axios.post(
+                `${trading_api_url}/listings/${listingId}/rescan`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            // Update the listing data with the new balances
+            setListingData((prev: ListingData | null) => prev ? {
+                ...prev,
+                balances: response.data.balances
+            } : null);
+            
+            setNotification({
+                show: true,
+                type: 'success',
+                message: 'Listing balances rescanned successfully'
+            });
+        } catch (error: any) {
+            console.error('Error rescanning listing:', error);
+            setNotification({
+                show: true,
+                type: 'error',
+                message: error.response?.data?.message || 'Failed to rescan listing.'
+            });
+        } finally {
+            setIsScanning(false);
+        }
+    };
+
     const renderBalances = () => {
         if (!listingData?.balances || listingData.balances.length === 0) {
             return null;
@@ -356,10 +478,20 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose
 
         return (
             <div className="available-balances">
-                <h3>
-                    <FiDollarSign />
-                    Available Balances
-                </h3>
+                <div className="balances-header">
+                    <h3>
+                        <FiDollarSign />
+                        Available Balances
+                    </h3>
+                    <button 
+                        className="rescan-button"
+                        onClick={handleRescan}
+                        disabled={isScanning}
+                    >
+                        <FiRefreshCw className={isScanning ? 'spin' : ''} />
+                        {isScanning ? 'Scanning...' : 'Rescan'}
+                    </button>
+                </div>
                 <div className="balance-list">
                     {listingData.balances.map((balance: Balance) => (
                         <div 
@@ -461,6 +593,53 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose
         );
     };
 
+    const renderTransactions = () => {
+        if (isLoadingTransactions) {
+            return <div className="loading">Loading transactions...</div>;
+        }
+
+        if (transactionError) {
+            return <div className="error-message">{transactionError}</div>;
+        }
+
+        if (!transactions.length) {
+            return <div className="no-transactions">No transactions found</div>;
+        }
+
+        return (
+            <div className="transactions-list">
+                {transactions.map((tx) => (
+                    <div key={tx.tx_hash} className="transaction-item">
+                        <div className="transaction-header">
+                            <span className={`status status-${tx.confirmations > 0 ? 'completed' : 'pending'}`}>
+                                {tx.confirmations > 0 ? 'Confirmed' : 'Pending'} ({tx.confirmations} confirmations)
+                            </span>
+                            <span className="timestamp">
+                                {new Date(tx.time).toLocaleString()}
+                            </span>
+                        </div>
+                        <div className="transaction-details">
+                            <div className="amount">
+                                {tx.entry_type === 'receive' ? '+' : '-'} {parseFloat(tx.amount).toFixed(8)} {tx.asset_name}
+                            </div>
+                            <div className="address" title={tx.address}>
+                                {tx.entry_type === 'receive' ? 'From' : 'To'}: {tx.address.substring(0, 8)}...{tx.address.substring(tx.address.length - 8)}
+                            </div>
+                        </div>
+                        <div className="transaction-id" title={tx.tx_hash}>
+                            TX: {tx.tx_hash.substring(0, 8)}...{tx.tx_hash.substring(tx.tx_hash.length - 8)}
+                        </div>
+                        {tx.asset_message && (
+                            <div className="transaction-message">
+                                Message: {tx.asset_message}
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="manage-listing-container">
             <button className="back-button" onClick={onClose}>
@@ -505,10 +684,18 @@ const ManageListing: React.FC<ManageListingProps> = ({ initialListingId, onClose
 
                                 <div className="listing-address">
                                     <h3>Refill Address</h3>
-                                    <p>{listingData.listing_address}</p>
+                                    <p>{listingData.deposit_address}</p>
                                 </div>
 
                         {renderFeaturedPlans()}
+
+                        <div className="transactions-section">
+                            <h3>
+                                <FiClock />
+                                Transaction History
+                            </h3>
+                            {renderTransactions()}
+                        </div>
 
                         <div className="button-group">
                             <button onClick={handleUpdateListing} disabled={isLoading}>
