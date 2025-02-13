@@ -5,7 +5,7 @@ import { FiArrowLeft, FiShoppingCart, FiShare2, FiCopy, FiExternalLink, FiEdit3,
 import QRCode from 'qrcode';
 import './ListingDetails.css';
 import { Balance, Price, Listing, Transaction, PriceHistoryEntry, AssetHistoryEntry } from './types';
-import { ListingHeader } from './components/ListingHeader/ListingHeader';
+import ListingHeader from './components/ListingHeader';
 import { ListingMedia } from './components/ListingMedia/ListingMedia';
 import PriceHistory from './components/PriceHistory/PriceHistory';
 import { AssetHistory } from './components/AssetHistory/AssetHistory';
@@ -18,7 +18,7 @@ import { useAuth } from '@/Application/contexts/AuthContext';
 import { formatDistance } from 'date-fns';
 import placeholderImage from '@/Application/logos/white-manticore.png';
 import UnAuthenticated from '@/Application/components/UnAuthenticated/UnAuthenticated';
-import { ListingActions } from './components/ListingActions/ListingActions';
+import ListingActions from './components/ListingActions/ListingActions';
 import { toast } from 'react-toastify';
 
 const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'http'}://${import.meta.env.VITE_TRADING_API_HOST || 'localhost'}:8000`;
@@ -204,7 +204,7 @@ export const ListingDetails: React.FC = () => {
         setLoading(false);
       }
     };
-
+    console.log(listing);
     fetchListingData();
   }, [id, userAddress]);
 
@@ -317,28 +317,24 @@ export const ListingDetails: React.FC = () => {
     // Implementation of handleEditListing
   };
 
-  const handleAddToCart = (item: Listing) => {
-    if (!item || !selectedQuantity) return;
-
-    const price = item.prices[0];
-    const balance = item.balances[0];
+  const handleAddToCart = async (quantity: number) => {
+    if (!listing || !listing.prices?.[0] || !listing.balances?.[0]) return;
     
-    if (!price || !balance) {
-      showError('Missing price or balance information');
-      return;
+    try {
+      await addToCart({
+        listingId: listing.id,
+        name: listing.name,
+        description: listing.description,
+        image_ipfs_hash: listing.image_ipfs_hash,
+        quantity: quantity,
+        unitPrice: listing.prices[0].price_evr,
+        asset_name: listing.balances[0].asset_name,
+        seller_address: listing.seller_address
+      });
+      toast.success('Added to cart successfully!');
+    } catch (err) {
+      toast.error('Failed to add to cart');
     }
-
-    addToCart({
-      listingId: item.id,
-      name: item.name,
-      description: item.description,
-      image_ipfs_hash: item.image_ipfs_hash,
-      quantity: selectedQuantity,
-      unitPrice: price.price_evr,
-      asset_name: balance.asset_name,
-      seller_address: item.seller_address
-    });
-    showSuccess('Added to cart successfully!');
   };
 
   const handleShare = async () => {
@@ -370,11 +366,42 @@ export const ListingDetails: React.FC = () => {
     }
   }, [listing?.deposit_address]);
 
-  const handleAssetSelect = (assetName: string) => {
+  const handleAssetSelect = async (assetName: string) => {
     if (selectedAsset === assetName) {
-      setSelectedAsset(''); // Deselect if clicking the same asset
-    } else {
-      setSelectedAsset(assetName);
+      return; // Keep the same asset selected if clicked again
+    }
+    
+    setSelectedAsset(assetName);
+    setLoading(true);
+    
+    try {
+      // Fetch all relevant data for the selected asset
+      await Promise.all([
+        fetchPriceHistory(assetName),
+        fetchAssetHistory(assetName),
+        fetchTransactions(assetName)
+      ]);
+      
+      toast.success(`Showing history for ${assetName}`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (err) {
+      console.error('Error fetching asset data:', err);
+      toast.error(`Failed to load ${assetName} history`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -453,6 +480,17 @@ export const ListingDetails: React.FC = () => {
 
   const isListingOwner = Boolean(token && userAddress && listing?.seller_address.toLowerCase() === userAddress.toLowerCase());
 
+  const handleCopyAddress = async () => {
+    if (!listing) return;
+    
+    try {
+      await navigator.clipboard.writeText(listing.seller_address);
+      toast.success('Seller address copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy address');
+    }
+  };
+
   if (loading) {
     return (
       <div className="listing-details">
@@ -477,70 +515,178 @@ export const ListingDetails: React.FC = () => {
 
   return (
     <div className="listing-details">
-      <div className="listing-details-nav">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <FiArrowLeft /> Back to Listings
-        </button>
-        <div className="nav-actions">
-          <button className="action-button" onClick={handleShare}>
-            <FiShare2 /> Share
-          </button>
-          {listing.isOwnedByUser && (
-            <button className="action-button manage-button" onClick={handleManageListing}>
-              <FiSettings /> Manage
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="listing-details-content">
         <div className="listing-details-main">
-          <ListingHeader
-            name={listing.name}
-            description={listing.description}
-            sellerAddress={listing.seller_address}
-            createdAt={listing.created_at}
-            tags={listing.tags}
-            onCopyAddress={() => {
-              // Implementation of onCopyAddress
-            }}
-          />
+          {listing && (
+            <>
+              <ListingHeader
+                id={listing.id}
+                name={listing.name}
+                description={listing.description}
+                sellerAddress={listing.seller_address}
+                createdAt={listing.created_at}
+                tags={listing.tags}
+                onCopyAddress={() => {
+                  navigator.clipboard.writeText(listing.seller_address);
+                  toast.success('Seller address copied to clipboard!');
+                }}
+                isOwner={listing.isOwnedByUser}
+              />
 
-          {listing.prices && listing.prices.length > 0 && listing.balances && listing.balances.length > 0 && (
-            <ListingActions
-              price={listing.prices[0]}
-              balance={listing.balances[0]}
-              onAddToCart={handleAddToCart}
-              onBuyNow={(quantity: number) => {
-                // Implementation of onBuyNow
-              }}
-            />
+              <div className="listing-addresses-info">
+                <div className="address-info-item">
+                  <h4>Listing Address</h4>
+                  <div className="address-display" onClick={() => {
+                    navigator.clipboard.writeText(listing.listing_address);
+                    toast.success('Listing address copied to clipboard!');
+                  }}>
+                    <span>{listing.listing_address}</span>
+                    <FiCopy className="copy-icon" />
+                  </div>
+                </div>
+
+                <div className="address-info-item">
+                  <h4>Status</h4>
+                  <span className={`listing-status status-${listing.status}`}>
+                    {listing.status.toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="address-info-item">
+                  <h4>Last Updated</h4>
+                  <span>{new Date(listing.updated_at).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</span>
+                </div>
+              </div>
+
+              {listing?.prices && listing.prices.length > 0 && listing.balances && listing.balances.length > 0 && (
+                <>
+                  <div className="listing-price-info">
+                    <h4>Price Information</h4>
+                    <div className="price-details">
+                      {listing.prices.map((price, index) => (
+                        <div key={`${price.asset_name}-${index}`} className="price-item">
+                          <span className="price-label">Asset:</span>
+                          <span className="price-value">{price.asset_name}</span>
+                          <span className="price-label">Price (EVR):</span>
+                          <span className="price-value">{price.price_evr}</span>
+                          {price.price_asset_name && (
+                            <>
+                              <span className="price-label">Alternative Price:</span>
+                              <span className="price-value">
+                                {price.price_asset_amount} {price.price_asset_name}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="listing-assets">
+                    <h4>Available Assets</h4>
+                    <div className="assets-grid">
+                      {listing.balances.map((balance, index) => (
+                        <div 
+                          key={`${balance.asset_name}-${index}`}
+                          className={`asset-card ${selectedAsset === balance.asset_name ? 'selected' : ''}`}
+                          onClick={() => handleAssetSelect(balance.asset_name)}
+                        >
+                          <div className="asset-name">{balance.asset_name}</div>
+                          <div className="asset-balance">
+                            Available: {formatAmount(balance.confirmed_balance, balance.units)}
+                          </div>
+                          <div className="asset-balance">
+                            Pending: {formatAmount(balance.pending_balance, balance.units)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="listing-balance-info">
+                    <h4>Balance Information</h4>
+                    <div className="balance-details">
+                      {listing.balances.map((balance, index) => (
+                        <div key={`${balance.asset_name}-${index}`} className="balance-item">
+                          <span className="balance-label">Asset:</span>
+                          <span className="balance-value">{balance.asset_name}</span>
+                          <span className="balance-label">Available:</span>
+                          <span className="balance-value">
+                            {formatAmount(balance.confirmed_balance, balance.units)} {balance.asset_name}
+                          </span>
+                          <span className="balance-label">Pending:</span>
+                          <span className="balance-value">
+                            {formatAmount(balance.pending_balance, balance.units)} {balance.asset_name}
+                          </span>
+                          {balance.last_confirmed_tx_hash && (
+                            <div className="balance-item">
+                              <span className="balance-label">Last Transaction:</span>
+                              <a 
+                                href={`https://explorer.manticore.exchange/tx/${balance.last_confirmed_tx_hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="tx-link"
+                              >
+                                {balance.last_confirmed_tx_hash.slice(0, 8)}...
+                                {balance.last_confirmed_tx_hash.slice(-8)}
+                                <FiExternalLink className="external-link-icon" />
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <ListingActions
+                    prices={listing.prices}
+                    balances={listing.balances}
+                    onAddToCart={handleAddToCart}
+                    onBuyNow={(quantity: number) => {
+                      if (!listing) return;
+                      handleAddToCart(quantity);
+                      navigate('/trade/checkout');
+                    }}
+                  />
+                </>
+              )}
+            </>
           )}
         </div>
 
         <div className="listing-details-history">
-          <div className="history-section">
-            <PriceHistory
-              listingId={listing.id}
-              assetName={selectedAsset}
-              data={priceHistory}
-            />
-          </div>
+          {selectedAsset && (
+            <>
+              <div className="history-section">
+                <PriceHistory
+                  listingId={listing?.id || ''}
+                  assetName={selectedAsset}
+                  data={priceHistory}
+                />
+              </div>
 
-          <div className="history-section">
-            <AssetHistory
-              listingId={listing.id}
-              assetName={selectedAsset}
-            />
-          </div>
+              <div className="history-section">
+                <AssetHistory
+                  listingId={listing?.id || ''}
+                  assetName={selectedAsset}
+                />
+              </div>
 
-          <div className="history-section">
-            <TransactionHistory
-              listingId={listing.id}
-              assetName={selectedAsset}
-              transactions={transactions}
-            />
-          </div>
+              <div className="history-section">
+                <TransactionHistory
+                  listingId={listing?.id || ''}
+                  assetName={selectedAsset}
+                  transactions={transactions}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -567,7 +713,7 @@ export const ListingDetails: React.FC = () => {
                   className="address-display"
                   onClick={() => {
                     navigator.clipboard.writeText(listing.deposit_address);
-                    showSuccess('Deposit address copied!');
+                    toast.success('Deposit address copied!');
                   }}
                 >
                   <span>{listing.deposit_address}</span>
@@ -583,7 +729,7 @@ export const ListingDetails: React.FC = () => {
                   className="address-display"
                   onClick={() => {
                     navigator.clipboard.writeText(listing.payout_address);
-                    showSuccess('Payout address copied!');
+                    toast.success('Payout address copied!');
                   }}
                 >
                   <span>{listing.payout_address}</span>

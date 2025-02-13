@@ -22,6 +22,7 @@ import Launch from './pages/Launch/Launch';
 import NavigationBar from './components/navigation/navigation-bar/navigation-bar';
 import Footer from './components/navigation/footer/footer';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import Bridge from './pages/Bridge/Bridge';
 
 const RootLayout = () => {
     return (
@@ -152,6 +153,10 @@ export const router = createBrowserRouter([
             {
                 path: '*',
                 element: <NotFound />
+            },
+            {
+                path: 'bridge',
+                element: <Bridge />
             }
         ]
     }
