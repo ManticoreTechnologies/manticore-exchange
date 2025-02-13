@@ -220,3 +220,24 @@
     width: 100%;
   }
 }
+
+.test-card-info {
+  background-color: var(--background-color-secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px dashed var(--border-color);
+}
+
+.test-card-info h3 {
+  color: var(--text-color);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.test-card-info p {
+  color: var(--text-color-secondary);
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  font-family: monospace;
+}

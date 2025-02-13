@@ -51,24 +51,47 @@
 .manage-button {
     background-color: var(--background-tertiary);
     color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
 }
 
 .manage-button:hover {
     background-color: var(--background-hover);
     color: var(--text-primary);
+    transform: translateY(-2px);
 }
 
 .manage-button.owner {
     background-color: var(--accent-color);
-    color: var(--text-on-accent);
-    border: none;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .manage-button.owner:hover {
-    background-color: var(--accent-color-hover);
-    transform: translateY(-1px);
+    background-color: var(--accent-color-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.manage-button.owner:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manage-button svg {
+    font-size: 1.1em;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+    .header-actions {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .manage-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
 }
 
 /* Theme-specific styles */

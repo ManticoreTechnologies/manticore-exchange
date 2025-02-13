@@ -1744,3 +1744,81 @@
     transform: none;
   }
 }
+
+.seller-info-section {
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.seller-info-section h4 {
+  margin: 0 0 var(--spacing-3) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.seller-address-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.address-label {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.address-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background: var(--background-tertiary);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-family: var(--font-family-mono);
+  color: var(--text-secondary);
+}
+
+.address-display:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+}
+
+.address-display span {
+  font-size: var(--font-size-sm);
+  word-break: break-all;
+}
+
+.copy-icon {
+  color: var(--text-muted);
+  transition: color var(--transition-normal);
+}
+
+.address-display:hover .copy-icon {
+  color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .seller-info-section {
+    padding: var(--spacing-3);
+  }
+
+  .address-display {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .address-display span {
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+}

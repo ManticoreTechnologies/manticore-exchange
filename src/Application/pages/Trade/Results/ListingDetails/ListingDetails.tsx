@@ -462,21 +462,35 @@ export const ListingDetails: React.FC = () => {
   };
 
   const handleManageListing = async () => {
+    if (!listing) return;
+
     // Check for auth token first
     if (!token) {
-        const returnUrl = encodeURIComponent(`/trade/listings/manage/${id}`);
-        navigate(`/signin?returnUrl=${returnUrl}`);
-        return;
+      const returnUrl = encodeURIComponent(`/trade/listings/manage/${listing.id}`);
+      navigate(`/signin?returnUrl=${returnUrl}`);
+      toast.info('Please sign in to manage your listing');
+      return;
     }
 
-    // Only check ownership if user is authenticated
-    if (!isAuthenticated || !userAddress || !(listing?.seller_address.toLowerCase() === userAddress.toLowerCase())) {
-        showError('You must be the listing owner to manage this listing');
-        return;
+    // Check ownership
+    if (!isAuthenticated || !userAddress || !(listing.seller_address.toLowerCase() === userAddress.toLowerCase())) {
+      toast.error('You must be the listing owner to manage this listing');
+      return;
     }
 
-    navigate(`/trade/listings/manage/${id}`);
+    // Navigate to manage listing page
+    navigate(`/trade/listings/manage/${listing.id}`);
+    toast.success('Loading listing management...');
   };
+
+  // Add this near other useEffect hooks
+  useEffect(() => {
+    // Check if we should show manage section based on ownership
+    if (listing && userAddress) {
+      const isOwner = listing.seller_address.toLowerCase() === userAddress.toLowerCase();
+      setShowManageSection(isOwner);
+    }
+  }, [listing, userAddress]);
 
   const isListingOwner = Boolean(token && userAddress && listing?.seller_address.toLowerCase() === userAddress.toLowerCase());
 
@@ -489,6 +503,32 @@ export const ListingDetails: React.FC = () => {
     } catch (err) {
       toast.error('Failed to copy address');
     }
+  };
+
+  const copyToClipboard = (text: string): Promise<void> => {
+    // Try using the Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    // Fallback for older browsers
+    return new Promise((resolve, reject) => {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 
   if (loading) {
@@ -526,19 +566,51 @@ export const ListingDetails: React.FC = () => {
                 sellerAddress={listing.seller_address}
                 createdAt={listing.created_at}
                 tags={listing.tags}
-                onCopyAddress={() => {
-                  navigator.clipboard.writeText(listing.seller_address);
-                  toast.success('Seller address copied to clipboard!');
+                onCopyAddress={async () => {
+                  try {
+                    await copyToClipboard(listing.seller_address);
+                    toast.success('Seller address copied to clipboard!');
+                  } catch (err) {
+                    toast.error('Failed to copy address');
+                  }
                 }}
                 isOwner={listing.isOwnedByUser}
+                onManage={handleManageListing}
               />
+
+              <div className="seller-info-section">
+                <h4>Seller Information</h4>
+                <div className="seller-address-display">
+                  <div className="address-label">Address:</div>
+                  <div className="address-content">
+                    <div 
+                      className="address-display"
+                      onClick={async () => {
+                        try {
+                          await copyToClipboard(listing.seller_address);
+                          toast.success('Seller address copied to clipboard!');
+                        } catch (err) {
+                          toast.error('Failed to copy address');
+                        }
+                      }}
+                    >
+                      <span>{listing.seller_address}</span>
+                      <FiCopy className="copy-icon" />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="listing-addresses-info">
                 <div className="address-info-item">
                   <h4>Listing Address</h4>
-                  <div className="address-display" onClick={() => {
-                    navigator.clipboard.writeText(listing.listing_address);
-                    toast.success('Listing address copied to clipboard!');
+                  <div className="address-display" onClick={async () => {
+                    try {
+                      await copyToClipboard(listing.listing_address);
+                      toast.success('Listing address copied to clipboard!');
+                    } catch (err) {
+                      toast.error('Failed to copy address');
+                    }
                   }}>
                     <span>{listing.listing_address}</span>
                     <FiCopy className="copy-icon" />
