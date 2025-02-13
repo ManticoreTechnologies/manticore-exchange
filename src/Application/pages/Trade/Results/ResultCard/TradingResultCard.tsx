@@ -44,7 +44,6 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
-    const [priceMediaStates, setPriceMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
 
     const getMediaSrc = (hash: string | null | undefined) => {
         if (!hash) return placeholderImage;
@@ -61,50 +60,37 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 })
                 .catch(() => setIsLoaded(true));
         }
+    }, [ipfsHash]);
 
-        // Check media type for each price's IPFS hash
-        prices.forEach(price => {
-            if (price.ipfs_hash) {
-                fetch(getMediaSrc(price.ipfs_hash), { method: 'HEAD' })
-                    .then((response) => {
-                        const contentType = response.headers.get('Content-Type');
-                        setPriceMediaStates(prev => ({
-                            ...prev,
-                            [price.asset_name]: {
-                                isVideo: contentType?.startsWith('video') || false,
-                                isLoaded: true
-                            }
-                        }));
-                    })
-                    .catch(() => {
-                        setPriceMediaStates(prev => ({
-                            ...prev,
-                            [price.asset_name]: {
-                                isVideo: false,
-                                isLoaded: true
-                            }
-                        }));
-                    });
-            }
-        });
-    }, [ipfsHash, prices]);
-
-    const renderPriceItem = (price: any) => {
-        const mediaState = priceMediaStates[price.asset_name];
-        const balance = balances.find(b => b.asset_name === price.asset_name);
+    const renderPriceItem = (price: any, balance: any) => {
+        const formattedPrice = Number(price.price_evr).toLocaleString();
+        const formattedBalance = balance ? Number(balance.confirmed_balance).toLocaleString() : '0';
         
         return (
             <div key={price.asset_name} className="trading-asset-item">
+                {price.ipfs_hash && (
+                    <div className="trading-asset-media">
+                        <img 
+                            src={getMediaSrc(price.ipfs_hash)}
+                            alt={price.asset_name}
+                            onError={(e) => {
+                                e.currentTarget.src = placeholderImage;
+                            }}
+                        />
+                    </div>
+                )}
                 <div className="trading-asset-info">
-                    <span className="trading-asset-name" title={price.asset_name}>
-                        {price.asset_name}
-                    </span>
-                    <span className="trading-asset-amount">
-                        {Number(price.price_evr).toLocaleString()} EVR
-                    </span>
+                    <div className="trading-asset-details">
+                        <span className="trading-asset-name" title={price.asset_name}>
+                            {price.asset_name}
+                        </span>
+                        <span className="trading-asset-price">
+                            {formattedPrice} EVR
+                        </span>
+                    </div>
                     {balance && (
-                        <span className="trading-asset-balance" title={`${Number(balance.confirmed_balance)} available`}>
-                            {Number(balance.confirmed_balance).toLocaleString()} available
+                        <span className="trading-asset-balance">
+                            {formattedBalance} available
                         </span>
                     )}
                 </div>
@@ -166,7 +152,10 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                 
                 <div className="trading-result-card__prices">
                     <div className="trading-asset-container">
-                        {prices.map(price => renderPriceItem(price))}
+                        {prices.map(price => {
+                            const balance = balances.find(b => b.asset_name === price.asset_name);
+                            return renderPriceItem(price, balance);
+                        })}
                     </div>
                 </div>
             </div>

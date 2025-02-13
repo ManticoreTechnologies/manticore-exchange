@@ -2,71 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import ManageListing from '../ManageListing/ManageListing';
 import { useAuth } from '@/Application/contexts/AuthContext';
-import { checkAuthStatus } from '@/Application/services/ChatService';
-import ErrorBoundary from '@/Application/components/ErrorBoundary/ErrorBoundary';
+import { FaExclamationCircle } from 'react-icons/fa';
 import './ManageListingPage.css';
 
 const ManageListingContent: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
-    const [isChecking, setIsChecking] = useState(true);
-    const [authError, setAuthError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const verifyAuth = async () => {
-            try {
-                setIsChecking(true);
-                const { isAuthenticated: isValid } = await checkAuthStatus();
-                
-                if (!isValid) {
-                    const returnUrl = encodeURIComponent(`/trade/listings/manage/${id}`);
-                    navigate(`/signin?returnUrl=${returnUrl}`, { replace: true });
-                }
-            } catch (error) {
-                console.error('Auth verification error:', error);
-                setAuthError('Failed to verify authentication status');
-            } finally {
-                setIsChecking(false);
-            }
-        };
-
-        if (id) {
-            verifyAuth();
-        }
-    }, [id, navigate]);
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const [error, setError] = useState<string | null>(null);
 
     const handleClose = () => {
         navigate('/trade');
     };
 
-    if (!id) {
-        return <Navigate to="/trade" replace />;
-    }
-
-    if (isChecking) {
+    if (authLoading) {
         return (
             <div className="manage-listing-page">
                 <div className="manage-listing-page-content">
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
-                        <p>Verifying authentication...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (authError) {
-        return (
-            <div className="manage-listing-page">
-                <div className="manage-listing-page-content">
-                    <div className="error-container">
-                        <h2>Authentication Error</h2>
-                        <p>{authError}</p>
-                        <button onClick={() => navigate('/trade')} className="back-button">
-                            Back to Trading
-                        </button>
+                        <p>Checking authentication...</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +29,63 @@ const ManageListingContent: React.FC = () => {
     }
 
     if (!isAuthenticated) {
-        return null;
+        return (
+            <div className="manage-listing-page">
+                <div className="manage-listing-page-content">
+                    <div className="auth-required-container">
+                        <FaExclamationCircle className="auth-required-icon" />
+                        <h2>Authentication Required</h2>
+                        <p>Please sign in to manage your listings</p>
+                        <div className="auth-required-actions">
+                            <button 
+                                onClick={() => navigate('/signin')}
+                                className="primary-button"
+                            >
+                                Sign In
+                            </button>
+                            <button 
+                                onClick={() => navigate('/trade')}
+                                className="secondary-button"
+                            >
+                                Back to Trading
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!id) {
+        return <Navigate to="/trade" replace />;
+    }
+
+    if (error) {
+        return (
+            <div className="manage-listing-page">
+                <div className="manage-listing-page-content">
+                    <div className="error-container">
+                        <FaExclamationCircle className="error-icon" />
+                        <h2>Error</h2>
+                        <p>{error}</p>
+                        <div className="error-actions">
+                            <button 
+                                onClick={() => window.location.reload()}
+                                className="primary-button"
+                            >
+                                Retry
+                            </button>
+                            <button 
+                                onClick={() => navigate('/trade')}
+                                className="secondary-button"
+                            >
+                                Back to Trading
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -90,11 +101,7 @@ const ManageListingContent: React.FC = () => {
 };
 
 const ManageListingPage: React.FC = () => {
-    return (
-        <ErrorBoundary>
-            <ManageListingContent />
-        </ErrorBoundary>
-    );
+    return <ManageListingContent />;
 };
 
 export default ManageListingPage; 

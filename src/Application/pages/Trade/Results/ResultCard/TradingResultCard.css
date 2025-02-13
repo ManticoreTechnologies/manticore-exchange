@@ -1,19 +1,24 @@
+/* Base Card Styles */
 .trading-result-card {
     position: relative;
     background: var(--background-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     height: 100%;
     display: flex;
     flex-direction: column;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
 }
 
+/* Card States */
 .trading-result-card.owned-by-user {
     border: 1px solid var(--accent-color);
-    box-shadow: 0 0 4px rgba(255, 51, 51, 0.05);
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.1);
 }
 
 .trading-result-card.owned-by-user::before {
@@ -21,11 +26,26 @@
 }
 
 .trading-result-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     border-color: var(--accent-color);
-    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.15);
+    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.15);
 }
 
+/* Card Header */
+.trading-result-card__header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+}
+
+/* Media Section */
 .trading-result-card__media {
     position: relative;
     width: 100%;
@@ -42,7 +62,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .trading-result-card:hover .trading-result-card__image,
@@ -50,12 +70,14 @@
     transform: scale(1.05);
 }
 
+/* Content Section */
 .trading-result-card__content {
     padding: var(--spacing-4);
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-3);
+    background: linear-gradient(180deg, var(--background-secondary) 0%, var(--background-tertiary) 100%);
 }
 
 .trading-result-card__title {
@@ -64,6 +86,7 @@
     color: var(--text-primary);
     margin: 0;
     line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .trading-result-card__description {
@@ -77,6 +100,7 @@
     overflow: hidden;
 }
 
+/* Price Section */
 .trading-result-card__prices {
     margin-top: auto;
     border-top: 1px solid var(--border-color);
@@ -99,13 +123,33 @@
     padding: var(--spacing-2);
     background: var(--background-tertiary);
     border-radius: var(--border-radius-md);
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .trading-asset-item:hover {
     background: var(--background-hover);
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
 }
 
+/* Asset Media */
+.trading-asset-media {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--background-quaternary);
+}
+
+.trading-asset-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Asset Info */
 .trading-asset-info {
     flex: 1;
     display: flex;
@@ -113,15 +157,28 @@
     gap: var(--spacing-1);
 }
 
+.trading-asset-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
 .trading-asset-name {
     font-weight: var(--font-weight-medium);
     color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
 }
 
-.trading-asset-amount {
+.trading-asset-price {
     font-family: var(--font-family-mono);
     color: var(--accent-color);
     font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
 }
 
 .trading-asset-balance {
@@ -129,26 +186,41 @@
     color: var(--text-secondary);
 }
 
-.trading-result-card__header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: var(--spacing-2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 2;
-}
-
+/* Status Badge */
 .trading-result-card__status {
-    position: static;
-    margin-left: auto;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    backdrop-filter: blur(4px);
 }
 
+.trading-result-card__status[data-status="ACTIVE"] {
+    background: var(--color-success-transparent);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+}
+
+.trading-result-card__status[data-status="INACTIVE"],
+.trading-result-card__status[data-status="CANCELLED"] {
+    background: var(--color-error-transparent);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+}
+
+.trading-result-card__status[data-status="PENDING"] {
+    background: var(--color-warning-transparent);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
+
+/* Ownership Badge */
 .ownership-badge {
-    position: static;
-    padding: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
     background: var(--background-secondary);
     color: var(--accent-color);
     border-radius: var(--border-radius-sm);
@@ -164,7 +236,6 @@
 .ownership-badge:hover {
     opacity: 1;
     transform: scale(1.05);
-    box-shadow: 0 2px 4px rgba(255, 51, 51, 0.1);
 }
 
 .ownership-badge svg {
@@ -173,61 +244,27 @@
     stroke-width: 2.5;
 }
 
-.trading-result-card.owned-by-user {
-    border: 1px solid var(--accent-color);
+/* Custom Scrollbar */
+.trading-asset-container::-webkit-scrollbar {
+    width: 4px;
 }
 
-/* Remove the before pseudo-element since we don't need it anymore */
-.trading-result-card.owned-by-user::before {
-    display: none;
-}
-
-/* Update the status styles to work with the new header */
-.trading-result-card__status {
-    padding: var(--spacing-1) var(--spacing-2);
+.trading-asset-container::-webkit-scrollbar-track {
+    background: var(--background-tertiary);
     border-radius: var(--border-radius-full);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-1);
-    backdrop-filter: blur(4px);
 }
 
-/* Remove the old absolute positioning styles for status */
-.trading-result-card__status {
-    position: static;
-    top: auto;
-    right: auto;
+.trading-asset-container::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: var(--border-radius-full);
 }
 
-.trading-result-card__status::before {
-    content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-}
-
-.trading-result-card__status[data-status="ACTIVE"] {
-    background: var(--color-success-transparent);
-    color: var(--color-success);
-}
-
-.trading-result-card__status[data-status="INACTIVE"],
-.trading-result-card__status[data-status="CANCELLED"] {
-    background: var(--color-error-transparent);
-    color: var(--color-error);
-}
-
-.trading-result-card__status[data-status="PENDING"] {
-    background: var(--color-warning-transparent);
-    color: var(--color-warning);
-}
-
+/* Responsive Styles */
 @media (max-width: 768px) {
+    .trading-result-card {
+        min-height: 350px;
+    }
+
     .trading-result-card__content {
         padding: var(--spacing-3);
     }
@@ -235,11 +272,33 @@
     .trading-asset-container {
         max-height: 120px;
     }
+
+    .trading-asset-name {
+        max-width: 100px;
+    }
+
+    .trading-asset-media {
+        width: 28px;
+        height: 28px;
+    }
 }
 
 @media (max-width: 480px) {
+    .trading-result-card {
+        min-height: 300px;
+    }
+
     .trading-result-card__media {
         padding-top: 66.67%;
+    }
+    
+    .trading-asset-name {
+        max-width: 80px;
+    }
+
+    .trading-asset-media {
+        width: 24px;
+        height: 24px;
     }
 }
 
@@ -269,96 +328,6 @@
 .trading-result-card__button,
 .trading-result-card__button--secondary {
     display: none;
-}
-
-/* Grid Container */
-.trading-results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-4);
-    padding: var(--spacing-4);
-    width: 100%;
-    max-width: var(--container-xl);
-}
-
-@media (max-width: 640px) {
-    .trading-results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        padding: var(--spacing-3);
-        margin-top: var(--spacing-8);
-    }
-    
-    .trading-result-card {
-        height: 360px;
-    }
-    
-    .trading-result-card__media {
-        height: 180px;
-    }
-}
-
-.trading-result-card__offerings {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-2);
-    margin: 0;
-    background-color: var(--background-tertiary);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.offerings-count {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    margin: 0;
-}
-
-.offerings-count--empty {
-    color: var(--color-error);
-}
-
-.offerings-count--has-offerings {
-    color: var(--color-success);
-}
-
-.offerings-images {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.offering-image {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--background-secondary);
-    object-fit: cover;
-    margin-left: -8px;
-    box-shadow: var(--shadow-sm);
-    background-color: var(--background-primary);
-}
-
-.offering-image:first-child {
-    margin-left: 0;
-}
-
-/* Limit the number of visible images and add a +X indicator if needed */
-.offering-image:nth-child(n+6) {
-    display: none;
-}
-
-.offering-image:nth-child(5):after {
-    content: "+" attr(data-remaining);
-    position: absolute;
-    right: -12px;
-    background-color: var(--background-tertiary);
-    color: var(--text-secondary);
-    font-size: var(--font-size-xs);
-    padding: 2px 4px;
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--border-color);
 }
 
 .trading-result-card__tags {

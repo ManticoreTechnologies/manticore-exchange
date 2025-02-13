@@ -704,10 +704,17 @@ const Trading: React.FC = () => {
 
             {/* Rest of the content */}
             {loading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p>Loading listings...</p>
-                </div>
+                <TradingResultsGrid 
+                    results={[]}
+                    addToCart={() => {}}
+                    buyNow={() => {}}
+                    showDetails={() => {}}
+                    currentPage={1}
+                    totalPages={1}
+                    totalResults={0}
+                    onPageChange={() => {}}
+                    isLoading={true}
+                />
             ) : listings.length === 0 ? (
                 <div className="no-results">
                     <p>No listings found</p>
@@ -731,6 +738,7 @@ const Trading: React.FC = () => {
                             totalPages={totalPages}
                             totalResults={totalResults}
                             onPageChange={handlePageChange}
+                            isLoading={false}
                         />
                     )}
                 </>

@@ -13,6 +13,7 @@ interface TradingResultsGridProps {
     totalPages: number;
     totalResults: number;
     onPageChange: (page: number) => void;
+    isLoading?: boolean;
 }
 
 const TradingResultsGrid: React.FC<TradingResultsGridProps> = ({
@@ -23,45 +24,66 @@ const TradingResultsGrid: React.FC<TradingResultsGridProps> = ({
     currentPage,
     totalPages,
     totalResults,
-    onPageChange
+    onPageChange,
+    isLoading
 }) => {
+    const renderPhantomCards = () => {
+        return Array(8).fill(null).map((_, index) => (
+            <div key={`phantom-${index}`} className="trading-result-card-phantom">
+                <div className="phantom-media"></div>
+                <div className="phantom-content">
+                    <div className="phantom-title"></div>
+                    <div className="phantom-description"></div>
+                    <div className="phantom-price">
+                        <div className="phantom-price-item"></div>
+                        <div className="phantom-price-item"></div>
+                    </div>
+                </div>
+            </div>
+        ));
+    };
+
     return (
         <div className="trading-results">
-            <div className="trading-results-grid">
-                {results.map((listing) => (
-                    <TradingResultCard
-                        key={listing.id}
-                        id={listing.id}
-                        name={listing.name}
-                        description={listing.description}
-                        seller={listing.seller_address}
-                        listingAddress={listing.listing_address}
-                        ipfsHash={listing.image_ipfs_hash}
-                        status={listing.status}
-                        createdAt={listing.created_at}
-                        unitPrice={listing.prices[0]?.price_evr || '0'}
-                        quantity={Number(listing.balances[0]?.confirmed_balance || 0)}
-                        balances={listing.balances}
-                        prices={listing.prices.map(price => ({
-                            asset_name: price.asset_name,
-                            price_evr: price.price_evr,
-                            ipfs_hash: price.ipfs_hash || undefined
-                        }))}
-                        addToCart={() => addToCart(listing)}
-                        buyNow={() => buyNow(listing)}
-                        showDetails={() => showDetails(listing)}
-                        tags={listing.tags || []}
-                        isOwnedByUser={listing.isOwnedByUser}
-                    />
-                ))}
+            <div className={`trading-results-grid ${isLoading ? 'is-loading' : ''}`}>
+                {isLoading ? renderPhantomCards() : (
+                    results.map((listing) => (
+                        <TradingResultCard
+                            key={listing.id}
+                            id={listing.id}
+                            name={listing.name}
+                            description={listing.description}
+                            seller={listing.seller_address}
+                            listingAddress={listing.listing_address}
+                            ipfsHash={listing.image_ipfs_hash || ''}
+                            status={listing.status}
+                            createdAt={listing.created_at}
+                            unitPrice={listing.prices[0]?.price_evr || '0'}
+                            quantity={Number(listing.balances[0]?.confirmed_balance || 0)}
+                            balances={listing.balances}
+                            prices={listing.prices.map(price => ({
+                                asset_name: price.asset_name,
+                                price_evr: price.price_evr,
+                                ipfs_hash: price.ipfs_hash || undefined
+                            }))}
+                            addToCart={() => addToCart(listing)}
+                            buyNow={() => buyNow(listing)}
+                            showDetails={() => showDetails(listing)}
+                            tags={listing.tags || []}
+                            isOwnedByUser={listing.isOwnedByUser}
+                        />
+                    ))
+                )}
             </div>
             
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalResults={totalResults}
-                onPageChange={onPageChange}
-            />
+            {!isLoading && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalResults={totalResults}
+                    onPageChange={onPageChange}
+                />
+            )}
         </div>
     );
 };
