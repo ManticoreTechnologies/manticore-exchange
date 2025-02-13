@@ -8,6 +8,7 @@ const WS_BASE = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}${API_
 
 
 
+
 export interface ChatMessage {
     id: string;
     text: string;
@@ -151,7 +152,7 @@ class ChatService {
         const params = new URLSearchParams();
         if (limit) params.append('limit', limit.toString());
         if (before) params.append('before', before);
-        
+
         const response = await axios.get(`${API_BASE}/chat/global?${params.toString()}`);
         return response.data;
     }
@@ -160,7 +161,7 @@ class ChatService {
         const params = new URLSearchParams();
         if (limit) params.append('limit', limit.toString());
         if (before) params.append('before', before);
-        
+
         const response = await axios.get(`${API_BASE}/chat/assets/${assetName}/messages?${params.toString()}`);
         return response.data;
     }

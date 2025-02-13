@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket, FaComments } from 'react-icons/fa'; 
-import HomeHero from '../../components/heros/home-hero/home-hero';
-import InfoCard from '../../components/cards/info-cards/info-card';
+import HomeHero from '@/Application/components/heros/home-hero/home-hero';
+import InfoCard from '@/Application/components/cards/info-cards/info-card';
 import { FaFaucetDrip } from 'react-icons/fa6';
-import LaunchPadBanner from '../../../components/LaunchPadBanner/LaunchPadBanner';
+import LaunchPadBanner from '@/Application/components/LaunchPadBanner/LaunchPadBanner';
 import './home.css';
 
 // Import the logo

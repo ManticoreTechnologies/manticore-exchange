@@ -8,7 +8,6 @@ import axios from 'axios';
 import TradingHeader from './TradingHeader/TradingHeader';
 import InvoiceToaster from './InvoiceToaster/InvoiceToaster';
 import ManageListing from './ManageListing/ManageListing';
-import TradingDetails from './Results/TradingDetails/TradingDetails';
 import { useNavigate, useLocation } from 'react-router-dom';
 import FeaturedListings from './TradingHeader/FeaturedListings';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -721,13 +720,6 @@ const Trading: React.FC = () => {
                             selectedItems={checkoutItems}
                             onCheckoutComplete={handleCheckoutComplete}
                             onBack={handleBack}
-                        />
-                    ) : showPopup && selectedListing ? (
-                        <TradingDetails 
-                            listing={selectedListing}
-                            closeDetails={closeDetails}
-                            addToCart={promptQuantity}
-                            onListingUpdate={(updatedListing: Listing) => handleListingUpdate(updatedListing)}
                         />
                     ) : (
                         <TradingResultsGrid 

@@ -6,7 +6,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ResultsGrid from './Results/ResultsGrid/ResultsGrid';
 import Pagination from './Pagination/Pagination';
 
-import useSearch from '@/hooks/useSearch';
+import useSearch from '@/Application/hooks/useSearch';
 
 const Search: React.FC = () => {
     const cardsPerPage = 24;

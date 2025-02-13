@@ -4,24 +4,13 @@
 
 /*
     This file is responsible for handling the authentication state of the application.
-    It is used to store the user's address and token in cookies and to verify the user's token.
-    It also handles the challenge and login process and restoring session from cookies.
+    It uses AuthService to manage authentication and provides a consistent interface
+    across the entire application.
 */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-// Use the same API base configuration
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.0.0.2:8000';
-
-// Cookie configuration
-const COOKIE_CONFIG = {
-    secure: true,
-    sameSite: 'Strict' as const,
-    expires: 7, // 7 days
-    path: '/'
-};
+import authService from '../services/AuthService';
+import { toast } from 'react-toastify';
 
 /*
     This interface is used to define the type of the authentication context.
@@ -59,19 +48,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         const checkExistingAuth = async () => {
             try {
-                const savedToken = Cookies.get('auth_token');
-                const savedAddress = Cookies.get('user_address');
+                const storedToken = authService.getToken();
+                const storedAddress = authService.getAddress();
                 
-                if (savedToken && savedAddress) {
-                    // Set token in axios defaults before verification
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
-                    
+                if (storedToken && storedAddress) {
                     try {
-                        const response = await axios.get(`${API_BASE}/auth/verify`);
-                        
-                        if (response.data.valid && response.data.address === savedAddress) {
-                            setToken(savedToken);
-                            setUserAddress(savedAddress);
+                        const result = await authService.verifyToken();
+                        if (result.valid && result.address === storedAddress) {
+                            setToken(storedToken);
+                            setUserAddress(storedAddress);
                             setIsAuthenticated(true);
                         } else {
                             await handleLogout();
@@ -95,59 +80,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const handleLogout = async () => {
-        // Clear cookies with matching settings
-        Cookies.remove('auth_token', COOKIE_CONFIG);
-        Cookies.remove('user_address', COOKIE_CONFIG);
-        
-        // Clear axios default header
-        delete axios.defaults.headers.common['Authorization'];
-        
-        // Reset state
-        setToken(null);
-        setUserAddress(null);
-        setIsAuthenticated(false);
+        try {
+            await authService.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setToken(null);
+            setUserAddress(null);
+            setIsAuthenticated(false);
+        }
     };
 
     const requestChallenge = async (address: string) => {
         try {
-            const response = await axios.post(`${API_BASE}/auth/challenge`, {
-                address: address
-            });
-            
+            const result = await authService.createChallenge(address);
             return {
-                challengeId: response.data.challenge_id,
-                message: response.data.message
+                challengeId: result.challenge_id,
+                message: result.message
             };
         } catch (error) {
             console.error('Error requesting challenge:', error);
+            toast.error('Failed to request authentication challenge');
             throw error;
         }
     };
 
     const login = async (address: string, signature: string, challengeId: string) => {
         try {
-            const response = await axios.post(`${API_BASE}/auth/login`, {
+            const result = await authService.verifyChallenge({
                 challenge_id: challengeId,
                 address: address,
                 signature: signature
             });
 
-            const { token: newToken } = response.data;
-
-            // Set cookies with secure settings
-            Cookies.set('auth_token', newToken, COOKIE_CONFIG);
-            Cookies.set('user_address', address, COOKIE_CONFIG);
-
-            // Configure axios defaults
-            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-
-            // Update state
-            setToken(newToken);
-            setUserAddress(address);
-            setIsAuthenticated(true);
-
+            if (result.token) {
+                setToken(result.token);
+                setUserAddress(address);
+                setIsAuthenticated(true);
+                toast.success('Successfully authenticated');
+            } else {
+                throw new Error('No token received');
+            }
         } catch (error) {
             console.error('Login error:', error);
+            toast.error('Authentication failed');
             await handleLogout();
             throw error;
         }
@@ -155,16 +131,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = async () => {
         try {
-            if (token) {
-                // Attempt to notify backend of logout
-                await axios.post(`${API_BASE}/auth/logout`, {}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
+            await handleLogout();
+            toast.success('Successfully logged out');
         } catch (error) {
             console.error('Logout error:', error);
-        } finally {
-            handleLogout();
+            toast.error('Failed to logout');
+            throw error;
         }
     };
 
@@ -183,22 +155,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
-
 /*
     This hook is used to access the authentication context.
     It is used to check if the user is authenticated and to get the user's address and token.
 */
 export const useAuth = () => {
-
-    // Get the context
-   const context = useContext(AuthContext);
-
-   // Check if the context is undefined
+    const context = useContext(AuthContext);
+    
     if (context === undefined) {
-        // If the context is undefined, throw an error
         throw new Error('useAuth must be used within an AuthProvider');
     }
-
-    // Return the context
+    
     return context;
 }; 

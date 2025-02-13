@@ -22,8 +22,8 @@ import { AuthProvider } from '@/Application/contexts/AuthContext';
 import '@coinbase/onchainkit/styles.css';
 
 // Import the global styles
-import './main.css' // Global colors and typography
-import './keyframes.css' // All the animations are in this file
+import './styles/main.css' // Global colors and typography
+import './styles/keyframes.css' // All the animations are in this file
 
 // Setup our root element
 const rootElement = document.getElementById('root');

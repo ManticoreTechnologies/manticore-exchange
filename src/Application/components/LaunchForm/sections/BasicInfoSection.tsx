@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaInfoCircle } from 'react-icons/fa';
-import Tooltip from '@/components/Tooltip/Tooltip';
+import Tooltip from '@/Application/components/Tooltip/Tooltip';
 
 interface BasicInfoSectionProps {
   values: any;

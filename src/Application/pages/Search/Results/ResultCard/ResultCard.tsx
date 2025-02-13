@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ResultCard.css';
 import logo from '@/images/logo-official.webp';
-import LoadingSpinner from '@/components/Spinners/LoadingSpinner';
+import LoadingSpinner from '@/Application/components/Spinners/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 // Import Font Awesome icons
 

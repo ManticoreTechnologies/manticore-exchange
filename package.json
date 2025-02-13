@@ -29,6 +29,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
+    "ethers": "^6.13.5",
     "framer-motion": "^12.4.0",
     "fs": "^0.0.1-security",
     "grapheme-splitter": "^1.0.4",

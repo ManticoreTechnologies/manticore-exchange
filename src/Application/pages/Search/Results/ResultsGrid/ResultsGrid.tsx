@@ -1,7 +1,7 @@
 import React from 'react';
 import ResultCard from '../ResultCard/ResultCard';
 import './ResultsGrid.css';
-import LoadingSpinner from '../../../../../components/Spinners/LoadingSpinner';
+import LoadingSpinner from '../../../../components/Spinners/LoadingSpinner';
 
 interface ResultsGridProps {
     results: any;
