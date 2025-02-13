@@ -1,3 +1,11 @@
+/* Manticore Technologies, LLC */
+/* Copyright 2025 Manticore Technologies, LLC */
+/* All Rights Reserved */
+
+/*
+    This file is the TypeScript configuration file for the node environment.
+    It is used to configure the TypeScript compiler for the node environment.
+*/
 {
   "compilerOptions": {
     "composite": true, // generate a declaration file for each module

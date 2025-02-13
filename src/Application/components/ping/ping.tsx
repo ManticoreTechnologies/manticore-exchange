@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa'; // Import icons
-const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'wss'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}/ws/listings`;
+const wsUrl = `${process.env.VITE_TRADING_WS_HOST === 'localhost' ? 'ws' : 'ws'}://${process.env.VITE_TRADING_WS_HOST}:${process.env.VITE_TRADING_WS_PORT}/ws/listings`;
 console.log(wsUrl);
 import './ping.css'; // Import the CSS file
 

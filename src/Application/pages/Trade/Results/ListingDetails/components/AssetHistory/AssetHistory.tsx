@@ -1,67 +1,130 @@
-import React from 'react';
-import { FiX } from 'react-icons/fi';
-import TransactionHistory from '../TransactionHistory';
-import PriceHistory from '../PriceHistory/PriceHistory';
-import { Balance } from '../../types';
+import * as React from 'react';
+import axios from 'axios';
+import './AssetHistory.css';
 
 interface AssetHistoryProps {
-  selectedAsset: Balance | null;
   listingId: string;
-  onClose: () => void;
+  assetName: string;
 }
 
-const AssetHistory: React.FC<AssetHistoryProps> = ({ selectedAsset, listingId, onClose }) => {
-  if (!selectedAsset) return null;
+interface AssetHistoryData {
+  timestamp: string;
+  asset_name: string;
+  amount: string;
+  type: 'deposit' | 'withdrawal';
+  balance_after: string;
+}
 
-  return (
-    <div className="asset-history-overlay">
-      <div className="asset-history-content">
-        <div className="asset-history-header">
-          <h2>{selectedAsset.asset_name} Details</h2>
-          <button className="close-button" onClick={onClose}>
-            <FiX />
-          </button>
-        </div>
+interface AssetHistoryResponse {
+  listing_id: string;
+  asset_name: string;
+  current_balances: {
+    confirmed: string;
+    pending: string;
+  };
+  history: AssetHistoryData[];
+}
+
+export const AssetHistory: React.FC<AssetHistoryProps> = ({ listingId, assetName }) => {
+  const [history, setHistory] = React.useState<AssetHistoryData[]>([]);
+  const [currentBalances, setCurrentBalances] = React.useState<{confirmed: string; pending: string} | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const baseUrl = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${
+          import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'
+        }:8000/listings/${encodeURIComponent(listingId)}/asset-history`;
+
+        const params = new URLSearchParams();
+        if (assetName) {
+          params.append('asset', assetName);
+        }
+
+        const url = `${baseUrl}?${params.toString()}`;
+        const response = await axios.get<AssetHistoryResponse>(url);
         
-        <div className="asset-history-stats">
-          <div className="stat-item">
-            <span className="stat-label">Available Balance</span>
-            <span className="stat-value">{selectedAsset.confirmed_balance}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Pending Balance</span>
-            <span className="stat-value">{selectedAsset.pending_balance}</span>
-          </div>
-          {selectedAsset.last_confirmed_tx_time && (
-            <div className="stat-item">
-              <span className="stat-label">Last Transaction</span>
-              <span className="stat-value">
-                {new Date(selectedAsset.last_confirmed_tx_time).toLocaleString()}
-              </span>
-            </div>
-          )}
-        </div>
+        // Set the history and current balances
+        setHistory(response.data.history || []);
+        setCurrentBalances(response.data.current_balances);
+      } catch (err) {
+        setError('Failed to load asset history');
+        console.error('Error fetching asset history:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        <div className="asset-history-tabs">
-          <div className="asset-history-section">
-            <h3>Price History</h3>
-            <PriceHistory 
-              listingId={listingId}
-              selectedAsset={selectedAsset.asset_name}
-            />
-          </div>
+    fetchHistory();
+  }, [listingId, assetName]);
 
-          <div className="asset-history-section">
-            <h3>Transaction History</h3>
-            <TransactionHistory 
-              listingId={listingId}
-              selectedAsset={selectedAsset.asset_name}
-            />
+  if (loading) {
+    return <div className="loading-spinner">Loading asset history...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
+
+  // Show current balances even if there's no history
+  const renderCurrentBalances = () => {
+    if (!currentBalances) return null;
+    
+    return (
+      <div className="current-balances">
+        <h3>Current Balances</h3>
+        <div className="balance-grid">
+          <div className="balance-item">
+            <span className="balance-label">Confirmed:</span>
+            <span className="balance-value">{currentBalances.confirmed} {assetName}</span>
+          </div>
+          <div className="balance-item">
+            <span className="balance-label">Pending:</span>
+            <span className="balance-value">{currentBalances.pending} {assetName}</span>
           </div>
         </div>
       </div>
+    );
+  };
+
+  if (history.length === 0) {
+    return (
+      <div className="asset-history">
+        {renderCurrentBalances()}
+        <div className="no-data-message">
+          <p>No transaction history found for {assetName}</p>
+          <p className="empty-details">This asset hasn't had any balance changes yet.</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="asset-history">
+      {renderCurrentBalances()}
+      <table className="asset-history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Balance After</th>
+          </tr>
+        </thead>
+        <tbody>
+          {history.map((item: AssetHistoryData, index: number) => (
+            <tr key={index} className={`type-${item.type}`}>
+              <td>{new Date(item.timestamp).toLocaleString()}</td>
+              <td>{item.type}</td>
+              <td>{item.amount}</td>
+              <td>{item.balance_after}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default AssetHistory; 
+}; 

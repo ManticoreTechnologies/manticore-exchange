@@ -374,6 +374,6 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
       </div>
     </div>
   );
-};
+}
 
-export default EditListingModal; 
+export default EditListingModal;

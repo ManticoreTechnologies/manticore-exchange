@@ -1,25 +1,59 @@
 .transaction-history {
+  padding: var(--spacing-4);
   background: var(--background-secondary);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-4);
-  margin-top: var(--spacing-4);
 }
 
-.transaction-graph {
-  background: var(--background-tertiary);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-4);
+.transaction-history h2 {
   margin-bottom: var(--spacing-4);
+  color: var(--text-primary);
 }
 
-.transaction-table-container {
-  overflow-x: auto;
+.transaction-history-loading,
+.transaction-history-error,
+.transaction-history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--spacing-4);
+  background: var(--background-secondary);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+}
+
+.transaction-history-loading {
+  color: var(--text-primary);
+}
+
+.transaction-history-error {
+  color: var(--color-error);
+}
+
+.transaction-history-empty {
+  color: var(--text-primary);
+}
+
+.transaction-history-empty p {
+  margin: 0;
+}
+
+.transaction-history-empty p:first-child {
+  font-size: 1.1em;
+  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+}
+
+.empty-details {
+  color: var(--text-secondary);
+  font-size: 0.9em;
 }
 
 .transaction-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-4);
 }
 
 .transaction-table th,
@@ -30,35 +64,73 @@
 }
 
 .transaction-table th {
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--background-tertiary);
+}
+
+.transaction-table tr:hover {
+  background: var(--background-hover);
 }
 
 .transaction-type {
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  text-transform: capitalize;
+  font-weight: 500;
 }
 
-.transaction-type.in {
-  background: var(--color-success-light);
+.transaction-type.deposit {
   color: var(--color-success);
 }
 
-.transaction-type.out {
-  background: var(--color-error-light);
+.transaction-type.withdrawal {
   color: var(--color-error);
 }
 
-.tx-link {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
-  color: var(--accent-color);
+.transaction-status {
+  text-transform: capitalize;
+  font-size: 0.9em;
+}
+
+.transaction-status.completed {
+  color: var(--color-success);
+}
+
+.transaction-status.pending {
+  color: var(--color-warning);
+}
+
+.transaction-status.failed {
+  color: var(--color-error);
+}
+
+.transaction-hash {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.transaction-hash a {
+  color: inherit;
   text-decoration: none;
 }
 
-.tx-link:hover {
+.transaction-hash a:hover {
+  color: var(--accent-color);
+}
+
+.transaction-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4299e1;
+  text-decoration: none;
+  font-family: monospace;
+}
+
+.transaction-link:hover {
   text-decoration: underline;
+}
+
+.external-link-icon {
+  font-size: 0.875rem;
 } 

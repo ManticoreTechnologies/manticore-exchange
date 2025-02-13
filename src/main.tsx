@@ -1,8 +1,24 @@
-// src/main.tsx
+/* Manticore Technologies, LLC */
+/* Copyright 2025 Manticore Technologies, LLC */
+/* All Rights Reserved */
+
+/*
+    This file is the main entry point for the application.
+    It is used to render the application and provide the theme context to the application.
+*/
+
+/* Import the React and ReactDOM libraries */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
+/* Import the application component */
 import Application from './Application/application';
-import { ThemeProvider } from '@/Application/contexts/theme-context';
+
+/* Import the context providers */
+import { ThemeProvider } from '@/Application/contexts/ThemeContext';
+import { AuthProvider } from '@/Application/contexts/AuthContext';
+
+/* Import the global styles */
 import '@coinbase/onchainkit/styles.css';
 
 // Import the global styles
@@ -16,11 +32,23 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
 
+    /*
+        This is the root element for the application.
+        It is used to render the application and provide the theme context to the application.
+
+        - React.StrictMode: This is used to ensure that the application is rendered correctly.
+        --- ThemeProvider: This is used to provide the theme context to the application.
+        ------ Application: This is the main application component.
+    */
     <React.StrictMode>
       
       <ThemeProvider>
-      
-        <Application />
+        
+        <AuthProvider>
+
+          <Application />
+        
+        </AuthProvider>
       
       </ThemeProvider>
 

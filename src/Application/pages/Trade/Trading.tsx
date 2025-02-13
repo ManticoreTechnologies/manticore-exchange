@@ -14,6 +14,8 @@ import FeaturedListings from './TradingHeader/FeaturedListings';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { debounce } from 'lodash';
 import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Listing,
     SelectedListing,
@@ -32,7 +34,6 @@ import {
 } from './types';
 
 const Trading: React.FC = () => {
-    const { userAddress } = useAuth();
     const [listings, setListings] = useState<Listing[]>([]);
     const [cartVisible, setCartVisible] = useState<boolean>(false);
     const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
@@ -75,6 +76,7 @@ const Trading: React.FC = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const { userAddress, isAuthenticated } = useAuth();
 
     // WebSocket setup with heartbeat
     const ws_host = 'localhost';
@@ -514,14 +516,14 @@ const Trading: React.FC = () => {
         setIsCreatingListing(false);
     };
 
-    const promptQuantity = (listing: Listing) => {
+    const promptQuantity = (listing: Listing, quantity?: number) => {
         setSelectedItem(listing);
-        setQuantity(1);
+        setQuantity(quantity || 1);
         setQuantityError(null);
         const price = listing.prices[0];
         if (price) {
             const unitPrice = parseFloat(price.price_evr || '0');
-            calculateTotalCost(unitPrice, 1);
+            calculateTotalCost(unitPrice, quantity || 1);
         }
         setQuantityPopupVisible(true);
     };
@@ -695,9 +697,10 @@ const Trading: React.FC = () => {
                 handleMinPriceChange={handleMinPriceChange}
                 maxPrice={maxPrice}
                 handleMaxPriceChange={handleMaxPriceChange}
-                isConnected={wsConnected}
+                loading={loading}
                 featuredListings={featuredListings}
                 onFeaturedClick={handleFeaturedClick}
+                isConnected={wsConnected}
             />
 
             {/* Rest of the content */}
@@ -724,7 +727,7 @@ const Trading: React.FC = () => {
                             listing={selectedListing}
                             closeDetails={closeDetails}
                             addToCart={promptQuantity}
-                            onListingUpdate={handleListingUpdate}
+                            onListingUpdate={(updatedListing: Listing) => handleListingUpdate(updatedListing)}
                         />
                     ) : (
                         <TradingResultsGrid 

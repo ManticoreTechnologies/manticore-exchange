@@ -1,3 +1,13 @@
+/* Manticore Technologies, LLC */
+/* Copyright 2025 Manticore Technologies, LLC */
+/* All Rights Reserved */
+
+/*
+    This file is responsible for handling the authentication state of the application.
+    It is used to store the user's address and token in cookies and to verify the user's token.
+    It also handles the challenge and login process and restoring session from cookies.
+*/
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -13,6 +23,11 @@ const COOKIE_CONFIG = {
     path: '/'
 };
 
+/*
+    This interface is used to define the type of the authentication context.
+    It is used to store the user's address and token in cookies and to verify the user's token.
+    It also handles the challenge and login process and restoring session from cookies.
+*/
 interface AuthContextType {
     isAuthenticated: boolean;
     userAddress: string | null;
@@ -23,8 +38,17 @@ interface AuthContextType {
     isLoading: boolean;
 }
 
+/*
+    This context is used to store the user's address and token in cookies and to verify the user's token.
+    It also handles the challenge and login process and restoring session from cookies.
+*/
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/*
+    This component is used to provide the authentication context to the application.
+    It is used to store the user's address and token in cookies and to verify the user's token.
+    It also handles the challenge and login process and restoring session from cookies.
+*/
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -159,10 +183,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
+
+/*
+    This hook is used to access the authentication context.
+    It is used to check if the user is authenticated and to get the user's address and token.
+*/
 export const useAuth = () => {
-    const context = useContext(AuthContext);
+
+    // Get the context
+   const context = useContext(AuthContext);
+
+   // Check if the context is undefined
     if (context === undefined) {
+        // If the context is undefined, throw an error
         throw new Error('useAuth must be used within an AuthProvider');
     }
+
+    // Return the context
     return context;
 }; 

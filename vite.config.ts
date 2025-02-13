@@ -1,19 +1,43 @@
+/* Manticore Technologies, LLC */
+/* Copyright 2025 Manticore Technologies, LLC */
+/* All Rights Reserved */
+
+/*
+    This file is the Vite configuration file for the application.
+    It is used to configure the application and the build process.
+*/
+
+/* Import the defineConfig function from Vite */
 import { defineConfig } from 'vite';
+
+/* Import the react plugin from Vite */
 import react from '@vitejs/plugin-react-swc';
+
+/* Import the dotenv library */
 import dotenv from 'dotenv';
+
+/* Import the path library */
 import path from 'path';
 
-// Load environment variables based on the current mode
+/* Load environment variables based on the current mode */
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
+/* Export the Vite configuration */
 export default defineConfig(({ mode }) => {
+
+  /* Return the Vite configuration */
   return {
+
+    /* Define the plugins for the application */
     plugins: [react()],
+
+    /* Define the server configuration for the application */
     server: {
       host: '0.0.0.0',
       port: 8080,
     },
 
+    /* Define the resolve configuration for the application */
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),

@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PriceChart from '../PriceChart/PriceChart';
+import { PriceHistoryEntry } from '../../types';
 import './PriceHistory.css';
 
 interface PriceHistoryProps {
   listingId: string;
-  selectedAsset?: string | null;
-}
-
-interface PriceData {
-  time: string;
-  asset_name: string;
-  num_sales: number;
-  min_price: string;
-  max_price: string;
-  avg_price: string;
-  volume: string;
+  assetName?: string;
+  data: PriceHistoryEntry[];
 }
 
 const TIME_RANGES = [
@@ -29,29 +21,30 @@ const TIME_RANGES = [
 
 type TimeRange = typeof TIME_RANGES[number]['value'];
 
-const SalesHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset }) => {
-  const [priceData, setPriceData] = useState<PriceData[]>([]);
+const PriceHistory: React.FC<PriceHistoryProps> = ({ listingId, assetName, data }) => {
+  const [priceData, setPriceData] = useState<PriceHistoryEntry[]>(data);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('1M');
 
   useEffect(() => {
     const fetchPriceHistory = async () => {
+      if (!assetName) return;
+
       try {
         setLoading(true);
         const baseUrl = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${
           import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'
         }:8000/listings/${encodeURIComponent(listingId)}/prices`;
 
-        const params = new URLSearchParams();
-        if (selectedAsset) {
-          params.append('asset', selectedAsset);
-        }
-        params.append('range', timeRange);
+        const params = new URLSearchParams({
+          asset: assetName,
+          range: timeRange
+        });
 
         const url = `${baseUrl}?${params.toString()}`;
-        const response = await axios.get<PriceData[]>(url);
-        setPriceData(response.data);
+        const response = await axios.get<{ history: PriceHistoryEntry[] }>(url);
+        setPriceData(response.data.history);
       } catch (err) {
         setError('Failed to load price history');
         console.error('Error fetching price history:', err);
@@ -61,7 +54,7 @@ const SalesHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
     };
 
     fetchPriceHistory();
-  }, [listingId, selectedAsset, timeRange]);
+  }, [listingId, assetName, timeRange]);
 
   const handleTimeRangeChange = (range: TimeRange) => {
     setTimeRange(range);
@@ -78,68 +71,70 @@ const SalesHistory: React.FC<PriceHistoryProps> = ({ listingId, selectedAsset })
   const hasData = priceData.length > 0;
 
   return (
-    <div className="sales-history">
-      <div className="sales-chart-header">
-        <div className="sales-chart-title">
-          <h2>
-            {selectedAsset ? (
-              <>
-                <span className="selected-asset">{selectedAsset}</span>
-                <span className="title-separator">•</span>
-                <span>Sales History</span>
-              </>
-            ) : (
-              'Sales History'
-            )}
-          </h2>
+    <div className="price-history">
+      <div className="sales-history">
+        <div className="sales-chart-header">
+          <div className="sales-chart-title">
+            <h2>
+              {assetName ? (
+                <>
+                  <span className="selected-asset">{assetName}</span>
+                  <span className="title-separator">•</span>
+                  <span>Sales History</span>
+                </>
+              ) : (
+                'Sales History'
+              )}
+            </h2>
+          </div>
+          <div className="time-range-selector">
+            {TIME_RANGES.map(({ value, label }) => (
+              <button
+                key={value}
+                className={`time-range-button ${timeRange === value ? 'active' : ''}`}
+                onClick={() => handleTimeRangeChange(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="time-range-selector">
-          {TIME_RANGES.map(({ value, label }) => (
-            <button
-              key={value}
-              className={`time-range-button ${timeRange === value ? 'active' : ''}`}
-              onClick={() => handleTimeRangeChange(value)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="sales-history-content">
-        <PriceChart 
-          data={priceData}
-          assetName={selectedAsset || undefined}
-          isIndex={!selectedAsset}
-        />
-        <div className="sales-table">
-          {hasData ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Price</th>
-                  <th>Volume</th>
-                  <th>Sales</th>
-                </tr>
-              </thead>
-              <tbody>
-                {priceData.map((price) => (
-                  <tr key={price.time}>
-                    <td>{new Date(price.time).toLocaleDateString()}</td>
-                    <td>{Number(price.avg_price).toFixed(2)}</td>
-                    <td>{Number(price.volume).toLocaleString()}</td>
-                    <td>{price.num_sales.toLocaleString()}</td>
+        <div className="sales-history-content">
+          <PriceChart 
+            data={priceData}
+            assetName={assetName || undefined}
+            isIndex={!assetName}
+          />
+          <div className="sales-table">
+            {hasData ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Volume</th>
+                    <th>Sales</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="no-data-message">No sales data available</div>
-          )}
+                </thead>
+                <tbody>
+                  {priceData.map((price) => (
+                    <tr key={price.time}>
+                      <td>{new Date(price.time).toLocaleDateString()}</td>
+                      <td>{Number(price.avg_price).toFixed(2)}</td>
+                      <td>{Number(price.volume).toLocaleString()}</td>
+                      <td>{price.num_sales.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="no-data-message">No sales data available</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SalesHistory; 
+export default PriceHistory;

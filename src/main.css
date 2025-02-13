@@ -1,5 +1,19 @@
+/* Manticore Technologies, LLC */
+/* Copyright 2025 Manticore Technologies, LLC */
+/* All Rights Reserved */
+
+/*
+    This file is the main CSS file for the application.
+    It is used to provide the global styles for the application.
+*/
+
+/* Import the reset CSS file: This is used to reset the default styles for the application. */
 @import './styles/reset.css';
+
+/* Import the variables CSS file: This is used to define the variables for the application. */
 @import './styles/variables.css';
+
+/* Import the utilities CSS file: This is used to define the utilities for the application. */
 @import './styles/utilities.css';
 
 /* Base Styles */

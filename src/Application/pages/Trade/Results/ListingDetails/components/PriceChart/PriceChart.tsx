@@ -12,7 +12,8 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { Line } from 'react-chartjs-2';
-import { PriceData } from '../PriceHistory/PriceHistory';
+import type { PriceData } from '../PriceHistory/types';
+import './PriceChart.css';
 
 ChartJS.register(
   CategoryScale,
@@ -32,6 +33,22 @@ interface PriceChartProps {
 }
 
 const PriceChart: React.FC<PriceChartProps> = ({ data, assetName, isIndex }) => {
+  // Check if data is valid and has entries
+  if (!Array.isArray(data) || data.length === 0) {
+    return (
+      <div style={{ height: '400px' }} className="no-data-container">
+        <div className="no-data-message">
+          <p>No price history data available</p>
+          <p className="no-data-details">
+            {isIndex 
+              ? "This listing doesn't have any recorded sales yet."
+              : `No sales data available for ${assetName || 'this asset'}.`}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const chartData = {
     datasets: [
       {

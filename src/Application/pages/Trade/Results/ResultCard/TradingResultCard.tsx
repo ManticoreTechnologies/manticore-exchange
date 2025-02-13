@@ -45,7 +45,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVideo, setIsVideo] = useState(false);
     const [priceMediaStates, setPriceMediaStates] = useState<Record<string, { isVideo: boolean, isLoaded: boolean }>>({});
-    console.log(isOwnedByUser);
+
     const getMediaSrc = (hash: string | null | undefined) => {
         if (!hash) return placeholderImage;
         return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
