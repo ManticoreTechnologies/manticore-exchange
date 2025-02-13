@@ -79,7 +79,7 @@ export class AuthService {
             // Handle auth errors
             if (error.response.status === 401) {
                 this.clearAuth();
-                window.location.href = '/login';
+                window.location.href = '/signin';
             }
         } else if (error.request) {
             message = 'No response received from server';
@@ -143,7 +143,7 @@ export class AuthService {
     async verifyChallenge(verifyRequest: VerifyRequest): Promise<LoginResponse> {
         try {
             const response: AxiosResponse<LoginResponse> = await this.api.post(
-                '/auth/login',
+                '/auth/signin',
                 verifyRequest
             );
             

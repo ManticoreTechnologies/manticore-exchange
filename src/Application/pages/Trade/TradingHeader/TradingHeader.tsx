@@ -4,6 +4,7 @@ import { RiExchangeFill } from 'react-icons/ri';
 import React, { useState } from 'react';
 import './TradingHeader.css';
 import FeaturedListings from './FeaturedListings';
+import SearchSpinner from '../../../components/Spinners/SearchSpinner';
 
 interface TradingHeaderProps {
     createListing: () => void;
@@ -79,7 +80,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
 
                     <div className="header-center">
                         <div className="search-bar-main">
-                            <div className={`search-input-wrapper ${loading ? 'loading' : ''}`}>
+                            <div className="search-input-wrapper">
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -87,7 +88,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                                     placeholder="Search listings..."
                                     aria-label="Search input"
                                 />
-                                <div className="loading-spinner" />
+                                <SearchSpinner loading={loading} />
                             </div>
                             <button 
                                 className={`filter-toggle-button ${showFilters ? 'active' : ''}`}

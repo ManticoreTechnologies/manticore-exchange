@@ -15,23 +15,23 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
     const getPageNumbers = () => {
         const pages = [];
-        const maxVisiblePages = 5;
+        const maxVisiblePages = 3;
         
         if (totalPages <= maxVisiblePages) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            if (currentPage <= 3) {
-                for (let i = 1; i <= 5; i++) {
+            if (currentPage <= 2) {
+                for (let i = 1; i <= 3; i++) {
                     pages.push(i);
                 }
-            } else if (currentPage >= totalPages - 2) {
-                for (let i = totalPages - 4; i <= totalPages; i++) {
+            } else if (currentPage >= totalPages - 1) {
+                for (let i = totalPages - 2; i <= totalPages; i++) {
                     pages.push(i);
                 }
             } else {
-                for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
                     pages.push(i);
                 }
             }
@@ -44,14 +44,12 @@ const Pagination: React.FC<PaginationProps> = ({
 
     return (
         <div className="pagination">
-            <div className="pagination-info">
-                Showing {totalResults} results
-            </div>
             <div className="pagination-controls">
                 <button
                     className="pagination-button"
                     onClick={() => onPageChange(1)}
                     disabled={currentPage === 1}
+                    title="First page"
                 >
                     «
                 </button>
@@ -59,6 +57,7 @@ const Pagination: React.FC<PaginationProps> = ({
                     className="pagination-button"
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
+                    title="Previous page"
                 >
                     ‹
                 </button>
@@ -77,6 +76,7 @@ const Pagination: React.FC<PaginationProps> = ({
                     className="pagination-button"
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
+                    title="Next page"
                 >
                     ›
                 </button>
@@ -84,9 +84,14 @@ const Pagination: React.FC<PaginationProps> = ({
                     className="pagination-button"
                     onClick={() => onPageChange(totalPages)}
                     disabled={currentPage === totalPages}
+                    title="Last page"
                 >
                     »
                 </button>
+            </div>
+            <div className="pagination-stats">
+                <span>Page {currentPage} of {totalPages}</span>
+                <span>({totalResults} total results)</span>
             </div>
         </div>
     );

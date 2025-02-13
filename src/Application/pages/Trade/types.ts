@@ -1,45 +1,12 @@
-export interface Price {
-    asset_name: string;
-    price_evr: string;
-    price_asset_name: string | null;
-    price_asset_amount: string | null;
-    ipfs_hash: string | null;
-    units: number;
-    created_at: string;
-    updated_at: string;
-}
+import { Listing as ServiceListing, Balance as ServiceBalance, Price as ServicePrice } from '../../services/TradingService';
 
-export interface Balance {
-    asset_name: string;
-    confirmed_balance: string;
-    pending_balance: string;
-    units: number;
-    last_confirmed_tx_hash: string | null;
-    last_confirmed_tx_time: string | null;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface Listing {
-    id: string;
-    seller_address: string;
-    listing_address: string;
-    deposit_address: string;
-    name: string;
-    description: string;
-    image_ipfs_hash: string;
-    balances: Balance[];
-    prices: Price[];
-    created_at: string;
-    updated_at: string;
-    units: number;
-    isOwnedByUser?: boolean;
-    status?: string;
-    tags?: string[];
-}
+export type Listing = ServiceListing;
+export type Balance = ServiceBalance;
+export type Price = ServicePrice;
 
 export interface SelectedListing extends Listing {
-    units: number;
+    units?: number;
+    isOwnedByUser?: boolean;
 }
 
 export interface CartItem {
@@ -51,7 +18,7 @@ export interface CartItem {
     unitPrice: number;
     totalPrice: number;
     asset_name: string;
-    image_ipfs_hash: string | null;
+    image_ipfs_hash?: string | null;
     seller_address: string;
 }
 
@@ -64,7 +31,7 @@ export interface CheckoutItem {
     unitPrice: number;
     totalPrice: number;
     asset_name: string;
-    image_ipfs_hash: string | undefined;
+    image_ipfs_hash?: string | null;
     seller_address: string;
 }
 

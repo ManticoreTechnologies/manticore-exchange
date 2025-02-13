@@ -315,11 +315,53 @@
 @media (max-width: 768px) {
     .fl_a7b3c9_container {
         height: auto;
-        flex-direction: column;
-        padding: var(--spacing-2) var(--spacing-4);
+        padding: var(--spacing-1);
+        gap: var(--spacing-1);
     }
 
     .fl_a7b3c9_carousel {
-        height: 140px;
+        height: 100px;
+    }
+
+    .fl_a7b3c9_header {
+        padding: var(--spacing-1) var(--spacing-2);
+        height: 24px;
+        font-size: var(--font-size-xs);
+    }
+
+    .fl_a7b3c9_icon {
+        font-size: 12px;
+    }
+
+    .fl_a7b3c9_scroll {
+        padding: var(--spacing-1);
+        gap: var(--spacing-1);
+        height: calc(100% - 24px);
+    }
+
+    .fl_a7b3c9_card {
+        flex: 0 0 80px;
+        height: 70px;
+    }
+
+    .fl_a7b3c9_card:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .fl_a7b3c9_info {
+        padding: var(--spacing-1);
+    }
+
+    .fl_a7b3c9_title {
+        font-size: 10px;
+    }
+
+    .fl_a7b3c9_price {
+        font-size: 10px;
+    }
+
+    .fl_a7b3c9_card::before {
+        padding: var(--spacing-1);
+        font-size: 10px;
     }
 }

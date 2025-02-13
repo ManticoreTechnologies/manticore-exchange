@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import TradingResultsGrid from './Results/ResultsGrid/TradingResultsGrid';
 import Cart from './Cart/Cart';
 import Checkout from './Checkout/Checkout';
@@ -31,6 +31,7 @@ import {
     Balance,
     ListingsResponse
 } from './types';
+import tradingService, { SearchParams } from '../../services/TradingService';
 
 const Trading: React.FC = () => {
     const [listings, setListings] = useState<Listing[]>([]);
@@ -267,22 +268,17 @@ const Trading: React.FC = () => {
     // Add fetchHomeListings function
     const fetchHomeListings = useCallback(async () => {
         try {
-            const response = await axios.get(
-                `${trading_api_url}/listings/home`,
-                {
-                    params: {
-                        featured_count: 5,
-                        trending_count: 10,
-                        new_count: 10,
-                        trending_timeframe: '24h',
-                        new_hours: 24
-                    }
-                }
-            );
+            const response = await tradingService.getHomeListings({
+                featured_count: 5,
+                trending_count: 10,
+                new_count: 10,
+                trending_timeframe: '24h',
+                new_hours: 24
+            });
             
-            if (response.data) {
+            if (response) {
                 const allFeaturedListings = [
-                    ...(response.data.featured?.listings || []).map((listing: Listing) => ({
+                    ...(response.featured?.listings || []).map((listing: Listing) => ({
                         id: listing.id,
                         title: listing.name,
                         store_name: listing.name,
@@ -290,7 +286,7 @@ const Trading: React.FC = () => {
                         price: listing.prices[0]?.price_evr || '0',
                         image_hash: listing.image_ipfs_hash
                     })),
-                    ...(response.data.new?.listings || []).map((listing: Listing) => ({
+                    ...(response.new?.listings || []).map((listing: Listing) => ({
                         id: listing.id,
                         title: listing.name,
                         store_name: listing.name,
@@ -299,7 +295,7 @@ const Trading: React.FC = () => {
                         highlight: 'New',
                         image_hash: listing.image_ipfs_hash
                     })),
-                    ...(response.data.trending?.listings || []).map((listing: Listing) => ({
+                    ...(response.trending?.listings || []).map((listing: Listing) => ({
                         id: listing.id,
                         title: listing.name,
                         store_name: listing.name,
@@ -311,121 +307,144 @@ const Trading: React.FC = () => {
                 ];
                 
                 setFeaturedListings(allFeaturedListings);
-                setHomeListings(response.data);
+                setHomeListings(response);
             }
         } catch (error) {
             console.error('Error fetching home listings:', error);
         }
-    }, [trading_api_url]);
+    }, []);
 
     // Add effect to fetch home listings on mount
     useEffect(() => {
         fetchHomeListings();
     }, [fetchHomeListings]);
 
-    // Update fetchListings dependencies
+    // Update fetchListings to handle search more effectively
     const fetchListings = useCallback(async () => {
         try {
             setLoading(true);
-            const offset = (currentPage - 1) * pageSize;
-            let url = `${trading_api_url}/listings/search`;
             
-            // Add debug logging
-            console.log('Current user address from AuthContext:', userAddress);
-            
-            // Add search and filter parameters
-            const params = new URLSearchParams({
-                limit: pageSize.toString(),
-                offset: offset.toString()
-            });
+            // Prepare search parameters
+            const searchParams: SearchParams = {
+                per_page: pageSize,
+                page: currentPage
+            };
 
-            if (searchQuery) params.append('search', searchQuery);
-            if (filterType && filterQuery) {
-                switch(filterType) {
+            // Only add parameters if they have values
+            if (searchQuery?.trim()) {
+                searchParams.search_term = searchQuery.trim();
+            }
+
+            if (filterType && filterQuery?.trim()) {
+                switch (filterType) {
                     case 'seller':
-                        params.append('seller_address', filterQuery);
+                        searchParams.seller_address = filterQuery.trim();
                         break;
                     case 'asset':
-                        params.append('asset_name', filterQuery);
+                        searchParams.asset_name = filterQuery.trim();
+                        break;
+                    case 'tags':
+                        searchParams.tags = tags.filter(tag => tag.trim());
                         break;
                 }
             }
-            if (tags.length > 0) {
-                tags.forEach(tag => params.append('tags', tag.trim()));
-            }
-            if (minPrice) params.append('min_price', minPrice);
-            if (maxPrice) params.append('max_price', maxPrice);
 
-            url = `${url}?${params.toString()}`;
-            console.log('Fetching listings from:', url);
+            if (minPrice?.trim()) {
+                searchParams.min_price_evr = minPrice.trim();
+            }
+
+            if (maxPrice?.trim()) {
+                searchParams.max_price_evr = maxPrice.trim();
+            }
+
+            // Use trading service to search listings
+            const response = await tradingService.searchListings(searchParams);
             
-            const response = await axios.get<ListingsResponse>(url);
-            const { listings: fetchedListings, total_count, total_pages, current_page } = response.data;
+            // Process the listings
+            const processedListings = response.listings.map(listing => ({
+                ...listing,
+                isOwnedByUser: userAddress ? listing.seller_address === userAddress : false
+            }));
             
-            // Add debug logging for listings
-            console.log('Fetched listings:', fetchedListings);
-            
-            // Add isOwnedByUser flag to listings
-            const processedListings = fetchedListings.map(listing => {
-                const isOwned = userAddress ? listing.seller_address === userAddress : false;
-                console.log(`Listing ${listing.id} ownership check:`, {
-                    seller: listing.seller_address,
-                    user: userAddress,
-                    isOwned
-                });
-                return {
-                    ...listing,
-                    isOwnedByUser: isOwned
-                };
-            });
-            
-            // Update listings with the results
             setListings(processedListings);
-            setTotalResults(total_count);
-            setTotalPages(total_pages);
-            setCurrentPage(current_page);
+            // Update pagination state with the response values
+            setTotalResults(response.total_count || 0);
+            setTotalPages(Math.max(1, response.total_pages || 1));
+            // Ensure current page is within bounds
+            const validCurrentPage = Math.min(Math.max(1, response.current_page || 1), response.total_pages || 1);
+            if (validCurrentPage !== currentPage) {
+                setCurrentPage(validCurrentPage);
+            }
             
-            // Don't update featured listings during search
-            if (!searchQuery && processedListings.length > 0) {
-                await fetchHomeListings(); // Fetch fresh featured listings instead
+            // Only fetch home listings if there's no active search
+            if (!searchQuery?.trim() && !filterQuery?.trim() && tags.length === 0 && !minPrice && !maxPrice) {
+                await fetchHomeListings();
             }
             
         } catch (error) {
             console.error('Error fetching listings:', error);
+            toast.error('Failed to fetch listings. Please try again.');
             setListings([]);
-            // Don't clear featured listings on error
+            setTotalResults(0);
+            setTotalPages(1);
+            setCurrentPage(1);
         } finally {
             setLoading(false);
         }
-    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, fetchHomeListings, userAddress]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, userAddress]);
 
-    // Add effect to fetch listings on mount and when dependencies change
-    useEffect(() => {
-        fetchListings();
-    }, [fetchListings]);
-
-    // Add debounced search function
-    const debouncedSearch = useCallback(
-        debounce((value: string) => {
+    // Update the debounced search implementation
+    const debouncedSearch = useMemo(
+        () => debounce((value: string) => {
             setSearchQuery(value);
-            fetchListings();
+            setCurrentPage(1); // Reset to first page on new search
         }, 500),
-        []  // Remove fetchListings from dependencies to prevent recreation
+        []
     );
 
-    // Update handleSearch to use debounced function
+    // Update handleSearch to use improved debounced function
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);  // Update the input value immediately for UI responsiveness
         debouncedSearch(value); // Debounce the actual search
     };
 
-    // Separate effect for search query changes
+    // Update the search effect
     useEffect(() => {
-        if (searchQuery !== undefined) {
-            fetchListings();
-        }
-    }, [searchQuery, currentPage, pageSize, filterType, filterQuery, tags, minPrice, maxPrice]);
+        fetchListings();
+    }, [fetchListings]);
+
+    // Update handleFilter
+    const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilterQuery(e.target.value);
+        setCurrentPage(1); // Reset to first page on new filter
+    };
+
+    // Update handleFilterTypeChange
+    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilterType(e.target.value);
+        setFilterQuery(''); // Clear the filter query when changing type
+        setCurrentPage(1); // Reset to first page on filter type change
+    };
+
+    // Update handleTagsChange
+    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const tagString = e.target.value;
+        const tagArray = tagString.split(',').map(tag => tag.trim()).filter(tag => tag);
+        setTags(tagArray);
+        setCurrentPage(1); // Reset to first page on tags change
+    };
+
+    // Update price filter handlers
+    const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMinPrice(e.target.value);
+        setCurrentPage(1); // Reset to first page on price change
+    };
+
+    const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMaxPrice(e.target.value);
+        setCurrentPage(1); // Reset to first page on price change
+    };
 
     // Helper function to check if a listing is new (less than 24 hours old)
     const isNewListing = (createdAt: string): boolean => {
@@ -644,34 +663,11 @@ const Trading: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         console.log('Changing to page:', page);
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
+        const validPage = Math.min(Math.max(1, page), totalPages);
+        if (validPage !== currentPage) {
+            setCurrentPage(validPage);
             window.scrollTo(0, 0);
-        } else {
-            console.warn('Invalid page number:', page);
         }
-    };
-
-    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const tagString = e.target.value;
-        const tagArray = tagString.split(',').map(tag => tag.trim()).filter(tag => tag);
-        setTags(tagArray);
-    };
-
-    const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setMinPrice(e.target.value);
-    };
-
-    const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setMaxPrice(e.target.value);
-    };
-
-    const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilterQuery(e.target.value);
-    };
-
-    const handleFilterTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilterType(e.target.value);
     };
 
     const handleFeaturedClick = (listing: any) => {
@@ -730,7 +726,7 @@ const Trading: React.FC = () => {
                         />
                     ) : (
                         <TradingResultsGrid 
-                            results={searchQuery ? searchResults : listings}
+                            results={listings}
                             addToCart={promptQuantity}
                             buyNow={handleBuyNow}
                             showDetails={showDetails}
@@ -750,8 +746,8 @@ const Trading: React.FC = () => {
                         <h3>Select Quantity</h3>
                         <input 
                             type="number" 
-                            min={Math.pow(10, -selectedItem.units)} 
-                            step={Math.pow(10, -selectedItem.units)}
+                            min={Math.pow(10, -(selectedItem.units || 0))} 
+                            step={Math.pow(10, -(selectedItem.units || 0))}
                             value={quantity} 
                             onChange={handleQuantityChange} 
                         />

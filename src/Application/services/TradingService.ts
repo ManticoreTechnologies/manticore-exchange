@@ -140,14 +140,15 @@ export interface HomeListingsResponse {
 }
 
 export interface SearchParams {
-    search?: string;
+    search_term?: string;
     seller_address?: string;
     asset_name?: string;
+    min_price_evr?: string;
+    max_price_evr?: string;
+    status?: 'active' | 'inactive' | 'cancelled' | 'pending';
     tags?: string[];
-    min_price?: string;
-    max_price?: string;
-    limit?: number;
-    offset?: number;
+    per_page?: number;
+    page?: number;
 }
 
 export interface HomeListingsParams {
@@ -235,7 +236,7 @@ export class TradingService {
 
     // Auth Methods
     async login(address: string, signature: string): Promise<void> {
-        const response = await this.api.post('/auth/login', { address, signature });
+        const response = await this.api.post('/auth/signin', { address, signature });
         if (response.data.token) {
             this.token = response.data.token;
             localStorage.setItem('auth_token', response.data.token);
@@ -265,19 +266,29 @@ export class TradingService {
     }
 
     async searchListings(params: SearchParams): Promise<ListingsResponse> {
-        const response = await this.api.get('/listings/search', {
-            params: {
-                search_term: params.search,
-                seller_address: params.seller_address,
-                asset_name: params.asset_name,
-                min_price_evr: params.min_price,
-                max_price_evr: params.max_price,
-                tags: params.tags?.join(','),
-                per_page: params.limit || 50,
-                page: Math.floor((params.offset || 0) / (params.limit || 50)) + 1
+        try {
+            // Convert params to URLSearchParams
+            const searchParams = new URLSearchParams();
+            
+            if (params.search_term) searchParams.append('search_term', params.search_term);
+            if (params.seller_address) searchParams.append('seller_address', params.seller_address);
+            if (params.asset_name) searchParams.append('asset_name', params.asset_name);
+            if (params.min_price_evr) searchParams.append('min_price_evr', params.min_price_evr);
+            if (params.max_price_evr) searchParams.append('max_price_evr', params.max_price_evr);
+            if (params.status) searchParams.append('status', params.status);
+            if (params.tags) {
+                params.tags.forEach(tag => searchParams.append('tags', tag));
             }
-        });
-        return response.data;
+            if (params.per_page) searchParams.append('per_page', params.per_page.toString());
+            if (params.page) searchParams.append('page', params.page.toString());
+
+            console.log(searchParams.toString());
+            const response = await this.api.get('/listings/search', { params: searchParams });
+            return response.data;
+        } catch (error) {
+            console.error('Error searching listings:', error);
+            throw error;
+        }
     }
 
     async getListingById(id: string): Promise<Listing> {
