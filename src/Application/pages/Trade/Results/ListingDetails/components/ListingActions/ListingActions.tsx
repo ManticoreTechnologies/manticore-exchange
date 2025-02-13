@@ -1,6 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import { FiShoppingCart } from 'react-icons/fi';
 import { Price, Balance } from '../../types';
+import { FaHeart, FaCog } from 'react-icons/fa';
 import './ListingActions.css';
 
 interface ListingActionsProps {
@@ -8,13 +9,21 @@ interface ListingActionsProps {
   balances: Balance[];
   onAddToCart: (quantity: number) => void;
   onBuyNow: (quantity: number) => void;
+  isLiked: boolean;
+  isOwner: boolean;
+  onLikeClick: () => void;
+  onManageClick: () => void;
 }
 
 const ListingActions: React.FC<ListingActionsProps> = ({
   prices,
   balances,
   onAddToCart,
-  onBuyNow
+  onBuyNow,
+  isLiked,
+  isOwner,
+  onLikeClick,
+  onManageClick
 }) => {
   const [selectedAsset, setSelectedAsset] = React.useState<string>('');
   const [quantity, setQuantity] = React.useState(1);
@@ -107,6 +116,22 @@ const ListingActions: React.FC<ListingActionsProps> = ({
         >
           Buy Now
         </button>
+      </div>
+
+      <div className="actions">
+        <button
+          className={`like-button ${isLiked ? 'liked' : ''}`}
+          onClick={onLikeClick}
+        >
+          <FaHeart />
+          {isLiked ? 'Liked' : 'Like'}
+        </button>
+        {isOwner && (
+          <button className="manage-button" onClick={onManageClick}>
+            <FaCog />
+            Manage Listing
+          </button>
+        )}
       </div>
     </div>
   );

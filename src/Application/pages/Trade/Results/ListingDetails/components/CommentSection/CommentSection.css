@@ -1,0 +1,98 @@
+.trading-comments {
+  margin-top: var(--spacing-6);
+}
+
+.comments-header {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comment-form {
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
+.comment-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: var(--spacing-3);
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  resize: vertical;
+  margin-bottom: var(--spacing-3);
+}
+
+.comment-form button {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--accent-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.comment-form button:hover:not(:disabled) {
+  background: var(--accent-color-hover);
+  transform: translateY(-1px);
+}
+
+.comment-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.comments-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--spacing-4) 0;
+}
+
+.comments-list li {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.comment-author {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.comment-date {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.delete-comment {
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--color-error-light);
+  color: var(--color-error);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-normal);
+}
+
+.delete-comment:hover {
+  background: var(--color-error);
+  color: var(--text-inverse);
+}
+
+.comment-text {
+  color: var(--text-secondary);
+  line-height: 1.5;
+} 

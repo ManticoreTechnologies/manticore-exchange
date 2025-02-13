@@ -1,1 +1,53 @@
 51/BPZghxPkyzVVGqJGz+g==|yvvjgWalkWQKSlU+cLIEjEI=
+
+.actions {
+  display: flex;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.like-button:hover {
+  background: var(--background-hover);
+  border-color: var(--accent-color);
+}
+
+.like-button.liked {
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.manage-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--accent-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.manage-button:hover {
+  background: var(--accent-color);
+  color: var(--text-inverse);
+}
+
+.manage-button.active {
+  background: var(--accent-color);
+  color: var(--text-inverse);
+}
