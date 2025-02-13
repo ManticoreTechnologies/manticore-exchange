@@ -6,7 +6,6 @@ import './SignIn.css';
 interface ChallengeData {
     challengeId: string;
     message: string;
-    expiresAt: string;
 }
 
 const SignIn: React.FC = () => {
@@ -22,6 +21,10 @@ const SignIn: React.FC = () => {
     
     const from = (location.state as any)?.from?.pathname || '/';
 
+    const handleBack = () => {
+        navigate(-1);
+    };
+
     const handleGetChallenge = async () => {
         if (!address) {
             setError('Please enter your Evrmore address');
@@ -36,7 +39,6 @@ const SignIn: React.FC = () => {
             setChallengeData({
                 challengeId: challenge.challengeId,
                 message: challenge.message,
-                expiresAt: challenge.expiresAt
             });
             setStep('challenge');
         } catch (err) {
@@ -180,6 +182,9 @@ const SignIn: React.FC = () => {
         <div className="sign-in">
             <div className="sign-in__container">
                 <div className="sign-in__content">
+                    <button onClick={handleBack} className="sign-in__back-button">
+                        ← Back
+                    </button>
                     {step === 'initial' ? renderInitialStep() : renderChallengeStep()}
 
                     {error && (

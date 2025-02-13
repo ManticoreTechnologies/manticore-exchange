@@ -28,7 +28,7 @@ const TradingResultsGrid: React.FC<TradingResultsGridProps> = ({
     isLoading
 }) => {
     const renderPhantomCards = () => {
-        return Array(8).fill(null).map((_, index) => (
+        return Array(10).fill(null).map((_, index) => (
             <div key={`phantom-${index}`} className="trading-result-card-phantom">
                 <div className="phantom-media"></div>
                 <div className="phantom-content">
