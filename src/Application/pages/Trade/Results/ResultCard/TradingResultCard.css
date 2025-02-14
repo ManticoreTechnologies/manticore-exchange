@@ -63,6 +63,7 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
 }
 
 .trading-result-card:hover .trading-result-card__image,
@@ -331,15 +332,34 @@
 }
 
 .trading-result-card__tags {
-    margin-bottom: var(--spacing-2);
+    position: absolute;
+    bottom: var(--spacing-2);
+    right: var(--spacing-2);
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-1);
+    justify-content: flex-end;
+    z-index: 3;
+    max-width: 70%;
 }
 
 .tag {
     font-size: var(--font-size-xs);
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.75);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-sm);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-transform: lowercase;
+}
+
+.tag:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+    background: rgba(0, 0, 0, 0.85);
 }
 
 .trading-result-card__assets-count {

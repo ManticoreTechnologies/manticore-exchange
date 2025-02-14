@@ -66,6 +66,16 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
     const trading_api_proto = import.meta.env.VITE_TRADING_API_PROTO || 'https';
     const trading_api_url = `${trading_api_proto}://${trading_api_host}:${trading_api_port}`;
 
+    useEffect(() => {
+        if (notification.show) {
+            const timer = setTimeout(() => {
+                setNotification({ show: false, type: '', message: '' });
+            }, 3000); // Hide after 3 seconds
+
+            return () => clearTimeout(timer);
+        }
+    }, [notification.show]);
+
     const handleNextStep = async () => {
         if (step === 3) {
             await submitListing();
@@ -210,6 +220,47 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             ...prev,
             tags: prev.tags.filter(tag => tag !== tagToRemove)
         }));
+    };
+
+    const copyToClipboard = async (text: string) => {
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                setNotification({
+                    show: true,
+                    type: 'success',
+                    message: 'Address copied to clipboard!'
+                });
+            } else {
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setNotification({
+                        show: true,
+                        type: 'success',
+                        message: 'Address copied to clipboard!'
+                    });
+                } catch (err) {
+                    setNotification({
+                        show: true,
+                        type: 'error',
+                        message: 'Failed to copy address. Please copy manually.'
+                    });
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            }
+        } catch (err) {
+            setNotification({
+                show: true,
+                type: 'error',
+                message: 'Failed to copy address. Please copy manually.'
+            });
+        }
     };
 
     const renderErrorMessage = () => {
@@ -410,14 +461,7 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                         </div>
                         <div 
                             className="deposit-address"
-                            onClick={() => {
-                                navigator.clipboard.writeText(listingResponse.deposit_address);
-                                setNotification({
-                                    show: true,
-                                    type: 'success',
-                                    message: 'Address copied to clipboard!'
-                                });
-                            }}
+                            onClick={() => copyToClipboard(listingResponse.deposit_address)}
                             title="Click to copy address"
                         >
                             {listingResponse.deposit_address}
@@ -500,6 +544,11 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             <div className="create-listing-content">
                 {renderStepProgress()}
                 {renderStepContent()}
+                {notification.show && (
+                    <div className={`notification ${notification.type}`}>
+                        {notification.message}
+                    </div>
+                )}
             </div>
         </div>
     );

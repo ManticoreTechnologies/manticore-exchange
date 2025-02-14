@@ -160,6 +160,18 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                         }}
                     />
                 )}
+                {tags && tags.length > 0 && (
+                    <div className="trading-result-card__tags">
+                        {tags.slice(0, 3).map((tag, index) => (
+                            <span key={index} className="tag">
+                                {tag}
+                            </span>
+                        ))}
+                        {tags.length > 3 && (
+                            <span className="tag">+{tags.length - 3}</span>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="trading-result-card__content">
