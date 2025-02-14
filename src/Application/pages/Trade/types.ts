@@ -16,23 +16,34 @@ export interface CartItem {
     description: string;
     quantity: number;
     unitPrice: number;
-    totalPrice: number;
     asset_name: string;
-    image_ipfs_hash?: string | null;
+    image_ipfs_hash: string | null;
     seller_address: string;
 }
 
-export interface CheckoutItem {
-    id: string;
-    listingId: string;
-    name: string;
-    description: string;
-    quantity: number;
-    unitPrice: number;
+export interface CheckoutItem extends CartItem {
     totalPrice: number;
-    asset_name: string;
-    image_ipfs_hash?: string | null;
-    seller_address: string;
+}
+
+export interface CartOrder {
+    id: string;
+    buyer_address: string;
+    payment_address: string;
+    status: string;
+    items: Array<{
+        listing_id: string;
+        asset_name: string;
+        amount: string;
+        price_evr: string;
+        fee_evr: string;
+        listing_name?: string;
+        seller_address?: string;
+    }>;
+    total_price_evr: string;
+    total_fee_evr: string;
+    required_payment: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface FeaturedListing {

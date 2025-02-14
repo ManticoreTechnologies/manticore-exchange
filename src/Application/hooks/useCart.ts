@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import TradingService from '@/Application/services/TradingService';
 import { toast } from 'react-toastify';
-import { useAuth } from '@/Application/contexts/AuthContext';
 
 export interface CartItem {
   listingId: string;
@@ -26,7 +24,6 @@ export const useCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartCount, setCartCount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { userAddress } = useAuth();
 
   const updateCartAndNotify = useCallback((newItems: CartItem[] | null) => {
     if (newItems === null) {
@@ -45,19 +42,42 @@ export const useCart = () => {
 
   // Load initial cart
   useEffect(() => {
-    const savedCart = localStorage.getItem('manticore_cart');
-    if (savedCart) {
+    // Check if we're in a checkout process
+    const checkoutPending = sessionStorage.getItem('checkout_pending');
+    const checkoutCart = sessionStorage.getItem('checkout_cart');
+
+    if (checkoutPending && checkoutCart) {
       try {
-        const items = JSON.parse(savedCart);
+        const items = JSON.parse(checkoutCart);
         updateCartAndNotify(items);
       } catch (error) {
-        console.error('Error loading cart:', error);
-        updateCartAndNotify(null);
+        console.error('Error loading checkout cart:', error);
+        const savedCart = localStorage.getItem('manticore_cart');
+        if (savedCart) {
+          try {
+            const items = JSON.parse(savedCart);
+            updateCartAndNotify(items);
+          } catch (error) {
+            console.error('Error loading cart:', error);
+            updateCartAndNotify(null);
+          }
+        }
+      }
+    } else {
+      const savedCart = localStorage.getItem('manticore_cart');
+      if (savedCart) {
+        try {
+          const items = JSON.parse(savedCart);
+          updateCartAndNotify(items);
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          updateCartAndNotify(null);
+        }
       }
     }
   }, [updateCartAndNotify]);
 
-  // Listen for storage changes and custom events
+  // Listen for storage changes only
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'manticore_cart') {
@@ -76,16 +96,10 @@ export const useCart = () => {
       }
     };
 
-    const handleCartUpdate = (e: CustomEvent) => {
-      setCartCount(e.detail.count);
-    };
-
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener(CART_UPDATED_EVENT, handleCartUpdate as EventListener);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener(CART_UPDATED_EVENT, handleCartUpdate as EventListener);
     };
   }, [updateCartAndNotify]);
 
@@ -119,61 +133,11 @@ export const useCart = () => {
   }, [updateCartAndNotify]);
 
   const clearCart = useCallback(() => {
+    // Clear checkout state when clearing cart
+    sessionStorage.removeItem('checkout_pending');
+    sessionStorage.removeItem('checkout_cart');
     updateCartAndNotify(null);
   }, [updateCartAndNotify]);
-
-  const processCart = useCallback(async () => {
-    if (!userAddress) {
-      toast.error('Please sign in to proceed with checkout');
-      return null;
-    }
-
-    if (cartItems.length === 0) {
-      toast.error('Your cart is empty');
-      return null;
-    }
-
-    setIsProcessing(true);
-    try {
-      // Group items by listing
-      const itemsByListing = cartItems.reduce((acc, item) => {
-        if (!acc[item.listingId]) {
-          acc[item.listingId] = [];
-        }
-        acc[item.listingId].push({
-          asset_name: item.asset_name,
-          amount: item.quantity.toString()
-        });
-        return acc;
-      }, {} as Record<string, { asset_name: string; amount: string; }[]>);
-
-      // Create orders for each listing
-      const orders = await Promise.all(
-        Object.entries(itemsByListing).map(([listingId, items]) =>
-          TradingService.createOrder(listingId, {
-            buyer_address: userAddress,
-            items
-          })
-        )
-      );
-
-      // Clear cart after successful order creation
-      clearCart();
-
-      return orders;
-    } catch (error: any) {
-      if (error.code === 'INSUFFICIENT_BALANCE') {
-        toast.error('Insufficient balance in listing');
-      } else if (error.code === 'LISTING_NOT_FOUND') {
-        toast.error('One or more listings not found');
-      } else {
-        toast.error('Failed to create order: ' + error.message);
-      }
-      return null;
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [cartItems, userAddress, clearCart]);
 
   return {
     cartItems,
@@ -181,7 +145,6 @@ export const useCart = () => {
     removeFromCart,
     clearCart,
     cartCount,
-    processCart,
     isProcessing
   };
 };

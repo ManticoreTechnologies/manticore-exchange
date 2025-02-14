@@ -620,23 +620,6 @@ export class TradingService {
         }
     }
 
-    async createOrder(listingId: string, request: CreateOrderRequest): Promise<Order> {
-        try {
-            const response = await this.api.post(`/orders/create/${listingId}`, request);
-            const order = response.data;
-            this.saveOrderToStorage(order);
-            return order;
-        } catch (error: any) {
-            if (error.response?.status === 404) {
-                throw new ListingNotFoundError(`Listing ${listingId} not found`);
-            }
-            if (error.response?.data?.detail?.includes('insufficient balance')) {
-                throw new InsufficientBalanceError(error.response.data.detail);
-            }
-            throw error;
-        }
-    }
-
     async createCartOrder(request: CartOrderRequest): Promise<CartOrder> {
         try {
             const response = await this.api.post('/orders/cart', request);
@@ -680,14 +663,34 @@ export class TradingService {
         return response.data;
     }
 
-    async getOrder(orderId: string): Promise<Order> {
-        const response = await this.api.get(`/orders/${orderId}`);
-        return response.data;
-    }
+    async getOrderHistory(params: {
+        status?: 'active' | 'completed' | 'all';
+        orderId?: string;
+    } = { status: 'all' }): Promise<OrderHistoryEvent[]> {
+        if (params.orderId) {
+            const response = await this.api.get(`/orders/cart/${params.orderId}/history`);
+            return response.data;
+        }
 
-    async getOrderHistory(orderId: string): Promise<OrderHistoryEvent[]> {
-        const response = await this.api.get(`/orders/${orderId}/history`);
-        return response.data;
+        this.removeExpiredOrders();
+        const savedOrders = this.getSavedOrders();
+        
+        // Filter based on status
+        const filteredOrders = savedOrders.filter(order => {
+            if (params.status === 'active') {
+                return !['completed', 'failed', 'cancelled', 'expired'].includes(order.status);
+            } else if (params.status === 'completed') {
+                return ['completed', 'failed', 'cancelled', 'expired'].includes(order.status);
+            }
+            return true; // Return all for 'all' status
+        });
+
+        return filteredOrders.map(order => ({
+            timestamp: order.created_at,
+            status: order.status,
+            description: `Order ${order.id} - ${order.status}`,
+            details: order
+        }));
     }
 
     async searchOrders(params: OrderSearchParams): Promise<OrderSearchResponse> {
@@ -779,10 +782,10 @@ export class TradingService {
     }
 
     // Enhanced Order Methods
-    async pollOrderStatus(orderId: string, callback: (order: Order) => void): Promise<void> {
+    async pollOrderStatus(orderId: string, callback: (order: CartOrder) => void): Promise<void> {
         const pollInterval = setInterval(async () => {
             try {
-                const order = await this.getOrder(orderId);
+                const order = await this.getCartOrder(orderId);
                 callback(order);
 
                 if (['completed', 'failed', 'cancelled', 'expired'].includes(order.status)) {
@@ -808,24 +811,7 @@ export class TradingService {
             clearInterval(pollInterval);
         }, this.ORDER_EXPIRY_TIME);
 
-        return () => clearInterval(pollInterval);
-    }
-
-    // Order Management Methods
-    async getActiveOrders(): Promise<Order[]> {
-        this.removeExpiredOrders();
-        const savedOrders = this.getSavedOrders();
-        return savedOrders.filter(order => 
-            !['completed', 'failed', 'cancelled', 'expired'].includes(order.status)
-        );
-    }
-
-    async getOrderHistory(): Promise<Order[]> {
-        this.removeExpiredOrders();
-        const savedOrders = this.getSavedOrders();
-        return savedOrders.filter(order => 
-            ['completed', 'failed', 'cancelled', 'expired'].includes(order.status)
-        );
+        clearInterval(pollInterval); // Clear interval before returning
     }
 }
 

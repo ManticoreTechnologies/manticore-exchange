@@ -528,3 +528,54 @@
     font-size: var(--font-size-sm);
     margin-bottom: var(--spacing-4);
 }
+
+.time-remaining {
+    text-align: center;
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    font-family: var(--font-family-mono);
+}
+
+.payment-status {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius-md);
+    background: var(--background-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+}
+
+.status-indicator.pending {
+    background-color: var(--warning-color-transparent);
+    color: var(--warning-color);
+}
+
+.status-indicator.completed {
+    background-color: var(--success-color-transparent);
+    color: var(--success-color);
+}
+
+.status-indicator.failed,
+.status-indicator.cancelled,
+.status-indicator.expired {
+    background-color: var(--error-color-transparent);
+    color: var(--error-color);
+}
+
+.payment-instructions {
+    margin-top: var(--spacing-4);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}

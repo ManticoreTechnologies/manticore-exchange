@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Cart.css';
 import placeholderImage from '@/Application/logos/white-manticore.png';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart } from 'react-icons/fi';
 import { useCart } from '@/Application/hooks/useCart';
-import { useAuth } from '@/Application/contexts/AuthContext';
 import { toast } from 'react-toastify';
-import InvoiceStatusPopup from '../InvoiceStatusPopup/InvoiceStatusPopup';
 
 const Cart: React.FC = () => {
     const navigate = useNavigate();
-    const { cartItems, removeFromCart, clearCart, processCart, isProcessing } = useCart();
-    const { isAuthenticated } = useAuth();
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const { cartItems, removeFromCart, clearCart, isProcessing } = useCart();
     const PINATA_GATEWAY = "https://rose-decent-prawn-420.mypinata.cloud/ipfs/";
 
     const getImageUrl = (ipfsHash: string | null) => {
@@ -33,31 +29,32 @@ const Cart: React.FC = () => {
         };
     };
 
-    const handleCheckout = async () => {
-        if (!isAuthenticated) {
-            toast.error('Please sign in to proceed with checkout');
-            navigate('/signin');
+    const handleCheckout = () => {
+        if (cartItems.length === 0) {
+            toast.error('Your cart is empty');
             return;
         }
 
-        const orders = await processCart();
-        if (orders && orders.length > 0) {
-            // Show the first order in the invoice popup
-            setSelectedOrder(orders[0]);
-        }
-    };
+        const checkoutItems = cartItems.map(item => ({
+            listingId: item.listingId,
+            name: item.name,
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+            asset_name: item.asset_name,
+            image_ipfs_hash: item.image_ipfs_hash,
+            seller_address: item.seller_address
+        }));
 
-    const handleInvoiceClose = (expired: boolean) => {
-        setSelectedOrder(null);
-        if (expired) {
-            toast.error('Order expired. Please try again.');
-        } else {
-            navigate('/trade');
-        }
+        // Store checkout items in session storage
+        sessionStorage.setItem('checkout_items', JSON.stringify(checkoutItems));
+        
+        navigate('/checkout');
     };
 
     const handleBack = () => {
-        navigate(-1); // This will go back to the previous page
+        navigate(-1);
     };
 
     const totals = calculateTotal();
@@ -166,13 +163,6 @@ const Cart: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            )}
-
-            {selectedOrder && (
-                <InvoiceStatusPopup
-                    invoiceData={selectedOrder}
-                    onClose={handleInvoiceClose}
-                />
             )}
         </div>
     );

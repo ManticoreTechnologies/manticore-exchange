@@ -585,6 +585,7 @@ const Trading: React.FC = () => {
                 featuredListings={featuredListings}
                 onFeaturedClick={handleFeaturedClick}
                 priceRangeError={priceRangeError}
+                isConnected={!!userAddress}
             />
 
             {/* Rest of the content */}

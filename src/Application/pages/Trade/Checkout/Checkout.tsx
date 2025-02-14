@@ -1,227 +1,231 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Checkout.css';
-import { FiArrowLeft, FiCopy, FiShoppingBag } from 'react-icons/fi';
-import Cookies from 'js-cookie';
+import { FiArrowLeft, FiCopy } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import TradingService, { CartOrder } from '@/Application/services/TradingService';
+import { toast } from 'react-toastify';
+import { CheckoutItem } from '../types';
 
-interface CheckoutItem {
-    id: string;
-    listingId: string;
-    name: string;
-    description: string;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-    asset_name: string;
-    image_ipfs_hash?: string;
-    seller_address: string;
-}
+const EVR_ADDRESS_REGEX = /^[A-Za-z0-9]{34}$/;
 
-interface OrderResponse {
-    id: string;
-    status: string;
-    payment_address?: string;
-    error?: string;
-    items?: Array<{
-        asset_name: string;
-        amount: number;
-        price_evr?: string;
-    }>;
-    total_price_evr?: string;
-    total_payment_evr?: string;
-    total_fee_evr?: string;
-    buyer_address?: string;
-    created_at?: string;
-    updated_at?: string;
-}
+const POLL_INTERVAL = 3000; // 3 seconds
+const MAX_POLL_TIME = 15 * 60 * 1000; // 15 minutes
 
-interface CheckoutProps {
-    selectedItems: CheckoutItem[];
-    onCheckoutComplete: () => void;
-    onBack: () => void;
-}
-
-const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, onBack }) => {
+const Checkout: React.FC = () => {
+    const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState<number>(1);
-    const [buyerAddress, setBuyerAddress] = useState<string>('');
-    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [orderData, setOrderData] = useState<OrderResponse[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [order, setOrder] = useState<CartOrder | null>(null);
+    const [buyerAddress, setBuyerAddress] = useState<string>('');
+    const [addressError, setAddressError] = useState<string>('');
+    const [isInitialized, setIsInitialized] = useState(false);
+    const [pollTimer, setPollTimer] = useState<NodeJS.Timeout | null>(null);
+    const [timeLeft, setTimeLeft] = useState<number>(MAX_POLL_TIME);
+    const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
 
-    const trading_api_url = `${import.meta.env.VITE_TRADING_API_PROTO || 'https'}://${import.meta.env.VITE_TRADING_API_HOST || 'api.manticore.exchange'}:8000`;
+    // Handle cart initialization and validation
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const storedItems = sessionStorage.getItem('checkout_items');
+            if (!storedItems) {
+                toast.error('No items selected for checkout');
+                navigate('/cart');
+                return;
+            }
 
-    const saveOrdersToCookies = (orders: OrderResponse[]) => {
-        const existingOrders = Cookies.get('manticore_orders');
-        let allOrders = orders;
-        
-        if (existingOrders) {
-            const parsedOrders = JSON.parse(existingOrders);
-            allOrders = [...parsedOrders, ...orders];
+            try {
+                const items = JSON.parse(storedItems);
+                setCheckoutItems(items);
+                setIsInitialized(true);
+            } catch (err) {
+                console.error('Error parsing checkout items:', err);
+                toast.error('Error loading checkout items');
+                navigate('/cart');
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [navigate]);
+
+    // Cleanup polling on unmount
+    useEffect(() => {
+        return () => {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+            }
+        };
+    }, [pollTimer]);
+
+    // Handle order status polling
+    const startPolling = useCallback((orderId: string) => {
+        if (pollTimer) {
+            clearInterval(pollTimer);
         }
+
+        const startTime = Date.now();
         
-        Cookies.set('manticore_orders', JSON.stringify(allOrders), { expires: 7 }); // Expires in 7 days
+        const timer = setInterval(async () => {
+            try {
+                const updatedOrder = await TradingService.getCartOrder(orderId);
+                console.log('Order status updated:', updatedOrder);
+                setOrder(updatedOrder);
+
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, MAX_POLL_TIME - elapsed);
+                setTimeLeft(remaining);
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    setError('Order expired. Please try again.');
+                    return;
+                }
+
+                switch (updatedOrder.status.toLowerCase()) {
+                    case 'completed':
+                        clearInterval(timer);
+                        toast.success('Payment received! Your order is complete.');
+                        // Clear checkout items from session storage
+                        sessionStorage.removeItem('checkout_items');
+                        break;
+                    case 'failed':
+                        clearInterval(timer);
+                        toast.error('Order failed. Please try again.');
+                        break;
+                    case 'cancelled':
+                        clearInterval(timer);
+                        toast.error('Order was cancelled.');
+                        break;
+                    case 'expired':
+                        clearInterval(timer);
+                        toast.error('Order expired. Please try again.');
+                        break;
+                    default:
+                        break;
+                }
+            } catch (err) {
+                console.error('Error polling order status:', err);
+            }
+        }, POLL_INTERVAL);
+
+        setPollTimer(timer);
+    }, [pollTimer]);
+
+    if (!isInitialized) {
+        return null;
+    }
+
+    const validateAddress = (address: string): boolean => {
+        if (!address) {
+            setAddressError('Please enter your EVR address');
+            return false;
+        }
+        if (!EVR_ADDRESS_REGEX.test(address)) {
+            setAddressError('Please enter a valid EVR address');
+            return false;
+        }
+        setAddressError('');
+        return true;
     };
 
     const calculateTotals = () => {
-        const subtotal = selectedItems.reduce((total, item) => 
-            total + (Number(item.unitPrice) * item.quantity), 0);
+        if (!checkoutItems || checkoutItems.length === 0) return { subtotal: "0", fee: "0", total: "0" };
+        
+        const subtotal = checkoutItems.reduce((total, item) => 
+            total + (item.unitPrice * item.quantity), 0);
         const fee = subtotal * 0.005; // 0.5% fee
         return {
-            subtotal: subtotal.toString(),
-            fee: fee.toString(),
-            total: (subtotal + fee).toString()
+            subtotal: subtotal.toFixed(8),
+            fee: fee.toFixed(8),
+            total: (subtotal + fee).toFixed(8)
         };
     };
 
     const handleCreateOrder = async () => {
-        if (!buyerAddress) {
-            setError('Please enter your EVR address');
+        if (!validateAddress(buyerAddress)) {
             return;
         }
 
-        setLoading(true);
         setError(null);
+        setLoading(true);
 
         try {
-            // Group items by listing ID
-            const listingOrders = selectedItems.reduce((acc: { [key: string]: CheckoutItem[] }, item) => {
-                if (!acc[item.listingId]) {
-                    acc[item.listingId] = [];
-                }
-                acc[item.listingId].push(item);
-                return acc;
-            }, {});
+            const cartOrderItems = checkoutItems.map(item => ({
+                listing_id: item.listingId,
+                asset_name: item.asset_name,
+                amount: item.quantity.toString(),
+                listing_name: item.name,
+                seller_address: item.seller_address
+            }));
 
-            // Create orders for each listing
-            const orderPromises = Object.entries(listingOrders).map(([listingId, listingItems]) => {
-                // Format items according to backend requirements
-                const formattedItems = listingItems.map(item => ({
-                    asset_name: item.asset_name,
-                    amount: item.quantity.toString() // Convert to string as per backend format
-                }));
+            console.log('Creating cart order with items:', cartOrderItems);
 
-                return fetch(`${trading_api_url}/listings/${listingId}/orders/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        buyer_address: buyerAddress,
-                        items: formattedItems
-                    }),
-                }).then(async response => {
-                    const data = await response.json();
-                    if (!response.ok) {
-                        console.error('Order creation failed:', {
-                            status: response.status,
-                            statusText: response.statusText,
-                            data
-                        });
-                        
-                        // Handle specific error cases
-                        if (data.detail) {
-                            if (typeof data.detail === 'object') {
-                                // Handle validation errors
-                                const errors = Object.entries(data.detail)
-                                    .map(([key, value]) => `${key}: ${value}`)
-                                    .join('\n');
-                                throw new Error(`Validation Error:\n${errors}`);
-                            } else {
-                                throw new Error(data.detail);
-                            }
-                        }
-                        
-                        throw new Error(`Failed to create order (${response.status}): ${response.statusText}`);
-                    }
-                    return data;
-                });
+            const createdOrder = await TradingService.createCartOrder({
+                buyer_address: buyerAddress,
+                items: cartOrderItems
             });
 
-            const results = await Promise.all(orderPromises);
-            console.log('Order creation successful:', results);
-            setOrderData(results);
-            saveOrdersToCookies(results);
+            console.log('Order created successfully:', createdOrder);
+
+            setOrder(createdOrder);
             setCurrentStep(2);
 
             // Start polling for order status
-            startOrderStatusPolling(results.map(r => r.id));
+            startPolling(createdOrder.id);
 
         } catch (err: any) {
             console.error('Order creation error:', err);
-            setError(err.message || 'Failed to create order. Please try again.');
+            if (err.code === 'INSUFFICIENT_BALANCE') {
+                setError('Insufficient balance in listing');
+            } else if (err.code === 'LISTING_NOT_FOUND') {
+                setError('One or more listings not found');
+            } else {
+                setError(err.message || 'Failed to create order. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    const startOrderStatusPolling = (orderIds: string[]) => {
-        const pollInterval = setInterval(async () => {
-            try {
-                const statusPromises = orderIds.map(async id => {
-                    const response = await fetch(`${trading_api_url}/orders/${id}`);
-                    if (response.status === 422) {
-                        console.error(`Invalid order ID format: ${id}`);
-                        throw new Error(`Invalid order ID format: ${id}`);
-                    }
-                    
-                    const data = await response.json();
-                    if (!response.ok) {
-                        console.error('Order status check failed:', {
-                            orderId: id,
-                            status: response.status,
-                            statusText: response.statusText,
-                            data
-                        });
-                        throw new Error(data.detail || `Failed to fetch status for order ${id}`);
-                    }
-                    return data;
-                });
+    const handleCopyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            toast.success('Copied to clipboard!');
+        } catch (err) {
+            toast.error('Failed to copy to clipboard');
+        }
+    };
 
-                const statuses = await Promise.all(statusPromises);
-                console.log('Order statuses:', statuses);
-                
-                // Check if all orders are complete or if any have failed
-                const allComplete = statuses.every(s => s.status === 'complete');
-                const anyFailed = statuses.some(s => s.status === 'failed');
-                const anyError = statuses.some(s => s.error);
+    const handleBack = () => {
+        if (currentStep === 2 && !order?.status) {
+            setCurrentStep(1);
+        } else {
+            navigate('/cart');
+        }
+    };
 
-                if (allComplete) {
-                    clearInterval(pollInterval);
-                    onCheckoutComplete();
-                } else if (anyFailed || anyError) {
-                    clearInterval(pollInterval);
-                    const failedOrders = statuses.filter(s => s.status === 'failed' || s.error);
-                    const errorMessages = failedOrders.map(order => {
-                        const baseMessage = order.error || `Order ${order.id} failed to process`;
-                        const details = order.status_details ? `\nDetails: ${order.status_details}` : '';
-                        return `${baseMessage}${details}`;
-                    });
-                    setError(errorMessages.join('\n'));
-                }
-
-                setOrderData(statuses);
-
-            } catch (err: any) {
-                console.error('Error polling order status:', err);
-                const errorMessage = err.message || 'Failed to update order status. Please check your orders page for the latest status.';
-                setError(`Error checking order status: ${errorMessage}`);
-            }
-        }, 5000);
-
-        // Cleanup interval after 15 minutes
-        setTimeout(() => {
-            clearInterval(pollInterval);
-            setError('Order status check timed out. Please check your orders page for the latest status.');
-        }, 15 * 60 * 1000);
-
-        return () => clearInterval(pollInterval);
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const address = e.target.value;
+        setBuyerAddress(address);
+        if (address) {
+            validateAddress(address);
+        } else {
+            setAddressError('');
+        }
     };
 
     const totals = calculateTotals();
 
+    const formatTimeLeft = (ms: number): string => {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
     return (
         <div className="checkout-page">
             <div className="checkout-header">
-                <button className="back-button" onClick={onBack}>
+                <button className="back-button" onClick={handleBack}>
                     <FiArrowLeft /> Back
                 </button>
                 <div className="checkout-steps">
@@ -243,7 +247,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                         <div className="order-summary">
                             <h3>Order Summary</h3>
                             <div className="order-items">
-                                {selectedItems.map((item, index) => (
+                                {checkoutItems.map((item, index) => (
                                     <div key={index} className="order-item">
                                         <div className="item-details">
                                             <h4>{item.name}</h4>
@@ -264,7 +268,7 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                                     <span>{totals.subtotal} EVR</span>
                                 </div>
                                 <div className="total-line">
-                                    <span>Trading Fee (0.5%)</span>
+                                    <span>Network Fee (0.5%)</span>
                                     <span>{totals.fee} EVR</span>
                                 </div>
                                 <div className="total-line total">
@@ -275,25 +279,31 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                         </div>
 
                         <div className="buyer-address-section">
-                            <h3>Your Information</h3>
+                            <h3>Delivery Information</h3>
                             <div className="input-group">
-                                <label htmlFor="buyerAddress">Your EVR Address</label>
+                                <label>Your EVR Address</label>
                                 <input
                                     type="text"
-                                    id="buyerAddress"
+                                    className={`address-input ${addressError ? 'error' : ''}`}
                                     value={buyerAddress}
-                                    onChange={(e) => setBuyerAddress(e.target.value)}
+                                    onChange={handleAddressChange}
                                     placeholder="Enter your EVR address"
-                                    className={error ? 'error' : ''}
                                 />
-                                {error && <div className="error-message">{error}</div>}
+                                {addressError && (
+                                    <div className="error-message">{addressError}</div>
+                                )}
+                                <p className="address-hint">
+                                    This is the address where your purchased assets will be sent.
+                                </p>
                             </div>
                         </div>
+
+                        {error && <div className="error-message">{error}</div>}
 
                         <button
                             className="proceed-button"
                             onClick={handleCreateOrder}
-                            disabled={loading || !buyerAddress}
+                            disabled={loading || !buyerAddress.trim() || !!addressError}
                         >
                             {loading ? 'Processing...' : 'Create Order'}
                         </button>
@@ -301,18 +311,21 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                 ) : (
                     <div className="order-status-container">
                         <div className="order-header">
-                            <h2>Orders Created Successfully!</h2>
+                            <h2>Order Created Successfully!</h2>
                             <p className="order-subtitle">Please complete the payment to receive your items</p>
+                            <div className="time-remaining">
+                                Time remaining: {formatTimeLeft(timeLeft)}
+                            </div>
                         </div>
 
-                        <div className="order-details">
-                            {orderData.map((order: OrderResponse, index: number) => (
-                                <div key={index} className="order-detail-item">
+                        {order && (
+                            <div className="order-details">
+                                <div className="order-detail-item">
                                     <div className="order-id">
                                         <span>Order #{order.id}</span>
                                         <button 
                                             className="copy-button"
-                                            onClick={() => navigator.clipboard.writeText(order.id)}
+                                            onClick={() => handleCopyToClipboard(order.id)}
                                             title="Copy Order ID"
                                         >
                                             <FiCopy />
@@ -325,99 +338,80 @@ const Checkout: React.FC<CheckoutProps> = ({ selectedItems, onCheckoutComplete, 
                                         </span>
                                     </div>
 
-                                    {order.items && order.items.length > 0 && (
-                                        <div className="order-items-list">
-                                            <h4>Items</h4>
-                                            {order.items.map((item, idx) => (
-                                                <div key={idx} className="order-item-detail">
-                                                    <span>{item.asset_name}</span>
-                                                    <span>x{item.amount}</span>
-                                                    {item.price_evr && (
-                                                        <span className="item-price">{item.price_evr} EVR</span>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {order.payment_address && (
-                                        <div className="payment-info">
-                                            <h4>Payment Details</h4>
-                                            <div className="payment-row">
-                                                <span className="label">Send payment to:</span>
-                                                <div className="address-copy">
-                                                    <span>{order.payment_address}</span>
-                                                    <button 
-                                                        className="copy-button"
-                                                        onClick={() => navigator.clipboard.writeText(order.payment_address!)}
-                                                        title="Copy Payment Address"
-                                                    >
-                                                        <FiCopy />
-                                                    </button>
-                                                </div>
+                                    <div className="payment-info">
+                                        <h4>Payment Details</h4>
+                                        <div className="payment-row">
+                                            <span className="label">Send payment to:</span>
+                                            <div className="address-copy">
+                                                <span>{order.payment_address}</span>
+                                                <button 
+                                                    className="copy-button"
+                                                    onClick={() => handleCopyToClipboard(order.payment_address)}
+                                                    title="Copy Payment Address"
+                                                >
+                                                    <FiCopy />
+                                                </button>
                                             </div>
-                                            {order.total_payment_evr && (
-                                                <div className="payment-row">
-                                                    <span className="label">Total to Pay:</span>
-                                                    <span className="value highlight">{order.total_payment_evr} EVR</span>
-                                                </div>
-                                            )}
-                                            {order.total_price_evr && (
-                                                <div className="payment-row">
-                                                    <span className="label">Items Total:</span>
-                                                    <span className="value">{order.total_price_evr} EVR</span>
-                                                </div>
-                                            )}
-                                            {order.total_fee_evr && (
-                                                <div className="payment-row">
-                                                    <span className="label">Network Fee:</span>
-                                                    <span className="value">{order.total_fee_evr} EVR</span>
-                                                </div>
-                                            )}
                                         </div>
-                                    )}
-
-                                    <div className="delivery-info">
-                                        <h4>Delivery Information</h4>
-                                        <div className="address-copy">
-                                            <span>{order.buyer_address}</span>
-                                            <button 
-                                                className="copy-button"
-                                                onClick={() => navigator.clipboard.writeText(order.buyer_address!)}
-                                                title="Copy Delivery Address"
-                                            >
-                                                <FiCopy />
-                                            </button>
+                                        <div className="payment-row">
+                                            <span className="label">Amount to Send:</span>
+                                            <span className="value highlight">{order.total_payment_evr} EVR</span>
+                                        </div>
+                                        <div className="payment-status">
+                                            <div className={`status-indicator ${order.status.toLowerCase()}`}>
+                                                {order.status}
+                                            </div>
+                                            {order.status.toLowerCase() === 'pending' && (
+                                                <p className="payment-instructions">
+                                                    Send exactly {order.total_payment_evr} EVR to the address above.
+                                                    The order will automatically complete once payment is detected.
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
-                                    {order.created_at && (
-                                        <div className="order-timestamp">
-                                            Created: {new Date(order.created_at).toLocaleString()}
+                                    {'fulfillment_txid' in order && (order as any).fulfillment_txid && (
+                                        <div className="transaction-info">
+                                            <h4>Transaction Details</h4>
+                                            <div className="address-copy">
+                                                <span>{(order as any).fulfillment_txid as string}</span>
+                                                <button 
+                                                    className="copy-button"
+                                                    onClick={() => handleCopyToClipboard((order as any).fulfillment_txid as string)}
+                                                    title="Copy Transaction ID"
+                                                >
+                                                    <FiCopy />
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
-                                </div>
-                            ))}
-                        </div>
 
-                        {error && (
-                            <div className="error-message">
-                                {error.split('\n').map((line, i) => (
-                                    <div key={i}>{line}</div>
-                                ))}
+                                    <div className="order-timestamp">
+                                        Created: {new Date(order.created_at).toLocaleString()}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
+                        {error && <div className="error-message">{error}</div>}
+
                         <div className="order-actions">
                             <p className="order-note">
-                                * Your orders have been saved. You can access them anytime from the orders menu.
+                                * Your order has been saved. You can access it anytime from your orders page.
+                                {order?.status.toLowerCase() === 'pending' && 
+                                    " The order will automatically update once payment is received."}
                             </p>
-                            <button 
-                                className="proceed-button"
-                                onClick={onCheckoutComplete}
-                            >
-                                Continue Shopping
-                            </button>
+                            {(order?.status.toLowerCase() === 'completed' || 
+                             order?.status.toLowerCase() === 'failed' ||
+                             order?.status.toLowerCase() === 'cancelled' ||
+                             order?.status.toLowerCase() === 'expired') && (
+                                <button 
+                                    className="proceed-button"
+                                    onClick={handleBack}
+                                >
+                                    Continue Shopping
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

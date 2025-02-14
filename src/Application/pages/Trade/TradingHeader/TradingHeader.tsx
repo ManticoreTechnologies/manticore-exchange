@@ -32,6 +32,7 @@ interface TradingHeaderProps {
     }>;
     onFeaturedClick: (listing: any) => void;
     loading: boolean;
+    priceRangeError: string | null;
 }
 
 const TradingHeader: React.FC<TradingHeaderProps> = ({

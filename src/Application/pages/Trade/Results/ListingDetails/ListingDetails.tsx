@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/Application/contexts/AuthContext';
 import { useCart } from '@/Application/hooks/useCart';
 import { toast } from 'react-toastify';
-import { FiHeart, FiShoppingCart, FiArrowLeft } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiArrowLeft, FiShare2, FiEdit } from 'react-icons/fi';
 import { ImageCarousel } from './components/ImageCarousel/ImageCarousel';
 import axios from 'axios';
 import './ListingDetails.css';
@@ -42,6 +42,12 @@ interface AssetQuantity {
 }
 
 const TRADING_API_URL = `${import.meta.env.VITE_TRADING_API_PROTO || 'http'}://${import.meta.env.VITE_TRADING_API_HOST || 'localhost'}:8000`;
+
+// Create a separate CartBadge component
+const CartBadge: React.FC<{ count: number }> = React.memo(({ count }) => {
+  if (count <= 0) return null;
+  return <span className="cart-badge">{count}</span>;
+});
 
 const ListingDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -343,6 +349,17 @@ const ListingDetails: React.FC = () => {
     return selectedBalance && Number(selectedBalance.confirmed_balance) > 0;
   }, [listing, selectedAsset]);
 
+  const handleShare = async () => {
+    try {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      toast.error('Failed to copy link');
+    }
+  };
+
   if (loading) {
     return (
       <div className="listing-details">
@@ -368,19 +385,35 @@ const ListingDetails: React.FC = () => {
         <div className="listing-details__header-left">
           <button 
             className="listing-details__back-button"
-            onClick={handleBack}
+            onClick={() => navigate('/trade')}
             aria-label="Go back"
           >
             <FiArrowLeft /> Back
           </button>
           <h1 className="listing-details__title">{listing.name}</h1>
         </div>
-        <button 
-          className={`listing-details__button listing-details__button--secondary ${isLiked ? 'active' : ''}`}
-          onClick={handleLikeClick}
-        >
-          <FiHeart /> {isLiked ? 'Liked' : 'Like'}
-        </button>
+        <div className="listing-details__header-actions">
+          <button 
+            className={`listing-details__button listing-details__button--secondary ${isLiked ? 'active' : ''}`}
+            onClick={handleLikeClick}
+          >
+            <FiHeart /> {isLiked ? 'Liked' : 'Like'}
+          </button>
+          <button 
+            className="listing-details__button listing-details__button--secondary"
+            onClick={handleShare}
+          >
+            <FiShare2 /> Share
+          </button>
+          {listing.isOwnedByUser && (
+            <button 
+              className="listing-details__button listing-details__button--primary"
+              onClick={() => navigate(`/trade/listings/manage/${listing.id}`)}
+            >
+              <FiEdit /> Manage Listing
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="listing-details__container">
@@ -595,7 +628,7 @@ const ListingDetails: React.FC = () => {
                 disabled={!hasAvailableAssets || (!purchaseAll && (!selectedAsset || Number(quantity) <= 0))}
               >
                 <FiShoppingCart /> Add to Cart
-                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                <CartBadge count={cartCount} />
               </button>
               <button
                 className="listing-details__button listing-details__button--secondary"

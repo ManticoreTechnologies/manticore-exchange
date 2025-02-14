@@ -15,6 +15,7 @@ import Roadmap from './pages/Roadmap/Roadmap';
 import Ipfs from './pages/Ipfs/Ipfs';
 import EVRPage from './pages/InfoChart/EVRPage';
 import Cart from './pages/Trade/Cart/Cart';
+import Checkout from './pages/Trade/Checkout/Checkout';
 import About from './pages/About/About';
 import Contact from './pages/Contact/Contact';
 import Chat from './pages/Chat/Chat';
@@ -164,6 +165,10 @@ export const router = createBrowserRouter([
             {
                 path: '*',
                 element: <NotFound />
+            },
+            {
+                path: '/checkout',
+                element: <Checkout />
             }
         ]
     }
