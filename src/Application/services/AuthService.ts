@@ -78,7 +78,6 @@ export class AuthService {
             // Handle auth errors
             if (error.response.status === 401) {
                 this.clearAuth();
-                window.location.href = '/login';
             }
         } else if (error.request) {
             message = 'No response received from server';
@@ -115,7 +114,7 @@ export class AuthService {
         return token;
     }
 
-    private clearAuth(): void {
+    public clearAuth(): void {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
     }

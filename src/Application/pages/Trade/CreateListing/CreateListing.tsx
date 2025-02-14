@@ -3,6 +3,8 @@ import axios, { AxiosError } from 'axios';
 import QRCode from 'qrcode.react';
 import './CreateListing.css';
 import './NumberInput.css';
+import { useAuth } from '../../../contexts/AuthContext';
+import tradingService from '../../../services/TradingService';
 
 interface CreateListingProps {
     onClose: () => void;
@@ -38,6 +40,7 @@ const STEPS = [
 ];
 
 const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) => {
+    const { token } = useAuth();
     const [step, setStep] = useState(1);
     const [listingDetails, setListingDetails] = useState({
         name: '',
@@ -88,11 +91,10 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
         setErrorMessage(null);
 
         try {
-            const prices: PriceSpec[] = assetPrices.map(ap => ({
+            const prices = assetPrices.map(ap => ({
                 asset_name: ap.asset_name.trim(),
-                price_evr: Number(ap.price_evr),
-                ipfs_hash: ap.ipfs_hash.trim() || undefined,
-                units: 8 // Default to 8 decimal places
+                price_evr: ap.price_evr.toString(),
+                ipfs_hash: ap.ipfs_hash.trim() || undefined
             }));
 
             const requestBody = {
@@ -104,10 +106,10 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
                 prices
             };
 
-            const response = await axios.post(`${trading_api_url}/listings/`, requestBody);
+            const response = await tradingService.createListing(requestBody);
 
-            if (response.data) {
-                setListingResponse(response.data);
+            if (response) {
+                setListingResponse(response);
                 setStep(4);
             }
         } catch (error) {
@@ -116,7 +118,10 @@ const CreateListing: React.FC<CreateListingProps> = ({ onClose, userAddress }) =
             if (axios.isAxiosError(error)) {
                 const axiosError = error as AxiosError<any>;
                 
-                if (axiosError.response?.status === 422) {
+                if (axiosError.response?.status === 401) {
+                    setErrorMessage('Your session has expired. Please sign in again.');
+                    // Let PrivateRoute handle the redirect
+                } else if (axiosError.response?.status === 422) {
                     const validationErrors = axiosError.response.data?.detail;
                     if (Array.isArray(validationErrors)) {
                         const errorMessages = validationErrors.map((err: ValidationError) => {

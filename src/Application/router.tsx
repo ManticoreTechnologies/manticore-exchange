@@ -24,6 +24,7 @@ import Footer from './components/navigation/footer/footer';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Bridge from './pages/Bridge/Bridge';
 import TradingServiceDebug from './services/Debug/TradingServiceDebug';
+
 const RootLayout = () => {
     return (
         <div className="application">
@@ -76,7 +77,9 @@ export const router = createBrowserRouter([
                 path: 'trade/create',
                 element: (
                     <PrivateRoute>
-                        <CreateListingPage />
+                        <ErrorBoundary>
+                            <CreateListingPage />
+                        </ErrorBoundary>
                     </PrivateRoute>
                 )
             },
@@ -140,7 +143,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'cart',
-                element: <Cart onBack={() => {}} />
+                element: <Cart />
             },
             {
                 path: 'chat',
@@ -151,16 +154,16 @@ export const router = createBrowserRouter([
                 )
             },
             {
-                path: '*',
-                element: <NotFound />
-            },
-            {
                 path: 'bridge',
                 element: <Bridge />
             },
             {
                 path: 'debug',
                 element: <TradingServiceDebug />
+            },
+            {
+                path: '*',
+                element: <NotFound />
             }
         ]
     }

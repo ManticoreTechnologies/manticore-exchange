@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
+import authService from './AuthService';
 
 // Base Types
 export interface Balance {
@@ -325,7 +326,6 @@ interface ApiConfig {
 // Service Class
 export class TradingService {
     private readonly baseUrl: string;
-    private token: string | null = null;
     private api: AxiosInstance;
     private readonly ORDERS_STORAGE_KEY = 'manticore_orders';
     private readonly ORDER_EXPIRY_TIME = 15 * 60 * 1000; // 15 minutes
@@ -340,8 +340,9 @@ export class TradingService {
         // Add request interceptor for auth token
         this.api.interceptors.request.use(
             (config) => {
-                if (this.token) {
-                    config.headers.Authorization = `Bearer ${this.token}`;
+                const token = authService.getToken();
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
                 }
                 return config;
             },
@@ -350,19 +351,14 @@ export class TradingService {
             }
         );
 
-        // Add response interceptor for token handling
+        // Add response interceptor for error handling
         this.api.interceptors.response.use(
-            (response) => {
-                if (response.data.token) {
-                    this.token = response.data.token;
-                    localStorage.setItem('auth_token', response.data.token);
-                }
-                return response;
-            },
+            (response) => response,
             (error) => {
                 if (error.response?.status === 401) {
-                    this.token = null;
-                    localStorage.removeItem('auth_token');
+                    // If unauthorized, clear auth and redirect to login
+                    authService.clearAuth();
+                    window.location.href = '/signin';
                 }
                 return Promise.reject(error);
             }
@@ -373,7 +369,6 @@ export class TradingService {
     async login(address: string, signature: string): Promise<void> {
         const response = await this.api.post('/auth/signin', { address, signature });
         if (response.data.token) {
-            this.token = response.data.token;
             localStorage.setItem('auth_token', response.data.token);
         }
     }
@@ -381,7 +376,6 @@ export class TradingService {
     async logout(): Promise<void> {
         try {
             await this.api.post('/auth/logout');
-            this.token = null;
             localStorage.removeItem('auth_token');
         } catch (error) {
             throw error;
@@ -389,7 +383,7 @@ export class TradingService {
     }
 
     getToken(): string | null {
-        return this.token || localStorage.getItem('auth_token');
+        return localStorage.getItem('auth_token');
     }
 
     // Listing Methods
