@@ -32,6 +32,7 @@ interface Listing {
         units: number;
   }>;
   isOwnedByUser?: boolean;
+  tags?: string[];
 }
 
 const TRADING_API_URL = `${import.meta.env.VITE_TRADING_API_PROTO || 'http'}://${import.meta.env.VITE_TRADING_API_HOST || 'localhost'}:8000`;
@@ -48,6 +49,8 @@ const ListingDetails: React.FC = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("1");
   const [evrAmount, setEvrAmount] = useState<string>("0");
+  const [purchaseAll, setPurchaseAll] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -97,35 +100,28 @@ const ListingDetails: React.FC = () => {
 
   const handleQuantityChange = (value: string) => {
     if (value === "") {
-      setQuantity("");
-      setEvrAmount("0");
-      return;
+        setQuantity("");
+        setEvrAmount("0");
+        return;
     }
 
     const numValue = Number(value);
-    if (isNaN(numValue)) return;
+    if (isNaN(numValue) || numValue < 0) return;
 
     const selectedBalance = listing?.balances.find(b => b.asset_name === selectedAsset);
     const selectedPrice = listing?.prices.find(p => p.asset_name === selectedAsset);
     
     if (!selectedBalance || !selectedPrice) return;
 
-    const decimals = getDecimalPlaces(selectedBalance.units);
-    const roundedQuantity = roundToUnits(numValue, selectedBalance.units);
     const maxQuantity = Number(selectedBalance.confirmed_balance);
 
-    if (roundedQuantity > maxQuantity) {
-      toast.error(`Maximum available quantity is ${maxQuantity}`);
-      return;
+    if (numValue > maxQuantity) {
+        toast.error(`Maximum available quantity is ${maxQuantity}`);
+        return;
     }
 
-    if (roundedQuantity < Math.pow(10, -decimals)) {
-      toast.error(`Minimum quantity is ${Math.pow(10, -decimals)}`);
-      return;
-    }
-
-    setQuantity(roundedQuantity.toString());
-    const totalEvr = (roundedQuantity * Number(selectedPrice.price_evr)).toFixed(8);
+    setQuantity(value);
+    const totalEvr = (numValue * Number(selectedPrice.price_evr)).toFixed(8);
     setEvrAmount(totalEvr);
   };
 
@@ -212,6 +208,52 @@ const ListingDetails: React.FC = () => {
     navigate(-1);
   };
 
+  const handleAssetSelect = (assetName: string) => {
+    setSelectedAsset(assetName);
+    setDropdownOpen(false);
+    // Reset quantity and EVR amount when changing assets
+    setQuantity("1");
+    const selectedPrice = listing?.prices.find(p => p.asset_name === assetName);
+    if (selectedPrice) {
+      setEvrAmount(selectedPrice.price_evr);
+    }
+  };
+
+  const hasAvailableAssets = useMemo(() => {
+    if (!listing) return false;
+    return listing.balances.some(balance => Number(balance.confirmed_balance) > 0);
+  }, [listing]);
+
+  const hasSelectedAssetBalance = useMemo(() => {
+    if (!listing || !selectedAsset) return false;
+    const selectedBalance = listing.balances.find(b => b.asset_name === selectedAsset);
+    return selectedBalance && Number(selectedBalance.confirmed_balance) > 0;
+  }, [listing, selectedAsset]);
+
+  const handlePurchaseAllToggle = () => {
+    if (!hasAvailableAssets) return;
+    
+    setPurchaseAll(!purchaseAll);
+    if (!purchaseAll && listing) {
+      // Calculate total EVR amount for all available assets
+      const total = listing.prices.reduce((sum, price) => {
+        const balance = listing.balances.find(b => b.asset_name === price.asset_name);
+        if (balance && Number(balance.confirmed_balance) > 0) {
+          return sum + (Number(balance.confirmed_balance) * Number(price.price_evr));
+        }
+        return sum;
+      }, 0);
+      setEvrAmount(total.toFixed(8));
+    } else {
+      // Reset to selected asset only
+      const selectedPrice = listing?.prices.find(p => p.asset_name === selectedAsset);
+      if (selectedPrice) {
+        setEvrAmount(selectedPrice.price_evr);
+        setQuantity("1");
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="listing-details">
@@ -273,9 +315,18 @@ const ListingDetails: React.FC = () => {
           />
 
           <div className="listing-details__description">
+            {listing.tags && listing.tags.length > 0 && (
+                <div className="listing-details__tags">
+                    {listing.tags.map((tag, index) => (
+                        <span key={index} className="listing-details__tag">
+                            #{tag}
+                        </span>
+                    ))}
+                </div>
+            )}
             <h2 className="listing-details__description-title">Description</h2>
             <p className="listing-details__description-content">{listing.description}</p>
-              </div>
+          </div>
 
           <div className="listing-details__info">
             <h3 className="listing-details__info-title">Item Details</h3>
@@ -304,54 +355,112 @@ const ListingDetails: React.FC = () => {
 
         <div className="listing-details__sidebar">
           <div className="listing-details__trading">
-            <div className="listing-details__price-list">
-              {listing.prices.map(price => {
-                const balance = listing.balances.find(b => b.asset_name === price.asset_name);
-                const isSelected = price.asset_name === selectedAsset;
-                const hasBalance = balance && Number(balance.confirmed_balance) > 0;
-
-                return (
-                  <div
-                    key={price.asset_name}
-                    className={`listing-details__price-item ${isSelected ? 'active' : ''} ${!hasBalance ? 'disabled' : ''}`}
-                    onClick={() => hasBalance && setSelectedAsset(price.asset_name)}
-                  >
-                    <div className="listing-details__price-info">
-                      <span className="listing-details__price-asset">
-                        {price.asset_name}
-                          </span>
-                      {balance && (
-                        <span className="listing-details__price-balance">
-                          {balance.confirmed_balance} available
-                          </span>
-                      )}
-                    </div>
-                    <span className="listing-details__price-value">
-                      {price.price_evr} EVR
-                    </span>
-                  </div>
-                );
-              })}
-        </div>
-
-            <div className="listing-details__quantity-controls">
-              <div className="quantity-input">
-                <label>Quantity ({selectedAsset})</label>
-                <input
-                  type="text"
-                  value={quantity}
-                  onChange={(e) => handleQuantityChange(e.target.value)}
-                  className="quantity-field"
-                />
+            <div className="listing-details__asset-selector">
+              <div 
+                className="listing-details__dropdown-header"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <span className="listing-details__selected-asset">
+                  {selectedAsset || "Select Asset"}
+                </span>
+                <svg
+                  className={`listing-details__dropdown-arrow ${dropdownOpen ? 'open' : ''}`}
+                  width="12"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L6 6L11 1"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
-              <div className="evr-input">
-                <label>Total (EVR)</label>
-                <input
-                  type="text"
-                  value={evrAmount}
-                  onChange={(e) => handleEvrChange(e.target.value)}
-                  className="evr-field"
-                />
+              {dropdownOpen && (
+                <div className="listing-details__dropdown-content">
+                  {listing?.prices.map(price => {
+                    const balance = listing.balances.find(b => b.asset_name === price.asset_name);
+                    const hasBalance = balance && Number(balance.confirmed_balance) > 0;
+                    
+                    return (
+                      <div
+                        key={price.asset_name}
+                        className={`listing-details__dropdown-item ${
+                          price.asset_name === selectedAsset ? 'active' : ''
+                        } ${!hasBalance ? 'disabled' : ''}`}
+                        onClick={() => hasBalance && handleAssetSelect(price.asset_name)}
+                      >
+                        <div className="listing-details__dropdown-item-info">
+                          <span className="listing-details__dropdown-item-name">
+                            {price.asset_name}
+                          </span>
+                          {balance && (
+                            <span className="listing-details__dropdown-item-balance">
+                              {Number(balance.confirmed_balance).toFixed(balance.units)} available
+                            </span>
+                          )}
+                        </div>
+                        <span className="listing-details__dropdown-item-price">
+                          {price.price_evr} EVR
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="listing-details__trading-controls">
+              <div className="listing-details__purchase-all">
+                <label className={`listing-details__checkbox-label ${!hasAvailableAssets ? 'disabled' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={purchaseAll}
+                    onChange={handlePurchaseAllToggle}
+                    disabled={!hasAvailableAssets}
+                  />
+                  Purchase All Available Assets
+                  {!hasAvailableAssets && (
+                    <span className="listing-details__empty-message">No assets available</span>
+                  )}
+                </label>
+              </div>
+
+              <div className="listing-details__input-group">
+                <div className="listing-details__input-container">
+                  <label className="listing-details__input-label">Quantity</label>
+                  <input
+                    type="number"
+                    className="listing-details__input quantity-field"
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
+                    min="0"
+                    step="0.00000001"
+                    placeholder="0.00000000"
+                    disabled={purchaseAll || !hasSelectedAssetBalance}
+                  />
+                  {selectedAsset && (
+                    <span className="listing-details__input-suffix">{selectedAsset}</span>
+                  )}
+                </div>
+
+                <div className="listing-details__input-container">
+                  <label className="listing-details__input-label">Total</label>
+                  <input
+                    type="number"
+                    className="listing-details__input evr-field"
+                    value={evrAmount}
+                    onChange={(e) => handleEvrChange(e.target.value)}
+                    min="0"
+                    step="0.00000001"
+                    placeholder="0.00000000"
+                    disabled={purchaseAll || !hasSelectedAssetBalance}
+                  />
+                  <span className="listing-details__input-suffix">EVR</span>
+                </div>
               </div>
             </div>
 
@@ -359,7 +468,7 @@ const ListingDetails: React.FC = () => {
               <button
                 className="listing-details__button listing-details__button--primary"
                 onClick={handleAddToCart}
-                disabled={!selectedAsset || Number(quantity) <= 0}
+                disabled={!hasAvailableAssets || (!purchaseAll && (!selectedAsset || Number(quantity) <= 0))}
               >
                 <FiShoppingCart /> Add to Cart
                 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}

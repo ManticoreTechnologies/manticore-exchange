@@ -1136,13 +1136,9 @@
 
 .listing-details__price-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-3);
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
-  cursor: pointer;
 }
 
 .listing-details__price-item:hover {
@@ -1153,6 +1149,69 @@
 .listing-details__price-item.active {
   background: var(--accent-color-transparent);
   border-color: var(--accent-color);
+}
+
+.listing-details__price-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.listing-details__quantity-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.listing-details__quantity-row .quantity-field {
+  width: 140px;
+  padding: var(--spacing-2);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+.listing-details__quantity-row .evr-total {
+  font-family: var(--font-family-mono);
+  color: var(--accent-color);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Remove spinner buttons from number input */
+.quantity-field::-webkit-outer-spin-button,
+.quantity-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-field[type=number] {
+  -moz-appearance: textfield;
+}
+
+.listing-details__price-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.listing-details__price-item.disabled .quantity-field {
+  background: var(--background-hover);
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .listing-details__quantity-row .quantity-field {
+    width: 100px;
+    font-size: var(--font-size-xs);
+  }
+  
+  .listing-details__quantity-row .evr-total {
+    font-size: var(--font-size-xs);
+  }
 }
 
 .listing-details__price-info {
@@ -1346,7 +1405,6 @@
 .evr-field:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    background: var(--background-tertiary);
 }
 
 /* Add error state */
@@ -1379,4 +1437,279 @@
         top: -6px;
         right: -6px;
     }
+}
+
+/* Asset Selector Dropdown */
+.listing-details__asset-selector {
+  position: relative;
+  margin-bottom: var(--spacing-4);
+}
+
+.listing-details__dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.listing-details__dropdown-header:hover {
+  border-color: var(--accent-color);
+}
+
+.listing-details__selected-asset {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.listing-details__dropdown-arrow {
+  transition: transform 0.2s ease;
+}
+
+.listing-details__dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.listing-details__dropdown-content {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.listing-details__dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.listing-details__dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.listing-details__dropdown-item:hover:not(.disabled) {
+  background: var(--background-tertiary);
+}
+
+.listing-details__dropdown-item.active {
+  background: var(--accent-color-transparent);
+}
+
+.listing-details__dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.listing-details__dropdown-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.listing-details__dropdown-item-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.listing-details__dropdown-item-balance {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.listing-details__dropdown-item-price {
+  font-family: var(--font-family-mono);
+  color: var(--accent-color);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Trading Controls */
+.listing-details__trading-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.listing-details__purchase-all {
+  padding: var(--spacing-3);
+  background: var(--background-tertiary);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.listing-details__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.listing-details__checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent-color);
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.listing-details__checkbox-label input[type="checkbox"]:checked {
+  background-color: var(--accent-color);
+}
+
+.listing-details__checkbox-label input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+}
+
+.listing-details__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.listing-details__input-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.listing-details__input-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.listing-details__input {
+  padding: var(--spacing-3);
+  background: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.listing-details__input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color-transparent);
+}
+
+.listing-details__input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.listing-details__input-container {
+  position: relative;
+}
+
+.listing-details__input-suffix {
+  position: absolute;
+  right: var(--spacing-3);
+  bottom: var(--spacing-3);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+}
+
+/* Remove spinner buttons from number inputs */
+.listing-details__input[type="number"]::-webkit-outer-spin-button,
+.listing-details__input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.listing-details__input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .listing-details__input {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-2);
+  }
+
+  .listing-details__input-suffix {
+    font-size: var(--font-size-xs);
+    right: var(--spacing-2);
+    bottom: var(--spacing-2);
+  }
+}
+
+.listing-details__checkbox-label.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.listing-details__checkbox-label.disabled input[type="checkbox"] {
+  border-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+.listing-details__empty-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  margin-left: var(--spacing-2);
+}
+
+.listing-details__button--primary:disabled {
+  background: var(--background-tertiary);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.listing-details__button--primary:disabled:hover {
+  background: var(--background-tertiary);
+  transform: none;
+}
+
+/* Update existing styles */
+.listing-details__input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: var(--background-secondary);
+  border-color: var(--border-color);
+}
+
+.listing-details__input:disabled + .listing-details__input-suffix {
+  opacity: 0.7;
+}
+
+.listing-details__dropdown-header.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  border-color: var(--border-color);
+}
+
+.listing-details__dropdown-header.disabled:hover {
+  border-color: var(--border-color);
 }
