@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import authService from '../../services/AuthService';
 import './SignIn.css';
 
 interface ChallengeData {
@@ -11,15 +12,17 @@ interface ChallengeData {
 const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { requestChallenge, login } = useAuth();
+    const { login } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [step, setStep] = useState<'initial' | 'challenge' | 'signature'>('initial');
     const [address, setAddress] = useState('');
     const [challengeData, setChallengeData] = useState<ChallengeData | null>(null);
     const [signature, setSignature] = useState('');
+    const [copyButtonText, setCopyButtonText] = useState('Copy Command');
     
-    const from = (location.state as any)?.from?.pathname || '/';
+    // Get the origin path that sent us to sign in
+    const from = (location.state as any)?.from?.pathname || '/profile';
 
     const handleBack = () => {
         navigate(-1);
@@ -35,9 +38,9 @@ const SignIn: React.FC = () => {
         setError(null);
 
         try {
-            const challenge = await requestChallenge(address);
+            const challenge = await authService.createChallenge(address);
             setChallengeData({
-                challengeId: challenge.challengeId,
+                challengeId: challenge.challenge_id,
                 message: challenge.message,
             });
             setStep('challenge');
@@ -59,11 +62,54 @@ const SignIn: React.FC = () => {
 
         try {
             await login(address, signature, challengeData.challengeId);
+            // Navigate to the original page or profile as fallback
             navigate(from, { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to verify signature');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const copyToClipboard = async (text: string) => {
+        // Check if navigator and clipboard API are available
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(text);
+                setCopyButtonText('Copied!');
+                setTimeout(() => setCopyButtonText('Copy Command'), 2000);
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+                setCopyButtonText('Failed to copy');
+                setTimeout(() => setCopyButtonText('Copy Command'), 2000);
+            }
+            return;
+        }
+
+        // Fallback for older browsers
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            if (successful) {
+                setCopyButtonText('Copied!');
+            } else {
+                setCopyButtonText('Failed to copy');
+            }
+            setTimeout(() => setCopyButtonText('Copy Command'), 2000);
+        } catch (err) {
+            console.error('Failed to copy text:', err);
+            setCopyButtonText('Failed to copy');
+            setTimeout(() => setCopyButtonText('Copy Command'), 2000);
         }
     };
 
@@ -100,7 +146,6 @@ const SignIn: React.FC = () => {
     );
 
     const renderChallengeStep = () => {
-        // Construct the complete command without the evrmore-cli prefix
         const completeCommand = challengeData 
             ? `signmessage ${address} "${challengeData.message}"`
             : '';
@@ -117,20 +162,10 @@ const SignIn: React.FC = () => {
                             <code>{completeCommand}</code>
                             <button 
                                 className="sign-in__copy-button"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(completeCommand);
-                                    const button = document.querySelector('.sign-in__copy-button');
-                                    if (button) {
-                                        const originalText = button.textContent;
-                                        button.textContent = 'Copied!';
-                                        setTimeout(() => {
-                                            button.textContent = originalText;
-                                        }, 2000);
-                                    }
-                                }}
+                                onClick={() => copyToClipboard(completeCommand)}
                             >
                                 <span className="sign-in__copy-icon">📋</span>
-                                Copy Command
+                                {copyButtonText}
                             </button>
                         </div>
                         <p className="sign-in__command-help">

@@ -37,7 +37,6 @@ export class AuthService {
     private baseUrl: string;
     private readonly TOKEN_KEY = 'auth_token';
     private readonly TOKEN_EXPIRY_KEY = 'auth_token_expiry';
-    private readonly ADDRESS_KEY = 'auth_address';
 
     constructor(config: ApiConfig) {
         this.baseUrl = `${config.protocol}://${config.host}:${config.port}`;
@@ -79,7 +78,7 @@ export class AuthService {
             // Handle auth errors
             if (error.response.status === 401) {
                 this.clearAuth();
-                window.location.href = '/signin';
+                window.location.href = '/login';
             }
         } else if (error.request) {
             message = 'No response received from server';
@@ -92,12 +91,11 @@ export class AuthService {
     }
 
     // Token Management
-    private setToken(token: string, address: string, expiryInHours: number = 24): void {
+    private setToken(token: string, expiryInHours: number = 24): void {
         localStorage.setItem(this.TOKEN_KEY, token);
         const expiry = new Date();
         expiry.setHours(expiry.getHours() + expiryInHours);
         localStorage.setItem(this.TOKEN_EXPIRY_KEY, expiry.toISOString());
-        localStorage.setItem(this.ADDRESS_KEY, address);
     }
 
     public getToken(): string | null {
@@ -117,14 +115,9 @@ export class AuthService {
         return token;
     }
 
-    public getAddress(): string | null {
-        return localStorage.getItem(this.ADDRESS_KEY);
-    }
-
     private clearAuth(): void {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
-        localStorage.removeItem(this.ADDRESS_KEY);
     }
 
     // Auth Flow Methods
@@ -143,12 +136,12 @@ export class AuthService {
     async verifyChallenge(verifyRequest: VerifyRequest): Promise<LoginResponse> {
         try {
             const response: AxiosResponse<LoginResponse> = await this.api.post(
-                '/auth/signin',
+                '/auth/login',
                 verifyRequest
             );
             
             if (response.data.token) {
-                this.setToken(response.data.token, verifyRequest.address);
+                this.setToken(response.data.token);
             }
             
             return response.data;

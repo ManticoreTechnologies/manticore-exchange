@@ -64,11 +64,24 @@ const Profile: React.FC = () => {
 
     const API_BASE = import.meta.env.VITE_API_BASE || 'http://10.0.0.2:8000';
 
+    useEffect(() => {
+        if (!authLoading && !isAuthenticated) {
+            navigate('/signin', { replace: true });
+        }
+    }, [authLoading, isAuthenticated, navigate]);
+
     const fetchProfileData = async () => {
+        if (!token) return;
+        
         try {
             setIsLoading(true);
+            setError(null);
+            
             const response = await axios.get(`${API_BASE}/profile`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Cache-Control': 'no-cache'
+                }
             });
             
             const profileData = response.data;
@@ -80,19 +93,25 @@ const Profile: React.FC = () => {
             if (profileData.profile_ipfs) {
                 setImageUrl(`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${profileData.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching profile:', error);
-            setError('Failed to load profile data');
+            const errorMessage = error.response?.data?.detail || 'Failed to load profile data';
+            setError(errorMessage);
+            
+            if (error.response?.status === 401) {
+                await logout();
+                navigate('/signin', { replace: true });
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (isAuthenticated && token) {
+        if (isAuthenticated && token && !authLoading) {
             fetchProfileData();
         }
-    }, [isAuthenticated, token]);
+    }, [isAuthenticated, token, authLoading]);
 
     const handleSave = async (updatedInfo: Partial<AccountInfo>) => {
         try {
@@ -144,7 +163,7 @@ const Profile: React.FC = () => {
     const handleLogout = async () => {
         try {
             await logout();
-            navigate('/signin');
+            navigate('/signin', { replace: true });
         } catch (error) {
             console.error('Logout error:', error);
             setError('Failed to logout. Please try again.');
@@ -260,18 +279,7 @@ const Profile: React.FC = () => {
     }
 
     if (!isAuthenticated || !token) {
-        return (
-            <div className="tradex-profile__error">
-                <FaExclamationCircle />
-                <p>Please sign in to view your profile</p>
-                <button 
-                    className="tradex-profile__action-button"
-                    onClick={() => navigate('/signin')}
-                >
-                    Sign In
-                </button>
-            </div>
-        );
+        return null;
     }
 
     if (isLoading) {

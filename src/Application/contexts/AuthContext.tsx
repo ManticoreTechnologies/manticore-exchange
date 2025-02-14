@@ -49,14 +49,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const checkExistingAuth = async () => {
             try {
                 const storedToken = authService.getToken();
-                const storedAddress = authService.getAddress();
                 
-                if (storedToken && storedAddress) {
+                if (storedToken) {
                     try {
                         const result = await authService.verifyToken();
-                        if (result.valid && result.address === storedAddress) {
+                        if (result.valid && result.address) {
                             setToken(storedToken);
-                            setUserAddress(storedAddress);
+                            setUserAddress(result.address);
                             setIsAuthenticated(true);
                         } else {
                             await handleLogout();
