@@ -12,6 +12,7 @@ interface FeaturedListing {
     image_hash?: string | null;
     store_name?: string;
     balance?: string;
+    prices?: { ipfs_hash?: string }[];
 }
 
 interface FeaturedListingsProps {
@@ -20,9 +21,20 @@ interface FeaturedListingsProps {
 }
 
 const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListingClick }) => {
-    const getImageUrl = (hash: string | null | undefined): string => {
-        if (!hash) return ManticoreLogo;
-        return `https://ipfs.io/ipfs/${hash}`;
+    const getImageUrl = (listing: FeaturedListing): string => {
+        // First try the listing's main image
+        if (listing.image_hash) {
+            return `https://ipfs.io/ipfs/${listing.image_hash}`;
+        }
+
+        // If no main image, try to get the first asset's image from prices
+        const firstAssetWithImage = listing.prices?.find(price => price.ipfs_hash);
+        if (firstAssetWithImage?.ipfs_hash) {
+            return `https://ipfs.io/ipfs/${firstAssetWithImage.ipfs_hash}`;
+        }
+
+        // If no images found, return placeholder
+        return ManticoreLogo;
     };
 
     const CarouselSection = ({ title, items, icon }: { title: string; items: FeaturedListing[]; icon: JSX.Element }) => {
@@ -44,7 +56,7 @@ const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListing
                         >
                             <div className="fl_a7b3c9_image">
                                 <img 
-                                    src={getImageUrl(listing.image_hash)} 
+                                    src={getImageUrl(listing)} 
                                     alt={listing.title}
                                     onError={(e) => {
                                         const img = e.target as HTMLImageElement;

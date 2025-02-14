@@ -53,7 +53,8 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
     isConnected,
     featuredListings,
     onFeaturedClick,
-    loading
+    loading,
+    priceRangeError
 }) => {
     const [showFilters, setShowFilters] = useState(false);
 
@@ -148,7 +149,7 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                                         value={minPrice}
                                         onChange={handleMinPriceChange}
                                         placeholder="Min"
-                                        className="price-input"
+                                        className={priceRangeError ? 'error' : ''}
                                     />
                                     <span className="price-separator">to</span>
                                     <input
@@ -156,9 +157,12 @@ const TradingHeader: React.FC<TradingHeaderProps> = ({
                                         value={maxPrice}
                                         onChange={handleMaxPriceChange}
                                         placeholder="Max"
-                                        className="price-input"
+                                        className={priceRangeError ? 'error' : ''}
                                     />
                                 </div>
+                                {priceRangeError && (
+                                    <div className="price-range-error">{priceRangeError}</div>
+                                )}
                             </div>
                         </div>
                     </div>

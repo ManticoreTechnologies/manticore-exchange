@@ -10,7 +10,6 @@ import InvoiceToaster from './InvoiceToaster/InvoiceToaster';
 import ManageListing from './ManageListing/ManageListing';
 import { useNavigate, useLocation } from 'react-router-dom';
 import FeaturedListings from './TradingHeader/FeaturedListings';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { debounce } from 'lodash';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
@@ -62,7 +61,6 @@ const Trading: React.FC = () => {
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
     const [featuredListings, setFeaturedListings] = useState<FeaturedListing[]>([]);
-    const [wsConnected, setWsConnected] = useState<boolean>(false);
     const [homeListings, setHomeListings] = useState<any>(null);
 
     // @ts-ignore
@@ -78,173 +76,8 @@ const Trading: React.FC = () => {
     const location = useLocation();
     const { userAddress, isAuthenticated } = useAuth();
 
-    // WebSocket setup with heartbeat
-    const ws_host = 'localhost';
-    const ws_port = '8000';
-    const wsBaseUrl = `ws://${ws_host}:${ws_port}`;
-    
-    // Heartbeat interval (15 seconds)
-    const HEARTBEAT_INTERVAL = 15000;
-    const RECONNECT_INTERVAL = 3000;
-
-    // Create separate WebSocket connections for different endpoints
-    const { sendMessage: sendListingMessage, lastMessage: lastListingMessage, readyState: listingReadyState } = useWebSocket(`${wsBaseUrl}/ws/listings`, {
-        onOpen: () => {
-            console.log('Listings WebSocket connected');
-            setWsConnected(true);
-            // Start heartbeat
-            const interval = setInterval(() => {
-                sendListingMessage(JSON.stringify({ type: 'ping' }));
-            }, HEARTBEAT_INTERVAL);
-            return () => clearInterval(interval);
-        },
-        onClose: () => {
-            console.log('Listings WebSocket disconnected');
-            setWsConnected(false);
-        },
-        onError: (error) => {
-            console.error('Listings WebSocket error:', error);
-            setWsConnected(false);
-        },
-        onMessage: (event: WebSocketEvent) => {
-            try {
-                const message: WebSocketMessage = JSON.parse(event.data);
-                if (message.type === 'pong') {
-                    console.log('Received pong from listings');
-                    return;
-                }
-                if (message.type === 'listing_update') {
-                    handleWebSocketMessage(message);
-                }
-            } catch (error) {
-                console.error('Error parsing listings WebSocket message:', error);
-            }
-        },
-        reconnectAttempts: 10,
-        reconnectInterval: RECONNECT_INTERVAL,
-        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
-        heartbeat: {
-            message: JSON.stringify({ type: 'ping' }),
-            interval: HEARTBEAT_INTERVAL,
-            timeout: HEARTBEAT_INTERVAL * 2
-        }
-    });
-
-    const { sendMessage: sendOrderMessage, lastMessage: lastOrderMessage, readyState: orderReadyState } = useWebSocket(`${wsBaseUrl}/ws/orders`, {
-        onOpen: () => {
-            console.log('Orders WebSocket connected');
-            // Start heartbeat
-            const interval = setInterval(() => {
-                sendOrderMessage(JSON.stringify({ type: 'ping' }));
-            }, HEARTBEAT_INTERVAL);
-            return () => clearInterval(interval);
-        },
-        onClose: () => {
-            console.log('Orders WebSocket disconnected');
-        },
-        onError: (error) => {
-            console.error('Orders WebSocket error:', error);
-        },
-        onMessage: (event: WebSocketEvent) => {
-            try {
-                const message: WebSocketMessage = JSON.parse(event.data);
-                if (message.type === 'pong') {
-                    console.log('Received pong from orders');
-                    return;
-                }
-                if (message.type === 'order_update') {
-                    handleWebSocketMessage(message);
-                }
-            } catch (error) {
-                console.error('Error parsing orders WebSocket message:', error);
-            }
-        },
-        reconnectAttempts: 10,
-        reconnectInterval: RECONNECT_INTERVAL,
-        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
-        heartbeat: {
-            message: JSON.stringify({ type: 'ping' }),
-            interval: HEARTBEAT_INTERVAL,
-            timeout: HEARTBEAT_INTERVAL * 2
-        }
-    });
-
-    const { sendMessage: sendMarketMessage, lastMessage: lastMarketMessage, readyState: marketReadyState } = useWebSocket(`${wsBaseUrl}/ws/market`, {
-        onOpen: () => {
-            console.log('Market WebSocket connected');
-            // Start heartbeat
-            const interval = setInterval(() => {
-                sendMarketMessage(JSON.stringify({ type: 'ping' }));
-            }, HEARTBEAT_INTERVAL);
-            return () => clearInterval(interval);
-        },
-        onClose: () => {
-            console.log('Market WebSocket disconnected');
-        },
-        onError: (error) => {
-            console.error('Market WebSocket error:', error);
-        },
-        onMessage: (event: WebSocketEvent) => {
-            try {
-                const message: WebSocketMessage = JSON.parse(event.data);
-                if (message.type === 'pong') {
-                    console.log('Received pong from market');
-                    return;
-                }
-                if (message.type === 'market_update') {
-                    handleWebSocketMessage(message);
-                }
-            } catch (error) {
-                console.error('Error parsing market WebSocket message:', error);
-            }
-        },
-        reconnectAttempts: 10,
-        reconnectInterval: RECONNECT_INTERVAL,
-        shouldReconnect: (closeEvent: WebSocketCloseEvent) => true,
-        heartbeat: {
-            message: JSON.stringify({ type: 'ping' }),
-            interval: HEARTBEAT_INTERVAL,
-            timeout: HEARTBEAT_INTERVAL * 2
-        }
-    });
-
-    // Update the handleWebSocketMessage callback to use the appropriate sendMessage function
-    const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
-        switch (message.type) {
-            case 'listing_update':
-                setListings(prevListings => 
-                    prevListings.map(listing => 
-                        listing.id === (message.data as ListingUpdate).id 
-                            ? { ...listing, ...(message.data as ListingUpdate) } 
-                            : listing
-                    )
-                );
-                break;
-            case 'order_update':
-                if (selectedListing && selectedListing.id === (message.data as OrderUpdate).listing_id) {
-                    setSelectedListing((prev: SelectedListing | null) => prev ? { ...prev, ...(message.data as OrderUpdate) } : null);
-                }
-                break;
-            case 'balance_update':
-                if (selectedListing && selectedListing.id === (message.data as BalanceUpdate).listing_id) {
-                    setSelectedListing((prev: SelectedListing | null) => prev ? {
-                        ...prev,
-                        balances: prev.balances?.map((balance: Balance) =>
-                            balance.asset_name === (message.data as BalanceUpdate).asset_name
-                                ? { ...balance, ...(message.data as BalanceUpdate) }
-                                : balance
-                        ) || []
-                    } : null);
-                }
-                break;
-            case 'market_update':
-                const marketData = message.data as MarketUpdate;
-                if (marketData.trending) {
-                    setFeaturedListings(marketData.trending);
-                }
-                break;
-        }
-    }, [selectedListing]);
+    // Add validation state
+    const [priceRangeError, setPriceRangeError] = useState<string | null>(null);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
@@ -319,9 +152,56 @@ const Trading: React.FC = () => {
         fetchHomeListings();
     }, [fetchHomeListings]);
 
-    // Update fetchListings to handle search more effectively
+    // Validate price range
+    const validatePriceRange = useCallback(() => {
+        // Clear previous error
+        setPriceRangeError(null);
+
+        // If both fields are empty, that's valid
+        if (!minPrice && !maxPrice) {
+            return true;
+        }
+
+        const min = Number(minPrice);
+        const max = Number(maxPrice);
+
+        // Check if values are valid numbers
+        if (minPrice && isNaN(min)) {
+            setPriceRangeError('Minimum price must be a valid number');
+            return false;
+        }
+        if (maxPrice && isNaN(max)) {
+            setPriceRangeError('Maximum price must be a valid number');
+            return false;
+        }
+
+        // Check if values are positive
+        if (min < 0) {
+            setPriceRangeError('Minimum price cannot be negative');
+            return false;
+        }
+        if (max < 0) {
+            setPriceRangeError('Maximum price cannot be negative');
+            return false;
+        }
+
+        // If both values are set, check their relationship
+        if (minPrice && maxPrice && min > max) {
+            setPriceRangeError('Minimum price cannot be greater than maximum price');
+            return false;
+        }
+
+        return true;
+    }, [minPrice, maxPrice]);
+
+    // Update fetchListings to include validation
     const fetchListings = useCallback(async () => {
         try {
+            // Validate price range before proceeding
+            if (!validatePriceRange()) {
+                return;
+            }
+
             setLoading(true);
             
             // Prepare search parameters
@@ -349,12 +229,19 @@ const Trading: React.FC = () => {
                 }
             }
 
+            // Only add price filters if they're valid numbers
             if (minPrice?.trim()) {
-                searchParams.min_price_evr = minPrice.trim();
+                const min = Number(minPrice);
+                if (!isNaN(min) && min >= 0) {
+                    searchParams.min_price_evr = minPrice.trim();
+                }
             }
 
             if (maxPrice?.trim()) {
-                searchParams.max_price_evr = maxPrice.trim();
+                const max = Number(maxPrice);
+                if (!isNaN(max) && max >= 0) {
+                    searchParams.max_price_evr = maxPrice.trim();
+                }
             }
 
             // Use trading service to search listings
@@ -367,16 +254,14 @@ const Trading: React.FC = () => {
             }));
             
             setListings(processedListings);
-            // Update pagination state with the response values
             setTotalResults(response.total_count || 0);
             setTotalPages(Math.max(1, response.total_pages || 1));
-            // Ensure current page is within bounds
+            
             const validCurrentPage = Math.min(Math.max(1, response.current_page || 1), response.total_pages || 1);
             if (validCurrentPage !== currentPage) {
                 setCurrentPage(validCurrentPage);
             }
             
-            // Only fetch home listings if there's no active search
             if (!searchQuery?.trim() && !filterQuery?.trim() && tags.length === 0 && !minPrice && !maxPrice) {
                 await fetchHomeListings();
             }
@@ -391,7 +276,7 @@ const Trading: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, userAddress]);
+    }, [currentPage, pageSize, searchQuery, filterType, filterQuery, tags, minPrice, maxPrice, userAddress, validatePriceRange]);
 
     // Update the debounced search implementation
     const debouncedSearch = useMemo(
@@ -435,15 +320,19 @@ const Trading: React.FC = () => {
         setCurrentPage(1); // Reset to first page on tags change
     };
 
-    // Update price filter handlers
+    // Update price filter handlers to validate on change
     const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setMinPrice(e.target.value);
-        setCurrentPage(1); // Reset to first page on price change
+        const value = e.target.value;
+        setMinPrice(value);
+        setCurrentPage(1);
+        validatePriceRange();
     };
 
     const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setMaxPrice(e.target.value);
-        setCurrentPage(1); // Reset to first page on price change
+        const value = e.target.value;
+        setMaxPrice(value);
+        setCurrentPage(1);
+        validatePriceRange();
     };
 
     // Helper function to check if a listing is new (less than 24 hours old)
@@ -695,7 +584,7 @@ const Trading: React.FC = () => {
                 loading={loading}
                 featuredListings={featuredListings}
                 onFeaturedClick={handleFeaturedClick}
-                isConnected={wsConnected}
+                priceRangeError={priceRangeError}
             />
 
             {/* Rest of the content */}

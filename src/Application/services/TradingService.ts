@@ -184,6 +184,139 @@ export interface VerifyTokenResponse {
     address: string;
 }
 
+// Order Types
+export interface OrderItem {
+    asset_name: string;
+    amount: string;
+    price_evr?: string;
+    fee_evr?: string;
+}
+
+export interface CartOrderItem extends OrderItem {
+    listing_id: string;
+    listing_name?: string;
+    seller_address?: string;
+}
+
+export interface CreateOrderRequest {
+    buyer_address: string;
+    items: OrderItem[];
+}
+
+export interface CartOrderRequest {
+    buyer_address: string;
+    items: CartOrderItem[];
+}
+
+export interface OrderBalance {
+    asset_name: string;
+    confirmed_balance: string;
+    pending_balance: string;
+}
+
+export interface OrderHistoryEvent {
+    timestamp: string;
+    status: string;
+    description: string;
+    details?: Record<string, any>;
+}
+
+export interface DisputeRequest {
+    reason: string;
+    description: string;
+    evidence?: Record<string, any>;
+}
+
+export interface OrderDispute {
+    dispute_id: string;
+    order_id: string;
+    status: string;
+    created_at: string;
+    reason: string;
+    description: string;
+    evidence?: Record<string, any>;
+}
+
+export interface Order {
+    id: string;
+    listing_id: string;
+    buyer_address: string;
+    payment_address: string;
+    status: OrderStatus;
+    items: OrderItem[];
+    balances?: OrderBalance[];
+    total_price_evr: string;
+    total_fee_evr: string;
+    total_payment_evr: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CartOrder extends Omit<Order, 'listing_id'> {
+    items: CartOrderItem[];
+    required_payment: string;
+}
+
+export type OrderStatus = 
+    | 'pending'
+    | 'partially_paid'
+    | 'paid'
+    | 'sale_pending'
+    | 'completed'
+    | 'cancelled'
+    | 'expired'
+    | 'failed'
+    | 'disputed';
+
+export interface OrderSearchResponse {
+    orders: Order[];
+    total_count: number;
+    total_pages: number;
+    current_page: number;
+}
+
+export interface OrderSearchParams {
+    buyer_address?: string;
+    listing_id?: string;
+    status?: OrderStatus;
+    per_page?: number;
+    page?: number;
+}
+
+// Order Error Types
+export class OrderError extends Error {
+    constructor(message: string, public code: string) {
+        super(message);
+        this.name = 'OrderError';
+    }
+}
+
+export class InsufficientBalanceError extends OrderError {
+    constructor(message: string) {
+        super(message, 'INSUFFICIENT_BALANCE');
+    }
+}
+
+export class ListingNotFoundError extends OrderError {
+    constructor(message: string) {
+        super(message, 'LISTING_NOT_FOUND');
+    }
+}
+
+export interface OrderTracking {
+    id: string;
+    status: OrderStatus;
+    payment_address: string;
+    payment_amount: string;
+    expiration_time: number;
+    created_at: string;
+    items: OrderItem[];
+    total_price_evr: string;
+    total_fee_evr: string;
+    total_payment_evr: string;
+    fulfillment_txid?: string[];
+}
+
 // API Configuration
 interface ApiConfig {
     baseUrl?: string;
@@ -194,6 +327,8 @@ export class TradingService {
     private readonly baseUrl: string;
     private token: string | null = null;
     private api: AxiosInstance;
+    private readonly ORDERS_STORAGE_KEY = 'manticore_orders';
+    private readonly ORDER_EXPIRY_TIME = 15 * 60 * 1000; // 15 minutes
 
     constructor(config: ApiConfig) {
         this.baseUrl = config.baseUrl || 'http://10.0.0.2:8000';
@@ -453,6 +588,250 @@ export class TradingService {
             updates
         });
         return response.data;
+    }
+
+    // Order Methods
+    private saveOrderToStorage(order: OrderTracking): void {
+        try {
+            const savedOrders = this.getSavedOrders();
+            const updatedOrders = [...savedOrders, order];
+            localStorage.setItem(this.ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
+            window.dispatchEvent(new CustomEvent('orderUpdate', { detail: { orders: updatedOrders } }));
+        } catch (error) {
+            console.error('Error saving order:', error);
+        }
+    }
+
+    private getSavedOrders(): OrderTracking[] {
+        try {
+            const savedOrders = localStorage.getItem(this.ORDERS_STORAGE_KEY);
+            return savedOrders ? JSON.parse(savedOrders) : [];
+        } catch (error) {
+            console.error('Error getting saved orders:', error);
+            return [];
+        }
+    }
+
+    private removeExpiredOrders(): void {
+        const savedOrders = this.getSavedOrders();
+        const currentTime = Date.now();
+        const validOrders = savedOrders.filter(order => {
+            const expiryTime = new Date(order.created_at).getTime() + this.ORDER_EXPIRY_TIME;
+            return currentTime < expiryTime || order.status !== 'pending';
+        });
+
+        if (validOrders.length !== savedOrders.length) {
+            localStorage.setItem(this.ORDERS_STORAGE_KEY, JSON.stringify(validOrders));
+            window.dispatchEvent(new CustomEvent('orderUpdate', { detail: { orders: validOrders } }));
+        }
+    }
+
+    async createOrder(listingId: string, request: CreateOrderRequest): Promise<Order> {
+        try {
+            const response = await this.api.post(`/orders/create/${listingId}`, request);
+            const order = response.data;
+            this.saveOrderToStorage(order);
+            return order;
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                throw new ListingNotFoundError(`Listing ${listingId} not found`);
+            }
+            if (error.response?.data?.detail?.includes('insufficient balance')) {
+                throw new InsufficientBalanceError(error.response.data.detail);
+            }
+            throw error;
+        }
+    }
+
+    async createCartOrder(request: CartOrderRequest): Promise<CartOrder> {
+        try {
+            const response = await this.api.post('/orders/cart', request);
+            const order = response.data;
+            this.saveOrderToStorage(order);
+            return order;
+        } catch (error: any) {
+            if (error.response?.data?.detail?.includes('insufficient balance')) {
+                throw new InsufficientBalanceError(error.response.data.detail);
+            }
+            throw error;
+        }
+    }
+
+    async getCartOrder(cartOrderId: string): Promise<CartOrder> {
+        const response = await this.api.get(`/orders/cart/${cartOrderId}`);
+        return response.data;
+    }
+
+    async getCartOrderBalances(cartOrderId: string): Promise<Record<string, OrderBalance>> {
+        const response = await this.api.get(`/orders/cart/${cartOrderId}/balances`);
+        return response.data;
+    }
+
+    async cancelOrder(orderId: string): Promise<{
+        order_id: string;
+        status: OrderStatus;
+        cancelled_at: string;
+    }> {
+        const response = await this.api.post(`/orders/${orderId}/cancel`);
+        return response.data;
+    }
+
+    async createDispute(orderId: string, dispute: DisputeRequest): Promise<OrderDispute> {
+        const response = await this.api.post(`/orders/${orderId}/dispute`, dispute);
+        return response.data;
+    }
+
+    async getOrderBalances(orderId: string): Promise<Record<string, OrderBalance>> {
+        const response = await this.api.get(`/orders/${orderId}/balances`);
+        return response.data;
+    }
+
+    async getOrder(orderId: string): Promise<Order> {
+        const response = await this.api.get(`/orders/${orderId}`);
+        return response.data;
+    }
+
+    async getOrderHistory(orderId: string): Promise<OrderHistoryEvent[]> {
+        const response = await this.api.get(`/orders/${orderId}/history`);
+        return response.data;
+    }
+
+    async searchOrders(params: OrderSearchParams): Promise<OrderSearchResponse> {
+        const response = await this.api.get('/orders', { params });
+        return response.data;
+    }
+
+    // Order Management Methods
+    async rescanOrderBalances(orderId: string): Promise<{
+        order_id: string;
+        status: string;
+        balances: Record<string, OrderBalance>;
+    }> {
+        const response = await this.api.post(`/orders/${orderId}/rescan`);
+        return response.data;
+    }
+
+    async refundOrder(orderId: string): Promise<{
+        order_id: string;
+        status: string;
+        refund_tx: string;
+        refunded_at: string;
+    }> {
+        const response = await this.api.post(`/orders/${orderId}/refund`);
+        return response.data;
+    }
+
+    async resolveDispute(
+        orderId: string,
+        disputeId: string,
+        resolution: {
+            outcome: 'refund' | 'complete' | 'cancel';
+            notes?: string;
+        }
+    ): Promise<{
+        order_id: string;
+        dispute_id: string;
+        status: string;
+        resolution: string;
+        resolved_at: string;
+    }> {
+        const response = await this.api.post(`/orders/${orderId}/disputes/${disputeId}/resolve`, resolution);
+        return response.data;
+    }
+
+    async getDisputeDetails(orderId: string, disputeId: string): Promise<OrderDispute & {
+        resolution?: {
+            outcome: string;
+            notes: string;
+            resolved_at: string;
+            resolved_by: string;
+        };
+    }> {
+        const response = await this.api.get(`/orders/${orderId}/disputes/${disputeId}`);
+        return response.data;
+    }
+
+    async listDisputes(params?: {
+        status?: 'opened' | 'resolved';
+        order_id?: string;
+        buyer_address?: string;
+        per_page?: number;
+        page?: number;
+    }): Promise<{
+        disputes: OrderDispute[];
+        total_count: number;
+        total_pages: number;
+        current_page: number;
+    }> {
+        const response = await this.api.get('/orders/disputes', { params });
+        return response.data;
+    }
+
+    async getOrderStats(params?: {
+        timeframe?: '24h' | '7d' | '30d' | 'all';
+        buyer_address?: string;
+        listing_id?: string;
+    }): Promise<{
+        total_orders: number;
+        total_volume_evr: string;
+        completed_orders: number;
+        cancelled_orders: number;
+        disputed_orders: number;
+        avg_order_value_evr: string;
+        stats_by_status: Record<OrderStatus, number>;
+    }> {
+        const response = await this.api.get('/orders/stats', { params });
+        return response.data;
+    }
+
+    // Enhanced Order Methods
+    async pollOrderStatus(orderId: string, callback: (order: Order) => void): Promise<void> {
+        const pollInterval = setInterval(async () => {
+            try {
+                const order = await this.getOrder(orderId);
+                callback(order);
+
+                if (['completed', 'failed', 'cancelled', 'expired'].includes(order.status)) {
+                    clearInterval(pollInterval);
+                }
+
+                // Update order in storage
+                const savedOrders = this.getSavedOrders();
+                const updatedOrders = savedOrders.map(savedOrder => 
+                    savedOrder.id === orderId ? { ...savedOrder, ...order } : savedOrder
+                );
+                localStorage.setItem(this.ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
+                window.dispatchEvent(new CustomEvent('orderUpdate', { detail: { orders: updatedOrders } }));
+
+            } catch (error) {
+                console.error('Error polling order status:', error);
+                clearInterval(pollInterval);
+            }
+        }, 5000); // Poll every 5 seconds
+
+        // Stop polling after 15 minutes
+        setTimeout(() => {
+            clearInterval(pollInterval);
+        }, this.ORDER_EXPIRY_TIME);
+
+        return () => clearInterval(pollInterval);
+    }
+
+    // Order Management Methods
+    async getActiveOrders(): Promise<Order[]> {
+        this.removeExpiredOrders();
+        const savedOrders = this.getSavedOrders();
+        return savedOrders.filter(order => 
+            !['completed', 'failed', 'cancelled', 'expired'].includes(order.status)
+        );
+    }
+
+    async getOrderHistory(): Promise<Order[]> {
+        this.removeExpiredOrders();
+        const savedOrders = this.getSavedOrders();
+        return savedOrders.filter(order => 
+            ['completed', 'failed', 'cancelled', 'expired'].includes(order.status)
+        );
     }
 }
 

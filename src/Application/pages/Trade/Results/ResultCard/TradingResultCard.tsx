@@ -46,21 +46,37 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     const [isVideo, setIsVideo] = useState(false);
 
     const getMediaSrc = (hash: string | null | undefined) => {
+        // If listing has no main image, try to get the first asset's image
+        if (!hash && prices.length > 0 && prices[0].ipfs_hash) {
+            hash = prices[0].ipfs_hash;
+        }
         if (!hash) return placeholderImage;
         return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
     };
 
     useEffect(() => {
-        if (ipfsHash) {
-            fetch(getMediaSrc(ipfsHash), { method: 'HEAD' })
-                .then((response) => {
+        const checkMedia = async () => {
+            // Get the appropriate hash to check
+            const hashToCheck = ipfsHash || (prices.length > 0 ? prices[0].ipfs_hash : null);
+            
+            if (hashToCheck) {
+                try {
+                    const response = await fetch(getMediaSrc(hashToCheck), { method: 'HEAD' });
                     const contentType = response.headers.get('Content-Type');
                     setIsVideo(contentType?.startsWith('video') || false);
                     setIsLoaded(true);
-                })
-                .catch(() => setIsLoaded(true));
-        }
-    }, [ipfsHash]);
+                } catch (error) {
+                    console.error('Error checking media type:', error);
+                    setIsVideo(false);
+                    setIsLoaded(true);
+                }
+            } else {
+                setIsLoaded(true);
+            }
+        };
+
+        checkMedia();
+    }, [ipfsHash, prices]);
 
     const renderPriceItem = (price: any, balance: any) => {
         const formattedPrice = Number(price.price_evr).toLocaleString();

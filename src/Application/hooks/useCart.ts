@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import TradingService from '@/Application/services/TradingService';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/Application/contexts/AuthContext';
 
 export interface CartItem {
   listingId: string;
@@ -22,6 +25,8 @@ const createCartEvent = (count: number) => {
 export const useCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartCount, setCartCount] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { userAddress } = useAuth();
 
   const updateCartAndNotify = useCallback((newItems: CartItem[] | null) => {
     if (newItems === null) {
@@ -114,21 +119,70 @@ export const useCart = () => {
   }, [updateCartAndNotify]);
 
   const clearCart = useCallback(() => {
-    // Immediately update state and localStorage
-    setCartItems([]);
-    setCartCount(0);
-    localStorage.removeItem('manticore_cart');
-    
-    // Dispatch event with count 0
-    window.dispatchEvent(createCartEvent(0));
-  }, []);
+    updateCartAndNotify(null);
+  }, [updateCartAndNotify]);
+
+  const processCart = useCallback(async () => {
+    if (!userAddress) {
+      toast.error('Please sign in to proceed with checkout');
+      return null;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty');
+      return null;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Group items by listing
+      const itemsByListing = cartItems.reduce((acc, item) => {
+        if (!acc[item.listingId]) {
+          acc[item.listingId] = [];
+        }
+        acc[item.listingId].push({
+          asset_name: item.asset_name,
+          amount: item.quantity.toString()
+        });
+        return acc;
+      }, {} as Record<string, { asset_name: string; amount: string; }[]>);
+
+      // Create orders for each listing
+      const orders = await Promise.all(
+        Object.entries(itemsByListing).map(([listingId, items]) =>
+          TradingService.createOrder(listingId, {
+            buyer_address: userAddress,
+            items
+          })
+        )
+      );
+
+      // Clear cart after successful order creation
+      clearCart();
+
+      return orders;
+    } catch (error: any) {
+      if (error.code === 'INSUFFICIENT_BALANCE') {
+        toast.error('Insufficient balance in listing');
+      } else if (error.code === 'LISTING_NOT_FOUND') {
+        toast.error('One or more listings not found');
+      } else {
+        toast.error('Failed to create order: ' + error.message);
+      }
+      return null;
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [cartItems, userAddress, clearCart]);
 
   return {
     cartItems,
     addToCart,
     removeFromCart,
     clearCart,
-    cartCount
+    cartCount,
+    processCart,
+    isProcessing
   };
 };
 

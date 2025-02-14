@@ -1,35 +1,23 @@
 import React, { useState } from 'react';
 import './Cart.css';
 import placeholderImage from '@/Application/logos/white-manticore.png';
-import Checkout from '../Checkout/Checkout';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart } from 'react-icons/fi';
 import { useCart } from '@/Application/hooks/useCart';
+import { useAuth } from '@/Application/contexts/AuthContext';
+import { toast } from 'react-toastify';
+import InvoiceStatusPopup from '../InvoiceStatusPopup/InvoiceStatusPopup';
 
-interface CartItem {
-    listingId: string;
-    name: string;
-    description: string;
-    image_ipfs_hash: string | null;
-    quantity: number;
-    unitPrice: string;
-    asset_name: string;
-    seller_address: string;
-}
-
-interface CartProps {
-    onBack: () => void;
-}
-
-const Cart: React.FC<CartProps> = ({ onBack }) => {
-    const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
+const Cart: React.FC = () => {
     const navigate = useNavigate();
-    const { clearCart, removeFromCart, cartItems } = useCart();
+    const { cartItems, removeFromCart, clearCart, processCart, isProcessing } = useCart();
+    const { isAuthenticated } = useAuth();
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const PINATA_GATEWAY = "https://rose-decent-prawn-420.mypinata.cloud/ipfs/";
 
-    const getImageUrl = (item: CartItem) => {
-        if (!item.image_ipfs_hash) return placeholderImage;
-        return `${PINATA_GATEWAY}${item.image_ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+    const getImageUrl = (ipfsHash: string | null) => {
+        if (!ipfsHash) return placeholderImage;
+        return `${PINATA_GATEWAY}${ipfsHash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
     };
 
     const calculateTotal = () => {
@@ -39,52 +27,45 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
             total + (Number(item.unitPrice) * item.quantity), 0);
         const fee = subtotal * 0.005; // 0.5% fee
         return {
-            subtotal: subtotal.toString(),
-            fee: fee.toString(),
-            total: (subtotal + fee).toString()
+            subtotal: subtotal.toFixed(8),
+            fee: fee.toFixed(8),
+            total: (subtotal + fee).toFixed(8)
         };
     };
 
-    const truncateDescription = (description: string, maxLength: number = 50) => {
-        if (!description) return "No description available";
-        if (description.length <= maxLength) return description;
-        return `${description.substring(0, maxLength)}...`;
+    const handleCheckout = async () => {
+        if (!isAuthenticated) {
+            toast.error('Please sign in to proceed with checkout');
+            navigate('/signin');
+            return;
+        }
+
+        const orders = await processCart();
+        if (orders && orders.length > 0) {
+            // Show the first order in the invoice popup
+            setSelectedOrder(orders[0]);
+        }
     };
 
-    const handleCheckoutComplete = () => {
-        setIsCheckingOut(false);
-        clearCart();
-        navigate('/trade');
+    const handleInvoiceClose = (expired: boolean) => {
+        setSelectedOrder(null);
+        if (expired) {
+            toast.error('Order expired. Please try again.');
+        } else {
+            navigate('/trade');
+        }
     };
 
     const handleBack = () => {
-        setIsCheckingOut(false);
-    };
-
-    const handleClearCart = () => {
-        clearCart();
-    };
-
-    const handleRemoveItem = (listingId: string, assetName: string) => {
-        removeFromCart(listingId, assetName);
+        navigate(-1); // This will go back to the previous page
     };
 
     const totals = calculateTotal();
 
-    if (isCheckingOut) {
-        return (
-            <Checkout
-                items={cartItems}
-                onCheckoutComplete={handleCheckoutComplete}
-                onBack={handleBack}
-            />
-        );
-    }
-
     return (
         <div className="cart-page">
             <div className="cart-page-header">
-                <button className="back-button" onClick={onBack}>
+                <button className="back-button" onClick={handleBack}>
                     <FiArrowLeft /> Back
                 </button>
                 <h1>Shopping Cart</h1>
@@ -104,10 +85,10 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
                 <div className="cart-content">
                     <div className="cart-items-section">
                         <ul className="cart-items">
-                            {cartItems.map((item, index) => (
+                            {cartItems.map((item) => (
                                 <li key={`${item.listingId}-${item.asset_name}`} className="cart-item">
                                     <img 
-                                        src={getImageUrl(item)} 
+                                        src={getImageUrl(item.image_ipfs_hash)} 
                                         alt={item.asset_name}
                                         className="cart-item-image"
                                         onError={(e) => {
@@ -118,7 +99,7 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
                                     <div className="cart-item-info">
                                         <div className="cart-item-name">{item.asset_name}</div>
                                         <div className="cart-item-description">
-                                            {truncateDescription(item.description)}
+                                            {item.description}
                                         </div>
                                         <div className="cart-item-details">
                                             <div className="cart-item-price">
@@ -130,8 +111,9 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
                                         </div>
                                     </div>
                                     <button 
-                                        onClick={() => handleRemoveItem(item.listingId, item.asset_name)} 
+                                        onClick={() => removeFromCart(item.listingId, item.asset_name)} 
                                         className="remove-item-button"
+                                        aria-label="Remove item"
                                     >
                                         ×
                                     </button>
@@ -159,19 +141,24 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
                             </div>
                             
                             <div className="cart-actions">
-                                <button 
-                                    className="checkout-button" 
-                                    onClick={() => setIsCheckingOut(true)}
-                                    disabled={cartItems.length === 0}
+                                <button
+                                    className="checkout-button"
+                                    onClick={handleCheckout}
+                                    disabled={isProcessing || cartItems.length === 0}
                                 >
-                                    Proceed to Checkout
+                                    {isProcessing ? 'Processing...' : 'Proceed to Checkout'}
                                 </button>
-                                <button className="clear-cart-button" onClick={handleClearCart}>
+                                <button 
+                                    className="clear-cart-button" 
+                                    onClick={clearCart}
+                                    disabled={isProcessing}
+                                >
                                     Clear Cart
                                 </button>
                                 <button 
                                     className="continue-shopping-button" 
                                     onClick={() => navigate('/trade')}
+                                    disabled={isProcessing}
                                 >
                                     Continue Shopping
                                 </button>
@@ -179,6 +166,13 @@ const Cart: React.FC<CartProps> = ({ onBack }) => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {selectedOrder && (
+                <InvoiceStatusPopup
+                    invoiceData={selectedOrder}
+                    onClose={handleInvoiceClose}
+                />
             )}
         </div>
     );
