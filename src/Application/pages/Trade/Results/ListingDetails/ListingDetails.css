@@ -1713,3 +1713,97 @@
 .listing-details__dropdown-header.disabled:hover {
   border-color: var(--border-color);
 }
+
+.listing-details__purchase-all-quantities {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+  background: var(--background-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+}
+
+.listing-details__quantity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.listing-details__quantity-row:last-child {
+  border-bottom: none;
+}
+
+.listing-details__asset-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  min-width: 120px;
+}
+
+.listing-details__asset-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.listing-details__asset-price {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--accent-color);
+}
+
+.listing-details__max-quantity {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  position: absolute;
+  right: var(--spacing-3);
+  top: calc(-1 * var(--spacing-4));
+}
+
+.listing-details__total-evr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  margin-top: var(--spacing-2);
+  border-top: 1px solid var(--border-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.listing-details__total-evr span:last-child {
+  font-family: var(--font-family-mono);
+  color: var(--accent-color);
+}
+
+/* Update existing styles */
+.listing-details__quantity-row .listing-details__input-container {
+  flex: 1;
+  margin: 0;
+}
+
+.listing-details__quantity-row .listing-details__input {
+  padding-right: var(--spacing-12);
+}
+
+@media (max-width: 768px) {
+  .listing-details__quantity-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-2);
+  }
+
+  .listing-details__asset-info {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .listing-details__max-quantity {
+    top: auto;
+    bottom: var(--spacing-2);
+  }
+}

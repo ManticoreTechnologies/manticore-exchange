@@ -35,6 +35,12 @@ interface Listing {
   tags?: string[];
 }
 
+interface AssetQuantity {
+  asset_name: string;
+  quantity: string;
+  max_quantity: string;
+}
+
 const TRADING_API_URL = `${import.meta.env.VITE_TRADING_API_PROTO || 'http'}://${import.meta.env.VITE_TRADING_API_HOST || 'localhost'}:8000`;
 
 const ListingDetails: React.FC = () => {
@@ -51,6 +57,7 @@ const ListingDetails: React.FC = () => {
   const [evrAmount, setEvrAmount] = useState<string>("0");
   const [purchaseAll, setPurchaseAll] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [assetQuantities, setAssetQuantities] = useState<AssetQuantity[]>([]);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -82,6 +89,19 @@ const ListingDetails: React.FC = () => {
 
     fetchListing();
   }, [id, userAddress]);
+
+  useEffect(() => {
+    if (listing) {
+      const quantities = listing.balances
+        .filter(balance => Number(balance.confirmed_balance) > 0)
+        .map(balance => ({
+          asset_name: balance.asset_name,
+          quantity: balance.confirmed_balance,
+          max_quantity: balance.confirmed_balance
+        }));
+      setAssetQuantities(quantities);
+    }
+  }, [listing]);
 
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
@@ -164,8 +184,101 @@ const ListingDetails: React.FC = () => {
     }
   }, [selectedAsset, quantity, listing]);
 
+  const handlePurchaseAllQuantityChange = (assetName: string, value: string) => {
+    const balance = listing?.balances.find(b => b.asset_name === assetName);
+    if (!balance) return;
+
+    const numValue = Number(value);
+    if (isNaN(numValue) || numValue < 0) return;
+
+    const maxQuantity = Number(balance.confirmed_balance);
+    if (numValue > maxQuantity) {
+      toast.error(`Maximum available quantity is ${maxQuantity}`);
+      return;
+    }
+
+    setAssetQuantities(prev => 
+      prev.map(aq => 
+        aq.asset_name === assetName 
+          ? { ...aq, quantity: value }
+          : aq
+      )
+    );
+
+    // Recalculate total EVR amount
+    if (listing) {
+      const total = assetQuantities.reduce((sum, aq) => {
+        const price = listing.prices.find(p => p.asset_name === aq.asset_name);
+        if (price) {
+          return sum + (Number(aq.quantity) * Number(price.price_evr));
+        }
+        return sum;
+      }, 0);
+      setEvrAmount(total.toFixed(8));
+    }
+  };
+
+  const handlePurchaseAllToggle = () => {
+    if (!hasAvailableAssets) return;
+    
+    setPurchaseAll(!purchaseAll);
+    if (!purchaseAll && listing) {
+      // Initialize quantities to max available for each asset
+      const quantities = listing.balances
+        .filter(balance => Number(balance.confirmed_balance) > 0)
+        .map(balance => ({
+          asset_name: balance.asset_name,
+          quantity: balance.confirmed_balance,
+          max_quantity: balance.confirmed_balance
+        }));
+      setAssetQuantities(quantities);
+
+      // Calculate total EVR amount
+      const total = quantities.reduce((sum, aq) => {
+        const price = listing.prices.find(p => p.asset_name === aq.asset_name);
+        if (price) {
+          return sum + (Number(aq.quantity) * Number(price.price_evr));
+        }
+        return sum;
+      }, 0);
+      setEvrAmount(total.toFixed(8));
+    } else {
+      // Reset to selected asset only
+      const selectedPrice = listing?.prices.find(p => p.asset_name === selectedAsset);
+      if (selectedPrice) {
+        setEvrAmount(selectedPrice.price_evr);
+        setQuantity("1");
+      }
+    }
+  };
+
   const handleAddToCart = () => {
-    if (!listing || !selectedAsset) return;
+    if (!listing) return;
+
+    if (purchaseAll) {
+      // Add all assets with their quantities
+      assetQuantities.forEach(aq => {
+        const price = listing.prices.find(p => p.asset_name === aq.asset_name);
+        if (price && Number(aq.quantity) > 0) {
+          const cartItem = {
+            listingId: listing.id,
+            name: listing.name,
+            description: listing.description,
+            image_ipfs_hash: listing.image_ipfs_hash,
+            quantity: Number(aq.quantity),
+            unitPrice: price.price_evr,
+            asset_name: aq.asset_name,
+            seller_address: listing.seller_address
+          };
+          addToCart(cartItem);
+        }
+      });
+      toast.success('All items added to cart successfully!');
+      return;
+    }
+
+    // Regular single asset add to cart
+    if (!selectedAsset) return;
 
     const selectedPrice = listing.prices.find(p => p.asset_name === selectedAsset);
     const selectedBalance = listing.balances.find(b => b.asset_name === selectedAsset);
@@ -229,30 +342,6 @@ const ListingDetails: React.FC = () => {
     const selectedBalance = listing.balances.find(b => b.asset_name === selectedAsset);
     return selectedBalance && Number(selectedBalance.confirmed_balance) > 0;
   }, [listing, selectedAsset]);
-
-  const handlePurchaseAllToggle = () => {
-    if (!hasAvailableAssets) return;
-    
-    setPurchaseAll(!purchaseAll);
-    if (!purchaseAll && listing) {
-      // Calculate total EVR amount for all available assets
-      const total = listing.prices.reduce((sum, price) => {
-        const balance = listing.balances.find(b => b.asset_name === price.asset_name);
-        if (balance && Number(balance.confirmed_balance) > 0) {
-          return sum + (Number(balance.confirmed_balance) * Number(price.price_evr));
-        }
-        return sum;
-      }, 0);
-      setEvrAmount(total.toFixed(8));
-    } else {
-      // Reset to selected asset only
-      const selectedPrice = listing?.prices.find(p => p.asset_name === selectedAsset);
-      if (selectedPrice) {
-        setEvrAmount(selectedPrice.price_evr);
-        setQuantity("1");
-      }
-    }
-  };
 
   if (loading) {
     return (
@@ -429,39 +518,74 @@ const ListingDetails: React.FC = () => {
                 </label>
               </div>
 
-              <div className="listing-details__input-group">
-                <div className="listing-details__input-container">
-                  <label className="listing-details__input-label">Quantity</label>
-                  <input
-                    type="number"
-                    className="listing-details__input quantity-field"
-                    value={quantity}
-                    onChange={(e) => handleQuantityChange(e.target.value)}
-                    min="0"
-                    step="0.00000001"
-                    placeholder="0.00000000"
-                    disabled={purchaseAll || !hasSelectedAssetBalance}
-                  />
-                  {selectedAsset && (
-                    <span className="listing-details__input-suffix">{selectedAsset}</span>
-                  )}
+              {purchaseAll ? (
+                <div className="listing-details__purchase-all-quantities">
+                  {assetQuantities.map(aq => {
+                    const price = listing?.prices.find(p => p.asset_name === aq.asset_name);
+                    return (
+                      <div key={aq.asset_name} className="listing-details__quantity-row">
+                        <div className="listing-details__asset-info">
+                          <span className="listing-details__asset-name">{aq.asset_name}</span>
+                          <span className="listing-details__asset-price">{price?.price_evr} EVR</span>
+                        </div>
+                        <div className="listing-details__input-container">
+                          <input
+                            type="number"
+                            className="listing-details__input quantity-field"
+                            value={aq.quantity}
+                            onChange={(e) => handlePurchaseAllQuantityChange(aq.asset_name, e.target.value)}
+                            min="0"
+                            max={aq.max_quantity}
+                            step="0.00000001"
+                            placeholder="0.00000000"
+                          />
+                          <span className="listing-details__max-quantity">
+                            Max: {aq.max_quantity}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div className="listing-details__total-evr">
+                    <span>Total</span>
+                    <span>{evrAmount} EVR</span>
+                  </div>
                 </div>
+              ) : (
+                <div className="listing-details__input-group">
+                  <div className="listing-details__input-container">
+                    <label className="listing-details__input-label">Quantity</label>
+                    <input
+                      type="number"
+                      className="listing-details__input quantity-field"
+                      value={quantity}
+                      onChange={(e) => handleQuantityChange(e.target.value)}
+                      min="0"
+                      step="0.00000001"
+                      placeholder="0.00000000"
+                      disabled={purchaseAll || !hasSelectedAssetBalance}
+                    />
+                    {selectedAsset && (
+                      <span className="listing-details__input-suffix">{selectedAsset}</span>
+                    )}
+                  </div>
 
-                <div className="listing-details__input-container">
-                  <label className="listing-details__input-label">Total</label>
-                  <input
-                    type="number"
-                    className="listing-details__input evr-field"
-                    value={evrAmount}
-                    onChange={(e) => handleEvrChange(e.target.value)}
-                    min="0"
-                    step="0.00000001"
-                    placeholder="0.00000000"
-                    disabled={purchaseAll || !hasSelectedAssetBalance}
-                  />
-                  <span className="listing-details__input-suffix">EVR</span>
+                  <div className="listing-details__input-container">
+                    <label className="listing-details__input-label">Total</label>
+                    <input
+                      type="number"
+                      className="listing-details__input evr-field"
+                      value={evrAmount}
+                      onChange={(e) => handleEvrChange(e.target.value)}
+                      min="0"
+                      step="0.00000001"
+                      placeholder="0.00000000"
+                      disabled={purchaseAll || !hasSelectedAssetBalance}
+                    />
+                    <span className="listing-details__input-suffix">EVR</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="listing-details__actions">
