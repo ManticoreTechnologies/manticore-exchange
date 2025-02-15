@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
             showSearch={showSearch} 
             showTrade={showTrade} 
             showFaucet={showFaucet}
-            showChat={false}
+            // showChat={false}
             showProfile={showProfile} 
           />
 

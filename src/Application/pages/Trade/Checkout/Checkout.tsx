@@ -3,8 +3,10 @@ import './Checkout.css';
 import { FiArrowLeft, FiCopy } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import TradingService, { CartOrder } from '@/Application/services/TradingService';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { CheckoutItem } from '../types';
+import useCart from '@/Application/hooks/useCart';
 
 const EVR_ADDRESS_REGEX = /^[A-Za-z0-9]{34}$/;
 
@@ -23,6 +25,7 @@ const Checkout: React.FC = () => {
     const [pollTimer, setPollTimer] = useState<NodeJS.Timeout | null>(null);
     const [timeLeft, setTimeLeft] = useState<number>(MAX_POLL_TIME);
     const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
+    const { clearCart } = useCart();
 
     // Handle cart initialization and validation
     useEffect(() => {
@@ -87,6 +90,8 @@ const Checkout: React.FC = () => {
                         toast.success('Payment received! Your order is complete.');
                         // Clear checkout items from session storage
                         sessionStorage.removeItem('checkout_items');
+                        // Clear the cart
+                        clearCart();
                         break;
                     case 'failed':
                         clearInterval(timer);
@@ -109,7 +114,7 @@ const Checkout: React.FC = () => {
         }, POLL_INTERVAL);
 
         setPollTimer(timer);
-    }, [pollTimer]);
+    }, [pollTimer, clearCart]);
 
     if (!isInitialized) {
         return null;
@@ -187,12 +192,41 @@ const Checkout: React.FC = () => {
         }
     };
 
-    const handleCopyToClipboard = async (text: string) => {
+    const handleCopyToClipboard = async (text: string, label: string = 'Text') => {
         try {
-            await navigator.clipboard.writeText(text);
-            toast.success('Copied to clipboard!');
+            // Try the modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                toast.success(`${label} copied to clipboard!`);
+                return;
+            }
+
+            // Fallback to older method
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            
+            // Avoid scrolling to bottom
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                toast.success(`${label} copied to clipboard!`);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                toast.error(`Failed to copy ${label.toLowerCase()} to clipboard`);
+            } finally {
+                document.body.removeChild(textArea);
+            }
         } catch (err) {
-            toast.error('Failed to copy to clipboard');
+            console.error('Failed to copy:', err);
+            toast.error(`Failed to copy ${label.toLowerCase()} to clipboard`);
         }
     };
 
@@ -224,6 +258,19 @@ const Checkout: React.FC = () => {
 
     return (
         <div className="checkout-page">
+            <ToastContainer
+                position="bottom-right"
+                autoClose={2000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss={false}
+                draggable={false}
+                pauseOnHover={false}
+                theme="dark"
+                style={{ fontSize: '14px' }}
+            />
             <div className="checkout-header">
                 <button className="back-button" onClick={handleBack}>
                     <FiArrowLeft /> Back
@@ -325,7 +372,7 @@ const Checkout: React.FC = () => {
                                         <span>Order #{order.id}</span>
                                         <button 
                                             className="copy-button"
-                                            onClick={() => handleCopyToClipboard(order.id)}
+                                            onClick={() => handleCopyToClipboard(order.id, 'Order ID')}
                                             title="Copy Order ID"
                                         >
                                             <FiCopy />
@@ -346,7 +393,7 @@ const Checkout: React.FC = () => {
                                                 <span>{order.payment_address}</span>
                                                 <button 
                                                     className="copy-button"
-                                                    onClick={() => handleCopyToClipboard(order.payment_address)}
+                                                    onClick={() => handleCopyToClipboard(order.payment_address, 'Payment address')}
                                                     title="Copy Payment Address"
                                                 >
                                                     <FiCopy />
@@ -377,7 +424,7 @@ const Checkout: React.FC = () => {
                                                 <span>{(order as any).fulfillment_txid as string}</span>
                                                 <button 
                                                     className="copy-button"
-                                                    onClick={() => handleCopyToClipboard((order as any).fulfillment_txid as string)}
+                                                    onClick={() => handleCopyToClipboard((order as any).fulfillment_txid as string, 'Transaction ID')}
                                                     title="Copy Transaction ID"
                                                 >
                                                     <FiCopy />

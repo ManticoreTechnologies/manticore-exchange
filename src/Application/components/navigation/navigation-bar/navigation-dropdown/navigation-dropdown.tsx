@@ -44,7 +44,7 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
       </button>
       {isOpen && (
         <div className="manticore-nav-dropdown-content">
-          <a href="/chat"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a>
+          {/* <a href="/chat"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a> */}
           <a href="/blog"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
           <a href="/roadmap"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
           <a href="/ipfs"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
