@@ -24,25 +24,20 @@ const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListing
     const getImageUrl = (listing: FeaturedListing): string => {
         // First try the listing's main image
         if (listing.image_hash) {
-            return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${listing.image_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+            return `https://ipfs.io/ipfs/${listing.image_hash}`;
         }
 
-        // If no main image, try to get any asset's image from prices array
-        const assetWithImage = listing.prices?.find(price => price.ipfs_hash);
-        if (assetWithImage?.ipfs_hash) {
-            return `https://rose-decent-prawn-420.mypinata.cloud/ipfs/${assetWithImage.ipfs_hash}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`;
+        // If no main image, try to get the first asset's image from prices
+        const firstAssetWithImage = listing.prices?.find(price => price.ipfs_hash);
+        if (firstAssetWithImage?.ipfs_hash) {
+            return `https://ipfs.io/ipfs/${firstAssetWithImage.ipfs_hash}`;
         }
 
         // If no images found, return placeholder
         return ManticoreLogo;
     };
 
-    const CarouselSection = ({ title, items, icon, isFeatured = false }: { 
-        title: string; 
-        items: FeaturedListing[]; 
-        icon: JSX.Element;
-        isFeatured?: boolean;
-    }) => {
+    const CarouselSection = ({ title, items, icon }: { title: string; items: FeaturedListing[]; icon: JSX.Element }) => {
         if (!items || items.length === 0) return null;
         
         return (
@@ -72,9 +67,6 @@ const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListing
                             <div className="fl_a7b3c9_info">
                                 <div className="fl_a7b3c9_title">{listing.title}</div>
                                 <div className="fl_a7b3c9_price">{listing.price} EVR</div>
-                                {isFeatured && listing.asset_name && (
-                                    <div className="fl_a7b3c9_asset">{listing.asset_name}</div>
-                                )}
                             </div>
                         </div>
                     ))}
@@ -83,44 +75,28 @@ const FeaturedListings: React.FC<FeaturedListingsProps> = ({ listings, onListing
         );
     };
 
-    // Split listings based on their sections
+    // Split listings based on their sections from the home/featured endpoint
     const featuredListings = listings.filter(l => !l.highlight);
     const newListings = listings.filter(l => l.highlight === 'New');
     const trendingListings = listings.filter(l => l.highlight === 'Trending');
 
     return (
         <div className="fl_a7b3c9_container">
-            {/* Featured row - full width */}
-            {featuredListings.length > 0 && (
-                <div className="fl_a7b3c9_row fl_a7b3c9_row--featured">
-                    <CarouselSection 
-                        title="Featured" 
-                        items={featuredListings} 
-                        icon={<FiStar />}
-                        isFeatured={true}
-                    />
-                </div>
-            )}
-            
-            {/* New and Trending row */}
-            {(newListings.length > 0 || trendingListings.length > 0) && (
-                <div className="fl_a7b3c9_row fl_a7b3c9_row--secondary">
-                    {newListings.length > 0 && (
-                        <CarouselSection 
-                            title="New Listings" 
-                            items={newListings} 
-                            icon={<FiClock />} 
-                        />
-                    )}
-                    {trendingListings.length > 0 && (
-                        <CarouselSection 
-                            title="Trending" 
-                            items={trendingListings} 
-                            icon={<FiTrendingUp />} 
-                        />
-                    )}
-                </div>
-            )}
+            <CarouselSection 
+                title="Featured" 
+                items={featuredListings} 
+                icon={<FiStar />} 
+            />
+            <CarouselSection 
+                title="New Listings" 
+                items={newListings} 
+                icon={<FiClock />} 
+            />
+            <CarouselSection 
+                title="Trending" 
+                items={trendingListings} 
+                icon={<FiTrendingUp />} 
+            />
         </div>
     );
 };
