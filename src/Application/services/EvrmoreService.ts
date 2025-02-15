@@ -5,7 +5,7 @@ interface RpcResponse<T> {
 }
 
 class EvrmoreService {
-    private baseUrl = 'http://localhost:8001/evrmore';
+    private baseUrl = 'http://10.0.0.2:8002/evrmore';
 
     private async makeRequest<T>(command: string, params: any[] = []): Promise<T> {
         try {
@@ -14,8 +14,15 @@ class EvrmoreService {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(params)
+                body: JSON.stringify({
+                    jsonrpc: '1.0',
+                    method: command,
+                    params: params,
+                    id: 1
+                })
             });
+
+            console.log(await response.json());
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

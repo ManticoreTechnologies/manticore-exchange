@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './TradingResultCard.css';
 import placeholderImage from '@/Application/logos/white-manticore.png';
 import { FiStar, FiKey } from 'react-icons/fi';
+import { formatEvrAmount } from '@/utils/formatting';
 
 interface TradingResultCardProps {
     id: string;
@@ -79,7 +80,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
     }, [ipfsHash, prices]);
 
     const renderPriceItem = (price: any, balance: any) => {
-        const formattedPrice = Number(price.price_evr).toLocaleString();
+        const formattedPrice = formatEvrAmount(price.price_evr);
         const formattedBalance = balance ? Number(balance.confirmed_balance).toLocaleString() : '0';
         
         return (
@@ -101,7 +102,7 @@ const TradingResultCard: React.FC<TradingResultCardProps> = ({
                             {price.asset_name}
                         </span>
                         <span className="trading-asset-price">
-                            {formattedPrice} EVR
+                            {formattedPrice}
                         </span>
                     </div>
                     {balance && (

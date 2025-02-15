@@ -25,7 +25,7 @@ import Footer from './components/navigation/footer/footer';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Bridge from './pages/Bridge/Bridge';
 import TradingServiceDebug from './services/Debug/TradingServiceDebug';
-
+import Asset from './pages/Asset/Asset';
 const RootLayout = () => {
     return (
         <div className="application">
@@ -69,6 +69,10 @@ export const router = createBrowserRouter([
             {
                 path: 'search',
                 element: <Search />
+            },
+            {
+                path: 'asset/:id',
+                element: <Asset />
             },
             {
                 path: 'trade',

@@ -117,7 +117,7 @@ const Trading: React.FC = () => {
                         store_name: listing.name,
                         asset_name: listing.balances[0]?.asset_name || '',
                         price: listing.prices[0]?.price_evr || '0',
-                        image_hash: listing.image_ipfs_hash
+                        image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
                     })),
                     ...(response.new?.listings || []).map((listing: Listing) => ({
                         id: listing.id,
@@ -126,7 +126,7 @@ const Trading: React.FC = () => {
                         asset_name: listing.balances[0]?.asset_name || '',
                         price: listing.prices[0]?.price_evr || '0',
                         highlight: 'New',
-                        image_hash: listing.image_ipfs_hash
+                        image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
                     })),
                     ...(response.trending?.listings || []).map((listing: Listing) => ({
                         id: listing.id,
@@ -135,7 +135,7 @@ const Trading: React.FC = () => {
                         asset_name: listing.balances[0]?.asset_name || '',
                         price: listing.prices[0]?.price_evr || '0',
                         highlight: 'Trending',
-                        image_hash: listing.image_ipfs_hash
+                        image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
                     }))
                 ];
                 
