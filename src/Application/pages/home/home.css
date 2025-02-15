@@ -4,6 +4,7 @@
     color: var(--text-primary);
     overflow: hidden;
     min-height: 100vh;
+    position: relative;
 }
 
 .home .infocards {
@@ -41,25 +42,192 @@
     }
 }
 
-/* Hero Section */
-.home-hero {
+/* Stats Container */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-8);
+    margin: var(--spacing-8) auto;
+    padding: 0 var(--spacing-4);
+    width: 100%;
+    max-width: 1200px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: var(--spacing-6);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    flex: 1;
+    max-width: 300px;
+    transition: all 0.3s ease;
+}
+
+.stat-box h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-2);
+    color: var(--text-secondary);
+}
+
+.stat-box p {
+    font-size: var(--font-size-2xl);
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+/* Quick Start Guide */
+.quick-start {
     padding: var(--spacing-16) var(--spacing-8);
     text-align: center;
-    border-bottom: 1px solid var(--border-color);
+    margin: var(--spacing-8) 0;
+}
+
+.quick-start h2 {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-8);
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.steps-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-8);
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.step {
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    padding: var(--spacing-6);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.step:hover {
+    transform: translateY(-5px);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    margin: 0 auto var(--spacing-4);
+}
+
+.step h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-2);
+}
+
+.step p {
+    color: var(--text-secondary);
+}
+
+/* Activity Ticker */
+.activity-ticker {
+    background: rgba(255, 255, 255, 0.05);
+    padding: var(--spacing-4);
+    margin: var(--spacing-8) 0;
+    overflow: hidden;
+}
+
+.activity-ticker h3 {
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-lg);
+}
+
+.ticker-content {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ticker-content span {
+    display: inline-block;
+    padding: 0 var(--spacing-4);
+    color: var(--text-secondary);
+}
+
+/* Enhanced Info Cards */
+.infocards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-8);
+    padding: var(--spacing-8);
+    margin: var(--spacing-4) auto;
+    width: 100%;
+    max-width: 1400px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-box {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .steps-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .step {
+        width: 100%;
+    }
+}
+
+/* Animation Keyframes */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Enhance existing styles */
+.home-hero {
+    position: relative;
+    padding: var(--spacing-16) var(--spacing-8);
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .home-hero h1 {
-    font-size: var(--font-size-4xl);
-    color: var(--text-primary);
+    font-size: var(--font-size-5xl);
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: var(--spacing-4);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .home-hero p {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     color: var(--text-secondary);
     max-width: 800px;
     margin: 0 auto var(--spacing-8);
+    line-height: 1.6;
 }
 
 /* Responsive Typography */

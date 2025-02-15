@@ -30,7 +30,6 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.5",
-    "framer-motion": "^12.4.0",
     "fs": "^0.0.1-security",
     "grapheme-splitter": "^1.0.4",
     "qrcode.react": "^3.2.0",
@@ -69,9 +68,12 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "framer-motion": "^12.4.3",
     "js-cookie": "^3.0.5",
     "lightweight-charts": "^4.2.1",
+    "particles-bg": "^2.5.5",
     "react-tooltip": "^5.28.0",
+    "react-type-animation": "^3.2.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.13"
   }
