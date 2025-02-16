@@ -524,6 +524,19 @@
     font-size: 1em;
 }
 
+.mlp_payment_status .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .mlp_payment_address {
     padding: var(--spacing-2);
     background: var(--background-tertiary);

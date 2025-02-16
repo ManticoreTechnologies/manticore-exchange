@@ -734,3 +734,73 @@
 .listing-item {
   cursor: pointer;
 }
+
+/* Auth Button */
+.auth-button {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  transition: all var(--transition-speed) ease;
+}
+
+.auth-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .auth-button {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Update Auth Button styles */
+.auth-button-centered {
+  margin: 0 auto;
+  margin-top: -1rem; /* Adjust this value to position relative to hero */
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 100;
+  transition: all var(--transition-speed) ease;
+}
+
+.auth-button-centered:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.2);
+}
+
+.auth-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .auth-button-centered {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin-top: -0.5rem;
+  }
+}

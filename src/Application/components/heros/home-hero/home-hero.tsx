@@ -15,7 +15,7 @@ const HomeHero: React.FC<homeheroprops> = ({
   title = "Home Hero",
   logo = manticore_logo,
   body = "This is a sample hero body. Update with info.",
-  subtitle = "Asset Exchange"
+  authButton
 }) => {
   return (
     <section className="hero">
@@ -28,6 +28,7 @@ const HomeHero: React.FC<homeheroprops> = ({
       </div>
       <div className="hero-section hero-center">
         <HeroContent title={title} subtitle={subtitle} body={body} />
+        {authButton}
       </div>
       <div className="hero-section hero-right">
         <img 

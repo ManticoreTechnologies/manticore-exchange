@@ -17,7 +17,24 @@ import { toast } from 'react-toastify';
 // Add white Manticore logo import
 import whiteManticore from '@/Application/logos/white-manticore.png';
 
+// Add new interfaces for featured info
+interface FeaturedPaymentInfo {
+    id: string | null;
+    status: string | null;
+    amount_evr: string | null;
+    duration_hours: number | null;
+    priority_level: number | null;
+    paid_at: string | null;
+}
 
+interface FeaturedInfo {
+    is_featured: boolean;
+    featured_at: string | null;
+    featured_by: string | null;
+    priority: number | null;
+    expires_at: string | null;
+    payment: FeaturedPaymentInfo | null;
+}
 
 const ManageListingPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -107,11 +124,14 @@ const ManageListingPage: React.FC = () => {
             );
             
             if (activePayment) {
+                console.log('Active payment:', activePayment); // Debug log
                 setPayment(activePayment);
                 // If payment is pending, start polling
                 if (activePayment.status === 'pending') {
                     startPaymentPolling(activePayment.id);
                 }
+            } else {
+                setPayment(null);
             }
         } catch (err) {
             console.error('Failed to load feature plans:', err);
@@ -258,36 +278,100 @@ const ManageListingPage: React.FC = () => {
     };
 
     const formatDuration = (hours: number) => {
+        if (hours === 0) return 'Hourly';
+        if (hours === 24) return 'Daily';
+        if (hours === 168) return 'Weekly';
+        if (hours === 720) return 'Monthly';
+        
         const days = Math.floor(hours / 24);
-        if (days === 0) return 'Hourly';
-        if (days === 1) return 'Daily';
-        if (days === 7) return 'Weekly';
-        if (days === 30) return 'Monthly';
-        return `${days} days`;
-    };
-
-    const getTimeRemaining = (expiresAt: string) => {
-        const now = new Date();
-        const expiry = new Date(expiresAt);
-        const diff = expiry.getTime() - now.getTime();
-        
-        if (diff <= 0) return 'Expired';
-        
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const remainingHours = hours % 24;
         
         if (days === 0) {
-            if (hours === 0) return 'Less than an hour';
             return hours === 1 ? '1 hour' : `${hours} hours`;
         }
         
-        if (hours === 0) {
+        if (remainingHours === 0) {
             return days === 1 ? '1 day' : `${days} days`;
         }
         
         return days === 1 
-            ? `1 day ${hours}h` 
-            : `${days} days ${hours}h`;
+            ? `1 day ${remainingHours}h` 
+            : `${days} days ${remainingHours}h`;
+    };
+
+    const formatDateTime = (utcDateString: string) => {
+        // Parse the UTC date string and force it to be interpreted as UTC
+        const utcDate = new Date(utcDateString + 'Z');
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
+        return utcDate.toLocaleString(undefined, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZoneName: 'short',
+            timeZone: timeZone
+        });
+    };
+
+    const getTimeRemaining = (expiresAt: string | null, paidAt: string | null, durationHours: number | null) => {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const now = new Date();
+        
+        // Debug log all inputs and current time
+        console.log('Time debug:', {
+            currentTime: now.toLocaleString(undefined, { timeZone }),
+            timeZone,
+            expiresAt,
+            paidAt,
+            durationHours
+        });
+        
+        if (!paidAt && durationHours) {
+            return formatDuration(durationHours);
+        }
+        
+        if (!paidAt) {
+            return 'Pending';
+        }
+
+        if (!expiresAt) {
+            return 'No expiry set';
+        }
+
+        // Force the expiry date to be interpreted as UTC by appending 'Z'
+        const utcExpiry = new Date(expiresAt + 'Z');
+        const localNow = new Date();
+        
+        // Get time difference in milliseconds
+        const diffMs = utcExpiry.getTime() - localNow.getTime();
+        
+        if (diffMs <= 0) return 'Expired';
+        
+        // Calculate exact hours and minutes
+        const totalMinutes = Math.floor(diffMs / (1000 * 60));
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        
+        if (hours < 2) {
+            // Show minutes when less than 2 hours remain
+            return `${hours ? `${hours}h ` : ''}${minutes}m remaining`;
+        }
+        
+        if (hours < 24) {
+            return `${hours}h remaining`;
+        }
+        
+        const days = Math.floor(hours / 24);
+        const remainingHours = hours % 24;
+        
+        if (remainingHours === 0) {
+            return `${days} day${days !== 1 ? 's' : ''} remaining`;
+        }
+        
+        return `${days}d ${remainingHours}h remaining`;
     };
 
     const handleCopyToClipboard = (text: string) => {
@@ -358,6 +442,12 @@ const ManageListingPage: React.FC = () => {
                                     <span>Awaiting Payment</span>
                                 </>
                             )}
+                            {payment.status === 'confirming' && (
+                                <>
+                                    <FaSync className="spin" />
+                                    <span>Confirming Payment</span>
+                                </>
+                            )}
                             {payment.status === 'completed' && (
                                 <>
                                     <FaCheckCircle />
@@ -378,23 +468,41 @@ const ManageListingPage: React.FC = () => {
                                 </div>
                                 <div className="mlp_balance_item">
                                     <span className="mlp_balance_asset">
-                                        <FaClock /> Time Remaining
+                                        <FaClock /> Duration
                                     </span>
                                     <span className="mlp_balance_amount">
-                                        {getTimeRemaining(payment.expires_at || '')}
+                                        {getTimeRemaining(payment.expires_at, payment.paid_at, payment.duration_hours)}
                                     </span>
                                 </div>
                             </>
                         )}
-                        {payment.status === 'completed' && payment.expires_at && (
-                            <div className="mlp_balance_item">
-                                <span className="mlp_balance_asset">
-                                    <FaBolt /> Featured Until
-                                </span>
-                                <span className="mlp_balance_amount">
-                                    {getTimeRemaining(payment.expires_at)}
-                                </span>
-                            </div>
+                        {payment.status === 'completed' && (
+                            <>
+                                <div className="mlp_balance_item">
+                                    <span className="mlp_balance_asset">
+                                        <FaCalendarAlt /> Duration Paid
+                                    </span>
+                                    <span className="mlp_balance_amount">
+                                        {formatDuration(payment.duration_hours)}
+                                    </span>
+                                </div>
+                                <div className="mlp_balance_item">
+                                    <span className="mlp_balance_asset">
+                                        <FaBolt /> Time Remaining
+                                    </span>
+                                    <span className="mlp_balance_amount">
+                                        {getTimeRemaining(payment.expires_at, payment.paid_at, payment.duration_hours)}
+                                    </span>
+                                </div>
+                                <div className="mlp_balance_item">
+                                    <span className="mlp_balance_asset">
+                                        <FaClock /> Expires At
+                                    </span>
+                                    <span className="mlp_balance_amount">
+                                        {payment.expires_at ? formatDateTime(payment.expires_at) : 'Not set'}
+                                    </span>
+                                </div>
+                            </>
                         )}
                     </div>
                 ) : (

@@ -52,6 +52,7 @@ export interface FeaturedPayment {
     status: string;
     created_at: string;
     expires_at: string | null;
+    paid_at: string | null;
 }
 
 export interface FeaturedInfo {

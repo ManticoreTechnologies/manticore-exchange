@@ -4,6 +4,7 @@ import ParticlesBg from 'particles-bg';
 import { TypeAnimation } from 'react-type-animation';
 import tradingService, { Listing, ListingsResponse } from '@/Application/services/TradingService';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/Application/contexts/AuthContext';
 
 //@ts-ignore
 import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket, FaComments, FaFire, FaTrophy, FaChartArea, FaShieldAlt, FaBolt, FaUsersCog, FaDatabase, FaChartBar, FaCubes } from 'react-icons/fa'; 
@@ -50,6 +51,7 @@ const evrmoreInfo = {
 };
 
 const Home: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [tradeCount, setTradeCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
@@ -130,12 +132,18 @@ const Home: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleAuthClick = () => {
+    if (isAuthenticated) {
+      navigate('/profile');
+    } else {
+      navigate('/signin');
+    }
+  };
+
   return (
     <div className="home">
       <ParticlesBg type="cobweb" bg={true} />
       
-     
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -159,6 +167,22 @@ const Home: React.FC = () => {
           }
           logo={manticore_logo}
           body="Your premier destination for trading digital assets on the Evrmore blockchain."
+          authButton={
+            <motion.button
+              className="auth-button-centered glassmorphism"
+              onClick={handleAuthClick}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 8px 32px rgba(255, 107, 107, 0.2)"
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaUser className="auth-icon" />
+              {isAuthenticated ? 'Profile' : 'Connect Wallet'}
+            </motion.button>
+          }
         />
       </motion.div>
 
@@ -269,7 +293,7 @@ const Home: React.FC = () => {
                   <p className="description">{listing.highlight ? `(${listing.highlight})` : 'No description available'}</p>
                   {listing.tags && listing.tags.length > 0 && (
                     <div className="tags">
-                      {listing.tags.map((tag, index) => (
+                      {listing.tags.map((tag: string, index: number) => (
                         <span key={index} className="tag">{tag}</span>
                       ))}
                     </div>
