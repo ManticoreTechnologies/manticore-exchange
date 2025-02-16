@@ -21,6 +21,8 @@ export interface Listing {
     description: string;
     seller_address: string;
     listing_address: string;
+    deposit_address: string;
+    payout_address: string;
     image_ipfs_hash: string | null;
     status: string;
     created_at: string;

@@ -14,6 +14,7 @@ interface Listing {
   description: string;
     seller_address: string;
     listing_address: string;
+    deposit_address: string;
     status: string;
     created_at: string;
     updated_at: string;

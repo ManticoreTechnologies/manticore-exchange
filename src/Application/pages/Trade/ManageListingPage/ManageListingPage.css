@@ -207,8 +207,12 @@
 .mlp_input_readonly {
     background: var(--background-tertiary);
     color: var(--text-muted);
-    cursor: default;
+    cursor: text;
     font-family: var(--font-family-mono);
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
 
 .mlp_input_readonly:focus {
@@ -266,6 +270,8 @@
     display: flex;
     gap: var(--spacing-2);
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .mlp_input_group input {
@@ -274,6 +280,9 @@
 
 .mlp_input_group button {
     white-space: nowrap;
+    flex-shrink: 0;
+    z-index: 2;
+    position: relative;
 }
 
 /* Stats Grid */
@@ -531,14 +540,19 @@
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.3s ease;
     border: none;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-2);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .mlp_button::after {
@@ -582,19 +596,20 @@
 }
 
 .mlp_button_secondary {
-    background: linear-gradient(
-        145deg,
-        var(--background-tertiary) 0%,
-        color-mix(in srgb, var(--background-tertiary) 90%, transparent 10%) 100%
-    );
+    background: var(--background-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-subtle);
+    position: relative;
+    z-index: 3;
 }
 
 .mlp_button_secondary:hover {
+    background: var(--background-hover);
     border-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.mlp_button_secondary:active {
+    transform: translateY(1px);
 }
 
 .mlp_button_danger {
@@ -617,6 +632,21 @@
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
+}
+
+/* Ensure buttons are always on top and clickable */
+.mlp_button_secondary {
+    position: relative;
+    z-index: 3;
+}
+
+.mlp_button:active {
+    transform: translateY(1px);
+}
+
+.mlp_button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.3);
 }
 
 /* Tags */
@@ -785,6 +815,8 @@
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
+    min-width: 80px;
+    text-align: center;
 }
 
 .mlp_type_receive {
@@ -792,21 +824,32 @@
     color: var(--color-success);
 }
 
-.mlp_type_send {
-    background: rgba(var(--color-error-rgb), 0.1);
-    color: var(--color-error);
+.mlp_type_withdraw {
+    background: rgba(var(--color-warning-rgb), 0.1);
+    color: var(--color-warning);
 }
 
 .mlp_transaction_asset {
     font-family: var(--font-family-mono);
     color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
 }
 
 .mlp_transaction_details {
     display: flex;
     justify-content: space-between;
     font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.mlp_transaction_time {
+    font-family: var(--font-family-mono);
+}
+
+.mlp_transaction_confirmations {
     color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
 }
 
 /* Enhanced Balance Card */

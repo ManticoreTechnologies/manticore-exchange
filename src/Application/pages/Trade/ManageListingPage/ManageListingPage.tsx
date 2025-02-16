@@ -17,16 +17,13 @@ import { toast } from 'react-toastify';
 // Add white Manticore logo import
 import whiteManticore from '@/Application/logos/white-manticore.png';
 
-// Update the Listing interface to include payout_address
-interface ExtendedListing extends Listing {
-    payout_address?: string;
-}
+
 
 const ManageListingPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [listing, setListing] = useState<ExtendedListing | null>(null);
+    const [listing, setListing] = useState<Listing | null>(null);
     const [analytics, setAnalytics] = useState<ListingAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -293,6 +290,42 @@ const ManageListingPage: React.FC = () => {
             : `${days} days ${hours}h`;
     };
 
+    const handleCopyToClipboard = (text: string) => {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        let success = false;
+        try {
+            success = document.execCommand('copy');
+            if (success) {
+                toast.success('Copied to clipboard!');
+            } else {
+                toast.error('Failed to copy');
+            }
+        } catch (err) {
+            console.error('Failed to copy:', err);
+            toast.error('Failed to copy to clipboard');
+        }
+        document.body.removeChild(el);
+    };
+
+    const formatAssetAmount = (amount: string, assetName: string) => {
+        const num = parseFloat(amount);
+        if (isNaN(num)) return amount;
+        
+        // Format with appropriate decimal places
+        if (num >= 1000000) {
+            return `${(num / 1000000).toFixed(2)}M ${assetName}`;
+        } else if (num >= 1000) {
+            return `${(num / 1000).toFixed(2)}K ${assetName}`;
+        }
+        return `${num.toFixed(2)} ${assetName}`;
+    };
+
     if (loading) {
         return (
             <div className="mlp_page">
@@ -462,16 +495,15 @@ const ManageListingPage: React.FC = () => {
                     <div className="mlp_input_group">
                         <input
                             type="text"
-                            value={listing?.listing_address || ''}
+                            value={listing?.deposit_address || ''}
                             readOnly
                             className="mlp_input_readonly"
+                            onClick={(e) => (e.target as HTMLInputElement).select()}
                         />
                         <button 
+                            type="button"
                             className="mlp_button mlp_button_secondary"
-                            onClick={() => {
-                                navigator.clipboard.writeText(listing?.listing_address || '');
-                                toast.success('Address copied to clipboard');
-                            }}
+                            onClick={() => handleCopyToClipboard(listing?.deposit_address || '')}
                         >
                             <FaCopy /> Copy
                         </button>
@@ -500,13 +532,12 @@ const ManageListingPage: React.FC = () => {
                                 value={listing?.payout_address || listing?.seller_address || ''}
                                 readOnly
                                 className="mlp_input_readonly"
+                                onClick={(e) => (e.target as HTMLInputElement).select()}
                             />
                             <button 
+                                type="button"
                                 className="mlp_button mlp_button_secondary"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(listing?.payout_address || listing?.seller_address || '');
-                                    toast.success('Address copied to clipboard');
-                                }}
+                                onClick={() => handleCopyToClipboard(listing?.payout_address || listing?.seller_address || '')}
                             >
                                 <FaCopy /> Copy
                             </button>
@@ -534,10 +565,10 @@ const ManageListingPage: React.FC = () => {
                             <div key={tx.tx_hash} className="mlp_transaction_item">
                                 <div className="mlp_transaction_info">
                                     <span className={`mlp_transaction_type mlp_type_${tx.entry_type}`}>
-                                        {tx.entry_type}
+                                        {tx.entry_type === 'receive' ? 'Received' : 'Withdrawn'}
                                     </span>
                                     <span className="mlp_transaction_asset">
-                                        {tx.amount} {tx.asset_type}
+                                        {formatAssetAmount(tx.amount, tx.asset_type)}
                                     </span>
                                 </div>
                                 <div className="mlp_transaction_details">
@@ -545,7 +576,7 @@ const ManageListingPage: React.FC = () => {
                                         {new Date(tx.time || '').toLocaleString()}
                                     </span>
                                     <span className="mlp_transaction_confirmations">
-                                        {tx.confirmations} confirmations
+                                        {tx.confirmations} {tx.confirmations === 1 ? 'confirmation' : 'confirmations'}
                                     </span>
                                 </div>
                             </div>
