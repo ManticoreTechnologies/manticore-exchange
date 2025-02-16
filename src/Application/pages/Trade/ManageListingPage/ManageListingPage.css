@@ -514,27 +514,73 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
-    padding: var(--spacing-2);
+    padding: var(--spacing-3);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-3);
+    background: var(--background-tertiary);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+}
+
+.mlp_payment_status.mlp_status_checking {
+    background: rgba(var(--accent-color-rgb), 0.1);
+    border-color: var(--accent-color);
+}
+
+.mlp_payment_status.mlp_status_success {
+    background: rgba(var(--color-success-rgb), 0.1);
+    border-color: var(--color-success);
+}
+
+.mlp_payment_status.mlp_status_error {
+    background: rgba(var(--color-error-rgb), 0.1);
+    border-color: var(--color-error);
 }
 
 .mlp_payment_status svg {
-    font-size: 1em;
+    font-size: 1.2em;
 }
 
 .mlp_payment_status .spin {
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.mlp_status_message {
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.mlp_status_message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mlp_status_message.success {
+    background: rgba(var(--color-success-rgb), 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(var(--color-success-rgb), 0.2);
+}
+
+.mlp_status_message.error {
+    background: rgba(var(--color-error-rgb), 0.1);
+    color: var(--color-error);
+    border: 1px solid rgba(var(--color-error-rgb), 0.2);
+}
+
+.mlp_status_message.info {
+    background: rgba(var(--accent-color-rgb), 0.1);
+    color: var(--accent-color);
+    border: 1px solid rgba(var(--accent-color-rgb), 0.2);
 }
 
 .mlp_payment_address {

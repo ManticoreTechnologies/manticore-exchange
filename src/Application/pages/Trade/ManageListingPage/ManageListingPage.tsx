@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/Application/contexts/AuthContext';
 import { 
@@ -6,7 +6,7 @@ import {
     FaWallet, FaClock, FaCheckCircle, FaTimes, FaSync,
     FaTag, FaCoins, FaCalendarAlt, FaBolt, FaImage,
     FaArrowUp, FaHistory, FaExternalLinkAlt, FaCopy,
-    FaExclamationCircle, FaHourglassHalf
+    FaExclamationCircle, FaHourglassHalf, FaInfoCircle
 } from 'react-icons/fa';
 import tradingService, { 
     Listing, Balance, FeaturedListingPlan, FeaturedPayment,
@@ -78,6 +78,10 @@ const ManageListingPage: React.FC = () => {
     const [showWithdrawModal, setShowWithdrawModal] = useState<string | null>(null);
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
 
+    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
         if (!isAuthenticated) {
             navigate('/signin');
@@ -87,6 +91,14 @@ const ManageListingPage: React.FC = () => {
         loadAnalytics();
         loadFeaturePlans();
         loadTransactions();
+
+        // Cleanup polling on unmount
+        return () => {
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+            }
+        };
     }, [id, isAuthenticated]);
 
     const loadListing = async () => {
@@ -158,7 +170,14 @@ const ManageListingPage: React.FC = () => {
     };
 
     const startPaymentPolling = (paymentId: string) => {
-        tradingService.pollFeaturedPaymentStatus(
+        // Clear any existing polling
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
+
+        // Start new polling
+        pollingIntervalRef.current = tradingService.pollFeaturedPaymentStatus(
             paymentId,
             (updatedPayment) => {
                 // Only update state if payment status has changed
@@ -517,16 +536,23 @@ const ManageListingPage: React.FC = () => {
         setPaymentError('');
     };
 
-    // Update the refresh button click handler to only work for pending/confirming payments
+    // Update the handleRefreshPayment function
     const handleRefreshPayment = async () => {
         if (!payment?.id || !['pending', 'confirming'].includes(payment.status)) return;
         
         try {
-            setIsProcessing(true);
-            const updatedPayment = await tradingService.getFeaturedPayment(payment.id);
+            setIsCheckingStatus(true);
+            setStatusMessage(null);
+            const result = await tradingService.recheckFeaturedPayment(payment.id);
             
-            // Only update if the payment status has changed
-            if (updatedPayment.status !== payment.status) {
+            // Show payment status message
+            if (result.message) {
+                setStatusMessage({ type: 'info', message: result.message });
+            }
+
+            // If status changed, update the payment
+            if (result.status !== payment.status) {
+                const updatedPayment = await tradingService.getFeaturedPayment(payment.id);
                 setPayment(updatedPayment);
                 
                 // Update listing's featured status if payment is completed
@@ -542,13 +568,34 @@ const ManageListingPage: React.FC = () => {
                             payment: updatedPayment
                         }
                     });
+                    setStatusMessage({ type: 'success', message: 'Payment completed! Your listing is now featured.' });
+                }
+            } else {
+                // Show detailed status even if status hasn't changed
+                const amountNeeded = parseFloat(result.amount_evr);
+                const amountReceived = parseFloat(result.received_evr);
+                const remaining = amountNeeded - amountReceived;
+                
+                if (remaining > 0) {
+                    setStatusMessage({ 
+                        type: 'info', 
+                        message: `Waiting for payment: ${remaining.toFixed(8)} EVR remaining`
+                    });
+                } else if (result.status === 'confirming') {
+                    setStatusMessage({ 
+                        type: 'info', 
+                        message: `Payment received! Waiting for ${6 - (result.confirmations || 0)} more confirmations`
+                    });
                 }
             }
         } catch (err) {
             console.error('Failed to refresh payment status:', err);
-            toast.error('Failed to refresh payment status');
+            setStatusMessage({ 
+                type: 'error', 
+                message: 'Failed to refresh payment status. Please try again.'
+            });
         } finally {
-            setIsProcessing(false);
+            setIsCheckingStatus(false);
         }
     };
 
@@ -581,27 +628,17 @@ const ManageListingPage: React.FC = () => {
                 <div className="mlp_card_content">
                     {(activePayment?.status === 'pending' || activePayment?.status === 'confirming' || isCurrentlyFeatured(featured)) ? (
                         <div className="mlp_feature_payment">
-                            <div className={`mlp_payment_status mlp_payment_${activePayment?.status || 'unknown'}`}>
-                                {activePayment?.status === 'pending' || activePayment?.status === 'confirming' ? (
-                                    <>
-                                        <FaClock className="spin" />
-                                        <span>{activePayment.status === 'confirming' ? 'Confirming Payment' : 'Payment Pending'}</span>
-                                    </>
-                                ) : (
-                                    <>
+                            {activePayment?.status === 'completed' ? (
+                                <>
+                                    <div className={`mlp_payment_status mlp_payment_${activePayment?.status || 'unknown'}`}>
                                         <FaCheckCircle />
                                         <span>Featured</span>
-                                    </>
-                                )}
-                            </div>
-                            
-                            {(activePayment?.status === 'pending' || activePayment?.status === 'confirming') && (
-                                <>
-                                    <div className="mlp_payment_details">
+                                    </div>
+                                    <div className="mlp_feature_details">
                                         <div className="mlp_payment_info_grid">
                                             <div className="mlp_payment_info_item">
                                                 <span className="mlp_info_label">
-                                                    <FaTag /> Amount
+                                                    <FaTag /> Amount Paid
                                                 </span>
                                                 <span className="mlp_info_value">
                                                     {activePayment.amount_evr} EVR
@@ -625,126 +662,35 @@ const ManageListingPage: React.FC = () => {
                                             </div>
                                             <div className="mlp_payment_info_item">
                                                 <span className="mlp_info_label">
-                                                    <FaCalendarAlt /> Created
+                                                    <FaCalendarAlt /> Featured Since
                                                 </span>
                                                 <span className="mlp_info_value">
-                                                    {formatDateTime(activePayment.created_at)}
+                                                    {formatDateTime(activePayment.paid_at || '')}
                                                 </span>
                                             </div>
                                         </div>
 
-                                        <div className="mlp_payment_address_section">
-                                            <h3><FaWallet /> Payment Address</h3>
-                                            <div className="mlp_payment_address">
-                                                <div className="mlp_address_header">
-                                                    Send exactly {activePayment.amount_evr} EVR to:
-                                                </div>
-                                                <div className="mlp_address_content">
-                                                    <code>{activePayment.payment_address}</code>
-                                                    <button 
-                                                        className="mlp_button mlp_button_secondary"
-                                                        onClick={() => handleCopyToClipboard(activePayment.payment_address)}
-                                                    >
-                                                        <FaCopy /> Copy Address
-                                                    </button>
+                                        <div className="mlp_feature_status">
+                                            <div className="mlp_time_remaining">
+                                                <h3><FaHourglassHalf /> Time Remaining</h3>
+                                                <div className="mlp_time_display">
+                                                    {getTimeRemaining(featured?.expires_at, activePayment.paid_at, activePayment.duration_hours)}
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div className="mlp_payment_expiry">
-                                            <div className="mlp_expiry_info">
-                                                <FaExclamationCircle />
-                                                <div>
-                                                    <h4>Payment Expires In:</h4>
-                                                    <p>{(() => {
-                                                        if (!activePayment?.created_at) return 'Not set';
-                                                        const createdDate = new Date(activePayment.created_at);
-                                                        const expiryDate = new Date(createdDate.getTime() + (24 * 60 * 60 * 1000));
-                                                        return getTimeRemaining(
-                                                            expiryDate.toISOString(),
-                                                            activePayment.created_at,
-                                                            24
-                                                        );
-                                                    })()}</p>
+                                            
+                                            <div className="mlp_expiry_date">
+                                                <h3><FaClock /> Expires At</h3>
+                                                <div className="mlp_date_display">
+                                                    {featured?.expires_at ? formatDateTime(featured.expires_at) : 'Not set'}
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div className="mlp_button_group">
-                                            <button
-                                                className="mlp_button mlp_button_primary mlp_refresh_button"
-                                                onClick={handleRefreshPayment}
-                                                disabled={isProcessing || isCancelling}
-                                            >
-                                                <FaSync className={isProcessing ? 'spin' : ''} /> 
-                                                {isProcessing ? 'Checking Status...' : 'Check Payment Status'}
-                                            </button>
-                                            <button
-                                                className="mlp_button mlp_button_primary mlp_cancel_button"
-                                                onClick={() => handleCancelPayment(activePayment.id)}
-                                                disabled={isProcessing || isCancelling}
-                                            >
-                                                <FaTimes /> 
-                                                {isCancelling ? 'Cancelling...' : 'Cancel Payment'}
-                                            </button>
                                         </div>
                                     </div>
                                 </>
-                            )}
-
-                            {activePayment?.status === 'completed' && (
-                                <div className="mlp_feature_details">
-                                    <div className="mlp_payment_info_grid">
-                                        <div className="mlp_payment_info_item">
-                                            <span className="mlp_info_label">
-                                                <FaTag /> Amount Paid
-                                            </span>
-                                            <span className="mlp_info_value">
-                                                {activePayment.amount_evr} EVR
-                                            </span>
-                                        </div>
-                                        <div className="mlp_payment_info_item">
-                                            <span className="mlp_info_label">
-                                                <FaClock /> Duration
-                                            </span>
-                                            <span className="mlp_info_value">
-                                                {formatDuration(activePayment.duration_hours || 0)}
-                                            </span>
-                                        </div>
-                                        <div className="mlp_payment_info_item">
-                                            <span className="mlp_info_label">
-                                                <FaBolt /> Priority Level
-                                            </span>
-                                            <span className="mlp_info_value">
-                                                Level {activePayment.priority_level}
-                                            </span>
-                                        </div>
-                                        <div className="mlp_payment_info_item">
-                                            <span className="mlp_info_label">
-                                                <FaCalendarAlt /> Featured Since
-                                            </span>
-                                            <span className="mlp_info_value">
-                                                {formatDateTime(activePayment.paid_at || '')}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mlp_feature_status">
-                                        <div className="mlp_time_remaining">
-                                            <h3><FaHourglassHalf /> Time Remaining</h3>
-                                            <div className="mlp_time_display">
-                                                {getTimeRemaining(featured?.expires_at, activePayment.paid_at, activePayment.duration_hours)}
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="mlp_expiry_date">
-                                            <h3><FaClock /> Expires At</h3>
-                                            <div className="mlp_date_display">
-                                                {featured?.expires_at ? formatDateTime(featured.expires_at) : 'Not set'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            ) : (
+                                <>
+                                    {activePayment && renderPaymentDetails(activePayment)}
+                                </>
                             )}
                         </div>
                     ) : (
@@ -781,6 +727,133 @@ const ManageListingPage: React.FC = () => {
             </div>
         );
     };
+
+    // Update the payment details section in renderFeatureCard
+    const renderPaymentDetails = (activePayment: FeaturedPayment) => (
+        <div className="mlp_payment_details">
+            <div className={`mlp_payment_status ${isCheckingStatus ? 'mlp_status_checking' : ''}`}>
+                {isCheckingStatus ? (
+                    <>
+                        <FaSync className="spin" />
+                        <span>Checking Payment Status...</span>
+                    </>
+                ) : (
+                    <>
+                        <FaClock className={activePayment.status === 'confirming' ? 'spin' : ''} />
+                        <span>
+                            {activePayment.status === 'confirming' ? 'Confirming Payment' : 'Payment Pending'}
+                        </span>
+                    </>
+                )}
+            </div>
+
+            {statusMessage && (
+                <div className={`mlp_status_message ${statusMessage.type} show`}>
+                    {statusMessage.type === 'success' && <FaCheckCircle />}
+                    {statusMessage.type === 'error' && <FaTimes />}
+                    {statusMessage.type === 'info' && <FaInfoCircle />}
+                    <span>{statusMessage.message}</span>
+                </div>
+            )}
+
+            {/* Rest of the payment details content */}
+            <div className="mlp_payment_info_grid">
+                <div className="mlp_payment_info_item">
+                    <span className="mlp_info_label">
+                        <FaTag /> Amount
+                    </span>
+                    <span className="mlp_info_value">
+                        {activePayment.amount_evr} EVR
+                    </span>
+                </div>
+                <div className="mlp_payment_info_item">
+                    <span className="mlp_info_label">
+                        <FaClock /> Duration
+                    </span>
+                    <span className="mlp_info_value">
+                        {formatDuration(activePayment.duration_hours || 0)}
+                    </span>
+                </div>
+                <div className="mlp_payment_info_item">
+                    <span className="mlp_info_label">
+                        <FaBolt /> Priority Level
+                    </span>
+                    <span className="mlp_info_value">
+                        Level {activePayment.priority_level}
+                    </span>
+                </div>
+                <div className="mlp_payment_info_item">
+                    <span className="mlp_info_label">
+                        <FaCalendarAlt /> Created
+                    </span>
+                    <span className="mlp_info_value">
+                        {formatDateTime(activePayment.created_at)}
+                    </span>
+                </div>
+            </div>
+
+            <div className="mlp_payment_address_section">
+                <h3><FaWallet /> Payment Address</h3>
+                <div className="mlp_payment_address">
+                    <div className="mlp_address_header">
+                        Send exactly {activePayment.amount_evr} EVR to:
+                    </div>
+                    <div className="mlp_address_content">
+                        <code>{activePayment.payment_address}</code>
+                        <button 
+                            className="mlp_button mlp_button_secondary"
+                            onClick={() => handleCopyToClipboard(activePayment.payment_address)}
+                        >
+                            <FaCopy /> Copy Address
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mlp_payment_expiry">
+                <div className="mlp_expiry_info">
+                    <FaExclamationCircle />
+                    <div>
+                        <h4>Payment Expires In:</h4>
+                        <p>{(() => {
+                            if (!activePayment?.created_at) return 'Not set';
+                            const createdDate = new Date(activePayment.created_at);
+                            const expiryDate = new Date(createdDate.getTime() + (24 * 60 * 60 * 1000));
+                            return getTimeRemaining(
+                                expiryDate.toISOString(),
+                                activePayment.created_at,
+                                24
+                            );
+                        })()}</p>
+                    </div>
+                </div>
+            </div>
+
+            {renderPaymentButtons(activePayment)}
+        </div>
+    );
+
+    // Update the button group in renderFeatureCard
+    const renderPaymentButtons = (activePayment: FeaturedPayment) => (
+        <div className="mlp_button_group">
+            <button
+                className="mlp_button mlp_button_primary mlp_refresh_button"
+                onClick={handleRefreshPayment}
+                disabled={isProcessing || isCancelling || isCheckingStatus}
+            >
+                <FaSync className={isCheckingStatus ? 'spin' : ''} /> 
+                {isCheckingStatus ? 'Checking Status...' : 'Check Payment Status'}
+            </button>
+            <button
+                className="mlp_button mlp_button_primary mlp_cancel_button"
+                onClick={() => handleCancelPayment(activePayment.id)}
+                disabled={isProcessing || isCancelling || isCheckingStatus}
+            >
+                <FaTimes /> 
+                {isCancelling ? 'Cancelling...' : 'Cancel Payment'}
+            </button>
+        </div>
+    );
 
     // Render the media section
     const renderMediaSection = () => (
@@ -912,8 +985,8 @@ const ManageListingPage: React.FC = () => {
                             No transactions found
                         </div>
                     ) : (
-                        transactions.map((tx) => (
-                            <div key={tx.tx_hash} className="mlp_transaction_item">
+                        transactions.map((tx, index) => (
+                            <div key={`${tx.tx_hash}-${index}`} className="mlp_transaction_item">
                                 <div className="mlp_transaction_info">
                                     <span className={`mlp_transaction_type mlp_type_${tx.entry_type}`}>
                                         {tx.entry_type === 'receive' ? 'Received' : 'Withdrawn'}

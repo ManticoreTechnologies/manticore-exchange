@@ -576,6 +576,21 @@ export class TradingService {
         return response.data;
     }
 
+    async recheckFeaturedPayment(paymentId: string): Promise<{
+        id: string;
+        listing_id: string;
+        status: string;
+        tx_hash?: string;
+        confirmations?: number;
+        amount_evr: string;
+        received_evr: string;
+        message?: string;
+        checked_at: string;
+    }> {
+        const response = await this.api.post(`/listings/featured/payments/${paymentId}/recheck`);
+        return response.data;
+    }
+
     async listFeaturedPayments(listingId?: string): Promise<FeaturedPayment[]> {
         const params = listingId ? { listing_id: listingId } : undefined;
         const response = await this.api.get('/listings/featured/payments', { params });
@@ -603,12 +618,12 @@ export class TradingService {
     }
 
     // Helper method to monitor featured payment status
-    async pollFeaturedPaymentStatus(
+    pollFeaturedPaymentStatus(
         paymentId: string,
         callback: (payment: FeaturedPayment) => boolean | void,
         interval: number = 5000,
         timeout: number = 15 * 60 * 1000 // 15 minutes
-    ): Promise<void> {
+    ): NodeJS.Timeout {
         const startTime = Date.now();
         const pollInterval = setInterval(async () => {
             try {
@@ -630,6 +645,9 @@ export class TradingService {
                 throw error;
             }
         }, interval);
+
+        // Return the interval ID so it can be cleared externally if needed
+        return pollInterval;
     }
 
     // Listing Management Methods
@@ -890,7 +908,7 @@ export class TradingService {
         try {
             const response = await this.api.get(`/listings/featured/payments/pending/${listingId}`);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             if (error?.response?.status === 404) {
                 return null;
             }
