@@ -185,7 +185,7 @@ const Checkout: React.FC = () => {
             } else if (err.code === 'LISTING_NOT_FOUND') {
                 setError('One or more listings not found');
             } else {
-                setError(err.message || 'Failed to create order. Please try again.');
+                setError(err.response?.data?.detail || err.message || 'Failed to create order. Please try again.');
             }
         } finally {
             setLoading(false);
