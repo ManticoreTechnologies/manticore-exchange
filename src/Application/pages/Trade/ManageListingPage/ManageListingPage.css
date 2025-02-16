@@ -1099,4 +1099,228 @@
 
 .mlp_modal {
     z-index: 1001;
+}
+
+/* Enhanced Payment Details */
+.mlp_payment_details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding: var(--spacing-3);
+    background: var(--background-tertiary);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-subtle);
+}
+
+.mlp_payment_info_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+}
+
+.mlp_payment_info_item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-2);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.mlp_info_label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.mlp_info_label svg {
+    color: var(--accent-color);
+}
+
+.mlp_info_value {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.mlp_payment_address_section {
+    padding: var(--spacing-3);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.mlp_payment_address_section h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: 0 0 var(--spacing-3) 0;
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+}
+
+.mlp_payment_address_section h3 svg {
+    color: var(--accent-color);
+}
+
+.mlp_address_header {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-sm);
+}
+
+.mlp_address_content {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    background: var(--background-tertiary);
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.mlp_address_content code {
+    flex: 1;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+.mlp_payment_expiry {
+    padding: var(--spacing-3);
+    background: rgba(var(--color-warning-rgb), 0.1);
+    border: 1px solid rgba(var(--color-warning-rgb), 0.2);
+    border-radius: var(--border-radius-md);
+}
+
+.mlp_expiry_info {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+}
+
+.mlp_expiry_info svg {
+    color: var(--color-warning);
+    font-size: 1.5em;
+    flex-shrink: 0;
+}
+
+.mlp_expiry_info h4 {
+    margin: 0;
+    color: var(--color-warning);
+    font-size: var(--font-size-sm);
+}
+
+.mlp_expiry_info p {
+    margin: var(--spacing-1) 0 0 0;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.mlp_refresh_button {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.mlp_cancel_button {
+    margin-top: 0.5rem;
+    width: 100%;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.mlp_cancel_button:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+.mlp_button_group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Feature Details (Completed State) */
+.mlp_feature_details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.mlp_feature_status {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3);
+}
+
+.mlp_time_remaining,
+.mlp_expiry_date {
+    padding: var(--spacing-3);
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.mlp_time_remaining h3,
+.mlp_expiry_date h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: 0 0 var(--spacing-2) 0;
+    font-size: var(--font-size-base);
+    color: var(--text-secondary);
+}
+
+.mlp_time_remaining h3 svg,
+.mlp_expiry_date h3 svg {
+    color: var(--accent-color);
+}
+
+.mlp_time_display,
+.mlp_date_display {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .mlp_payment_info_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mlp_feature_status {
+        grid-template-columns: 1fr;
+    }
+
+    .mlp_address_content {
+        flex-direction: column;
+    }
+
+    .mlp_address_content button {
+        width: 100%;
+    }
+}
+
+/* Animation for the refresh button */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 } 

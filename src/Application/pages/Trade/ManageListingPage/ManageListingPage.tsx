@@ -5,7 +5,8 @@ import {
     FaStar, FaEdit, FaPause, FaPlay, FaChartLine, 
     FaWallet, FaClock, FaCheckCircle, FaTimes, FaSync,
     FaTag, FaCoins, FaCalendarAlt, FaBolt, FaImage,
-    FaArrowUp, FaHistory, FaExternalLinkAlt, FaCopy
+    FaArrowUp, FaHistory, FaExternalLinkAlt, FaCopy,
+    FaExclamationCircle, FaHourglassHalf
 } from 'react-icons/fa';
 import tradingService, { 
     Listing, Balance, FeaturedListingPlan, FeaturedPayment,
@@ -17,30 +18,41 @@ import { toast } from 'react-toastify';
 // Add white Manticore logo import
 import whiteManticore from '@/Application/logos/white-manticore.png';
 
-// Add new interfaces for featured info
-interface FeaturedPaymentInfo {
-    id: string | null;
-    status: string | null;
-    amount_evr: string | null;
-    duration_hours: number | null;
-    priority_level: number | null;
-    paid_at: string | null;
+// Add this interface to extend the Listing type
+interface ListingWithFeatured extends Listing {
+    featured?: {
+        is_featured: boolean;
+        featured_at: string | null;
+        featured_by: string | null;
+        priority: number;
+        expires_at: string | null;
+        payment: FeaturedPayment | null;
+    };
 }
 
-interface FeaturedInfo {
-    is_featured: boolean;
-    featured_at: string | null;
-    featured_by: string | null;
-    priority: number | null;
-    expires_at: string | null;
-    payment: FeaturedPaymentInfo | null;
-}
+// Add this helper function to check if listing is currently featured
+const isCurrentlyFeatured = (featured: any) => {
+    if (!featured || !featured.expires_at) return false;
+    
+    // Parse the expiry time as UTC
+    const expiryTime = new Date(featured.expires_at + 'Z');
+    const now = new Date();
+    
+    return expiryTime.getTime() > now.getTime();
+};
+
+// Add this helper function to check for pending payments
+const hasPendingPayment = (featured: any) => {
+    if (!featured?.payment) return false;
+    return featured.payment.status === 'pending' && 
+           new Date(featured.payment.created_at + 'Z').getTime() > new Date().getTime() - (24 * 60 * 60 * 1000); // 24 hours
+};
 
 const ManageListingPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [listing, setListing] = useState<Listing | null>(null);
+    const [listing, setListing] = useState<ListingWithFeatured | null>(null);
     const [analytics, setAnalytics] = useState<ListingAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -54,10 +66,11 @@ const ManageListingPage: React.FC = () => {
 
     // Enhanced feature listing states
     const [plans, setPlans] = useState<Record<string, FeaturedListingPlan>>({});
-    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+    const [selectedPlan, setSelectedPlan] = useState<string>('');
     const [payment, setPayment] = useState<FeaturedPayment | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [paymentError, setPaymentError] = useState<string | null>(null);
+    const [paymentError, setPaymentError] = useState<string>('');
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [withdrawAmount, setWithdrawAmount] = useState<Record<string, string>>({});
@@ -81,7 +94,7 @@ const ManageListingPage: React.FC = () => {
             if (!id) return;
             setLoading(true);
             const data = await tradingService.getListingById(id);
-            setListing(data);
+            setListing(data as ListingWithFeatured);
             setEditForm({
                 name: data.name,
                 description: data.description || '',
@@ -115,23 +128,26 @@ const ManageListingPage: React.FC = () => {
 
             // Check for existing payments if we have a listing ID
             if (!id) return;
-            const payments = await tradingService.listFeaturedPayments(id);
             
-            // Find active or pending payment
-            const activePayment = payments.find(p => 
-                p.status === 'pending' || 
-                (p.status === 'completed' && p.expires_at && new Date(p.expires_at) > new Date())
-            );
-            
-            if (activePayment) {
-                console.log('Active payment:', activePayment); // Debug log
-                setPayment(activePayment);
-                // If payment is pending, start polling
-                if (activePayment.status === 'pending') {
-                    startPaymentPolling(activePayment.id);
-                }
+            // Use the new endpoint to only get pending/confirming payments
+            const pendingPayment = await tradingService.getPendingPayment(id);
+            if (pendingPayment) {
+                console.log('Pending payment found:', pendingPayment);
+                setPayment(pendingPayment);
+                startPaymentPolling(pendingPayment.id);
             } else {
-                setPayment(null);
+                // Only check completed payments if no pending payment exists
+                const payments = await tradingService.listFeaturedPayments(id);
+                const completedPayment = payments.find(p => 
+                    p.status === 'completed' && p.expires_at && new Date(p.expires_at) > new Date()
+                );
+                
+                if (completedPayment) {
+                    setPayment(completedPayment);
+                } else {
+                    setPayment(null);
+                    setSelectedPlan('');
+                }
             }
         } catch (err) {
             console.error('Failed to load feature plans:', err);
@@ -145,10 +161,28 @@ const ManageListingPage: React.FC = () => {
         tradingService.pollFeaturedPaymentStatus(
             paymentId,
             (updatedPayment) => {
-                setPayment(updatedPayment);
-                if (updatedPayment.status === 'completed') {
-                    loadListing();
+                // Only update state if payment status has changed
+                if (payment?.status !== updatedPayment.status) {
+                    console.log('Payment status changed:', updatedPayment.status);
+                    setPayment(updatedPayment);
+                    
+                    if (updatedPayment.status === 'completed' && listing) {
+                        setListing({
+                            ...listing,
+                            featured: {
+                                is_featured: true,
+                                featured_at: updatedPayment.paid_at,
+                                featured_by: listing.featured?.featured_by || null,
+                                priority: listing.featured?.priority || 0,
+                                expires_at: updatedPayment.expires_at,
+                                payment: updatedPayment
+                            }
+                        });
+                    }
                 }
+                
+                // Return true to stop polling if payment is not pending/confirming
+                return !['pending', 'confirming'].includes(updatedPayment.status);
             },
             5000, // Poll every 5 seconds
             15 * 60 * 1000 // Timeout after 15 minutes
@@ -200,15 +234,41 @@ const ManageListingPage: React.FC = () => {
         
         try {
             setIsProcessing(true);
-            setPaymentError(null);
+            setPaymentError('');
+            
+            // Check for existing pending payment
+            const currentListing = await tradingService.getListingById(id) as ListingWithFeatured;
+            if (currentListing?.featured && hasPendingPayment(currentListing.featured)) {
+                const pendingPayment = currentListing.featured.payment;
+                if (pendingPayment?.created_at) {
+                    const createdAt = new Date(pendingPayment.created_at + 'Z');
+                    const expiresAt = new Date(createdAt.getTime() + (24 * 60 * 60 * 1000));
+                    const timeLeft = Math.ceil((expiresAt.getTime() - new Date().getTime()) / (1000 * 60 * 60));
+                    
+                    setPaymentError(
+                        `This listing already has a pending featured payment. Please wait for the current payment to complete ` +
+                        `or expire (${timeLeft} hours remaining) before creating a new one. If you believe this is an error, ` +
+                        `try refreshing the page.`
+                    );
+                    return;
+                }
+            }
             
             const newPayment = await tradingService.createFeaturedPayment(id, selectedPlan);
             setPayment(newPayment);
             startPaymentPolling(newPayment.id);
             
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to create feature payment:', err);
-            setPaymentError('Failed to create feature payment. Please try again.');
+            if (err?.response?.data?.error === '400: Listing already has a pending featured payment') {
+                setPaymentError(
+                    "This listing already has a pending featured payment. Please wait for the current payment to complete " +
+                    "or expire (24 hours from creation) before creating a new one. If you believe this is an error, " +
+                    "try refreshing the page."
+                );
+            } else {
+                setPaymentError('Failed to create feature payment. Please try again.');
+            }
         } finally {
             setIsProcessing(false);
         }
@@ -300,78 +360,90 @@ const ManageListingPage: React.FC = () => {
     };
 
     const formatDateTime = (utcDateString: string) => {
-        // Parse the UTC date string and force it to be interpreted as UTC
-        const utcDate = new Date(utcDateString + 'Z');
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (!utcDateString) return 'Not set';
         
-        return utcDate.toLocaleString(undefined, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-            timeZoneName: 'short',
-            timeZone: timeZone
-        });
+        try {
+            // Remove any existing 'Z' and add it back to ensure UTC
+            const cleanDate = utcDateString.replace('Z', '') + 'Z';
+            const date = new Date(cleanDate);
+            
+            // Check if date is valid
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', utcDateString);
+                return 'Invalid date';
+            }
+
+            return date.toLocaleString(undefined, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZoneName: 'short'
+            });
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            return 'Invalid date';
+        }
     };
 
-    const getTimeRemaining = (expiresAt: string | null, paidAt: string | null, durationHours: number | null) => {
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const now = new Date();
-        
-        // Debug log all inputs and current time
-        console.log('Time debug:', {
-            currentTime: now.toLocaleString(undefined, { timeZone }),
-            timeZone,
-            expiresAt,
-            paidAt,
-            durationHours
-        });
-        
-        if (!paidAt && durationHours) {
-            return formatDuration(durationHours);
-        }
-        
-        if (!paidAt) {
-            return 'Pending';
-        }
+    const getTimeRemaining = (expiresAt: string | null | undefined, paidAt: string | null | undefined, durationHours: number | null | undefined) => {
+        try {
+            if (!paidAt && durationHours) {
+                return formatDuration(durationHours);
+            }
+            
+            if (!paidAt) {
+                return 'Pending';
+            }
 
-        if (!expiresAt) {
-            return 'No expiry set';
-        }
+            if (!expiresAt) {
+                return 'No expiry set';
+            }
 
-        // Force the expiry date to be interpreted as UTC by appending 'Z'
-        const utcExpiry = new Date(expiresAt + 'Z');
-        const localNow = new Date();
-        
-        // Get time difference in milliseconds
-        const diffMs = utcExpiry.getTime() - localNow.getTime();
-        
-        if (diffMs <= 0) return 'Expired';
-        
-        // Calculate exact hours and minutes
-        const totalMinutes = Math.floor(diffMs / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        
-        if (hours < 2) {
-            // Show minutes when less than 2 hours remain
-            return `${hours ? `${hours}h ` : ''}${minutes}m remaining`;
+            // Clean the dates and ensure UTC
+            const cleanExpiryDate = expiresAt.replace('Z', '') + 'Z';
+            const expiry = new Date(cleanExpiryDate);
+            const now = new Date();
+
+            // Validate dates
+            if (isNaN(expiry.getTime())) {
+                console.error('Invalid expiry date:', expiresAt);
+                return 'Invalid date';
+            }
+            
+            // Get time difference in milliseconds
+            const diffMs = expiry.getTime() - now.getTime();
+            
+            if (diffMs <= 0) return 'Expired';
+            
+            // Calculate exact hours and minutes
+            const totalMinutes = Math.floor(diffMs / (1000 * 60));
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            if (hours < 2) {
+                // Show minutes when less than 2 hours remain
+                return `${hours ? `${hours}h ` : ''}${minutes}m remaining`;
+            }
+            
+            if (hours < 24) {
+                return `${hours}h remaining`;
+            }
+            
+            const days = Math.floor(hours / 24);
+            const remainingHours = hours % 24;
+            
+            if (remainingHours === 0) {
+                return `${days} day${days !== 1 ? 's' : ''} remaining`;
+            }
+            
+            return `${days}d ${remainingHours}h remaining`;
+        } catch (error) {
+            console.error('Time remaining calculation error:', error);
+            return 'Invalid date';
         }
-        
-        if (hours < 24) {
-            return `${hours}h remaining`;
-        }
-        
-        const days = Math.floor(hours / 24);
-        const remainingHours = hours % 24;
-        
-        if (remainingHours === 0) {
-            return `${days} day${days !== 1 ? 's' : ''} remaining`;
-        }
-        
-        return `${days}d ${remainingHours}h remaining`;
     };
 
     const handleCopyToClipboard = (text: string) => {
@@ -410,6 +482,76 @@ const ManageListingPage: React.FC = () => {
         return `${num.toFixed(2)} ${assetName}`;
     };
 
+    const handleCancelPayment = async (paymentId: string) => {
+        try {
+            setIsCancelling(true);
+            await tradingService.cancelFeaturedPayment(paymentId);
+            toast.success('Payment cancelled successfully');
+            // Update state directly instead of reloading the page
+            setPayment(null);
+            setSelectedPlan('');
+            if (listing) {
+                setListing({
+                    ...listing,
+                    featured: {
+                        is_featured: false,
+                        featured_at: null,
+                        featured_by: null,
+                        priority: 0,
+                        expires_at: null,
+                        payment: null
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Failed to cancel payment:', error);
+            toast.error('Failed to cancel payment');
+        } finally {
+            setIsCancelling(false);
+        }
+    };
+
+    const clearPaymentState = () => {
+        setSelectedPlan('');
+        setPayment(null);
+        setPaymentError('');
+    };
+
+    // Update the refresh button click handler to only work for pending/confirming payments
+    const handleRefreshPayment = async () => {
+        if (!payment?.id || !['pending', 'confirming'].includes(payment.status)) return;
+        
+        try {
+            setIsProcessing(true);
+            const updatedPayment = await tradingService.getFeaturedPayment(payment.id);
+            
+            // Only update if the payment status has changed
+            if (updatedPayment.status !== payment.status) {
+                setPayment(updatedPayment);
+                
+                // Update listing's featured status if payment is completed
+                if (updatedPayment.status === 'completed' && listing) {
+                    setListing({
+                        ...listing,
+                        featured: {
+                            is_featured: true,
+                            featured_at: updatedPayment.paid_at,
+                            featured_by: listing.featured?.featured_by || null,
+                            priority: listing.featured?.priority || 0,
+                            expires_at: updatedPayment.expires_at,
+                            payment: updatedPayment
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Failed to refresh payment status:', err);
+            toast.error('Failed to refresh payment status');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="mlp_page">
@@ -427,117 +569,218 @@ const ManageListingPage: React.FC = () => {
     }
 
     // Render the feature card section
-    const renderFeatureCard = () => (
-        <div className="mlp_card">
-            <div className="mlp_card_header">
-                <h2><FaStar /> Feature Listing</h2>
-            </div>
-            <div className="mlp_card_content">
-                {payment ? (
-                    <div className="mlp_feature_payment">
-                        <div className={`mlp_payment_status mlp_payment_${payment.status}`}>
-                            {payment.status === 'pending' && (
-                                <>
-                                    <FaClock />
-                                    <span>Awaiting Payment</span>
-                                </>
-                            )}
-                            {payment.status === 'confirming' && (
-                                <>
-                                    <FaSync className="spin" />
-                                    <span>Confirming Payment</span>
-                                </>
-                            )}
-                            {payment.status === 'completed' && (
-                                <>
-                                    <FaCheckCircle />
-                                    <span>Featured</span>
-                                </>
-                            )}
-                            {payment.status === 'failed' && (
-                                <>
-                                    <FaTimes />
-                                    <span>Payment Failed</span>
-                                </>
-                            )}
-                        </div>
-                        {payment.status === 'pending' && (
-                            <>
-                                <div className="mlp_payment_address">
-                                    Send {payment.amount_evr} EVR to: {payment.payment_address}
-                                </div>
-                                <div className="mlp_balance_item">
-                                    <span className="mlp_balance_asset">
-                                        <FaClock /> Duration
-                                    </span>
-                                    <span className="mlp_balance_amount">
-                                        {getTimeRemaining(payment.expires_at, payment.paid_at, payment.duration_hours)}
-                                    </span>
-                                </div>
-                            </>
-                        )}
-                        {payment.status === 'completed' && (
-                            <>
-                                <div className="mlp_balance_item">
-                                    <span className="mlp_balance_asset">
-                                        <FaCalendarAlt /> Duration Paid
-                                    </span>
-                                    <span className="mlp_balance_amount">
-                                        {formatDuration(payment.duration_hours)}
-                                    </span>
-                                </div>
-                                <div className="mlp_balance_item">
-                                    <span className="mlp_balance_asset">
-                                        <FaBolt /> Time Remaining
-                                    </span>
-                                    <span className="mlp_balance_amount">
-                                        {getTimeRemaining(payment.expires_at, payment.paid_at, payment.duration_hours)}
-                                    </span>
-                                </div>
-                                <div className="mlp_balance_item">
-                                    <span className="mlp_balance_asset">
-                                        <FaClock /> Expires At
-                                    </span>
-                                    <span className="mlp_balance_amount">
-                                        {payment.expires_at ? formatDateTime(payment.expires_at) : 'Not set'}
-                                    </span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ) : (
-                    <>
-                        <div className="mlp_feature_plans">
-                            {Object.entries(plans).map(([name, plan]) => (
-                                <div
-                                    key={name}
-                                    className={`mlp_plan_card ${selectedPlan === name ? 'mlp_plan_selected' : ''}`}
-                                    onClick={() => !isProcessing && setSelectedPlan(name)}
-                                >
-                                    <div className="mlp_plan_name">{formatDuration(plan.duration_hours)}</div>
-                                    <div className="mlp_plan_price">{plan.amount_evr} EVR</div>
-                                </div>
-                            ))}
-                        </div>
-                        {paymentError && (
-                            <div className="mlp_error_message">
-                                {paymentError}
+    const renderFeatureCard = () => {
+        const featured = listing?.featured;
+        const activePayment = payment || featured?.payment;
+        
+        return (
+            <div className="mlp_card">
+                <div className="mlp_card_header">
+                    <h2><FaStar /> Feature Listing</h2>
+                </div>
+                <div className="mlp_card_content">
+                    {(activePayment?.status === 'pending' || activePayment?.status === 'confirming' || isCurrentlyFeatured(featured)) ? (
+                        <div className="mlp_feature_payment">
+                            <div className={`mlp_payment_status mlp_payment_${activePayment?.status || 'unknown'}`}>
+                                {activePayment?.status === 'pending' || activePayment?.status === 'confirming' ? (
+                                    <>
+                                        <FaClock className="spin" />
+                                        <span>{activePayment.status === 'confirming' ? 'Confirming Payment' : 'Payment Pending'}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaCheckCircle />
+                                        <span>Featured</span>
+                                    </>
+                                )}
                             </div>
-                        )}
-                        {selectedPlan && (
-                            <button
-                                className="mlp_button mlp_button_primary"
-                                onClick={handleFeatureListing}
-                                disabled={isProcessing}
-                            >
-                                {isProcessing ? 'Processing...' : `Feature for ${plans[selectedPlan].amount_evr} EVR`}
-                            </button>
-                        )}
-                    </>
-                )}
+                            
+                            {(activePayment?.status === 'pending' || activePayment?.status === 'confirming') && (
+                                <>
+                                    <div className="mlp_payment_details">
+                                        <div className="mlp_payment_info_grid">
+                                            <div className="mlp_payment_info_item">
+                                                <span className="mlp_info_label">
+                                                    <FaTag /> Amount
+                                                </span>
+                                                <span className="mlp_info_value">
+                                                    {activePayment.amount_evr} EVR
+                                                </span>
+                                            </div>
+                                            <div className="mlp_payment_info_item">
+                                                <span className="mlp_info_label">
+                                                    <FaClock /> Duration
+                                                </span>
+                                                <span className="mlp_info_value">
+                                                    {formatDuration(activePayment.duration_hours || 0)}
+                                                </span>
+                                            </div>
+                                            <div className="mlp_payment_info_item">
+                                                <span className="mlp_info_label">
+                                                    <FaBolt /> Priority Level
+                                                </span>
+                                                <span className="mlp_info_value">
+                                                    Level {activePayment.priority_level}
+                                                </span>
+                                            </div>
+                                            <div className="mlp_payment_info_item">
+                                                <span className="mlp_info_label">
+                                                    <FaCalendarAlt /> Created
+                                                </span>
+                                                <span className="mlp_info_value">
+                                                    {formatDateTime(activePayment.created_at)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mlp_payment_address_section">
+                                            <h3><FaWallet /> Payment Address</h3>
+                                            <div className="mlp_payment_address">
+                                                <div className="mlp_address_header">
+                                                    Send exactly {activePayment.amount_evr} EVR to:
+                                                </div>
+                                                <div className="mlp_address_content">
+                                                    <code>{activePayment.payment_address}</code>
+                                                    <button 
+                                                        className="mlp_button mlp_button_secondary"
+                                                        onClick={() => handleCopyToClipboard(activePayment.payment_address)}
+                                                    >
+                                                        <FaCopy /> Copy Address
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mlp_payment_expiry">
+                                            <div className="mlp_expiry_info">
+                                                <FaExclamationCircle />
+                                                <div>
+                                                    <h4>Payment Expires In:</h4>
+                                                    <p>{(() => {
+                                                        if (!activePayment?.created_at) return 'Not set';
+                                                        const createdDate = new Date(activePayment.created_at);
+                                                        const expiryDate = new Date(createdDate.getTime() + (24 * 60 * 60 * 1000));
+                                                        return getTimeRemaining(
+                                                            expiryDate.toISOString(),
+                                                            activePayment.created_at,
+                                                            24
+                                                        );
+                                                    })()}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mlp_button_group">
+                                            <button
+                                                className="mlp_button mlp_button_primary mlp_refresh_button"
+                                                onClick={handleRefreshPayment}
+                                                disabled={isProcessing || isCancelling}
+                                            >
+                                                <FaSync className={isProcessing ? 'spin' : ''} /> 
+                                                {isProcessing ? 'Checking Status...' : 'Check Payment Status'}
+                                            </button>
+                                            <button
+                                                className="mlp_button mlp_button_primary mlp_cancel_button"
+                                                onClick={() => handleCancelPayment(activePayment.id)}
+                                                disabled={isProcessing || isCancelling}
+                                            >
+                                                <FaTimes /> 
+                                                {isCancelling ? 'Cancelling...' : 'Cancel Payment'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {activePayment?.status === 'completed' && (
+                                <div className="mlp_feature_details">
+                                    <div className="mlp_payment_info_grid">
+                                        <div className="mlp_payment_info_item">
+                                            <span className="mlp_info_label">
+                                                <FaTag /> Amount Paid
+                                            </span>
+                                            <span className="mlp_info_value">
+                                                {activePayment.amount_evr} EVR
+                                            </span>
+                                        </div>
+                                        <div className="mlp_payment_info_item">
+                                            <span className="mlp_info_label">
+                                                <FaClock /> Duration
+                                            </span>
+                                            <span className="mlp_info_value">
+                                                {formatDuration(activePayment.duration_hours || 0)}
+                                            </span>
+                                        </div>
+                                        <div className="mlp_payment_info_item">
+                                            <span className="mlp_info_label">
+                                                <FaBolt /> Priority Level
+                                            </span>
+                                            <span className="mlp_info_value">
+                                                Level {activePayment.priority_level}
+                                            </span>
+                                        </div>
+                                        <div className="mlp_payment_info_item">
+                                            <span className="mlp_info_label">
+                                                <FaCalendarAlt /> Featured Since
+                                            </span>
+                                            <span className="mlp_info_value">
+                                                {formatDateTime(activePayment.paid_at || '')}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="mlp_feature_status">
+                                        <div className="mlp_time_remaining">
+                                            <h3><FaHourglassHalf /> Time Remaining</h3>
+                                            <div className="mlp_time_display">
+                                                {getTimeRemaining(featured?.expires_at, activePayment.paid_at, activePayment.duration_hours)}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="mlp_expiry_date">
+                                            <h3><FaClock /> Expires At</h3>
+                                            <div className="mlp_date_display">
+                                                {featured?.expires_at ? formatDateTime(featured.expires_at) : 'Not set'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mlp_feature_plans">
+                                {Object.entries(plans).map(([name, plan]) => (
+                                    <div
+                                        key={name}
+                                        className={`mlp_plan_card ${selectedPlan === name ? 'mlp_plan_selected' : ''}`}
+                                        onClick={() => !isProcessing && setSelectedPlan(name)}
+                                    >
+                                        <div className="mlp_plan_name">{formatDuration(plan.duration_hours)}</div>
+                                        <div className="mlp_plan_price">{plan.amount_evr} EVR</div>
+                                    </div>
+                                ))}
+                            </div>
+                            {paymentError && (
+                                <div className="mlp_error_message">
+                                    {paymentError}
+                                </div>
+                            )}
+                            {selectedPlan && (
+                                <button
+                                    className="mlp_button mlp_button_primary"
+                                    onClick={handleFeatureListing}
+                                    disabled={isProcessing}
+                                >
+                                    {isProcessing ? 'Processing...' : `Feature for ${plans[selectedPlan].amount_evr} EVR`}
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     // Render the media section
     const renderMediaSection = () => (

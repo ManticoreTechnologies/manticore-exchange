@@ -582,6 +582,16 @@ export class TradingService {
         return response.data;
     }
 
+    async cancelFeaturedPayment(paymentId: string): Promise<{
+        id: string;
+        listing_id: string;
+        status: string;
+        cancelled_at: string;
+    }> {
+        const response = await this.api.post(`/listings/featured/payments/${paymentId}/cancel`);
+        return response.data;
+    }
+
     async getRandomFeaturedPopup(): Promise<FeaturedPopupListing> {
         const response = await this.api.get('/listings/featured/random-popup');
         return response.data;
@@ -595,17 +605,18 @@ export class TradingService {
     // Helper method to monitor featured payment status
     async pollFeaturedPaymentStatus(
         paymentId: string,
-        callback: (payment: FeaturedPayment) => void,
+        callback: (payment: FeaturedPayment) => boolean | void,
         interval: number = 5000,
-        timeout: number = 24 * 60 * 60 * 1000 // 24 hours
+        timeout: number = 15 * 60 * 1000 // 15 minutes
     ): Promise<void> {
         const startTime = Date.now();
         const pollInterval = setInterval(async () => {
             try {
                 const payment = await this.getFeaturedPayment(paymentId);
-                callback(payment);
+                const shouldStop = callback(payment);
 
-                if (payment.status === 'completed' || payment.status === 'expired' || payment.status === 'failed') {
+                // Stop polling if callback returns true or payment is not pending/confirming
+                if (shouldStop || !['pending', 'confirming'].includes(payment.status)) {
                     clearInterval(pollInterval);
                 }
 
@@ -873,6 +884,18 @@ export class TradingService {
         }, this.ORDER_EXPIRY_TIME);
 
         clearInterval(pollInterval); // Clear interval before returning
+    }
+
+    async getPendingPayment(listingId: string): Promise<FeaturedPayment | null> {
+        try {
+            const response = await this.api.get(`/listings/featured/payments/pending/${listingId}`);
+            return response.data;
+        } catch (error) {
+            if (error?.response?.status === 404) {
+                return null;
+            }
+            throw error;
+        }
     }
 }
 
