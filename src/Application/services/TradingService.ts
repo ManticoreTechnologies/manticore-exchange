@@ -30,12 +30,14 @@ export interface Listing {
     isOwnedByUser?: boolean;
 }
 
-// New Types for Featured Listings
+// Featured Listing Types
 export interface FeaturedListingPlan {
     name: string;
     amount_evr: string;
-    duration_days: number;
+    duration_hours: number;
     priority_level: number;
+    description: string;
+    hourly_rate: string;
 }
 
 export interface FeaturedPayment {
@@ -43,11 +45,28 @@ export interface FeaturedPayment {
     listing_id: string;
     payment_address: string;
     amount_evr: string;
-    duration_days: number;
+    duration_hours: number;
     priority_level: number;
     status: string;
     created_at: string;
     expires_at: string | null;
+}
+
+export interface FeaturedInfo {
+    priority_level: number;
+    featured_at: string;
+    expires_at: string;
+    next_available_at: string;
+}
+
+export interface FeaturedPopupListing {
+    listing: Listing;
+    featured_info: FeaturedInfo;
+}
+
+export interface FeaturedPopupBatch {
+    listings: FeaturedPopupListing[];
+    total_count: number;
 }
 
 // Analytics Types
@@ -558,6 +577,45 @@ export class TradingService {
         const params = listingId ? { listing_id: listingId } : undefined;
         const response = await this.api.get('/listings/featured/payments', { params });
         return response.data;
+    }
+
+    async getRandomFeaturedPopup(): Promise<FeaturedPopupListing> {
+        const response = await this.api.get('/listings/featured/random-popup');
+        return response.data;
+    }
+
+    async getRandomFeaturedPopupBatch(count: number = 5): Promise<FeaturedPopupBatch> {
+        const response = await this.api.get(`/listings/featured/random-popup-batch/${count}`);
+        return response.data;
+    }
+
+    // Helper method to monitor featured payment status
+    async pollFeaturedPaymentStatus(
+        paymentId: string,
+        callback: (payment: FeaturedPayment) => void,
+        interval: number = 5000,
+        timeout: number = 24 * 60 * 60 * 1000 // 24 hours
+    ): Promise<void> {
+        const startTime = Date.now();
+        const pollInterval = setInterval(async () => {
+            try {
+                const payment = await this.getFeaturedPayment(paymentId);
+                callback(payment);
+
+                if (payment.status === 'completed' || payment.status === 'expired' || payment.status === 'failed') {
+                    clearInterval(pollInterval);
+                }
+
+                if (Date.now() - startTime >= timeout) {
+                    clearInterval(pollInterval);
+                    throw new Error('Featured payment polling timed out');
+                }
+            } catch (error) {
+                console.error('Error polling featured payment status:', error);
+                clearInterval(pollInterval);
+                throw error;
+            }
+        }, interval);
     }
 
     // Listing Management Methods

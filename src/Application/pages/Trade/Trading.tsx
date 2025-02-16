@@ -7,7 +7,6 @@ import './Trading.css';
 import axios from 'axios';
 import TradingHeader from './TradingHeader/TradingHeader';
 import InvoiceToaster from './InvoiceToaster/InvoiceToaster';
-import ManageListing from './ManageListing/ManageListing';
 import { useNavigate, useLocation } from 'react-router-dom';
 import FeaturedListings from './TradingHeader/FeaturedListings';
 import { debounce } from 'lodash';

@@ -41,7 +41,7 @@ interface AccountInfo {
     friendly_name: string;
     bio?: string;
     profile_ipfs?: string;
-    status: 'online' | 'offline';
+    status: 'active' | 'offline';
     favorite_assets: string[];
     achievements?: Achievement[];
     stats?: TradingStats;
@@ -122,7 +122,7 @@ const Profile: React.FC = () => {
             setAccountInfo(prev => prev ? { ...prev, ...response.data } : null);
             
             if (response.data.profile_ipfs) {
-                setImageUrl(`https://rose-decent-prawn-420.mypinata.cloud/ipfs/${response.data.profile_ipfs}?pinataGatewayToken=HtcAOAK7UkS5a7JrD-_1j4FwStTV2Qw4uNJ7_Esk-TvoCsn87T6wUeoq6w7WN3SO`);
+                setImageUrl(`https://ipfs.io/ipfs/${response.data.profile_ipfs}`);
             }
             
             setIsEditing(false);
@@ -132,10 +132,32 @@ const Profile: React.FC = () => {
         }
     };
 
+    const handleImageUpload = async (file: File) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axios.post(`${API_BASE}/profile/image`, formData, {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (response.data.ipfs_hash) {
+                await handleSave({ profile_ipfs: response.data.ipfs_hash });
+                setImageUrl(`https://ipfs.io/ipfs/${response.data.ipfs_hash}`);
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            setError('Failed to upload image');
+        }
+    };
+
     const handleAddToFavorites = async (asset: string) => {
         try {
-            const response = await axios.post(`${API_BASE}/favorites`, 
-                { asset },
+            await axios.post(`${API_BASE}/profile/favorites`, 
+                { asset_name: asset },
                 { headers: { Authorization: `Bearer ${token}` }}
             );
             setAccountInfo(prev => prev ? {
@@ -146,6 +168,34 @@ const Profile: React.FC = () => {
             console.error('Error adding favorite:', error);
             setError('Failed to add favorite');
         }
+    };
+
+    const handleRemoveFavorite = async (asset: string) => {
+        try {
+            await axios.delete(`${API_BASE}/profile/favorites/${asset}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAccountInfo(prev => prev ? {
+                ...prev,
+                favorite_assets: prev.favorite_assets.filter(a => a !== asset)
+            } : null);
+        } catch (error) {
+            console.error('Error removing favorite:', error);
+            setError('Failed to remove favorite');
+        }
+    };
+
+    const handleImageClick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                handleImageUpload(file);
+            }
+        };
+        input.click();
     };
 
     const copyToClipboard = (text: string) => {
@@ -305,8 +355,16 @@ const Profile: React.FC = () => {
         <div className="tradex-profile">
             <div className="tradex-profile__header">
                 <div className="tradex-profile__image-container">
-                    <img src={imageUrl || ''} alt="Profile" className="tradex-profile__image" />
-                    <button className="tradex-profile__image-edit" onClick={() => setIsEditing(true)}>
+                    <img 
+                        src={imageUrl || ''} 
+                        alt="Profile" 
+                        className="tradex-profile__image"
+                        onClick={handleImageClick}
+                    />
+                    <button 
+                        className="tradex-profile__image-edit" 
+                        onClick={handleImageClick}
+                    >
                         <FaEdit />
                     </button>
                 </div>
@@ -331,7 +389,7 @@ const Profile: React.FC = () => {
                     </div>
                     <div className="tradex-profile__status">
                         <div className={`tradex-profile__status-indicator ${
-                            accountInfo?.status !== 'online' ? 'tradex-profile__status-indicator--offline' : ''
+                            accountInfo?.status !== 'active' ? 'tradex-profile__status-indicator--offline' : ''
                         }`} />
                         {accountInfo?.status || 'offline'}
                     </div>
