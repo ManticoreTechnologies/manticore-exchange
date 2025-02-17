@@ -58,11 +58,13 @@ const Home: React.FC = () => {
   const [scrollingListings, setScrollingListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [homeListings, setHomeListings] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchHomeListings = useCallback(async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const response = await tradingService.getHomeListings({
         featured_count: 5,
         trending_count: 10,
@@ -110,6 +112,7 @@ const Home: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching home listings:', error);
+      setError('Failed to load listings');
     } finally {
       setIsLoading(false);
     }
@@ -219,50 +222,78 @@ const Home: React.FC = () => {
       <section className="evrmore-intro">
         <motion.div
           className="intro-content"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
         >
-          <h2>{evrmoreInfo.title}</h2>
-          <p className="intro-description">{evrmoreInfo.description}</p>
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {evrmoreInfo.title}
+          </motion.h2>
+          
+          <motion.p 
+            className="intro-description"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            {evrmoreInfo.description}
+          </motion.p>
           
           <div className="intro-grid">
             {evrmoreInfo.keyPoints.map((point, index) => (
               <motion.div
                 key={index}
                 className="intro-card glassmorphism"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
+                initial={{ 
+                  opacity: 0,
+                  x: index % 2 === 0 ? -100 : 100,
+                  scale: 0.8
+                }}
+                whileInView={{ 
+                  opacity: 1,
+                  x: 0,
+                  scale: 1
+                }}
+                viewport={{ 
+                  once: true, 
+                  margin: "-50px"
+                }}
+                transition={{ 
+                  duration: 1,
+                  delay: index * 0.3,
+                  type: "spring",
+                  stiffness: 100
+                }}
                 whileHover={{ 
-                  scale: 1.02,
-                  boxShadow: "0 8px 32px rgba(255, 107, 107, 0.1)"
+                  scale: 1.05,
+                  y: -10,
+                  boxShadow: "0 20px 40px rgba(255, 107, 107, 0.2)",
+                  transition: {
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 10
+                  }
                 }}
               >
-                <point.icon className="intro-icon" />
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: index * 0.3 + 0.3 }}
+                >
+                  <point.icon className="intro-icon" />
+                </motion.div>
                 <h3>{point.title}</h3>
                 <p>{point.description}</p>
               </motion.div>
             ))}
           </div>
-
-          <motion.div 
-            className="intro-cta glassmorphism"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <h3>Ready to Get Started?</h3>
-            <p>Join the Evrmore community and start exploring the possibilities of digital assets today.</p>
-            <div className="cta-buttons">
-              <a href="https://docs.evrmore.org" target="_blank" rel="noopener noreferrer" className="cta-button primary">
-                Learn More
-              </a>
-              <a href="https://discord.gg/evrmore" target="_blank" rel="noopener noreferrer" className="cta-button secondary">
-                Join Community
-              </a>
-            </div>
-          </motion.div>
         </motion.div>
       </section>
 
