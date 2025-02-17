@@ -8,13 +8,14 @@ interface homeheroprops {
   title?: string;
   body?: React.ReactNode;
   logo?: string;
-  subtitle?: string;
+  authButton?: React.ReactNode;
 }
 
 const HomeHero: React.FC<homeheroprops> = ({
   title = "Home Hero",
   logo = manticore_logo,
   body = "This is a sample hero body. Update with info.",
+  subtitle,
   authButton
 }) => {
   return (

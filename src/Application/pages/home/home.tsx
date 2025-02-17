@@ -167,24 +167,54 @@ const Home: React.FC = () => {
           }
           logo={manticore_logo}
           body="Your premier destination for trading digital assets on the Evrmore blockchain."
-          authButton={
-            <motion.button
-              className="auth-button-centered glassmorphism"
-              onClick={handleAuthClick}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: "0 8px 32px rgba(255, 107, 107, 0.2)"
+        />
+      </motion.div>
+
+      {/* Wallet Connection Section */}
+      <motion.section 
+        className="wallet-connection-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <h1 className="section-title">Connect & Trade</h1>
+        <div className="wallet-content">
+          <div className="wallet-icon-wrapper">
+            <motion.div 
+              className="wallet-icon"
+              animate={{ 
+                y: [-2, 2, -2],
+                opacity: [0.8, 1, 0.8],
               }}
-              whileTap={{ scale: 0.95 }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              whileHover={{ 
+                scale: 1.1,
+                filter: "brightness(1.2)",
+                transition: { duration: 0.2 }
+              }}
+            >
+              <FaUsersCog />
+            </motion.div>
+          </div>
+          <div className="wallet-text">
+            <h2>Connect Your Wallet</h2>
+            <p>Start your journey in the Evrmore ecosystem by connecting your wallet. Trade, collect, and manage digital assets with ease.</p>
+            <motion.button
+              className="auth-button-centered"
+              onClick={handleAuthClick}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <FaUser className="auth-icon" />
               {isAuthenticated ? 'Profile' : 'Connect Wallet'}
             </motion.button>
-          }
-        />
-      </motion.div>
+          </div>
+        </div>
+      </motion.section>
 
       <section className="evrmore-intro">
         <motion.div
