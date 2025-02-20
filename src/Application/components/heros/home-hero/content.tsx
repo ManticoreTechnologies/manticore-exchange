@@ -2,7 +2,7 @@ import React from 'react';
 
 interface HeroContentProps {
   title: string;
-  subtitle: string;
+  subtitle: React.ReactNode;
   body: React.ReactNode;
 }
 

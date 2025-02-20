@@ -1,5 +1,6 @@
 import React from 'react';
 import './home-hero.css';
+import { TypeAnimation } from 'react-type-animation';
 import manticore_logo from '@/Application/logos/white-manticore.png';
 import evrmore_logo from '@/Application/logos/evr.svg';
 import HeroContent from './content';
@@ -9,6 +10,7 @@ interface homeheroprops {
   body?: React.ReactNode;
   logo?: string;
   authButton?: React.ReactNode;
+  subtitle?: React.ReactNode;
 }
 
 const HomeHero: React.FC<homeheroprops> = ({
@@ -28,7 +30,30 @@ const HomeHero: React.FC<homeheroprops> = ({
         />
       </div>
       <div className="hero-section hero-center">
-        <HeroContent title={title} subtitle={subtitle} body={body} />
+        <HeroContent 
+          title={title} 
+          subtitle={
+            <TypeAnimation
+              sequence={[
+                'EVRything Decentralized',
+                2000,
+                'EVRmore Secure',
+                2000,
+                'Trade EVRything',
+                2000,
+                'Create EVRything',
+                2000,
+                'Own EVRything',
+                2000,
+              ]}
+              wrapper="span"
+              speed={50}
+              repeat={Infinity}
+              className="type-animation"
+            />
+          } 
+          body={body} 
+        />
         {authButton}
       </div>
       <div className="hero-section hero-right">

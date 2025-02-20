@@ -110,6 +110,18 @@ const Home: React.FC = () => {
     window.location.href = `/trade/listings/by-id/${listing.id}`;
   };
 
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+      document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
     <div className="home">
       <ParticlesBg type="cobweb" bg={true} />
@@ -126,13 +138,41 @@ const Home: React.FC = () => {
         />
       </motion.div>
 
-      <WalletConnection />
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+      >
+        <EvrmoreInfo />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <WalletConnection />
+      </motion.div>
       
-      <MarketStats stats={marketStats} />
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <MarketStats stats={marketStats} />
+      </motion.div>
 
-      <EvrmoreInfo />
-
-      <FeaturedAssets isLoading={false} listings={dummyListings} />
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+      >
+        <FeaturedAssets isLoading={false} listings={dummyListings} />
+      </motion.div>
 
       {/* Scrolling Listings Section */}
       <section className="listings-scroll">
@@ -176,64 +216,83 @@ const Home: React.FC = () => {
       </section>
 
       {/* Services Grid */}
-      <section className="services-grid">
-        <motion.div 
-          className="infocards"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <InfoCard 
-            FaIcon={FaSearch} 
-            to="/search" 
-            title="Search Assets" 
-            action="Explore Now" 
-            body="Find the perfect assets for your portfolio with our advanced search features."
-          />
-          <InfoCard 
-            FaIcon={FaExchangeAlt}
-            to="/trade"
-            title="Trade"
-            action="Start Trading"
-            body="Execute trades instantly with our high-performance trading engine."
-          />
-          <InfoCard 
-            FaIcon={FaFaucet}
-            to="/faucet"
-            title="Faucet"
-            action="Get Started"
-            body="New to Evrmore? Get your first assets free from our community faucet."
-          />
-          <InfoCard 
-            FaIcon={FaRoad} 
-            to="/roadmap" 
-            title="Roadmap" 
-            action="View Future" 
-            body="Discover our vision and upcoming features that will revolutionize asset trading."
-          />
-          <InfoCard 
-            FaIcon={FaBlog} 
-            to="/blog" 
-            title="Blog" 
-            action="Read More" 
-            body="Stay updated with the latest news, updates, and insights from the Manticore team."
-          />
-          <InfoCard 
-            FaIcon={FaDatabase} 
-            to="/ipfs" 
-            title="IPFS Storage" 
-            action="Store Now" 
-            body="Securely store and manage your asset metadata using decentralized IPFS storage."
-          />
-          <InfoCard 
-            FaIcon={FaChartArea} 
-            to="/chart" 
-            title="EVR Chart" 
-            action="View Chart" 
-            body="Track EVR price movements and market trends with our interactive chart."
-          />
+      <motion.section 
+        className="services-grid"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
+        <motion.div className="infocards">
+          {[
+            {
+              icon: FaSearch,
+              to: "/search",
+              title: "Search Assets",
+              action: "Explore Now",
+              body: "Find the perfect assets for your portfolio with our advanced search features."
+            },
+            {
+              icon: FaExchangeAlt,
+              to: "/trade",
+              title: "Trade",
+              action: "Start Trading",
+              body: "Execute trades instantly with our high-performance trading engine."
+            },
+            {
+              icon: FaFaucet,
+              to: "/faucet",
+              title: "Faucet",
+              action: "Get Started",
+              body: "New to Evrmore? Get your first assets free from our community faucet."
+            },
+            {
+              icon: FaRoad,
+              to: "/roadmap",
+              title: "Roadmap",
+              action: "View Future",
+              body: "Discover our vision and upcoming features that will revolutionize asset trading."
+            },
+            {
+              icon: FaBlog,
+              to: "/blog",
+              title: "Blog",
+              action: "Read More",
+              body: "Stay updated with the latest news, updates, and insights from the Manticore team."
+            },
+            {
+              icon: FaDatabase,
+              to: "/ipfs",
+              title: "IPFS Storage",
+              action: "Store Now",
+              body: "Securely store and manage your asset metadata using decentralized IPFS storage."
+            },
+            {
+              icon: FaChartArea,
+              to: "/chart",
+              title: "EVR Chart",
+              action: "View Chart",
+              body: "Track EVR price movements and market trends with our interactive chart."
+            }
+          ].map((card, index) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <InfoCard 
+                FaIcon={card.icon}
+                to={card.to}
+                title={card.title}
+                action={card.action}
+                body={card.body}
+              />
+            </motion.div>
+          ))}
         </motion.div>
-      </section>
+      </motion.section>
     </div>
   );
 };
