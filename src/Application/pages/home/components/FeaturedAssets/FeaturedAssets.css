@@ -1,0 +1,101 @@
+.featured-assets {
+  width: 100%;
+  padding: var(--spacing-4);
+}
+
+.assets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-4);
+  width: 100%;
+}
+
+.asset-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: var(--card-border-radius);
+  padding: var(--spacing-6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-speed) ease;
+  height: 100%;
+  cursor: pointer;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.asset-info h3 {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.asset-info .price {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.asset-info .description {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  max-height: 4.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-top: auto;
+}
+
+.tag {
+  background: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--card-border-radius);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+.no-listings {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+@media (max-width: 768px) {
+  .assets-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .asset-info h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .asset-info .price {
+    font-size: var(--font-size-base);
+  }
+} 

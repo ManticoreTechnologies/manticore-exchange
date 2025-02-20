@@ -1,0 +1,121 @@
+.wallet-connection-section {
+  padding: 4rem 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-self: center;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.wallet-content {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.wallet-icon-wrapper {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.wallet-icon {
+  font-size: 48px;
+  color: #ff6b6b;
+  filter: drop-shadow(0 2px 4px rgba(255, 107, 107, 0.2));
+}
+
+.wallet-text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.wallet-text h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.wallet-text p {
+  max-width: 500px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.wallet-text .auth-button-centered {
+  margin-top: 1.5rem;
+}
+
+.auth-button-centered {
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 100;
+  transition: all var(--transition-speed) ease;
+}
+
+.auth-button-centered:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.2);
+}
+
+.auth-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .wallet-connection-section {
+    margin: 2rem auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .wallet-icon-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .wallet-icon {
+    font-size: 36px;
+  }
+
+  .wallet-text h2 {
+    font-size: 1.25rem;
+  }
+
+  .auth-button-centered {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+} 

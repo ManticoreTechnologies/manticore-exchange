@@ -1,146 +1,113 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import ParticlesBg from 'particles-bg';
 import { TypeAnimation } from 'react-type-animation';
-import tradingService, { Listing, ListingsResponse } from '@/Application/services/TradingService';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/Application/contexts/AuthContext';
-
-//@ts-ignore
-import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaUser, FaChartLine, FaRocket, FaComments, FaFire, FaTrophy, FaChartArea, FaShieldAlt, FaBolt, FaUsersCog, FaDatabase, FaChartBar, FaCubes } from 'react-icons/fa'; 
+import manticore_logo from '@/Application/logos/white-manticore.png';
 import HomeHero from '@/Application/components/heros/home-hero/home-hero';
 import InfoCard from '@/Application/components/cards/info-cards/info-card';
-import { FaFaucetDrip } from 'react-icons/fa6';
+import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaChartArea, FaDatabase, FaFaucet } from 'react-icons/fa';
 import './home.css';
-//import LaunchPadBanner from '@/Application/components/LaunchPadBanner/LaunchPadBanner';
 
-// Import the logo
-import manticore_logo from '@/Application/logos/white-manticore.png'; 
-
-
-//@ts-ignore
-import Townhall from './Townhall/Townhall';
+// Import new components
+import MarketStats from './components/MarketStats/MarketStats';
+import EvrmoreInfo from './components/EvrmoreInfo/EvrmoreInfo';
+import WalletConnection from './components/WalletConnection/WalletConnection';
+import FeaturedAssets from './components/FeaturedAssets/FeaturedAssets';
 
 // Mock data for market stats
 const marketStats = [
-  { label: '24h Volume', value: '152.5K EVR', trend: 'up' },
-  { label: 'Active Trades', value: '1,234', trend: 'up' },
-  { label: 'Market Cap', value: '2.5M EVR', trend: 'up' },
+  { label: '24h Volume', value: '152.5K EVR', trend: 'up' as const },
+  { label: 'Active Trades', value: '1,234', trend: 'up' as const },
+  { label: 'Market Cap', value: '2.5M EVR', trend: 'up' as const },
 ];
 
-const evrmoreInfo = {
-  title: "Welcome to the Future of Digital Assets",
-  description: "Evrmore is a revolutionary blockchain platform that enables the creation, management, and trading of digital assets with unprecedented flexibility and security.",
-  keyPoints: [
-    {
-      icon: FaShieldAlt,
-      title: "What is Evrmore?",
-      description: "Evrmore is a secure, decentralized blockchain platform designed for creating and managing digital assets. Built with advanced technology, it offers fast transactions and low fees."
-    },
-    {
-      icon: FaCubes,
-      title: "Evrmore Assets",
-      description: "Create and trade digital assets representing anything from art and collectibles to real estate and securities. Each asset is unique, secure, and easily transferable."
-    },
-    {
-      icon: FaRocket,
-      title: "Why Choose Evrmore?",
-      description: "Experience the power of true digital ownership with our battle-tested blockchain, advanced security features, and vibrant community-driven ecosystem."
-    }
-  ]
-};
+// Mock data for featured listings
+const dummyListings = [
+  {
+    id: '1',
+    title: 'Digital Art Collection #1',
+    price: '1000',
+    highlight: 'Limited Edition',
+    tags: ['Art', 'NFT', 'Rare']
+  },
+  {
+    id: '2',
+    title: 'Virtual Real Estate',
+    price: '5000',
+    highlight: 'Prime Location',
+    tags: ['Real Estate', 'Virtual World']
+  },
+  {
+    id: '3',
+    title: 'Gaming Asset Bundle',
+    price: '750',
+    highlight: 'Special Items',
+    tags: ['Gaming', 'Bundle', 'Limited']
+  },
+  {
+    id: '4',
+    title: 'Crypto Collectible',
+    price: '300',
+    highlight: 'Unique Item',
+    tags: ['Collectible', 'Rare']
+  }
+];
+
+// Mock data for scrolling listings
+const scrollingListings = [
+  {
+    id: '1',
+    title: 'Rare Digital Artwork',
+    price: '2500',
+    highlight: 'New'
+  },
+  {
+    id: '2',
+    title: 'Virtual Land Plot',
+    price: '1800',
+    highlight: 'Trending'
+  },
+  {
+    id: '3',
+    title: 'Exclusive Game Items',
+    price: '500',
+    highlight: 'New'
+  },
+  {
+    id: '4',
+    title: 'NFT Collection Bundle',
+    price: '3500',
+    highlight: 'Trending'
+  },
+  {
+    id: '5',
+    title: 'Digital Trading Cards',
+    price: '150',
+    highlight: 'New'
+  },
+  {
+    id: '6',
+    title: 'Virtual Fashion Items',
+    price: '800',
+    highlight: 'Trending'
+  },
+  {
+    id: '7',
+    title: 'Metaverse Assets',
+    price: '1200',
+    highlight: 'New'
+  },
+  {
+    id: '8',
+    title: 'Digital Collectibles',
+    price: '950',
+    highlight: 'Trending'
+  }
+];
 
 const Home: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-  const [tradeCount, setTradeCount] = useState(0);
-  const [userCount, setUserCount] = useState(0);
-  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [scrollingListings, setScrollingListings] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [homeListings, setHomeListings] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  const fetchHomeListings = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await tradingService.getHomeListings({
-        featured_count: 5,
-        trending_count: 10,
-        new_count: 10,
-        trending_timeframe: '24h',
-        new_hours: 24
-      });
-      
-      if (response) {
-        // Featured listings for the grid
-        const featured = response.featured?.listings.map((listing: Listing) => ({
-          id: listing.id,
-          title: listing.name,
-          store_name: listing.name,
-          asset_name: listing.balances[0]?.asset_name || '',
-          price: listing.prices[0]?.price_evr || '0',
-          image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
-        })) || [];
-
-        // Scrolling listings combining new and trending
-        const scrolling = [
-          ...(response.new?.listings || []).map((listing: Listing) => ({
-            id: listing.id,
-            title: listing.name,
-            store_name: listing.name,
-            asset_name: listing.balances[0]?.asset_name || '',
-            price: listing.prices[0]?.price_evr || '0',
-            highlight: 'New',
-            image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
-          })),
-          ...(response.trending?.listings || []).map((listing: Listing) => ({
-            id: listing.id,
-            title: listing.name,
-            store_name: listing.name,
-            asset_name: listing.balances[0]?.asset_name || '',
-            price: listing.prices[0]?.price_evr || '0',
-            highlight: 'Trending',
-            image_hash: listing.image_ipfs_hash || listing.prices[0]?.ipfs_hash || null
-          }))
-        ];
-        
-        setFeaturedListings(featured);
-        setScrollingListings(scrolling);
-        setHomeListings(response);
-      }
-    } catch (error) {
-      console.error('Error fetching home listings:', error);
-      setError('Failed to load listings');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchHomeListings();
-  }, [fetchHomeListings]);
-
   const handleListingClick = (listing: any) => {
-    navigate(`/trade/listings/by-id/${listing.id}`);
-  };
-
-  // Simulate increasing stats
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTradeCount(prev => prev + Math.floor(Math.random() * 5));
-      setUserCount(prev => prev + Math.floor(Math.random() * 2));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      navigate('/profile');
-    } else {
-      navigate('/signin');
-    }
+    window.location.href = `/trade/listings/by-id/${listing.id}`;
   };
 
   return (
@@ -154,221 +121,61 @@ const Home: React.FC = () => {
       >
         <HomeHero 
           title="Manticore"
-          subtitle={
-            <TypeAnimation
-              sequence={[
-                'EVRything EVRmore',
-                2000,
-                'Trade with Confidence',
-                2000,
-                'Secure. Fast. Reliable.',
-                2000
-              ]}
-              wrapper="span"
-              repeat={Infinity}
-            />
-          }
-          logo={manticore_logo}
           body="Your premier destination for trading digital assets on the Evrmore blockchain."
+          logo={manticore_logo}
         />
       </motion.div>
 
-      {/* Wallet Connection Section */}
-      <motion.section 
-        className="wallet-connection-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <h1 className="section-title">Connect & Trade</h1>
-        <div className="wallet-content">
-          <div className="wallet-icon-wrapper">
-            <motion.div 
-              className="wallet-icon"
-              animate={{ 
-                y: [-2, 2, -2],
-                opacity: [0.8, 1, 0.8],
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              whileHover={{ 
-                scale: 1.1,
-                filter: "brightness(1.2)",
-                transition: { duration: 0.2 }
-              }}
-            >
-              <FaUsersCog />
-            </motion.div>
-          </div>
-          <div className="wallet-text">
-            <h2>Connect Your Wallet</h2>
-            <p>Start your journey in the Evrmore ecosystem by connecting your wallet. Trade, collect, and manage digital assets with ease.</p>
-            <motion.button
-              className="auth-button-centered"
-              onClick={handleAuthClick}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FaUser className="auth-icon" />
-              {isAuthenticated ? 'Profile' : 'Connect Wallet'}
-            </motion.button>
-          </div>
-        </div>
-      </motion.section>
+      <WalletConnection />
+      
+      <MarketStats stats={marketStats} />
 
-      <section className="evrmore-intro">
-        <motion.div
-          className="intro-content"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-        >
-          <motion.h2
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            {evrmoreInfo.title}
-          </motion.h2>
-          
-          <motion.p 
-            className="intro-description"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            {evrmoreInfo.description}
-          </motion.p>
-          
-          <div className="intro-grid">
-            {evrmoreInfo.keyPoints.map((point, index) => (
-              <motion.div
-                key={index}
-                className="intro-card glassmorphism"
-                initial={{ 
-                  opacity: 0,
-                  x: index % 2 === 0 ? -100 : 100,
-                  scale: 0.8
-                }}
-                whileInView={{ 
-                  opacity: 1,
-                  x: 0,
-                  scale: 1
-                }}
-                viewport={{ 
-                  once: true, 
-                  margin: "-50px"
-                }}
-                transition={{ 
-                  duration: 1,
-                  delay: index * 0.3,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  y: -10,
-                  boxShadow: "0 20px 40px rgba(255, 107, 107, 0.2)",
-                  transition: {
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 10
-                  }
-                }}
-              >
-                <motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: index * 0.3 + 0.3 }}
-                >
-                  <point.icon className="intro-icon" />
-                </motion.div>
-                <h3>{point.title}</h3>
-                <p>{point.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      <EvrmoreInfo />
 
-      {/* Live Market Stats */}
-      <section className="market-stats">
+      <FeaturedAssets isLoading={false} listings={dummyListings} />
+
+      {/* Scrolling Listings Section */}
+      <section className="listings-scroll">
         <motion.div 
-          className="stats-grid"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          {marketStats.map((stat, index) => (
-            <motion.div
-              key={index}
-              className="stat-card glassmorphism"
-              whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <h3>{stat.label}</h3>
-              <p className="value">{stat.value}</p>
-              <div className={`trend ${stat.trend}`}>
-                {stat.trend === 'up' ? '↑' : '↓'}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* Featured Assets Section */}
-      <section className="featured-assets">
-        <motion.h2 
-          className="section-title"
+          className="scroll-container glassmorphism"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.7 }}
         >
-          <FaFire className="icon" /> Featured Assets
-        </motion.h2>
-        <div className="assets-grid">
-          {isLoading ? (
-            <div className="loading">Loading featured assets...</div>
-          ) : featuredListings.length > 0 ? (
-            featuredListings.map((listing, index) => (
-              <motion.div
-                key={`featured-${listing.id}-${index}`}
-                className="asset-card glassmorphism"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => handleListingClick(listing)}
-              >
-                <div className="asset-info">
-                  <h3>{listing.title}</h3>
-                  <p className="price">
+          <h3>Available Assets</h3>
+          <div className="scroll-content">
+            <motion.div
+              animate={{ x: [-1000, 0] }}
+              transition={{ 
+                duration: 30, 
+                repeat: Infinity, 
+                ease: "linear",
+                repeatType: "loop"
+              }}
+            >
+              {scrollingListings.map((listing, index) => (
+                <div 
+                  key={`scroll-${listing.id}-${index}`}
+                  className="listing-item"
+                  onClick={() => handleListingClick(listing)}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <span className="listing-name">{listing.title}</span>
+                  <span className="listing-price">
                     {listing.price ? `${listing.price} EVR` : 'Price not set'}
-                  </p>
-                  <p className="description">{listing.highlight ? `(${listing.highlight})` : 'No description available'}</p>
-                  {listing.tags && listing.tags.length > 0 && (
-                    <div className="tags">
-                      {listing.tags.map((tag: string, index: number) => (
-                        <span key={index} className="tag">{tag}</span>
-                      ))}
-                    </div>
+                  </span>
+                  {listing.highlight && (
+                    <span className="listing-highlight">{listing.highlight}</span>
                   )}
                 </div>
-              </motion.div>
-            ))
-          ) : (
-            <div className="no-listings">No featured assets available</div>
-          )}
-        </div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* Interactive Services Grid */}
+      {/* Services Grid */}
       <section className="services-grid">
         <motion.div 
           className="infocards"
@@ -391,7 +198,7 @@ const Home: React.FC = () => {
             body="Execute trades instantly with our high-performance trading engine."
           />
           <InfoCard 
-            FaIcon={FaFaucetDrip}
+            FaIcon={FaFaucet}
             to="/faucet"
             title="Faucet"
             action="Get Started"
@@ -425,79 +232,6 @@ const Home: React.FC = () => {
             action="View Chart" 
             body="Track EVR price movements and market trends with our interactive chart."
           />
-        </motion.div>
-      </section>
-
-      {/* Project Highlights */}
-      <section className="project-highlights">
-        <motion.div 
-          className="highlights-grid"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="highlight-card glassmorphism">
-            <FaShieldAlt className="icon" />
-            <h3>Secure by Design</h3>
-            <p>Built on Evrmore's battle-tested blockchain with state-of-the-art security measures.</p>
-          </div>
-          <div className="highlight-card glassmorphism">
-            <FaBolt className="icon" />
-            <h3>Lightning Fast</h3>
-            <p>Experience instant trades and real-time updates with our optimized platform.</p>
-          </div>
-          <div className="highlight-card glassmorphism">
-            <FaUsersCog className="icon" />
-            <h3>Community Driven</h3>
-            <p>Shaped by traders, for traders. Your success is our top priority.</p>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Scrolling Listings Section */}
-      <section className="listings-scroll">
-        <motion.div 
-          className="scroll-container glassmorphism"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          <h3>Available Assets</h3>
-          <div className="scroll-content">
-            {isLoading ? (
-              <div className="loading">Loading assets...</div>
-            ) : scrollingListings.length > 0 ? (
-              <motion.div
-                animate={{ x: scrollingListings.length > 4 ? [0, -1000] : 0 }}
-                transition={{ 
-                  duration: 30, 
-                  repeat: Infinity, 
-                  ease: "linear",
-                  repeatType: "loop"
-                }}
-              >
-                {scrollingListings.map((listing, index) => (
-                  <div 
-                    key={`scroll-${listing.id}-${index}`}
-                    className="listing-item"
-                    onClick={() => handleListingClick(listing)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <span className="listing-name">{listing.title}</span>
-                    <span className="listing-price">
-                      {listing.price ? `${listing.price} EVR` : 'Price not set'}
-                    </span>
-                    {listing.highlight && (
-                      <span className="listing-highlight">{listing.highlight}</span>
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-            ) : (
-              <div className="no-listings">No assets available</div>
-            )}
-          </div>
         </motion.div>
       </section>
     </div>
