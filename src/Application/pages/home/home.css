@@ -1,30 +1,31 @@
 /* Root Variables */
 :root {
-  --section-spacing: 6rem;
-  --section-spacing-mobile: 3rem;
+  --section-spacing: 2rem;
+  --section-spacing-mobile: 1rem;
   --container-max-width: 100%;
   --card-border-radius: 16px;
   --transition-speed: 0.3s;
-  --section-padding: 2rem;
+  --section-padding: 1rem;
 }
 
 /* Base Layout */
 .home {
     display: flex;
     flex-direction: column;
+    align-items: center;
     color: var(--text-primary);
     overflow: hidden;
     min-height: 100vh;
     position: relative;
     background: var(--background-primary);
     width: 100%;
-    gap: var(--spacing-16);
+    gap: var(--section-spacing);
 }
 
 .home section {
     width: 100%;
     margin: 0;
-    padding: var(--spacing-8) var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-4);
     position: relative;
 }
 
@@ -349,7 +350,7 @@
 .listings-scroll {
   width: 100%;
   padding: var(--spacing-4);
-  margin: 2rem 0;
+  margin: 0;
   overflow: hidden;
 }
 
@@ -434,7 +435,7 @@
 @media (max-width: 768px) {
     :root {
         --section-spacing: var(--section-spacing-mobile);
-        --section-padding: 1rem;
+        --section-padding: 0.5rem;
     }
 
     .home {
@@ -470,11 +471,11 @@
     }
 
     .home section {
-        padding: var(--spacing-8) var(--spacing-4);
+        padding: var(--spacing-4) var(--spacing-4);
     }
 
     .services-grid {
-        padding: 3rem 1rem;
+        padding: 1.5rem 1rem;
     }
 }
 
@@ -650,13 +651,13 @@
 /* Services Grid */
 .services-grid {
     width: 100%;
-    padding: 6rem 2rem;
+    padding: 2rem;
     background: linear-gradient(
         180deg,
         rgba(31, 31, 31, 0) 0%,
         rgba(31, 31, 31, 0.3) 100%
     );
-    margin: 2rem 0;
+    margin: 0;
     position: relative;
     overflow: hidden;
 }
@@ -693,7 +694,7 @@
 
 /* Evrmore Introduction Section */
 .evrmore-intro {
-    padding: 6rem 2rem;
+    padding: 2rem;
     text-align: center;
     background: linear-gradient(
         180deg, 
@@ -991,3 +992,37 @@ document.addEventListener('mousemove', (e) => {
     document.documentElement.style.setProperty('--mouse-y', `${y}%`);
 });
 */
+
+/* Content Container for all sections below hero */
+.home > section:not(.hero) {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Section Content Wrapper */
+.section-content-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--spacing-4);
+}
+
+/* Section Title Container */
+.section-title-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--spacing-8);
+}
