@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useAnimationControls } from 'framer-motion';
 import ParticlesBg from 'particles-bg';
 import { TypeAnimation } from 'react-type-animation';
 import manticore_logo from '@/Application/logos/white-manticore.png';
@@ -136,17 +136,58 @@ const Home: React.FC = () => {
   }, []);
   
   // Animation variants for scroll animations
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
+  const fadeInUpVariant = {
+    hidden: { 
+      opacity: 0, 
+      y: 60,
+      scale: 0.95
+    },
     visible: { 
       opacity: 1, 
       y: 0,
+      scale: 1,
       transition: { 
-        duration: 0.8, 
+        type: "spring",
+        stiffness: 70,
+        damping: 15,
+        duration: 0.8,
         ease: [0.22, 1, 0.36, 1]
       }
     }
   };
+
+  const fadeInStaggerVariant = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariant = {
+    hidden: { 
+      opacity: 0, 
+      y: 30,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: { 
+        type: "spring",
+        stiffness: 80,
+        damping: 15
+      }
+    }
+  };
+
+  const { scrollYProgress } = useScroll();
+  const scaleBackground = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
+  const backgroundOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.2]);
 
   return (
     <div className="home">
@@ -158,33 +199,73 @@ const Home: React.FC = () => {
       />
       
       {/* Hero Section */}
-      <HomeHero 
-        title="Manticore"
-        body="Your premier destination for trading digital assets on the Evrmore blockchain."
-        logo={manticore_logo}
-      />
+      <motion.div
+        style={{ opacity: backgroundOpacity }}
+        className="hero-background-wrapper"
+      >
+        <HomeHero 
+          title="Manticore"
+          body="Your premier destination for trading digital assets on the Evrmore blockchain."
+          logo={manticore_logo}
+        />
+      </motion.div>
 
       {/* Evrmore Info Section */}
-      <EvrmoreInfo />
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={fadeInUpVariant}
+        className="section-wrapper"
+      >
+        <EvrmoreInfo />
+      </motion.section>
 
       {/* Wallet Connection Section */}
-      <WalletConnection />
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={fadeInUpVariant}
+        className="section-wrapper"
+      >
+        <WalletConnection />
+      </motion.section>
       
       {/* Market Stats Section */}
-      <MarketStats stats={marketStats} />
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={fadeInUpVariant}
+        className="section-wrapper"
+      >
+        <MarketStats stats={marketStats} />
+      </motion.section>
 
       {/* Featured Assets Section */}
-      <FeaturedAssets isLoading={false} listings={dummyListings} />
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={fadeInUpVariant}
+        className="section-wrapper"
+      >
+        <FeaturedAssets isLoading={false} listings={dummyListings} />
+      </motion.section>
 
       {/* Scrolling Listings Section */}
-      <section className="listings-scroll">
+      <motion.section 
+        className="listings-scroll"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={fadeInUpVariant}
+      >
         <div className="section-content">
           <motion.div 
             className="scroll-container glassmorphism"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            variants={itemVariant}
           >
             <h3 className="section-title">Available Assets</h3>
             <div className="scroll-content">
@@ -218,33 +299,27 @@ const Home: React.FC = () => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Services Grid */}
-      <section className="services-grid">
+      <motion.section 
+        className="services-grid"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}
+        variants={fadeInUpVariant}
+      >
         <div className="section-content">
           <motion.h2
             className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            variants={itemVariant}
           >
             Platform Services
           </motion.h2>
           
           <motion.div 
             className="infocards"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.1
-                }
-              }
-            }}
+            variants={fadeInStaggerVariant}
           >
             {[
               {
@@ -296,10 +371,11 @@ const Home: React.FC = () => {
                 action: "View Chart",
                 body: "Track EVR price movements and market trends with our interactive chart."
               }
-            ].map((card) => (
+            ].map((card, index) => (
               <motion.div
                 key={card.title}
-                variants={sectionVariants}
+                variants={itemVariant}
+                custom={index}
               >
                 <InfoCard 
                   FaIcon={card.icon}
@@ -312,7 +388,7 @@ const Home: React.FC = () => {
             ))}
           </motion.div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

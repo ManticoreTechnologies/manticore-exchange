@@ -114,24 +114,30 @@ const HomeHero: React.FC<homeheroprops> = ({
         <HeroContent 
           title={title} 
           subtitle={
-            <TypeAnimation
-              sequence={[
-                'EVRything Decentralized',
-                2000,
-                'EVRmore Secure',
-                2000,
-                'Trade EVRything',
-                2000,
-                'Create EVRything',
-                2000,
-                'Own EVRything',
-                2000,
-              ]}
-              wrapper="span"
-              speed={50}
-              repeat={Infinity}
-              className="type-animation"
-            />
+            <div className="type-animation-container">
+              <TypeAnimation
+                sequence={[
+                  'EVRything Decentralized',
+                  2000,
+                  'EVRmore Secure',
+                  2000,
+                  'Trade EVRything',
+                  2000,
+                  'Create EVRything',
+                  2000,
+                  'Own EVRything',
+                  2000,
+                ]}
+                wrapper="span"
+                speed={50}
+                cursor={true}
+                repeat={Infinity}
+                className="type-animation"
+                style={{ display: 'block', width: '100%' }}
+                deletionSpeed={70}
+                omitDeletionAnimation={false}
+              />
+            </div>
           } 
           body={body} 
         />
