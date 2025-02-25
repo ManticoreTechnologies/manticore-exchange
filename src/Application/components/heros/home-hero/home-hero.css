@@ -1,50 +1,62 @@
 /* Theme variables for different color schemes */
 :root {
   /* Default dark theme variables */
-  --hero-bg: #191919;
+  --hero-bg: #161616;
   --hero-text: #ffffff;
   --hero-accent-primary: #ff6b6b;
   --hero-accent-secondary: #ff8e53;
   --hero-accent-tertiary: #7cb8ff;
   --hero-card-bg: rgba(30, 30, 30, 0.9);
-  --hero-border: rgba(255, 255, 255, 0.3);
+  --hero-border: rgba(255, 255, 255, 0.15);
   --hero-shadow-dark: rgba(0, 0, 0, 0.5);
   --hero-shadow-light: rgba(255, 255, 255, 0.1);
-  --hero-pattern-fill: rgba(255, 255, 255, 0.15);
-  --hero-gradient-start: rgba(255, 107, 107, 0.3);
-  --hero-gradient-end: rgba(124, 184, 255, 0.3);
+  --hero-pattern-fill: rgba(255, 255, 255, 0.03);
+  --hero-gradient-start: rgba(255, 107, 107, 0.2);
+  --hero-gradient-end: rgba(124, 184, 255, 0.2);
+  --hero-glow-1: rgba(255, 107, 107, 0.4);
+  --hero-glow-2: rgba(124, 184, 255, 0.3);
+  --hero-mesh-color-1: rgba(255, 107, 107, 0.15);
+  --hero-mesh-color-2: rgba(124, 184, 255, 0.15);
 }
 
 /* Light theme overrides */
 [data-theme="light"] {
-  --hero-bg: #f5f5f7;
+  --hero-bg: #f8f9fa;
   --hero-text: #333333;
   --hero-accent-primary: #ff6b6b;
   --hero-accent-secondary: #ff8e53;
   --hero-accent-tertiary: #4a90e2;
   --hero-card-bg: rgba(255, 255, 255, 0.9);
-  --hero-border: rgba(0, 0, 0, 0.1);
-  --hero-shadow-dark: rgba(0, 0, 0, 0.1);
+  --hero-border: rgba(0, 0, 0, 0.08);
+  --hero-shadow-dark: rgba(0, 0, 0, 0.08);
   --hero-shadow-light: rgba(255, 255, 255, 0.8);
-  --hero-pattern-fill: rgba(0, 0, 0, 0.05);
-  --hero-gradient-start: rgba(255, 107, 107, 0.2);
-  --hero-gradient-end: rgba(74, 144, 226, 0.2);
+  --hero-pattern-fill: rgba(0, 0, 0, 0.02);
+  --hero-gradient-start: rgba(255, 107, 107, 0.15);
+  --hero-gradient-end: rgba(74, 144, 226, 0.15);
+  --hero-glow-1: rgba(255, 107, 107, 0.2);
+  --hero-glow-2: rgba(74, 144, 226, 0.15);
+  --hero-mesh-color-1: rgba(255, 107, 107, 0.1);
+  --hero-mesh-color-2: rgba(74, 144, 226, 0.1);
 }
 
 /* Evrmore theme overrides */
 [data-theme="evrmore"] {
-  --hero-bg: #1a0e1e;
+  --hero-bg: #15081a;
   --hero-text: #ffffff;
   --hero-accent-primary: #ff6b6b;
   --hero-accent-secondary: #e8545e;
   --hero-accent-tertiary: #9d4edd;
   --hero-card-bg: rgba(40, 20, 50, 0.9);
-  --hero-border: rgba(255, 107, 107, 0.3);
+  --hero-border: rgba(255, 107, 107, 0.2);
   --hero-shadow-dark: rgba(0, 0, 0, 0.6);
   --hero-shadow-light: rgba(255, 107, 107, 0.15);
-  --hero-pattern-fill: rgba(255, 107, 107, 0.1);
-  --hero-gradient-start: rgba(255, 107, 107, 0.35);
-  --hero-gradient-end: rgba(157, 78, 221, 0.35);
+  --hero-pattern-fill: rgba(255, 107, 107, 0.04);
+  --hero-gradient-start: rgba(255, 107, 107, 0.25);
+  --hero-gradient-end: rgba(157, 78, 221, 0.25);
+  --hero-glow-1: rgba(255, 107, 107, 0.5);
+  --hero-glow-2: rgba(157, 78, 221, 0.4);
+  --hero-mesh-color-1: rgba(255, 107, 107, 0.12);
+  --hero-mesh-color-2: rgba(157, 78, 221, 0.12);
 }
 
 .hero {
@@ -60,51 +72,178 @@
   overflow: hidden;
   box-sizing: border-box;
   z-index: 0;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* Main background with mesh gradient effect */
 .hero::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: 
-    radial-gradient(circle at 30% 50%, var(--hero-gradient-start) 0%, transparent 60%),
-    radial-gradient(circle at 70% 70%, var(--hero-gradient-end) 0%, transparent 60%);
-  pointer-events: none;
+    radial-gradient(circle at 20% 20%, var(--hero-mesh-color-1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--hero-mesh-color-2) 0%, transparent 50%);
+  opacity: 0.8;
   z-index: 1;
-  transition: background 0.3s ease;
-  animation: pulseGradient 15s infinite alternate ease-in-out;
+  mix-blend-mode: normal;
+  animation: meshFlow 20s infinite alternate ease-in-out;
 }
 
-@keyframes pulseGradient {
+/* Animated wave pattern overlay */
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 150%;
+  top: -25%;
+  left: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 20.83l2.83-2.83 1.41 1.41L1.41 22.24H0v-1.41zM0 3.07l2.83-2.83 1.41 1.41L1.41 4.48H0V3.07zm33.66 30.34l2.83-2.83 1.41 1.41-2.83 2.83H38.07v-1.41zM33.66 12.59l2.83-2.83 1.41 1.41-2.83 2.83H38.07v-1.41zM20.9 38.59l2.83-2.83 1.41 1.41-2.83 2.83H24.9v-1.41zM20.9 20.83l2.83-2.83 1.41 1.41-2.83 2.83H24.9v-1.41zM20.9 3.07l2.83-2.83 1.41 1.41-2.83 2.83H24.9V3.07z'/%3E%3C/g%3E%3C/svg%3E");
+  z-index: 1;
+  opacity: 0.15;
+  pointer-events: none;
+  animation: wavePatternFlow 120s linear infinite;
+  transform-origin: center;
+  transform: rotate(-5deg);
+}
+
+/* Glowing orbs */
+.hero-glow-orbs {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.hero-glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  background: var(--hero-glow-1);
+  animation: orbFloat 20s infinite alternate ease-in-out;
+}
+
+.hero-glow-orb:nth-child(1) {
+  width: 400px;
+  height: 400px;
+  left: -100px;
+  top: -100px;
+  animation-delay: 0s;
+  background: var(--hero-glow-1);
+}
+
+.hero-glow-orb:nth-child(2) {
+  width: 300px;
+  height: 300px;
+  right: -50px;
+  bottom: -50px;
+  animation-delay: -5s;
+  animation-duration: 25s;
+  background: var(--hero-glow-2);
+}
+
+.hero-glow-orb:nth-child(3) {
+  width: 250px;
+  height: 250px;
+  right: 30%;
+  top: 10%;
+  animation-delay: -10s;
+  animation-duration: 30s;
+  background: var(--hero-glow-1);
+  opacity: 0.2;
+}
+
+/* Subtle background noise texture */
+.hero-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Subtle grid lines */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0.06;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(to right, var(--hero-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hero-border) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+@keyframes orbFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(30px, -20px) scale(1.1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-20px, 40px) scale(0.95);
+    opacity: 0.25;
+  }
+}
+
+@keyframes wavePatternFlow {
+  0% {
+    transform: translateX(-10%) translateY(5%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(10%) translateY(-5%) rotate(-2deg);
+  }
+  100% {
+    transform: translateX(-10%) translateY(5%) rotate(-5deg);
+  }
+}
+
+@keyframes meshFlow {
   0% {
     opacity: 0.6;
     background-position: 0% 0%;
+    filter: hue-rotate(0deg);
   }
   50% {
-    opacity: 1;
-    background-position: 100% 100%;
+    opacity: 0.8;
+    background-position: 100% 0%;
+    filter: hue-rotate(5deg);
   }
   100% {
     opacity: 0.6;
     background-position: 0% 0%;
+    filter: hue-rotate(0deg);
   }
 }
 
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='var(--hero-pattern-fill)' fill-rule='evenodd'/%3E%3C/svg%3E");
-  opacity: 0.5;
-  z-index: 0;
-  transition: opacity 0.3s ease;
+/* Evrmore theme specific animations */
+[data-theme="evrmore"] .hero::before {
+  animation: evrmoreGlow 15s infinite alternate ease-in-out;
+}
+
+@keyframes evrmoreGlow {
+  0% {
+    opacity: 0.7;
+    background-position: 0% 0%;
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  50% {
+    opacity: 0.9;
+    background-position: 100% 0%;
+    filter: hue-rotate(10deg) saturate(1.2);
+  }
+  100% {
+    opacity: 0.7;
+    background-position: 0% 0%;
+    filter: hue-rotate(0deg) saturate(1);
+  }
 }
 
 .hero-section {

@@ -122,6 +122,15 @@ const HomeHero: React.FC<homeheroprops> = ({
 
   return (
     <section ref={heroRef} className="hero" data-theme={theme}>
+      {/* Add background effects */}
+      <div className="hero-glow-orbs">
+        <div className="hero-glow-orb"></div>
+        <div className="hero-glow-orb"></div>
+        <div className="hero-glow-orb"></div>
+      </div>
+      <div className="hero-noise"></div>
+      <div className="hero-grid"></div>
+      
       <ThemeToggle />
       <motion.div 
         className="hero-section hero-left"
