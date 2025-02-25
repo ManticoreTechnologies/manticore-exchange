@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import manticore_logo from '@/Application/logos/white-manticore.png';
 import evrmore_logo from '@/Application/logos/evr.svg';
 import HeroContent from './content';
+import { useTheme } from './ThemeContext';
+import ThemeToggle from './ThemeToggle';
 
 interface homeheroprops {
   title?: string;
@@ -22,6 +24,7 @@ const HomeHero: React.FC<homeheroprops> = ({
   authButton
 }) => {
   const heroRef = useRef<HTMLElement>(null);
+  const { theme } = useTheme();
   
   // Interactive parallax effect
   useEffect(() => {
@@ -91,13 +94,40 @@ const HomeHero: React.FC<homeheroprops> = ({
     };
   }, []);
 
+  // Define different animation settings based on theme
+  const getAnimationSettings = () => {
+    switch(theme) {
+      case 'light':
+        return {
+          backgroundOpacity: [0.9, 1],
+          shadowIntensity: [10, 20],
+          transition: { duration: 0.8, ease: "easeOut" }
+        };
+      case 'evrmore':
+        return {
+          backgroundOpacity: [0.9, 1],
+          shadowIntensity: [15, 30],
+          transition: { duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }
+        };
+      default: // dark
+        return {
+          backgroundOpacity: [0.8, 1],
+          shadowIntensity: [20, 40],
+          transition: { duration: 1, ease: "easeOut" }
+        };
+    }
+  };
+
+  const animSettings = getAnimationSettings();
+
   return (
-    <section ref={heroRef} className="hero">
+    <section ref={heroRef} className="hero" data-theme={theme}>
+      <ThemeToggle />
       <motion.div 
         className="hero-section hero-left"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        transition={animSettings.transition}
       >
         <img 
           src={logo} 
@@ -108,8 +138,17 @@ const HomeHero: React.FC<homeheroprops> = ({
       <motion.div 
         className="hero-section hero-center"
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+        animate={{ 
+          opacity: 1, 
+          y: 0,
+          boxShadow: `0 ${animSettings.shadowIntensity[0]}px ${animSettings.shadowIntensity[1]}px var(--hero-shadow-dark), 0 0 ${animSettings.shadowIntensity[0]}px var(--hero-shadow-light)`  
+        }}
+        whileHover={{
+          y: -15,
+          scale: 1.03,
+          boxShadow: `0 ${animSettings.shadowIntensity[0] * 1.5}px ${animSettings.shadowIntensity[1] * 1.5}px var(--hero-shadow-dark), 0 0 ${animSettings.shadowIntensity[0] * 1.5}px var(--hero-shadow-light)`
+        }}
+        transition={{ ...animSettings.transition, delay: 0.3 }}
       >
         <HeroContent 
           title={title} 
@@ -155,7 +194,7 @@ const HomeHero: React.FC<homeheroprops> = ({
         className="hero-section hero-right"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        transition={animSettings.transition}
       >
         <img 
           src={evrmore_logo} 
