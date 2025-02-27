@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './home-hero.css';
 import { TypeAnimation } from 'react-type-animation';
 import { motion } from 'framer-motion';
@@ -25,6 +25,65 @@ const HomeHero: React.FC<homeheroprops> = ({
 }) => {
   const heroRef = useRef<HTMLElement>(null);
   const { theme } = useTheme();
+  const [nodes, setNodes] = useState<Array<{x: number, y: number, size: number, delay: number}>>([]);
+  const [connections, setConnections] = useState<Array<{
+    x1: number, y1: number, x2: number, y2: number, width: number, delay: number
+  }>>([]);
+
+  // Create blockchain nodes and connections
+  useEffect(() => {
+    const createBlockchainElements = () => {
+      if (!heroRef.current) return;
+      
+      const { width, height } = heroRef.current.getBoundingClientRect();
+      const nodeCount = Math.min(30, Math.floor((width * height) / 15000)); // Responsive node count
+      
+      // Create nodes
+      const newNodes = [];
+      for (let i = 0; i < nodeCount; i++) {
+        newNodes.push({
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 3 + 1.5,
+          delay: Math.random() * 5
+        });
+      }
+      
+      // Create connections between some nodes
+      const newConnections = [];
+      for (let i = 0; i < nodeCount - 1; i++) {
+        if (Math.random() > 0.4) { // Only create connections for some nodes
+          const startNode = newNodes[i];
+          const endNode = newNodes[i + 1];
+          
+          newConnections.push({
+            x1: startNode.x,
+            y1: startNode.y,
+            x2: endNode.x,
+            y2: endNode.y,
+            width: Math.random() * 80 + 40,
+            delay: Math.random() * 3
+          });
+        }
+      }
+      
+      setNodes(newNodes);
+      setConnections(newConnections);
+    };
+    
+    // Initialize blockchain elements
+    createBlockchainElements();
+    
+    // Recreate on window resize
+    const handleResize = () => {
+      createBlockchainElements();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Interactive parallax effect
   useEffect(() => {
@@ -38,14 +97,11 @@ const HomeHero: React.FC<homeheroprops> = ({
       const x = ((clientX - left) / width - 0.5) * 20; // Max movement 20px
       const y = ((clientY - top) / height - 0.5) * 20;
       
-      // Update CSS variables for mouse position
-      heroRef.current.style.setProperty('--mouse-x', `${clientX - left}px`);
-      heroRef.current.style.setProperty('--mouse-y', `${clientY - top}px`);
-      
-      // Apply parallax effect to logos
+      // Apply parallax effect to elements
       const logoLeft = heroRef.current.querySelector('.hero-logo') as HTMLElement;
       const logoRight = heroRef.current.querySelector('.hero-logo-right') as HTMLElement;
       const heroCenter = heroRef.current.querySelector('.hero-center') as HTMLElement;
+      const heroGrid = heroRef.current.querySelector('.hero-grid') as HTMLElement;
       
       if (logoLeft) {
         logoLeft.style.transform = `translate(${-x/2}px, ${-y/2}px)`;
@@ -56,7 +112,11 @@ const HomeHero: React.FC<homeheroprops> = ({
       }
       
       if (heroCenter) {
-        heroCenter.style.transform = `perspective(1000px) rotateX(${y/30}deg) rotateY(${-x/30}deg)`;
+        heroCenter.style.transform = `perspective(1000px) rotateX(${y/40}deg) rotateY(${-x/40}deg)`;
+      }
+      
+      if (heroGrid) {
+        heroGrid.style.transform = `translate(${x/8}px, ${y/8}px)`;
       }
     };
     
@@ -66,6 +126,7 @@ const HomeHero: React.FC<homeheroprops> = ({
       const logoLeft = heroRef.current.querySelector('.hero-logo') as HTMLElement;
       const logoRight = heroRef.current.querySelector('.hero-logo-right') as HTMLElement;
       const heroCenter = heroRef.current.querySelector('.hero-center') as HTMLElement;
+      const heroGrid = heroRef.current.querySelector('.hero-grid') as HTMLElement;
       
       if (logoLeft) {
         logoLeft.style.transform = 'translate(0, 0)';
@@ -77,6 +138,10 @@ const HomeHero: React.FC<homeheroprops> = ({
       
       if (heroCenter) {
         heroCenter.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      }
+      
+      if (heroGrid) {
+        heroGrid.style.transform = 'translate(0, 0)';
       }
     };
     
@@ -99,19 +164,19 @@ const HomeHero: React.FC<homeheroprops> = ({
     switch(theme) {
       case 'light':
         return {
-          backgroundOpacity: [0.9, 1],
+          backgroundOpacity: 1, // Full opacity
           shadowIntensity: [10, 20],
           transition: { duration: 0.8, ease: "easeOut" }
         };
       case 'evrmore':
         return {
-          backgroundOpacity: [0.9, 1],
+          backgroundOpacity: 1, // Full opacity
           shadowIntensity: [15, 30],
           transition: { duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }
         };
       default: // dark
         return {
-          backgroundOpacity: [0.8, 1],
+          backgroundOpacity: 1, // Full opacity
           shadowIntensity: [20, 40],
           transition: { duration: 1, ease: "easeOut" }
         };
@@ -121,27 +186,91 @@ const HomeHero: React.FC<homeheroprops> = ({
   const animSettings = getAnimationSettings();
 
   return (
-    <section ref={heroRef} className="hero" data-theme={theme}>
-      {/* Add background effects */}
-      <div className="hero-glow-orbs">
+    <motion.section 
+      ref={heroRef} 
+      className="hero" 
+      data-theme={theme}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Add solid background layer to prevent transparency issues */}
+      <div 
+        style={{ 
+          position: 'absolute', 
+          width: '100%', 
+          height: '100%', 
+          backgroundColor: 'var(--hero-bg)',
+          zIndex: 0 
+        }}
+      />
+      
+      {/* Increased z-index of orbs for better visibility */}
+      <div className="hero-glow-orbs" style={{ zIndex: 1 }}>
         <div className="hero-glow-orb"></div>
         <div className="hero-glow-orb"></div>
         <div className="hero-glow-orb"></div>
       </div>
-      <div className="hero-noise"></div>
-      <div className="hero-grid"></div>
+      
+      <div className="hero-grid" style={{ zIndex: 2 }}></div>
+      
+      {/* Blockchain visualization with improved visibility */}
+      <div className="hero-blockchain" style={{ zIndex: 3, opacity: 0.9 }}>
+        {nodes.map((node, index) => (
+          <div
+            key={`node-${index}`}
+            className="hero-node"
+            style={{
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              width: `${node.size * 1.5}px`, // Increased size by 50%
+              height: `${node.size * 1.5}px`, // Increased size by 50%
+              animationDelay: `${node.delay}s`,
+              backgroundColor: 'var(--hero-particle)',
+              boxShadow: '0 0 8px var(--hero-accent-primary)' // Added glow
+            }}
+          />
+        ))}
+        
+        {connections.map((connection, index) => (
+          <div
+            key={`connection-${index}`}
+            className="hero-connection"
+            style={{
+              left: `${connection.x1}%`,
+              top: `${connection.y1}%`,
+              width: `${connection.width}px`,
+              animationDelay: `${connection.delay}s`,
+              opacity: 0.5, // Increased opacity
+              transform: `rotate(${Math.atan2(
+                (connection.y2 - connection.y1) * window.innerHeight / 100,
+                (connection.x2 - connection.x1) * window.innerWidth / 100
+              ) * (180 / Math.PI)}deg)`
+            }}
+          />
+        ))}
+      </div>
+      
+      <div className="hero-noise" style={{ zIndex: 4, opacity: 0.08 }}></div>
       
       <ThemeToggle />
+      
       <motion.div 
         className="hero-section hero-left"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={animSettings.transition}
       >
-        <img 
+        <motion.img 
           src={logo} 
           alt={title}
-          className="hero-logo" 
+          className="hero-logo"
+          whileHover={{ 
+            scale: 1.1,
+            rotate: 5,
+            filter: `drop-shadow(0 0 50px var(--hero-accent-primary))`
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
         />
       </motion.div>
       <motion.div 
@@ -205,13 +334,19 @@ const HomeHero: React.FC<homeheroprops> = ({
         animate={{ opacity: 1, x: 0 }}
         transition={animSettings.transition}
       >
-        <img 
+        <motion.img 
           src={evrmore_logo} 
-          alt={title}
-          className="hero-logo-right" 
+          alt="Evrmore"
+          className="hero-logo-right"
+          whileHover={{ 
+            scale: 1.1,
+            rotate: -5,
+            filter: `drop-shadow(0 0 50px var(--hero-accent-primary))`
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
         />
       </motion.div>
-    </section>
+    </motion.section>
   );
 };
 
