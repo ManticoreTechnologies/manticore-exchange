@@ -1,10 +1,10 @@
-import ThemedHero from './ThemedHero';
 import HomeHero from './home-hero';
+import HeroContent from './content';
 import { useTheme, ThemeProvider } from './ThemeContext';
 import ThemeToggle from './ThemeToggle';
 
-// Default export is the ready-to-use ThemedHero with ThemeContext
-export default ThemedHero;
+// Default export is the ready-to-use HomeHero with ThemeContext
+export default HomeHero;
 
 // Also export individual components for flexibility
 export {
@@ -12,4 +12,5 @@ export {
   useTheme,
   ThemeProvider,
   ThemeToggle,
+  HeroContent,
 }; 
