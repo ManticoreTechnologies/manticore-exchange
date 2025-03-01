@@ -1,0 +1,343 @@
+.project-highlights-section {
+  position: relative;
+  padding: 80px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Star field background for depth */
+.highlight-starfield {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(1px 1px at 25% 15%, rgba(255, 255, 255, 0.6) 100%, transparent),
+    radial-gradient(1px 1px at 50% 40%, rgba(255, 255, 255, 0.6) 100%, transparent),
+    radial-gradient(1.5px 1.5px at 75% 75%, rgba(255, 255, 255, 0.6) 100%, transparent),
+    radial-gradient(2px 2px at 20% 60%, rgba(255, 255, 255, 0.6) 100%, transparent);
+  background-repeat: repeat;
+  background-size: 350px 350px, 250px 250px, 150px 150px;
+  opacity: 0.2;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Section title styling */
+.project-highlights-section .section-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 4rem;
+  color: #ffffff;
+  position: relative;
+  text-shadow: 0 0 20px rgba(85, 169, 254, 0.4);
+}
+
+.project-highlights-section .title-gradient {
+  background: linear-gradient(to right, #55a9fe, #00ffd0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Highlights container grid */
+.highlights-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Highlight card styling */
+.highlight-card {
+  background: rgba(7, 27, 60, 0.8);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(85, 169, 254, 0.2);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(85, 169, 254, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 280px;
+}
+
+.highlight-card:hover {
+  border-color: rgba(0, 255, 208, 0.4);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 255, 208, 0.3);
+  transform: translateY(-10px);
+}
+
+/* Decorative tech elements */
+.highlight-decoration {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 208, 0.6), transparent);
+  width: 80%;
+  opacity: 0.5;
+}
+
+.highlight-decoration.top {
+  top: 15px;
+  left: 10%;
+}
+
+.highlight-decoration.bottom {
+  bottom: 15px;
+  left: 10%;
+}
+
+/* Icon container with orbit animation */
+.highlight-icon-container {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.highlight-icon {
+  font-size: 2rem;
+  color: #00ffd0;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 208, 0.5));
+  z-index: 2;
+}
+
+.icon-orbit {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px dashed rgba(85, 169, 254, 0.4);
+  border-radius: 50%;
+  animation: orbit 12s linear infinite;
+}
+
+.orbit-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #55a9fe;
+  border-radius: 50%;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(85, 169, 254, 0.8);
+}
+
+/* Card content styling */
+.highlight-card h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: #ffffff;
+  background: linear-gradient(to right, #ffffff, #b6ccf5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.highlight-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  background: linear-gradient(to right, #00ffd0, #55a9fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.highlight-value::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(to right, #00ffd0, #55a9fe);
+  border-radius: 2px;
+}
+
+.highlight-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #b6ccf5;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Data pulse animation */
+.data-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 208, 0.15) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Orbital path decoration */
+.orbital-path {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border: 1px dotted rgba(85, 169, 254, 0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.orbit-satellite {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #55a9fe;
+  border-radius: 50%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 15px rgba(85, 169, 254, 0.8);
+  animation: orbitPath 30s linear infinite;
+}
+
+.orbit-satellite::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, #55a9fe, transparent);
+  top: 50%;
+  left: -20px;
+  transform: translateY(-50%);
+}
+
+.orbit-satellite::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #55a9fe);
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+}
+
+/* Animations */
+@keyframes orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes orbitPath {
+  0% { transform: translateX(-50%) rotate(0deg) translateY(-300px); }
+  100% { transform: translateX(-50%) rotate(360deg) translateY(-300px); }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 1200px) {
+  .highlights-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  
+  .orbital-path {
+    width: 500px;
+    height: 500px;
+  }
+  
+  @keyframes orbitPath {
+    0% { transform: translateX(-50%) rotate(0deg) translateY(-250px); }
+    100% { transform: translateX(-50%) rotate(360deg) translateY(-250px); }
+  }
+}
+
+@media (max-width: 768px) {
+  .project-highlights-section {
+    padding: 60px 15px;
+  }
+  
+  .project-highlights-section .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .highlights-container {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .highlight-card {
+    padding: 25px;
+    min-height: 250px;
+  }
+  
+  .highlight-icon-container {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .highlight-icon {
+    font-size: 1.8rem;
+  }
+  
+  .highlight-card h3 {
+    font-size: 1.3rem;
+  }
+  
+  .highlight-value {
+    font-size: 1.8rem;
+  }
+  
+  .orbital-path {
+    width: 350px;
+    height: 350px;
+  }
+  
+  @keyframes orbitPath {
+    0% { transform: translateX(-50%) rotate(0deg) translateY(-175px); }
+    100% { transform: translateX(-50%) rotate(360deg) translateY(-175px); }
+  }
+}
+
+@media (max-width: 480px) {
+  .project-highlights-section .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .highlights-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .highlight-card {
+    padding: 20px;
+  }
+  
+  .orbital-path {
+    display: none;
+  }
+} 

@@ -26,82 +26,97 @@ const evrmoreInfo = {
 };
 
 const EvrmoreInfo: React.FC = () => {
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15
+      }
+    }
+  };
+
   return (
     <section className="evrmore-intro">
+      {/* Circuit decorations */}
+      <div className="circuit-board top-left"></div>
+      <div className="circuit-board bottom-right"></div>
+      
+      {/* Data flow animation lines */}
+      <div className="data-flow-line line-1"></div>
+      <div className="data-flow-line line-2"></div>
+      <div className="data-flow-line line-3"></div>
+
       <motion.div
         className="intro-content"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
       >
         <motion.h2
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          variants={itemVariants}
         >
           {evrmoreInfo.title}
         </motion.h2>
         
         <motion.p 
           className="intro-description"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          variants={itemVariants}
         >
           {evrmoreInfo.description}
         </motion.p>
         
-        <div className="intro-grid">
+        <motion.div 
+          className="key-points"
+          variants={containerVariants}
+        >
           {evrmoreInfo.keyPoints.map((point, index) => (
-            <motion.div
-              key={index}
-              className="intro-card glassmorphism"
-              initial={{ 
-                opacity: 0,
-                x: index % 2 === 0 ? -100 : 100,
-                scale: 0.8
-              }}
-              whileInView={{ 
-                opacity: 1,
-                x: 0,
-                scale: 1
-              }}
-              viewport={{ 
-                once: true, 
-                margin: "-50px"
-              }}
-              transition={{ 
-                duration: 1,
-                delay: index * 0.3,
-                type: "spring",
-                stiffness: 100
-              }}
+            <motion.div 
+              key={index} 
+              className="key-point"
+              variants={itemVariants}
               whileHover={{ 
-                scale: 1.05,
-                y: -10,
-                boxShadow: "0 20px 40px rgba(255, 107, 107, 0.2)",
-                transition: {
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 10
-                }
+                y: -10, 
+                transition: { type: "spring", stiffness: 300 } 
               }}
             >
-              <motion.div
-                initial={{ scale: 0.5, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.3 + 0.3 }}
-              >
-                <point.icon className="intro-icon" />
-              </motion.div>
+              <div className="key-point-icon">
+                <point.icon />
+              </div>
               <h3>{point.title}</h3>
               <p>{point.description}</p>
+              
+              {/* Tech decorative pulse element */}
+              <motion.div 
+                className="tech-pulse"
+                animate={{ 
+                  scale: [1, 1.2, 1], 
+                  opacity: [0, 0.2, 0] 
+                }}
+                transition={{ 
+                  duration: 2.5, 
+                  repeat: Infinity,
+                  delay: index * 0.7
+                }}
+              />
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   );

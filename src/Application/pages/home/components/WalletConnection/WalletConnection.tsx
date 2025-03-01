@@ -1,67 +1,156 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaUsersCog, FaUser } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, useAnimation } from 'framer-motion';
 import { useAuth } from '@/Application/contexts/AuthContext';
+import { FaFingerprint, FaLock, FaRocket, FaShieldAlt, FaUserAstronaut } from 'react-icons/fa';
 import './WalletConnection.css';
 
 const WalletConnection: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-
+  const controls = useAnimation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number, speed: number}>>([]);
+  
+  // Handle auth button click based on authentication state
   const handleAuthClick = () => {
     if (isAuthenticated) {
-      navigate('/profile');
+      // Navigate to dashboard or wallet page
+      window.location.href = '/dashboard';
     } else {
-      navigate('/signin');
+      // Navigate to auth page
+      window.location.href = '/auth';
+    }
+  };
+
+  // Create security particles
+  useEffect(() => {
+    const createParticles = () => {
+      const newParticles = [];
+      const particleCount = 30;
+      
+      for (let i = 0; i < particleCount; i++) {
+        newParticles.push({
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 3 + 1,
+          speed: Math.random() * 2 + 0.5
+        });
+      }
+      
+      setParticles(newParticles);
+    };
+    
+    createParticles();
+    
+    return () => {
+      setParticles([]);
+    };
+  }, []);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15
+      }
     }
   };
 
   return (
-    <motion.section 
-      className="wallet-connection-section"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-    >
-      <h1 className="section-title">Connect & Trade</h1>
-      <div className="wallet-content">
-        <div className="wallet-icon-wrapper">
-          <motion.div 
-            className="wallet-icon"
-            animate={{ 
-              y: [-2, 2, -2],
-              opacity: [0.8, 1, 0.8],
+    <div className="wallet-connection-container" ref={containerRef}>
+      {/* Floating security particles */}
+      <div className="security-particles">
+        {particles.map(particle => (
+          <motion.div
+            key={particle.id}
+            className="security-particle"
+            initial={{ x: `${particle.x}%`, y: `${particle.y}%`, opacity: 0.3 }}
+            animate={{
+              y: [`${particle.y}%`, `${particle.y + 10}%`, `${particle.y}%`],
+              opacity: [0.3, 0.7, 0.3]
             }}
-            transition={{ 
-              duration: 2,
+            transition={{
+              duration: particle.speed * 3,
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            whileHover={{ 
-              scale: 1.1,
-              filter: "brightness(1.2)",
-              transition: { duration: 0.2 }
-            }}
-          >
-            <FaUsersCog />
-          </motion.div>
-        </div>
-        <div className="wallet-text">
-          <h2>Connect Your Wallet</h2>
-          <p>Start your journey in the Evrmore ecosystem by connecting your wallet. Trade, collect, and manage digital assets with ease.</p>
-          <motion.button
-            className="auth-button-centered"
-            onClick={handleAuthClick}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaUser className="auth-icon" />
-            {isAuthenticated ? 'Profile' : 'Connect Wallet'}
-          </motion.button>
-        </div>
+            style={{ width: `${particle.size}px`, height: `${particle.size}px` }}
+          />
+        ))}
       </div>
-    </motion.section>
+
+      {/* Shield decoration */}
+      <div className="shield-decoration">
+        <div className="shield-glow"></div>
+        <FaShieldAlt className="shield-icon" />
+      </div>
+
+      {/* Digital circuit background */}
+      <div className="digital-circuit"></div>
+
+      <motion.div
+        className="wallet-content"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <motion.div className="wallet-header" variants={itemVariants}>
+          <div className="icon-container">
+            <FaUserAstronaut className="astronaut-icon" />
+          </div>
+          <h2>Secure Your Digital Assets</h2>
+        </motion.div>
+
+        <motion.p variants={itemVariants}>
+          Connect your wallet to start trading on the Evrmore Exchange. Our platform offers
+          state-of-the-art security features to keep your assets safe.
+        </motion.p>
+
+        <motion.div className="security-features" variants={containerVariants}>
+          <motion.div className="security-feature" variants={itemVariants}>
+            <FaLock />
+            <span>Advanced Encryption</span>
+          </motion.div>
+          <motion.div className="security-feature" variants={itemVariants}>
+            <FaFingerprint />
+            <span>Biometric Authentication</span>
+          </motion.div>
+          <motion.div className="security-feature" variants={itemVariants}>
+            <FaRocket />
+            <span>Quick Transactions</span>
+          </motion.div>
+        </motion.div>
+
+        <motion.button
+          className="connect-button"
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleAuthClick}
+        >
+          {isAuthenticated ? 'Go to Dashboard' : 'Connect Wallet'}
+          <span className="button-glow"></span>
+        </motion.button>
+      </motion.div>
+    </div>
   );
 };
 

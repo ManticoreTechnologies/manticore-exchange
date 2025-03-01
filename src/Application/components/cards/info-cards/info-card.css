@@ -1,10 +1,12 @@
 .infocard-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 40px;
     justify-items: center;
     width: 100%;
-    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
 @media (min-width: 768px) {
@@ -20,31 +22,30 @@
 }
 
 .infocard {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(7, 27, 60, 0.7);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 2px solid;
-    border-image: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.2) 100%
-    ) 1;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    border: 1px solid rgba(85, 169, 254, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
     height: 100%;
     position: relative;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(85, 169, 254, 0.2);
 }
 
 .infocard::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 20px;
-    padding: 2px; /* control the border thickness */
+    border-radius: 16px;
+    padding: 1px; /* control the border thickness */
     background: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.2) 100%
+        135deg,
+        rgba(85, 169, 254, 0.3) 0%,
+        rgba(157, 78, 221, 0.3) 50%,
+        rgba(0, 255, 208, 0.3) 100%
     );
     -webkit-mask: 
         linear-gradient(#fff 0 0) content-box, 
@@ -55,17 +56,21 @@
 }
 
 .infocard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.1);
+    transform: translateY(-10px);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(85, 169, 254, 0.4);
+    border-color: rgba(0, 255, 208, 0.4);
 }
 
 .infocard:hover::before {
     background: linear-gradient(
-        45deg,
-        rgba(255, 107, 107, 0.5) 0%,
-        rgba(255, 142, 83, 0.5) 100%
+        135deg,
+        rgba(85, 169, 254, 0.5) 0%,
+        rgba(157, 78, 221, 0.5) 50%,
+        rgba(0, 255, 208, 0.5) 100%
     );
-    animation: borderRotate 4s linear infinite;
+    animation: borderRotate 8s linear infinite;
 }
 
 @keyframes borderRotate {
@@ -85,7 +90,7 @@
     text-align: center;
     text-decoration: none;
     height: 100%;
-    color: var(--text-primary);
+    color: #ffffff;
     position: relative;
     z-index: 1;
 }
@@ -93,44 +98,64 @@
 .icon-wrapper {
     width: 80px;
     height: 80px;
-    background: rgba(255, 107, 107, 0.1);
+    background: rgba(7, 27, 60, 0.7);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 107, 107, 0.2);
+    border: 1px solid rgba(85, 169, 254, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Tech circuit lines in icon background */
+.icon-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    background-image: 
+        linear-gradient(rgba(85, 169, 254, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 169, 254, 0.2) 1px, transparent 1px);
+    background-size: 10px 10px;
+    opacity: 0.3;
+    z-index: -1;
+    transform: rotate(45deg);
 }
 
 .icon-wrapper svg {
-    color: #ff6b6b;
+    color: #00ffd0;
     transition: all 0.3s ease;
-    filter: drop-shadow(0 2px 4px rgba(255, 107, 107, 0.2));
+    filter: drop-shadow(0 0 5px rgba(0, 255, 208, 0.5));
+    font-size: 2rem;
 }
 
 .infocard:hover .icon-wrapper {
-    background: rgba(255, 107, 107, 0.15);
-    transform: scale(1.1);
-    border-color: rgba(255, 107, 107, 0.4);
+    background: rgba(85, 169, 254, 0.1);
+    transform: scale(1.1) rotate(10deg);
+    border-color: rgba(0, 255, 208, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 208, 0.3);
 }
 
 .infocard:hover .icon-wrapper svg {
     transform: scale(1.1);
-    filter: drop-shadow(0 4px 8px rgba(255, 107, 107, 0.3));
+    filter: drop-shadow(0 0 10px rgba(0, 255, 208, 0.7));
 }
 
 .icon-item h3 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0 0 1rem 0;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    background: linear-gradient(to right, #ffffff, #b6ccf5);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 600;
+    background-clip: text;
+    font-weight: 700;
 }
 
 .icon-item p {
-    color: var(--text-secondary);
+    color: #b6ccf5;
     line-height: 1.6;
     margin: 0 0 1.5rem 0;
     font-size: 1rem;
@@ -138,7 +163,7 @@
 }
 
 .action-button {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    background: linear-gradient(135deg, rgba(85, 169, 254, 0.8), rgba(157, 78, 221, 0.8));
     color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 25px;
@@ -147,6 +172,24 @@
     transition: all 0.3s ease;
     opacity: 0;
     transform: translateY(10px);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(85, 169, 254, 0.3);
+}
+
+.action-button::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(135deg, rgba(85, 169, 254, 0.8), rgba(157, 78, 221, 0.8));
+    z-index: -1;
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .infocard:hover .action-button {
@@ -154,9 +197,36 @@
     transform: translateY(0);
 }
 
+.infocard:hover .action-button::before {
+    opacity: 0.7;
+}
+
+.action-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(85, 169, 254, 0.4);
+}
+
 .visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Data pulse animation */
+.icon-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 208, 0.3) 0%, transparent 70%);
+    animation: pulse 3s infinite alternate ease-in-out;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { transform: scale(1.2); opacity: 0; }
 }
 
 @media (max-width: 768px) {

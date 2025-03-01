@@ -7,6 +7,7 @@ import HomeHero from '@/Application/components/heros/home-hero/home-hero';
 import InfoCard from '@/Application/components/cards/info-cards/info-card';
 import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaChartArea, FaDatabase, FaFaucet } from 'react-icons/fa';
 import './home.css';
+import './space-tech-theme.css';
 import { throttle } from 'lodash';
 
 // Import new components
@@ -383,7 +384,7 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div className="home">
+    <div className="home space-tech">
       {/* Cursor light element that follows the mouse */}
       <div className="cursor-light"></div>
       
@@ -414,6 +415,7 @@ const Home: React.FC = () => {
         variants={fadeInUpVariant}
         className="section-wrapper"
       >
+        <div className="tech-grid-accent"></div>
         <EvrmoreInfo />
       </motion.section>
 
@@ -425,6 +427,7 @@ const Home: React.FC = () => {
         variants={fadeInUpVariant}
         className="section-wrapper"
       >
+        <div className="tech-grid-accent"></div>
         <WalletConnection />
       </motion.section>
       
@@ -436,6 +439,7 @@ const Home: React.FC = () => {
         variants={fadeInUpVariant}
         className="section-wrapper"
       >
+        <div className="tech-grid-accent"></div>
         <MarketStats stats={marketStats} />
       </motion.section>
 
@@ -447,17 +451,19 @@ const Home: React.FC = () => {
         variants={fadeInUpVariant}
         className="section-wrapper"
       >
+        <div className="tech-grid-accent"></div>
         <FeaturedAssets isLoading={false} listings={dummyListings} />
       </motion.section>
 
       {/* Scrolling Listings Section */}
       <motion.section 
-        className="listings-scroll"
+        className="listings-scroll section-wrapper"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: false, amount: 0.3 }}
         variants={fadeInUpVariant}
       >
+        <div className="tech-grid-accent"></div>
         <div className="section-content">
           <motion.div 
             className="scroll-container glassmorphism"
@@ -499,12 +505,13 @@ const Home: React.FC = () => {
 
       {/* Services Grid */}
       <motion.section 
-        className="services-grid"
+        className="services-grid section-wrapper"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.3 }}
         variants={fadeInUpVariant}
       >
+        <div className="tech-grid-accent"></div>
         <div className="section-content">
           <motion.h2
             className="section-title"

@@ -70,13 +70,14 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="manticore-nav-bar">
-      <div className="manticore-nav-bar-content">
-        <div className="manticore-nav-bar-logo">
-          <img className="manticore-nav-bar-logo-img" src={logo} alt="Logo" onClick={handleLogoClick}/>
-          <span className="manticore-nav-bar-logo-text" onClick={handleLogoClick}>MANTICORE</span>
+    <div className="manticore-nav-bar">
+      <div className="manticore-nav-bar-logo">
+        <img src={logo} alt="logo" className="manticore-nav-bar-logo-img" onClick={handleLogoClick} />
+        <div className="manticore-nav-bar-logo-text" onClick={handleLogoClick}>
+          MANTICORE
         </div>
-
+      </div>
+      <div className="manticore-nav-bar-content">
         <div className="manticore-nav-bar-links">
           {showSearch && (
             <NavLink to="/search" className="nav-link animated-link" onClick={handleLinkClick}>
@@ -131,7 +132,8 @@ const Navbar: React.FC = () => {
           </NavLink>
         </div>
       </div>
-    </nav>
+      <div className="nav-data-flow"></div>
+    </div>
   );
 };
 

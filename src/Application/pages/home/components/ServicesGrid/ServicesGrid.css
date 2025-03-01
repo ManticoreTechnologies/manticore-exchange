@@ -1,0 +1,425 @@
+.services-grid-section {
+  position: relative;
+  padding: 80px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Section title with gradient and glow effect */
+.services-grid-section .section-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 4rem;
+  color: #ffffff;
+  position: relative;
+  text-shadow: 0 0 20px rgba(85, 169, 254, 0.4);
+  width: 100%;
+}
+
+.services-grid-section .section-title .accent {
+  background: linear-gradient(to right, #55a9fe, #9d4edd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Orbital ring decoration */
+.orbital-ring {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border: 2px solid rgba(85, 169, 254, 0.1);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  z-index: -1;
+  box-shadow: 0 0 40px rgba(85, 169, 254, 0.1);
+  pointer-events: none;
+}
+
+.orbital-ring::before,
+.orbital-ring::after {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border: 1px solid rgba(157, 78, 221, 0.1);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbital-ring::after {
+  width: 400px;
+  height: 400px;
+  border-color: rgba(0, 255, 208, 0.1);
+  animation: rotateSlow 30s linear infinite reverse;
+}
+
+/* Technical grid background */
+.tech-grid-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(85, 169, 254, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(85, 169, 254, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform: rotateX(60deg) scale(3) translateY(-100px);
+  transform-origin: center center;
+}
+
+/* Services container grid layout */
+.services-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+/* Service card styling */
+.service-card {
+  background: rgba(7, 27, 60, 0.9);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(85, 169, 254, 0.2);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(85, 169, 254, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+  z-index: 1;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(0, 255, 208, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(85, 169, 254, 0.4);
+}
+
+/* Circuit decorations in corners */
+.circuit-decoration {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.circuit-decoration.top-left {
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(circle at 0% 0%, rgba(85, 169, 254, 0.2) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(85, 169, 254, 0.1) 1px, transparent 1px),
+    linear-gradient(to right, rgba(85, 169, 254, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: center, 0 0, 0 0;
+  border-top-left-radius: 16px;
+}
+
+.circuit-decoration.top-right {
+  top: 0;
+  right: 0;
+  background-image: radial-gradient(circle at 100% 0%, rgba(0, 255, 208, 0.2) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(0, 255, 208, 0.1) 1px, transparent 1px),
+    linear-gradient(to left, rgba(0, 255, 208, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: center, 0 0, 0 0;
+  border-top-right-radius: 16px;
+}
+
+.circuit-decoration.bottom-left {
+  bottom: 0;
+  left: 0;
+  background-image: radial-gradient(circle at 0% 100%, rgba(157, 78, 221, 0.2) 0%, transparent 70%),
+    linear-gradient(to top, rgba(157, 78, 221, 0.1) 1px, transparent 1px),
+    linear-gradient(to right, rgba(157, 78, 221, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: center, 0 0, 0 0;
+  border-bottom-left-radius: 16px;
+}
+
+.circuit-decoration.bottom-right {
+  bottom: 0;
+  right: 0;
+  background-image: radial-gradient(circle at 100% 100%, rgba(255, 92, 117, 0.2) 0%, transparent 70%),
+    linear-gradient(to top, rgba(255, 92, 117, 0.1) 1px, transparent 1px),
+    linear-gradient(to left, rgba(255, 92, 117, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: center, 0 0, 0 0;
+  border-bottom-right-radius: 16px;
+}
+
+/* Animated tech pulse */
+.tech-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(85, 169, 254, 0.1) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Hexagon icon container */
+.icon-hexagon {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  background: linear-gradient(135deg, rgba(85, 169, 254, 0.2), rgba(157, 78, 221, 0.2));
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .icon-hexagon {
+  background: linear-gradient(135deg, rgba(85, 169, 254, 0.3), rgba(157, 78, 221, 0.3));
+}
+
+.service-icon {
+  font-size: 2.5rem;
+  color: #00ffd0;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 208, 0.5));
+  z-index: 2;
+}
+
+.icon-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 255, 208, 0.3) 0%, transparent 70%);
+  animation: pulse 3s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+/* Card content styling */
+.service-card h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 15px;
+  color: #ffffff;
+  text-align: center;
+  background: linear-gradient(to right, #ffffff, #b6ccf5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.service-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #b6ccf5;
+  margin: 0 0 20px;
+  flex-grow: 1;
+}
+
+.service-link {
+  align-self: flex-start;
+  text-decoration: none;
+  color: #55a9fe;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(85, 169, 254, 0.3);
+}
+
+.link-arrow {
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .link-arrow {
+  transform: translateX(5px);
+}
+
+/* Data flow lines */
+.data-flow-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.data-line {
+  position: absolute;
+  background: linear-gradient(to right, rgba(0, 255, 208, 0.1), rgba(85, 169, 254, 0.3));
+  height: 2px;
+  width: 100%;
+}
+
+.data-line.horizontal {
+  top: 30%;
+  left: 0;
+  animation: dataFlowHorizontal 15s linear infinite;
+}
+
+.data-line.vertical {
+  width: 2px;
+  height: 100%;
+  left: 60%;
+  top: 0;
+  background: linear-gradient(to bottom, rgba(157, 78, 221, 0.1), rgba(85, 169, 254, 0.3));
+  animation: dataFlowVertical 20s linear infinite;
+}
+
+.data-line.diagonal-1 {
+  width: 200%;
+  height: 2px;
+  left: -50%;
+  top: 60%;
+  transform: rotate(45deg);
+  transform-origin: center;
+  background: linear-gradient(to right, rgba(255, 92, 117, 0.1), rgba(0, 255, 208, 0.3));
+  animation: dataFlowDiagonal 25s linear infinite;
+}
+
+.data-line.diagonal-2 {
+  width: 200%;
+  height: 2px;
+  left: -50%;
+  top: 40%;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  background: linear-gradient(to right, rgba(0, 255, 208, 0.1), rgba(157, 78, 221, 0.3));
+  animation: dataFlowDiagonal 30s linear infinite reverse;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.1; }
+  50% { opacity: 0.3; }
+  100% { transform: scale(1.1); opacity: 0.1; }
+}
+
+@keyframes dataFlowHorizontal {
+  0% { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@keyframes dataFlowVertical {
+  0% { background-position: 0 0%; }
+  100% { background-position: 0 100%; }
+}
+
+@keyframes dataFlowDiagonal {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+@keyframes rotateSlow {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (max-width: 1200px) {
+  .services-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+  }
+  
+  .orbital-ring {
+    width: 600px;
+    height: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-grid-section {
+    padding: 60px 20px;
+  }
+  
+  .services-grid-section .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .services-container {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  
+  .service-card {
+    min-height: 280px;
+    padding: 20px;
+  }
+  
+  .icon-hexagon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .service-icon {
+    font-size: 1.8rem;
+  }
+  
+  .service-card h3 {
+    font-size: 1.2rem;
+  }
+  
+  .orbital-ring {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .orbital-ring::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .orbital-ring::after {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-grid-section .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .services-container {
+    grid-template-columns: 1fr;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .service-card {
+    min-height: auto;
+  }
+} 

@@ -32,34 +32,37 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
   }, [isOpen, toggleDropdown]);
 
   return (
-    <div className="manticore-nav-dropdown" aria-expanded={isOpen} ref={dropdownRef}>
+    <div className="manticore-nav-dropdown dropdown-container" aria-expanded={isOpen} ref={dropdownRef}>
       <button 
-        className="manticore-nav-dropdown-toggle" 
+        className={`manticore-nav-dropdown-toggle dropdown-toggle ${isOpen ? 'active' : ''}`}
         onClick={toggleDropdown} 
         onKeyDown={(e) => e.key === 'Enter' && toggleDropdown()}
         aria-haspopup="true"
       >
         <FaBars />
-        <p>{showMore ? "More" : ""}</p>
+        <span>{showMore ? "More" : ""}</span>
       </button>
       {isOpen && (
-        <div className="manticore-nav-dropdown-content">
-          {/* <a href="/chat"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a> */}
-          <a href="/blog"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
-          <a href="/roadmap"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
-          <a href="/ipfs"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
-          <a href="/chart"><FaChartBar className='manticore-nav-dropdown-icon'/> Chart</a>
+        <div className="manticore-nav-dropdown-content dropdown-menu show">
+          {/* Tech glow decoration */}
+          <div className="dropdown-glow"></div>
+          
+          {/* <a href="/chat" className="dropdown-menu-item"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a> */}
+          <a href="/blog" className="dropdown-menu-item"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
+          <a href="/roadmap" className="dropdown-menu-item"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
+          <a href="/ipfs" className="dropdown-menu-item"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
+          <a href="/chart" className="dropdown-menu-item"><FaChartBar className='manticore-nav-dropdown-icon'/> Chart</a>
           {!showProfile && (
-            <a href="/profile"><FaUser className='manticore-nav-dropdown-icon'/> Profile</a>
+            <a href="/profile" className="dropdown-menu-item"><FaUser className='manticore-nav-dropdown-icon'/> Profile</a>
           )}
           {!showFaucet && (
-            <a href="/faucet"><FaTint className='manticore-nav-dropdown-icon'/> Faucet</a>
+            <a href="/faucet" className="dropdown-menu-item"><FaTint className='manticore-nav-dropdown-icon'/> Faucet</a>
           )}
           {!showTrade && (
-            <a href="/trade"><FaExchangeAlt className='manticore-nav-dropdown-icon'/> Trade</a>
+            <a href="/trade" className="dropdown-menu-item"><FaExchangeAlt className='manticore-nav-dropdown-icon'/> Trade</a>
           )}
           {!showSearch && (
-            <a href="/search"><FaSearch className='manticore-nav-dropdown-icon'/> Search</a>
+            <a href="/search" className="dropdown-menu-item"><FaSearch className='manticore-nav-dropdown-icon'/> Search</a>
           )}
         </div>
       )}

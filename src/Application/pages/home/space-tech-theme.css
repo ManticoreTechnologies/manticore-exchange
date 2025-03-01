@@ -1,0 +1,496 @@
+/* Space Tech Theme Variables */
+:root {
+  /* Core space theme colors */
+  --space-bg-dark: #030b1c;
+  --space-bg-gradient-1: #071b3c;
+  --space-bg-gradient-2: #0c0021;
+  --space-star-color: #ffffff;
+  --space-text-primary: #ffffff;
+  --space-text-secondary: #b6ccf5;
+  --space-accent-blue: #55a9fe;
+  --space-accent-purple: #9d4edd;
+  --space-accent-teal: #00ffd0;
+  --space-accent-red: #ff5c75;
+  --space-glow-blue: rgba(85, 169, 254, 0.15);
+  --space-glow-purple: rgba(157, 78, 221, 0.15);
+  --space-glow-teal: rgba(0, 255, 208, 0.15);
+  --space-blockchain-line: rgba(85, 169, 254, 0.4);
+  --space-grid-color: rgba(85, 169, 254, 0.1);
+  --space-planet-shadow: rgba(0, 0, 0, 0.8);
+  --space-nebula-1: rgba(157, 78, 221, 0.1);
+  --space-nebula-2: rgba(255, 92, 117, 0.1);
+  --space-card-bg: rgba(7, 27, 60, 0.9);
+  --space-card-border: rgba(85, 169, 254, 0.2);
+  --space-security-shield: #2a6bc1;
+  
+  /* Section spacing */
+  --section-spacing: 6rem;
+  --section-spacing-mobile: 4rem;
+}
+
+/* Space background for full page */
+.home.space-tech {
+  background: var(--space-bg-dark);
+  color: var(--space-text-primary);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Deep space background with gradient */
+.home.space-tech::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    var(--space-bg-gradient-1) 0%,
+    var(--space-bg-gradient-2) 100%
+  );
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Star field background that stays fixed */
+.home.space-tech::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(1px 1px at 25% 15%, var(--space-star-color) 100%, transparent),
+    radial-gradient(1px 1px at 50% 40%, var(--space-star-color) 100%, transparent),
+    radial-gradient(1.5px 1.5px at 75% 75%, var(--space-star-color) 100%, transparent),
+    radial-gradient(2px 2px at 20% 60%, var(--space-star-color) 100%, transparent),
+    radial-gradient(2.5px 2.5px at 40% 25%, var(--space-star-color) 100%, transparent),
+    radial-gradient(1px 1px at 90% 35%, var(--space-star-color) 100%, transparent);
+  background-repeat: repeat;
+  background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+  animation: subtleStarTwinkle 8s infinite alternate ease-in-out;
+}
+
+/* Section styling for space-tech theme */
+.home.space-tech section {
+  position: relative;
+  padding: var(--section-spacing) 0;
+  margin: 0;
+  width: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Space-tech section gradients */
+.home.space-tech section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--space-glow-blue) 0%, transparent 60%),
+    radial-gradient(circle at 80% 70%, var(--space-glow-purple) 0%, transparent 60%);
+  opacity: 0.4;
+  z-index: -1;
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+/* Section header styling */
+.home.space-tech .section-title {
+  color: var(--space-text-primary);
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  position: relative;
+  text-shadow: 0 0 10px rgba(85, 169, 254, 0.5);
+}
+
+.home.space-tech .section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--space-accent-blue), var(--space-accent-purple));
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(85, 169, 254, 0.5);
+}
+
+/* Section icon styling */
+.home.space-tech .section-title .icon {
+  margin-right: 0.5rem;
+  color: var(--space-accent-teal);
+  filter: drop-shadow(0 0 5px var(--space-accent-teal));
+}
+
+/* Enhanced Hero Styling for Space-Tech Theme */
+.home-hero.space-tech {
+  background: var(--space-bg-dark);
+  overflow: hidden;
+  position: relative;
+}
+
+.home-hero.space-tech .hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(
+    to right, 
+    var(--space-text-primary) 0%,
+    var(--space-accent-blue) 50%,
+    var(--space-text-primary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(85, 169, 254, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.home-hero.space-tech .hero-subtitle {
+  font-size: 1.8rem;
+  color: var(--space-accent-teal);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-shadow: 0 0 15px rgba(0, 255, 208, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.home-hero.space-tech .hero-body {
+  font-size: 1.2rem;
+  color: var(--space-text-secondary);
+  max-width: 650px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+
+/* Tech decoration for hero */
+.hero-tech-decor {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-circuit {
+  background-image: 
+    radial-gradient(circle, rgba(85, 169, 254, 0.2) 1px, transparent 1px),
+    linear-gradient(to right, rgba(85, 169, 254, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(85, 169, 254, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
+  opacity: 0.3;
+}
+
+.hero-circuit.left {
+  width: 300px;
+  height: 300px;
+  top: 5%;
+  left: 0;
+  border-bottom-right-radius: 150px;
+}
+
+.hero-circuit.right {
+  width: 300px;
+  height: 300px;
+  bottom: 5%;
+  right: 0;
+  border-top-left-radius: 150px;
+}
+
+.hero-data-flow {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--space-accent-blue), transparent);
+  opacity: 0.5;
+  animation: dataFlow 8s infinite linear;
+}
+
+.hero-data-flow:nth-child(1) {
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.hero-data-flow:nth-child(2) {
+  top: 50%;
+  animation-delay: 2s;
+}
+
+.hero-data-flow:nth-child(3) {
+  top: 80%;
+  animation-delay: 4s;
+}
+
+/* Card styling for space-tech theme */
+.home.space-tech .glassmorphism {
+  background: var(--space-card-bg);
+  border: 1px solid var(--space-card-border);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.5),
+    0 0 40px var(--space-glow-blue),
+    inset 0 0 20px rgba(85, 169, 254, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.home.space-tech .glassmorphism::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    var(--space-accent-blue) 0%,
+    var(--space-accent-purple) 50%,
+    var(--space-accent-teal) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.home.space-tech .glassmorphism:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.6),
+    0 0 60px var(--space-glow-blue),
+    inset 0 0 25px rgba(85, 169, 254, 0.1);
+}
+
+.home.space-tech .glassmorphism:hover::before {
+  opacity: 0.8;
+}
+
+/* Info cards styling for space-tech theme */
+.home.space-tech .infocard {
+  background: rgba(7, 27, 60, 0.9);
+  border: 1px solid rgba(85, 169, 254, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(85, 169, 254, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.home.space-tech .infocard:hover {
+  transform: translateY(-10px);
+  border-color: rgba(0, 255, 208, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(85, 169, 254, 0.4);
+}
+
+/* Tech accent elements - grid lines that appear on scrolling */
+.tech-grid-accent {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, var(--space-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--space-grid-color) 1px, transparent 1px);
+  opacity: 0;
+  z-index: -1;
+  transform: perspective(1000px) rotateX(60deg) scale(1.5) translateY(100px);
+  pointer-events: none;
+}
+
+.section-wrapper:hover .tech-grid-accent {
+  opacity: 0.2;
+  transform: perspective(1000px) rotateX(60deg) scale(1.5) translateY(0);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Market Stats section styling for space-tech theme */
+.home.space-tech .market-stats {
+  background: transparent;
+  position: relative;
+  padding: var(--section-spacing) 0;
+}
+
+.home.space-tech .stat-card {
+  background: var(--space-card-bg);
+  border: 1px solid var(--space-card-border);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 30px var(--space-glow-blue);
+}
+
+.home.space-tech .stat-card h3 {
+  color: var(--space-text-secondary);
+}
+
+.home.space-tech .stat-card .value {
+  background: linear-gradient(
+    to right,
+    var(--space-accent-blue) 0%,
+    var(--space-accent-purple) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.home.space-tech .stat-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 50px var(--space-glow-blue);
+}
+
+/* Featured Assets section styling */
+.home.space-tech .featured-assets {
+  position: relative;
+  padding: var(--section-spacing) 0;
+}
+
+.home.space-tech .asset-card {
+  background: var(--space-card-bg);
+  border: 1px solid var(--space-card-border);
+  transition: all 0.3s ease;
+}
+
+.home.space-tech .asset-card h3 {
+  color: var(--space-text-primary);
+  text-shadow: 0 0 10px rgba(85, 169, 254, 0.3);
+}
+
+.home.space-tech .asset-card .price {
+  color: var(--space-accent-teal);
+  font-weight: 700;
+}
+
+.home.space-tech .asset-card .tag {
+  background: rgba(85, 169, 254, 0.15);
+  color: var(--space-text-primary);
+  border: 1px solid rgba(85, 169, 254, 0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.home.space-tech .asset-card:hover .tag {
+  background: rgba(85, 169, 254, 0.25);
+  border-color: rgba(85, 169, 254, 0.5);
+}
+
+/* Scrolling listings section styling */
+.home.space-tech .listings-scroll {
+  position: relative;
+  padding: var(--section-spacing) 0;
+}
+
+.home.space-tech .scroll-container {
+  background: var(--space-card-bg);
+  border: 1px solid var(--space-card-border);
+  border-radius: 20px;
+  padding: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.home.space-tech .scroll-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(90deg, var(--space-card-bg), transparent 20%, transparent 80%, var(--space-card-bg)),
+    linear-gradient(90deg, rgba(0, 255, 208, 0.3), transparent 10%, transparent 90%, rgba(0, 255, 208, 0.3));
+  pointer-events: none;
+  z-index: 10;
+}
+
+.home.space-tech .listing-item {
+  background: rgba(7, 27, 60, 0.7);
+  border: 1px solid rgba(85, 169, 254, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 0 1rem;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.home.space-tech .listing-item:hover {
+  background: rgba(7, 27, 60, 0.9);
+  border-color: var(--space-accent-teal);
+  box-shadow: 0 0 20px rgba(0, 255, 208, 0.2);
+  transform: translateY(-5px);
+}
+
+.home.space-tech .listing-highlight {
+  background: rgba(0, 255, 208, 0.15);
+  color: var(--space-accent-teal);
+  border: 1px solid rgba(0, 255, 208, 0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
+/* Animations */
+@keyframes subtleStarTwinkle {
+  0% { opacity: 0.2; }
+  100% { opacity: 0.4; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dataFlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  :root {
+    --section-spacing: 4rem;
+    --section-spacing-mobile: 3rem;
+  }
+  
+  .home.space-tech .section-title {
+    font-size: 2rem;
+  }
+  
+  .home-hero.space-tech .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .home-hero.space-tech .hero-subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .home-hero.space-tech .hero-body {
+    font-size: 1rem;
+  }
+} 
