@@ -428,12 +428,13 @@
 /* Logo styling */
 .hero-logo {
   width: clamp(100px, 30vh, 200px);
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem auto; /* Center the logo horizontally with margin auto */
   filter: drop-shadow(0 0 30px var(--space-accent-blue));
   animation: logoFloat 10s infinite ease-in-out;
   transition: all 0.5s ease;
   z-index: 5;
   position: relative;
+  display: block; /* Make it a block element to allow margin auto centering */
 }
 
 .hero-logo-right {
