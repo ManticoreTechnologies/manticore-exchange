@@ -84,42 +84,50 @@ const Home: React.FC = () => {
         body="Welcome to the future of digital asset trading with Evrmore Exchange. Experience secure, transparent, and efficient transactions with our cutting-edge blockchain platform."
       />
       
-      {/* Market Stats */}
-      <div className="home-section">
-        <MarketStats stats={marketStats} />
+      {/* Main content sections */}
+      <div className="home-content">
+        {/* Market Stats */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <MarketStats stats={marketStats} />
+          </div>
+        </div>
+        
+        {/* Featured Assets */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <FeaturedAssets isLoading={false} listings={mockListings} />
+          </div>
+        </div>
+        
+        {/* Evrmore Info */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <EvrmoreInfo />
+          </div>
+        </div>
+        
+        {/* Wallet Connection */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <WalletConnection />
+          </div>
+        </div>
+        
+        {/* Services Grid */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <ServicesGrid />
+          </div>
+        </div>
+        
+        {/* Project Highlights */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <ProjectHighlights />
+          </div>
+        </div>
       </div>
-      
-      {/* Featured Assets */}
-      <div className="home-section">
-        <FeaturedAssets isLoading={false} listings={mockListings} />
-      </div>
-      
-      {/* Evrmore Info */}
-      <div className="home-section">
-        <EvrmoreInfo />
-      </div>
-      
-      {/* Wallet Connection */}
-      <div className="home-section">
-        <WalletConnection />
-      </div>
-      
-      {/* Services Grid */}
-      <div className="home-section">
-        <ServicesGrid />
-      </div>
-      
-      {/* Project Highlights */}
-      <div className="home-section">
-        <ProjectHighlights />
-      </div>
-      
-      {/* Uncomment these when components are available */}
-      {/* 
-      <div className="home-section">
-        <ListingsScroll />
-      </div>
-      */}
     </div>
   );
 };

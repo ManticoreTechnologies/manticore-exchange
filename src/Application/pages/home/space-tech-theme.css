@@ -109,9 +109,15 @@
   text-align: center;
   font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin: 0 auto 3rem auto;
   position: relative;
   text-shadow: 0 0 10px rgba(85, 169, 254, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 80%;
+  line-height: 1.3;
 }
 
 .home.space-tech .section-title::after {
@@ -129,9 +135,11 @@
 
 /* Section icon styling */
 .home.space-tech .section-title .icon {
-  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
   color: var(--space-accent-teal);
   filter: drop-shadow(0 0 5px var(--space-accent-teal));
+  font-size: 2rem;
+  display: block;
 }
 
 /* Enhanced Hero Styling for Space-Tech Theme */
@@ -479,7 +487,13 @@
   }
   
   .home.space-tech .section-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    max-width: 100%;
+  }
+  
+  .home.space-tech .section-title .icon {
+    font-size: 1.5rem;
   }
   
   .home-hero.space-tech .hero-title {
@@ -492,5 +506,96 @@
   
   .home-hero.space-tech .hero-body {
     font-size: 1rem;
+  }
+  
+  .home-section {
+    padding: 3rem 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Home section styling - cleanup and consistency */
+.home-section {
+  position: relative;
+  width: 100%;
+  padding: 5rem 2rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Add a subtle separator between sections */
+.home-section:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    rgba(85, 169, 254, 0) 0%,
+    rgba(85, 169, 254, 0.3) 50%,
+    rgba(85, 169, 254, 0) 100%
+  );
+}
+
+/* Make sure all section content is properly centered */
+.home-section > * {
+  max-width: var(--content-max-width);
+  width: 100%;
+}
+
+/* Home content container */
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 2rem 0;
+}
+
+/* Section wrapper enhancement */
+.section-wrapper {
+  width: 100%;
+  max-width: var(--content-max-width);
+  position: relative;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s var(--scroll-reveal-ease);
+  padding: 0 1rem;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* Add a subtle hover effect to sections */
+.section-wrapper:hover {
+  z-index: 5;
+}
+
+/* Add a subtle glow to sections on hover */
+.section-wrapper:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(85, 169, 254, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    padding: 1rem 0;
+  }
+  
+  .section-wrapper {
+    padding: 0 0.5rem;
   }
 } 
