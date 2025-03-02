@@ -91,7 +91,7 @@ const ServicesGrid: React.FC = () => {
         transition={{ duration: 0.7 }}
       >
         <FaSatelliteDish className="icon" />
-        <span className="accent">Evrmore</span> Services
+        <span className="title-gradient">Platform</span> Services
       </motion.h2>
       
       {/* Services grid */}
