@@ -90,6 +90,7 @@ const ServicesGrid: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
+        <FaSatelliteDish className="icon" />
         <span className="accent">Evrmore</span> Services
       </motion.h2>
       

@@ -55,22 +55,50 @@
     transform: rotate(45deg);
 }
 
-/* Data flow line animation */
+/* Footer data flow animation */
 .footer-data-flow {
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
-    height: 1px;
-    width: 30%;
-    background: linear-gradient(to left, rgba(0, 255, 208, 0), rgba(0, 255, 208, 0.8), rgba(0, 255, 208, 0));
-    opacity: 0.6;
-    animation: dataFlowFooter 8s linear infinite;
-    z-index: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(46, 191, 255, 0.3) 25%,
+        rgba(46, 191, 255, 0.8) 50%,
+        rgba(46, 191, 255, 0.3) 75%,
+        rgba(0, 0, 0, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: data-flow 8s linear infinite;
+    z-index: 10;
 }
 
-@keyframes dataFlowFooter {
-    0% { right: -30%; }
-    100% { right: 100%; }
+@keyframes data-flow {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Make sure the footer has relative positioning for absolute positioning of the data flow */
+.footer {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ensure the theme toggle is always visible above the data flow */
+.footer .theme-settings-container {
+    z-index: 11;
+}
+
+/* Ensure footer content is above the data flow */
+.footer .footer-content {
+    position: relative;
+    z-index: 11;
 }
 
 .footer-text {
@@ -173,6 +201,10 @@
     
     .theme-settings-container {
         order: 3;
+    }
+    
+    .footer-data-flow {
+        height: 1px;
     }
 }
 

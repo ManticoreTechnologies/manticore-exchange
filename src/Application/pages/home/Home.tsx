@@ -6,6 +6,7 @@ import WalletConnection from './components/WalletConnection/WalletConnection';
 import EvrmoreInfo from './components/EvrmoreInfo/EvrmoreInfo';
 import ServicesGrid from './components/ServicesGrid/ServicesGrid';
 import ProjectHighlights from './components/ProjectHighlights/ProjectHighlights';
+import ListingsScroll from './components/ListingsScroll/ListingsScroll';
 import './home.css';
 import './space-tech-theme.css';
 
@@ -32,6 +33,16 @@ const mockListings = [
     highlight: 'Popular',
     tags: ['Domain', 'Digital']
   }
+];
+
+// Mock data for scrolling listings
+const scrollListings = [
+  { id: 'a1', name: 'Quantum Token', price: '3,200 EVR', highlight: 'New' },
+  { id: 'a2', name: 'Neural Link #7', price: '1,850 EVR' },
+  { id: 'a3', name: 'Stellar Domain', price: '4,500 EVR', highlight: 'Hot' },
+  { id: 'a4', name: 'Crypto Art #42', price: '2,100 EVR' },
+  { id: 'a5', name: 'EVR Collectible', price: '950 EVR', highlight: 'Limited' },
+  { id: 'a6', name: 'Space Station', price: '6,300 EVR' }
 ];
 
 // Mock data for market stats
@@ -104,6 +115,13 @@ const Home: React.FC = () => {
         <div className="home-section">
           <div className="section-wrapper">
             <EvrmoreInfo />
+          </div>
+        </div>
+        
+        {/* Available Assets Scroll */}
+        <div className="home-section">
+          <div className="section-wrapper">
+            <ListingsScroll listings={scrollListings} />
           </div>
         </div>
         
