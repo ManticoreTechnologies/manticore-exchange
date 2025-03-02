@@ -1,6 +1,6 @@
 .market-stats {
   width: 100%;
-  padding: 6rem 2rem;
+  padding: 3rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,6 +8,11 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  border-radius: 10px;
+  background: rgba(7, 27, 60, 0.6);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(85, 169, 254, 0.15);
 }
 
 /* Network nodes effect */
