@@ -1,0 +1,77 @@
+.cosmic-title {
+  position: relative;
+  color: var(--text-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-normal);
+  text-shadow: 0 0 10px rgba(154, 85, 255, 0.3);
+}
+
+.cosmic-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--nebula-cyan), var(--nebula-pink));
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(154, 85, 255, 0.5);
+}
+
+.section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  font-size: 1.75rem;
+  color: var(--nebula-cyan);
+  transition: var(--transition-normal);
+  animation: pulseSlow 4s infinite alternate;
+}
+
+@keyframes pulseSlow {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.cosmic-float {
+  animation: floatElement 4s ease-in-out infinite;
+}
+
+@keyframes floatElement {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .cosmic-title {
+    font-size: 1.8rem;
+  }
+  
+  .section-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cosmic-title {
+    font-size: 1.5rem;
+  }
+} 
