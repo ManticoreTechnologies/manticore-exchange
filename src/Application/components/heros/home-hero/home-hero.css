@@ -660,3 +660,300 @@
   }
 }
 
+/* Adding cosmic purple space theme to the hero */
+.hero.cosmic-purple {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.hero.cosmic-purple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.8) 0%, rgba(10, 1, 24, 0.9) 100%);
+  z-index: -1;
+}
+
+/* Cosmic star field */
+.hero-star-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+/* Cosmic grid for hero */
+.hero-cosmic-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(154, 85, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 85, 255, 0.07) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.5;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform: rotateX(60deg) scale(2.5);
+  z-index: -1;
+}
+
+/* Hero content - cosmic purple style */
+.hero-content.cosmic-purple {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Main hero title */
+.hero-title.cosmic-purple {
+  font-size: 4.5rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #41e0fd, #9370d8, #ff2a6d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(154, 85, 255, 0.5);
+  animation: titlePulse 3s infinite alternate;
+  letter-spacing: 2px;
+}
+
+/* Type animation for cosmic theme */
+.type-animation.cosmic-purple {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  min-height: 2.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-block;
+  position: relative;
+  font-weight: 500;
+}
+
+.type-animation.cosmic-purple::after {
+  content: '|';
+  position: absolute;
+  right: -10px;
+  top: 0;
+  color: rgba(154, 85, 255, 0.8);
+  animation: blink 1s step-end infinite;
+}
+
+/* Hero description */
+.hero-body.cosmic-purple {
+  font-size: 1.2rem;
+  margin-bottom: 2.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Tech circuit decorations */
+.hero-circuit {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  opacity: 0.15;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-circuit.left {
+  left: -50px;
+  top: 15%;
+  background-image: 
+    radial-gradient(circle at 30% 30%, rgba(65, 224, 253, 0.3) 0%, transparent 60%),
+    linear-gradient(0deg, rgba(65, 224, 253, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(65, 224, 253, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: 0 0, 0 0, 0 0;
+  animation: pulseSlow 4s infinite alternate;
+}
+
+.hero-circuit.right {
+  right: -50px;
+  bottom: 15%;
+  background-image: 
+    radial-gradient(circle at 70% 70%, rgba(255, 42, 109, 0.3) 0%, transparent 60%),
+    linear-gradient(0deg, rgba(255, 42, 109, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 42, 109, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 10px 10px, 10px 10px;
+  background-position: 0 0, 0 0, 0 0;
+  animation: pulseSlow 5s infinite alternate;
+}
+
+/* Floating cosmic objects */
+.cosmic-object {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.2;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: floatObject 15s infinite ease-in-out alternate;
+}
+
+.cosmic-object.purple {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(154, 85, 255, 0.8) 0%, transparent 70%);
+  top: 15%;
+  right: 10%;
+}
+
+.cosmic-object.blue {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(65, 224, 253, 0.8) 0%, transparent 70%);
+  bottom: 20%;
+  left: 10%;
+}
+
+.cosmic-object.pink {
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(255, 42, 109, 0.8) 0%, transparent 70%);
+  top: 60%;
+  left: 15%;
+}
+
+/* Data flow animations */
+.data-flow-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nebula-blue), transparent);
+  opacity: 0.4;
+  z-index: -1;
+  animation: dataFlow 5s infinite;
+}
+
+.data-flow-line:nth-child(1) {
+  width: 150px;
+  top: 25%;
+  left: 10%;
+  transform: rotate(45deg);
+  animation-delay: 0s;
+}
+
+.data-flow-line:nth-child(2) {
+  width: 200px;
+  top: 65%;
+  right: 15%;
+  transform: rotate(-30deg);
+  animation-delay: 1s;
+}
+
+.data-flow-line:nth-child(3) {
+  width: 100px;
+  bottom: 20%;
+  left: 30%;
+  transform: rotate(15deg);
+  animation-delay: 2s;
+}
+
+/* Animations */
+@keyframes titlePulse {
+  0% { text-shadow: 0 0 15px rgba(154, 85, 255, 0.3); }
+  100% { text-shadow: 0 0 30px rgba(154, 85, 255, 0.8); }
+}
+
+@keyframes pulseSlow {
+  0% { opacity: 0.1; transform: scale(0.95); }
+  100% { opacity: 0.2; transform: scale(1.05); }
+}
+
+@keyframes floatObject {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+  100% { transform: translate(-20px, 20px); }
+}
+
+@keyframes dataFlow {
+  0% { width: 0; opacity: 0; }
+  50% { width: 100%; opacity: 0.4; }
+  100% { width: 0; opacity: 0; transform: translateX(100%); }
+}
+
+/* Button styling */
+.hero-button.cosmic-purple {
+  background: linear-gradient(90deg, #4c2888, #3b1a72);
+  color: rgba(255, 255, 255, 0.95);
+  border: none;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.hero-button.cosmic-purple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.hero-button.cosmic-purple:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+}
+
+.hero-button.cosmic-purple:hover::before {
+  left: 100%;
+  transition: 0.7s;
+}
+
+/* Media query adjustments */
+@media (max-width: 768px) {
+  .hero-title.cosmic-purple {
+    font-size: 2.5rem;
+  }
+  
+  .type-animation.cosmic-purple {
+    font-size: 1.2rem;
+  }
+  
+  .hero-body.cosmic-purple {
+    font-size: 1rem;
+  }
+  
+  .cosmic-object {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  .hero-circuit {
+    width: 200px;
+    height: 200px;
+  }
+}
+

@@ -10,7 +10,7 @@ interface DropdownProps {
   showFaucet: boolean;
   showProfile: boolean;
   showMore: boolean;
-  showChat: boolean;
+  showChat?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch, showTrade, showFaucet, showProfile, showMore, showChat }) => {
@@ -48,10 +48,9 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
           <div className="dropdown-glow"></div>
           
           {/* <a href="/chat" className="dropdown-menu-item"><FaComments className='manticore-nav-dropdown-icon'/> Chat</a> */}
-          <a href="/blog" className="dropdown-menu-item"><FaBlog className='manticore-nav-dropdown-icon'/> Blog</a>
           <a href="/roadmap" className="dropdown-menu-item"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
           <a href="/ipfs" className="dropdown-menu-item"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
-          <a href="/chart" className="dropdown-menu-item"><FaChartBar className='manticore-nav-dropdown-icon'/> Chart</a>
+          <a href="/network" className="dropdown-menu-item"><FaChartBar className='manticore-nav-dropdown-icon'/> Network Status</a>
           {!showProfile && (
             <a href="/profile" className="dropdown-menu-item"><FaUser className='manticore-nav-dropdown-icon'/> Profile</a>
           )}

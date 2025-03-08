@@ -3,49 +3,71 @@ import { motion } from 'framer-motion';
 import { 
   FaExchangeAlt, 
   FaShieldAlt, 
-  FaChartLine, 
+  FaChartArea, 
   FaDatabase, 
   FaCode, 
-  FaSatelliteDish 
+  FaSatelliteDish,
+  FaSearch,
+  FaTint,
+  FaUser
 } from 'react-icons/fa';
 import './ServicesGrid.css';
 
 const serviceItems = [
   {
+    icon: FaSearch,
+    title: "Asset Discovery",
+    description: "Explore and discover digital assets on the Evrmore blockchain with our advanced search and filtering tools.",
+    link: "/search"
+  },
+  {
     icon: FaExchangeAlt,
-    title: "Decentralized Exchange",
-    description: "Trade digital assets securely on our fully decentralized platform with cross-chain compatibility and zero custody.",
+    title: "Trade Assets",
+    description: "Trade digital assets securely on our fully decentralized platform with optimized transaction processing.",
     link: "/trade"
   },
   {
-    icon: FaShieldAlt,
-    title: "Advanced Security",
-    description: "Our platform utilizes quantum-resistant encryption and multi-layered security protocols to protect your assets.",
-    link: "/security"
+    icon: FaTint,
+    title: "Evrmore Faucet",
+    description: "Get started with free EVR tokens from our community faucet to begin your journey in the Evrmore ecosystem.",
+    link: "/faucet"
   },
   {
-    icon: FaChartLine,
-    title: "Market Analytics",
-    description: "Access real-time analytics and predictive models powered by advanced AI to make informed trading decisions.",
-    link: "/analytics"
+    icon: FaUser,
+    title: "Wallet Profile",
+    description: "Connect your wallet to access your personal dashboard, transaction history, and asset portfolio.",
+    link: "/profile"
   },
   {
     icon: FaDatabase,
     title: "IPFS Storage",
-    description: "Store your digital assets metadata on the InterPlanetary File System for permanent decentralized access.",
+    description: "Store your digital assets' metadata on the InterPlanetary File System for permanent decentralized access.",
     link: "/ipfs"
-  },
-  {
-    icon: FaCode,
-    title: "Developer Tools",
-    description: "Build on our platform with comprehensive developer tools, APIs, and SDK for seamless integration.",
-    link: "/developers"
   },
   {
     icon: FaSatelliteDish,
     title: "Network Status",
     description: "Monitor the health and performance of the Evrmore network with our real-time status dashboard.",
     link: "/network"
+  }
+];
+
+// Coming Soon Services for the Roadmap
+const roadmapServices = [
+  {
+    icon: FaShieldAlt,
+    title: "Advanced Security",
+    description: "Enhanced protection with multi-signature wallets, hardware integration, and quantum-resistant encryption.",
+  },
+  {
+    icon: FaChartArea,
+    title: "Market Analytics",
+    description: "Access real-time analytics and predictive models to make informed trading decisions.",
+  },
+  {
+    icon: FaCode,
+    title: "Developer Tools",
+    description: "Build on our platform with comprehensive developer tools, APIs, and SDK for seamless integration.",
   }
 ];
 
@@ -91,7 +113,7 @@ const ServicesGrid: React.FC = () => {
         transition={{ duration: 0.7 }}
       >
         <FaSatelliteDish className="icon" />
-        <span className="title-gradient">Platform</span> Services
+        <span className="title-gradient">Core</span> Services
       </motion.h2>
       
       {/* Services grid */}
@@ -149,21 +171,20 @@ const ServicesGrid: React.FC = () => {
                 scale: 1.05,
                 color: "var(--space-accent-teal)" 
               }}
-              whileTap={{ scale: 0.95 }}
             >
               Explore <span className="link-arrow">→</span>
             </motion.a>
+            
+            {/* Data flow decoration */}
+            <div className="data-flow-lines">
+              <div className="data-line horizontal"></div>
+              <div className="data-line vertical"></div>
+              <div className="data-line diagonal-1"></div>
+              <div className="data-line diagonal-2"></div>
+            </div>
           </motion.div>
         ))}
       </motion.div>
-      
-      {/* Data flow lines */}
-      <div className="data-flow-lines">
-        <div className="data-line horizontal"></div>
-        <div className="data-line vertical"></div>
-        <div className="data-line diagonal-1"></div>
-        <div className="data-line diagonal-2"></div>
-      </div>
     </section>
   );
 };

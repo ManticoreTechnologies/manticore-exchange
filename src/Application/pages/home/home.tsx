@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, useAnimationControls } from 'framer-motion';
 import ParticlesBg from 'particles-bg';
 import { TypeAnimation } from 'react-type-animation';
 import manticore_logo from '@/Application/logos/white-manticore.png';
 import HomeHero from '@/Application/components/heros/home-hero/home-hero';
 import InfoCard from '@/Application/components/cards/info-cards/info-card';
-import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaChartArea, FaDatabase, FaFaucet } from 'react-icons/fa';
+import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaChartArea, FaDatabase, FaFaucet, FaChartLine, FaStar, FaRocket, FaAtom, FaLayerGroup } from 'react-icons/fa';
 import './home.css';
 import './space-tech-theme.css';
+import './cosmic-purple-theme.css';
 import { throttle } from 'lodash';
 
 // Import new components
@@ -15,42 +16,63 @@ import MarketStats from './components/MarketStats/MarketStats';
 import EvrmoreInfo from './components/EvrmoreInfo/EvrmoreInfo';
 import WalletConnection from './components/WalletConnection/WalletConnection';
 import FeaturedAssets from './components/FeaturedAssets/FeaturedAssets';
+import ProjectHighlights from './components/ProjectHighlights/ProjectHighlights';
+import ServicesGrid from './components/ServicesGrid/ServicesGrid';
+import ListingsScroll from './components/ListingsScroll/ListingsScroll';
+import Footer from '@/Application/components/navigation/footer/footer';
 
 // Mock data for market stats
 const marketStats = [
-  { label: '24h Volume', value: '152.5K EVR', trend: 'up' as const },
-  { label: 'Active Trades', value: '1,234', trend: 'up' as const },
-  { label: 'Market Cap', value: '2.5M EVR', trend: 'up' as const },
+  {
+    label: 'Total Volume',
+    value: '₭ 14.2M',
+    trend: 'up' as const
+  },
+  {
+    label: 'Assets Listed',
+    value: '3,458',
+    trend: 'up' as const
+  },
+  {
+    label: 'Active Users',
+    value: '12,872',
+    trend: 'up' as const
+  },
+  {
+    label: 'Market Cap',
+    value: '₭ 127.5M',
+    trend: 'up' as const
+  }
 ];
 
 // Mock data for featured listings
-const dummyListings = [
+const featuredAssets = [
   {
     id: '1',
-    title: 'Digital Art Collection #1',
-    price: '1000',
-    highlight: 'Limited Edition',
-    tags: ['Art', 'NFT', 'Rare']
+    title: 'Nebula Collection #42',
+    price: '1500',
+    highlight: 'Popular',
+    tags: ['Art', 'NFT', 'Limited']
   },
   {
     id: '2',
-    title: 'Virtual Real Estate',
-    price: '5000',
-    highlight: 'Prime Location',
-    tags: ['Real Estate', 'Virtual World']
+    title: 'Cosmic Voyager Pass',
+    price: '850',
+    highlight: 'Trending',
+    tags: ['Access', 'Utility']
   },
   {
     id: '3',
-    title: 'Gaming Asset Bundle',
-    price: '750',
-    highlight: 'Special Items',
-    tags: ['Gaming', 'Bundle', 'Limited']
+    title: 'Quantum Domain',
+    price: '1200',
+    highlight: 'New',
+    tags: ['Virtual Land', 'Metaverse']
   },
   {
     id: '4',
-    title: 'Crypto Collectible',
+    title: 'Astral Artifacts',
     price: '300',
-    highlight: 'Unique Item',
+    highlight: 'Unique',
     tags: ['Collectible', 'Rare']
   }
 ];
@@ -59,49 +81,49 @@ const dummyListings = [
 const scrollingListings = [
   {
     id: '1',
-    title: 'Rare Digital Artwork',
+    name: 'Quantum Realm Domain',
     price: '2500',
     highlight: 'New'
   },
   {
     id: '2',
-    title: 'Virtual Land Plot',
+    name: 'Nebula Shard Alpha',
     price: '1800',
     highlight: 'Trending'
   },
   {
     id: '3',
-    title: 'Exclusive Game Items',
+    name: 'Cosmic Arsenal Pack',
     price: '500',
     highlight: 'New'
   },
   {
     id: '4',
-    title: 'NFT Collection Bundle',
+    name: 'Galactic Pioneers Bundle',
     price: '3500',
     highlight: 'Trending'
   },
   {
     id: '5',
-    title: 'Digital Trading Cards',
+    name: 'Stardust Collection',
     price: '150',
     highlight: 'New'
   },
   {
     id: '6',
-    title: 'Virtual Fashion Items',
+    name: 'Virtual Space Station',
     price: '800',
     highlight: 'Trending'
   },
   {
     id: '7',
-    title: 'Metaverse Assets',
+    name: 'Interstellar Travel Pass',
     price: '1200',
     highlight: 'New'
   },
   {
     id: '8',
-    title: 'Digital Collectibles',
+    name: 'Cosmic Relic Series',
     price: '950',
     highlight: 'Trending'
   }
@@ -118,207 +140,162 @@ const Home: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(true);
   // Store the target position separately for interpolation
   const [targetCursorPosition, setTargetCursorPosition] = useState({ x: 0, y: 0 });
+  
+  // References for scroll reveal animations
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
   // Variable to track if scroll is locked
   let scrollTimeout: NodeJS.Timeout | null = null; // Initialize as null to fix linter error
 
   // Interactive effects for the entire page
   useEffect(() => {
-    // Create lens flare dots dynamically - but with fewer elements for better performance
-    const createFlareDots = () => {
-      const cursorLight = document.querySelector('.cursor-light') as HTMLElement;
-      if (!cursorLight) return;
-      
-      // Remove existing flare dots container if any
-      const existingContainer = cursorLight.querySelector('.flare-dots');
-      if (existingContainer) {
-        cursorLight.removeChild(existingContainer);
-      }
-      
-      // Create new flare dots container
-      const flareDots = document.createElement('div');
-      flareDots.className = 'flare-dots';
-      
-      // Create random flare dots - reduced count for better performance
-      const dotCount = 4; // Reduced from 6 to 4
-      
-      for (let i = 0; i < dotCount; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'flare-dot';
-        
-        // Random position within the cursor light
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 30 + 20; // Reduced range
-        
-        const x = Math.cos(angle) * distance + 50; // Center at 50%
-        const y = Math.sin(angle) * distance + 50; // Center at 50%
-        
-        // Apply styles
-        dot.style.left = `${x}%`;
-        dot.style.top = `${y}%`;
-        dot.style.width = `${Math.random() * 4 + 3}px`; // Smaller size range
-        dot.style.height = dot.style.width;
-        dot.style.opacity = `${Math.random() * 0.4 + 0.3}`; // Slightly reduced opacity
-        
-        // Add animation with random delay - but longer duration for smoother effect
-        dot.style.animation = `flare-pulse-small ${Math.random() * 2 + 1.5}s infinite alternate ease-in-out`;
-        dot.style.animationDelay = `${Math.random() * 1}s`;
-        
-        flareDots.appendChild(dot);
-      }
-      
-      cursorLight.appendChild(flareDots);
-    };
+    // Create dynamic star background
+    createCosmicBackground();
     
-    createFlareDots();
-    
-    // Use a reference to store the cursor light element to avoid querying the DOM on every mouse move
-    const cursorLightRef = document.querySelector('.cursor-light') as HTMLElement;
-    
-    // Animation frame ID for cursor movement
-    let cursorAnimationFrame: number;
-    
-    // Animation function for smooth cursor movement with interpolation
-    const animateCursor = () => {
-      if (!isAnimating || !cursorLightRef) {
-        if (cursorAnimationFrame) {
-          cancelAnimationFrame(cursorAnimationFrame);
-        }
-        return;
-      }
-      
-      // Improved interpolation factor for smoother movement
-      // Different factors for different device performance levels
-      const interpolationFactor = 0.12; // Slightly reduced for even smoother movement
-      
-      const nextX = cursorPosition.x + (targetCursorPosition.x - cursorPosition.x) * interpolationFactor;
-      const nextY = cursorPosition.y + (targetCursorPosition.y - cursorPosition.y) * interpolationFactor;
-      
-      // Only update state if there's a significant change to avoid unnecessary renders
-      if (Math.abs(nextX - cursorPosition.x) > 0.05 || Math.abs(nextY - cursorPosition.y) > 0.05) {
-        setCursorPosition({ x: nextX, y: nextY });
-      }
-      
-      // Apply position to cursor light element - using transform3d for better performance
-      cursorLightRef.style.transform = `translate3d(${nextX}px, ${nextY}px, 0) translate(-50%, -50%)`;
-      
-      // Calculate normalized position for CSS variables (as percentage)
-      const normalizedX = (nextX / window.innerWidth) * 100;
-      const normalizedY = (nextY / window.innerHeight) * 100;
-      
-      // Update CSS variables less frequently to reduce style recalculations (only once every 4-5 frames)
-      if (Math.random() > 0.8) {
-        document.documentElement.style.setProperty('--mouse-x', `${normalizedX}%`);
-        document.documentElement.style.setProperty('--mouse-y', `${normalizedY}%`);
-      }
-      
-      // Schedule next animation frame
-      cursorAnimationFrame = requestAnimationFrame(animateCursor);
-    };
-    
-    // Start the animation loop
-    cursorAnimationFrame = requestAnimationFrame(animateCursor);
-    
-    // Throttle mouse movements to improve performance - increased throttle time for better performance
-    const handleMouseMove = throttle((e: MouseEvent) => {
-      if (!isAnimating) return;
-      
-      // Update target position directly from the mouse event
+    // Handle cursor effects
+    const handleMouseMove = (e: MouseEvent) => {
       setTargetCursorPosition({ x: e.clientX, y: e.clientY });
-      
-      // Handle flare rotation only when there's significant movement
-      if (cursorLightRef && (Math.abs(e.movementX) > 5 || Math.abs(e.movementY) > 5)) {
-        const flareRotation = Math.atan2(e.movementY, e.movementX) * (180 / Math.PI);
-        cursorLightRef.style.setProperty('--flare-rotation', `${flareRotation}deg`);
-        
-        // Trigger active state only for significant movements - increased threshold
-        if (Math.abs(e.movementX) > 15 || Math.abs(e.movementY) > 15) {
-          cursorLightRef.classList.add('active');
-          setTimeout(() => {
-            if (cursorLightRef) cursorLightRef.classList.remove('active');
-          }, 180); // Slightly increased duration for smoother transition
-        }
-      }
-    }, 20); // Slightly increased throttle time for better performance
+    };
     
-    // Optimize mouse click handler
-    const handleMouseDown = throttle(() => {
-      if (!isAnimating || !cursorLightRef) return;
-      
-      cursorLightRef.classList.add('active');
-      setTimeout(() => {
-        if (cursorLightRef) cursorLightRef.classList.remove('active');
-      }, 300);
-    }, 100);
-    
-    // Throttle scroll handler for better performance
-    const handleScroll = throttle(() => {
-      if (!isAnimating) return;
-      
-      // Clear any existing timeout to prevent rapid scroll lock/unlock
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = null;
-      }
-      
-      // Use requestAnimationFrame to handle scroll progress update off the main thread
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        const height = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = Math.min(Math.max(scrollY / height, 0), 1); // Ensure value is between 0 and 1
-        document.documentElement.style.setProperty('--scroll-progress', `${progress}`);
-      });
-    }, 200); // Increased from 100ms to 200ms for much better performance
-    
-    // Handle visibility changes to pause animations when tab is not visible
+    // Handle visibility changes (pause animations when tab is not visible)
     const handleVisibilityChange = () => {
       setIsAnimating(!document.hidden);
-      
-      if (!document.hidden && cursorLightRef) {
-        // Reset animation when becoming visible again
-        cursorAnimationFrame = requestAnimationFrame(animateCursor);
-      } else if (document.hidden && cursorAnimationFrame) {
-        cancelAnimationFrame(cursorAnimationFrame);
-      }
     };
     
-    // Use passive event listeners for better performance
-    const passiveOpts = { passive: true } as AddEventListenerOptions;
-    
-    document.addEventListener('mousemove', handleMouseMove, passiveOpts);
-    document.addEventListener('scroll', handleScroll, passiveOpts);
-    document.addEventListener('mousedown', handleMouseDown);
+    // Set up event listeners
+    window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Recreate flare dots on window resize - but add throttling
-    const throttledResize = throttle(() => {
-      createFlareDots();
+    // Create smooth animation for cursor
+    const animateCursor = () => {
+      if (!isAnimating) return;
       
-      // Also update cursor position on resize
-      if (targetCursorPosition.x > 0 && targetCursorPosition.y > 0) {
-        setCursorPosition(targetCursorPosition);
+      // Interpolate position for smoother movement
+      setCursorPosition(prev => ({
+        x: prev.x + (targetCursorPosition.x - prev.x) * 0.1,
+        y: prev.y + (targetCursorPosition.y - prev.y) * 0.1
+      }));
+      
+      const cursorLight = document.querySelector('.cursor-light') as HTMLElement;
+      if (cursorLight) {
+        cursorLight.style.transform = `translate(${cursorPosition.x}px, ${cursorPosition.y}px) translateZ(0)`;
       }
-    }, 500);
+      
+      requestAnimationFrame(animateCursor);
+    };
     
-    window.addEventListener('resize', throttledResize, passiveOpts);
+    // Start the animation
+    animateCursor();
     
+    // Scroll reveal effect
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    };
+    
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    // Get all animated elements
+    const animatedElements = document.querySelectorAll('.fade-in-cosmic, .cosmic-stagger');
+    animatedElements.forEach(el => observer.observe(el));
+    
+    // Clean up event listeners and animations
     return () => {
-      if (cursorAnimationFrame) {
-        cancelAnimationFrame(cursorAnimationFrame);
-      }
-      
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('resize', throttledResize);
+      animatedElements.forEach(el => observer.unobserve(el));
       
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = null;
+      // Remove cosmic background elements
+      const cosmicBackground = document.querySelector('.cosmic-background');
+      if (cosmicBackground && cosmicBackground.parentNode) {
+        cosmicBackground.parentNode.removeChild(cosmicBackground);
       }
     };
-  }, [isAnimating]); // Depend on isAnimating to restart handlers when visibility changes
+  }, [isAnimating, targetCursorPosition]);
+  
+  // Function to create the cosmic background with stars and nebulas
+  const createCosmicBackground = () => {
+    const cosmicBg = document.createElement('div');
+    cosmicBg.className = 'cosmic-background';
+    
+    // Create star field
+    const starField = document.createElement('div');
+    starField.className = 'star-field';
+    
+    // Generate stars
+    const starCount = window.innerWidth < 768 ? 100 : 200;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      
+      // Random size class
+      const sizeClass = Math.random();
+      if (sizeClass < 0.5) {
+        star.className = 'star tiny';
+      } else if (sizeClass < 0.8) {
+        star.className = 'star small';
+      } else if (sizeClass < 0.95) {
+        star.className = 'star medium';
+      } else {
+        star.className = 'star large';
+      }
+      
+      // Random position
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      
+      // Random animation delay
+      star.style.animationDelay = `${Math.random() * 4}s`;
+      
+      starField.appendChild(star);
+    }
+    
+    cosmicBg.appendChild(starField);
+    
+    // Create nebulas
+    const nebulaCount = window.innerWidth < 768 ? 3 : 5;
+    for (let i = 0; i < nebulaCount; i++) {
+      const nebula = document.createElement('div');
+      
+      // Random nebula class
+      const nebulaClass = Math.random();
+      if (nebulaClass < 0.4) {
+        nebula.className = 'nebula nebula-purple';
+      } else if (nebulaClass < 0.7) {
+        nebula.className = 'nebula nebula-blue';
+      } else {
+        nebula.className = 'nebula nebula-pink';
+      }
+      
+      // Random size and position
+      const size = Math.random() * 300 + 200;
+      nebula.style.width = `${size}px`;
+      nebula.style.height = `${size}px`;
+      nebula.style.left = `${Math.random() * 100}%`;
+      nebula.style.top = `${Math.random() * 100}%`;
+      
+      // Random animation delay
+      nebula.style.animationDelay = `${Math.random() * 5}s`;
+      
+      cosmicBg.appendChild(nebula);
+    }
+    
+    // Create cosmic grid
+    const cosmicGrid = document.createElement('div');
+    cosmicGrid.className = 'cosmic-grid';
+    cosmicBg.appendChild(cosmicGrid);
+    
+    // Add to the DOM
+    document.body.appendChild(cosmicBg);
+  };
   
   // Animation variants for scroll animations
   const fadeInUpVariant = {
@@ -384,7 +361,7 @@ const Home: React.FC = () => {
   );
 
   return (
-    <div className="home space-tech">
+    <div className="home cosmic-purple">
       {/* Cursor light element that follows the mouse */}
       <div className="cursor-light"></div>
       
@@ -407,191 +384,81 @@ const Home: React.FC = () => {
         />
       </motion.div>
 
-      {/* Evrmore Info Section */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-        className="section-wrapper"
-      >
-        <div className="tech-grid-accent"></div>
-        <EvrmoreInfo />
-      </motion.section>
-
-      {/* Wallet Connection Section */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-        className="section-wrapper"
-      >
-        <div className="tech-grid-accent"></div>
-        <WalletConnection />
-      </motion.section>
-      
       {/* Market Stats Section */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-        className="section-wrapper"
-      >
-        <div className="tech-grid-accent"></div>
-        <MarketStats stats={marketStats} />
-      </motion.section>
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaChartLine className="section-icon" />
+            Cosmic Market Metrics
+          </h2>
+          <MarketStats stats={marketStats} />
+        </div>
+      </section>
 
       {/* Featured Assets Section */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-        className="section-wrapper"
-      >
-        <div className="tech-grid-accent"></div>
-        <FeaturedAssets isLoading={false} listings={dummyListings} />
-      </motion.section>
-
-      {/* Scrolling Listings Section */}
-      <motion.section 
-        className="listings-scroll section-wrapper"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-      >
-        <div className="tech-grid-accent"></div>
-        <div className="section-content">
-          <motion.div 
-            className="scroll-container glassmorphism"
-            variants={itemVariant}
-          >
-            <h3 className="section-title">Available Assets</h3>
-            <div className="scroll-content">
-              <motion.div
-                animate={{ x: [-1000, 1000] }}
-                transition={{ 
-                  duration: 40, 
-                  repeat: Infinity, 
-                  ease: "linear",
-                  repeatType: "loop"
-                }}
-              >
-                {scrollingListings.map((listing, index) => (
-                  <div 
-                    key={`scroll-${listing.id}-${index}`}
-                    className="listing-item"
-                    onClick={() => handleListingClick(listing)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <span className="listing-name">{listing.title}</span>
-                    <span className="listing-price">
-                      {listing.price ? `${listing.price} EVR` : 'Price not set'}
-                    </span>
-                    {listing.highlight && (
-                      <span className="listing-highlight">{listing.highlight}</span>
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          </motion.div>
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaStar className="section-icon" />
+            Featured Galactic Assets
+          </h2>
+          <FeaturedAssets isLoading={false} listings={featuredAssets} />
         </div>
-      </motion.section>
+      </section>
 
-      {/* Services Grid */}
-      <motion.section 
-        className="services-grid section-wrapper"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }}
-        variants={fadeInUpVariant}
-      >
-        <div className="tech-grid-accent"></div>
-        <div className="section-content">
-          <motion.h2
-            className="section-title"
-            variants={itemVariant}
-          >
-            Platform Services
-          </motion.h2>
-          
-          <motion.div 
-            className="infocards"
-            variants={fadeInStaggerVariant}
-          >
-            {[
-              {
-                icon: FaSearch,
-                to: "/search",
-                title: "Search Assets",
-                action: "Explore Now",
-                body: "Find the perfect assets for your portfolio with our advanced search features."
-              },
-              {
-                icon: FaExchangeAlt,
-                to: "/trade",
-                title: "Trade",
-                action: "Start Trading",
-                body: "Execute trades instantly with our high-performance trading engine."
-              },
-              {
-                icon: FaFaucet,
-                to: "/faucet",
-                title: "Faucet",
-                action: "Get Started",
-                body: "New to Evrmore? Get your first assets free from our community faucet."
-              },
-              {
-                icon: FaRoad,
-                to: "/roadmap",
-                title: "Roadmap",
-                action: "View Future",
-                body: "Discover our vision and upcoming features that will revolutionize asset trading."
-              },
-              {
-                icon: FaBlog,
-                to: "/blog",
-                title: "Blog",
-                action: "Read More",
-                body: "Stay updated with the latest news, updates, and insights from the Manticore team."
-              },
-              {
-                icon: FaDatabase,
-                to: "/ipfs",
-                title: "IPFS Storage",
-                action: "Store Now",
-                body: "Securely store and manage your asset metadata using decentralized IPFS storage."
-              },
-              {
-                icon: FaChartArea,
-                to: "/chart",
-                title: "EVR Chart",
-                action: "View Chart",
-                body: "Track EVR price movements and market trends with our interactive chart."
-              }
-            ].map((card, index) => (
-              <motion.div
-                key={card.title}
-                variants={itemVariant}
-                custom={index}
-              >
-                <InfoCard 
-                  FaIcon={card.icon}
-                  to={card.to}
-                  title={card.title}
-                  action={card.action}
-                  body={card.body}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+      {/* Wallet Connection Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <WalletConnection />
         </div>
-      </motion.section>
+      </section>
+
+      {/* Evrmore Info Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaAtom className="section-icon" />
+            Evrmore Universe
+          </h2>
+          <EvrmoreInfo />
+        </div>
+      </section>
+
+      {/* Project Highlights Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaRocket className="section-icon" />
+            Cosmic Achievements
+          </h2>
+          <ProjectHighlights />
+        </div>
+      </section>
+
+      {/* Services Grid Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaLayerGroup className="section-icon" />
+            Galactic Ecosystem
+          </h2>
+          <ServicesGrid />
+        </div>
+      </section>
+
+      {/* Listings Scroll Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaExchangeAlt className="section-icon" />
+            Trending Interstellar Assets
+          </h2>
+          <ListingsScroll listings={scrollingListings} />
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
