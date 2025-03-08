@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch, FaComments } from 'react-icons/fa';
+import { FaBars, FaBlog, FaRoad, FaDatabase, FaChartBar, FaUser, FaTint, FaExchangeAlt, FaSearch, FaComments, FaRocket } from 'react-icons/fa';
 import './navigation-dropdown.css';
 
 interface DropdownProps {
@@ -51,6 +51,7 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, showSearch,
           <a href="/roadmap" className="dropdown-menu-item"><FaRoad className='manticore-nav-dropdown-icon'/> Roadmap</a>
           <a href="/ipfs" className="dropdown-menu-item"><FaDatabase className='manticore-nav-dropdown-icon'/> IPFS</a>
           <a href="/network" className="dropdown-menu-item"><FaChartBar className='manticore-nav-dropdown-icon'/> Network Status</a>
+          <a href="/launch" className="dropdown-menu-item"><FaRocket className='manticore-nav-dropdown-icon'/> Launch Pad</a>
           {!showProfile && (
             <a href="/profile" className="dropdown-menu-item"><FaUser className='manticore-nav-dropdown-icon'/> Profile</a>
           )}

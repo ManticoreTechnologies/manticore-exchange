@@ -5,47 +5,33 @@ import { TypeAnimation } from 'react-type-animation';
 import manticore_logo from '@/Application/logos/white-manticore.png';
 import HomeHero from '@/Application/components/heros/home-hero/home-hero';
 import InfoCard from '@/Application/components/cards/info-cards/info-card';
-import { FaSearch, FaExchangeAlt, FaBlog, FaRoad, FaChartArea, FaDatabase, FaFaucet, FaChartLine, FaStar, FaRocket, FaAtom, FaLayerGroup } from 'react-icons/fa';
+import { 
+  FaSearch, 
+  FaExchangeAlt, 
+  FaRoad, 
+  FaDatabase, 
+  FaFaucet, 
+  FaSatelliteDish, 
+  FaRocket, 
+  FaAtom, 
+  FaLayerGroup,
+  FaUserAstronaut,
+  FaCompass,
+  FaCubes
+} from 'react-icons/fa';
 import './home.css';
 import './space-tech-theme.css';
 import './cosmic-purple-theme.css';
 import { throttle } from 'lodash';
 
-// Import new components
-import MarketStats from './components/MarketStats/MarketStats';
+// Import components
 import EvrmoreInfo from './components/EvrmoreInfo/EvrmoreInfo';
 import WalletConnection from './components/WalletConnection/WalletConnection';
 import FeaturedAssets from './components/FeaturedAssets/FeaturedAssets';
-import ProjectHighlights from './components/ProjectHighlights/ProjectHighlights';
-import ServicesGrid from './components/ServicesGrid/ServicesGrid';
 import ListingsScroll from './components/ListingsScroll/ListingsScroll';
 import Footer from '@/Application/components/navigation/footer/footer';
 
-// Mock data for market stats
-const marketStats = [
-  {
-    label: 'Total Volume',
-    value: '₭ 14.2M',
-    trend: 'up' as const
-  },
-  {
-    label: 'Assets Listed',
-    value: '3,458',
-    trend: 'up' as const
-  },
-  {
-    label: 'Active Users',
-    value: '12,872',
-    trend: 'up' as const
-  },
-  {
-    label: 'Market Cap',
-    value: '₭ 127.5M',
-    trend: 'up' as const
-  }
-];
-
-// Mock data for featured listings
+// Mock data for featured assets
 const featuredAssets = [
   {
     id: '1',
@@ -129,6 +115,34 @@ const scrollingListings = [
   }
 ];
 
+// Roadmap events for display
+const roadmapEvents = [
+  {
+    title: "Q2 2024",
+    events: [
+      "Advanced Security Features",
+      "Mobile App Beta Launch",
+      "Multi-Chain Support"
+    ]
+  },
+  {
+    title: "Q3 2024",
+    events: [
+      "Market Analytics Dashboard",
+      "NFT Creator Studio",
+      "Enhanced Developer Tools"
+    ]
+  },
+  {
+    title: "Q4 2024",
+    events: [
+      "Decentralized Governance",
+      "Staking & Yield Features",
+      "Cross-Platform Integration"
+    ]
+  }
+];
+
 const Home: React.FC = () => {
   const handleListingClick = (listing: any) => {
     window.location.href = `/trade/listings/by-id/${listing.id}`;
@@ -136,14 +150,16 @@ const Home: React.FC = () => {
 
   // Store cursor position in state to avoid DOM manipulation on every mouse move
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  
   // Track if animations are active to pause when page is not visible
   const [isAnimating, setIsAnimating] = useState(true);
+  
   // Store the target position separately for interpolation
   const [targetCursorPosition, setTargetCursorPosition] = useState({ x: 0, y: 0 });
   
   // References for scroll reveal animations
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-
+  
   // Variable to track if scroll is locked
   let scrollTimeout: NodeJS.Timeout | null = null; // Initialize as null to fix linter error
 
@@ -208,11 +224,26 @@ const Home: React.FC = () => {
     const animatedElements = document.querySelectorAll('.fade-in-cosmic, .cosmic-stagger');
     animatedElements.forEach(el => observer.observe(el));
     
+    // Add animation for cosmic sections
+    const cosmicSections = document.querySelectorAll('.cosmic-section');
+    cosmicSections.forEach(el => observer.observe(el));
+    
+    // Add floating animation to section icons
+    const sectionIcons = document.querySelectorAll('.section-icon');
+    sectionIcons.forEach(icon => {
+      icon.classList.add('cosmic-float');
+    });
+
     // Clean up event listeners and animations
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Clean up all observers
       animatedElements.forEach(el => observer.unobserve(el));
+      cosmicSections.forEach(el => observer.unobserve(el));
+      sectionIcons.forEach(el => observer.unobserve(el));
+      observer.disconnect();
       
       // Remove cosmic background elements
       const cosmicBackground = document.querySelector('.cosmic-background');
@@ -297,112 +328,91 @@ const Home: React.FC = () => {
     document.body.appendChild(cosmicBg);
   };
   
-  // Animation variants for scroll animations
-  const fadeInUpVariant = {
-    hidden: { 
-      opacity: 0, 
-      y: 60,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: { 
-        type: "spring",
-        stiffness: 50, // Reduced from 70 for smoother animation
-        damping: 20,   // Increased from 15 for less bouncing
-        duration: 1.2, // Increased from 0.8 for smoother effect
-        ease: [0.22, 1, 0.36, 1]
-      }
-    }
-  };
-
-  const fadeInStaggerVariant = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.2, // Increased from 0.15 for smoother effect
-        delayChildren: 0.3    // Increased from 0.2
-      }
-    }
-  };
-
-  const itemVariant = {
-    hidden: { 
-      opacity: 0, 
-      y: 30,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: { 
-        type: "spring",
-        stiffness: 60, // Reduced from 80
-        damping: 18    // Increased from 15
-      }
-    }
-  };
-
-  const { scrollYProgress } = useScroll();
-  // Make the scale transition smoother
-  const scaleBackground = useTransform(scrollYProgress, 
-    [0, 0.1, 0.5], // Added middle keyframe for smoother transition
-    [1, 1.05, 1.2]
-  );
-  
-  // Make the opacity transition smoother
-  const backgroundOpacity = useTransform(scrollYProgress, 
-    [0, 0.2, 0.5], // Added middle keyframe for smoother transition
-    [1, 0.95, 0.9]
-  );
-
   return (
     <div className="home cosmic-purple">
-      {/* Cursor light element that follows the mouse */}
+      {/* Cursor light effect */}
       <div className="cursor-light"></div>
       
-      <ParticlesBg 
-        type="cobweb" 
-        bg={true} 
-        color="#ff6b6b"
-        num={40}
+      {/* Hero Section */}
+      <HomeHero
+        title="MANTICORE EXCHANGE"
+        subtitle={
+          <div className="hero-subtitle cosmic-purple">
+            The premier platform for digital assets on the Evrmore blockchain
+          </div>
+        }
+        body={
+          <div className="hero-description cosmic-purple">
+            Trade, collect, and explore cosmic assets in the expanding Evrmore universe
+          </div>
+        }
       />
       
-      {/* Hero Section */}
-      <motion.div
-        style={{ opacity: backgroundOpacity }}
-        className="hero-background-wrapper"
-      >
-        <HomeHero 
-          title="Manticore"
-          body="Your premier destination for trading digital assets on the Evrmore blockchain."
-          logo={manticore_logo}
-        />
-      </motion.div>
-
-      {/* Market Stats Section */}
+      {/* Evrmore Info Section - Moved to the top */}
       <section className="cosmic-section">
         <div className="cosmic-container fade-in-cosmic">
           <h2 className="cosmic-title">
-            <FaChartLine className="section-icon" />
-            Cosmic Market Metrics
+            <FaAtom className="section-icon" />
+            Welcome to the Future of Digital Assets
           </h2>
-          <MarketStats stats={marketStats} />
+          <EvrmoreInfo />
         </div>
       </section>
-
+      
       {/* Featured Assets Section */}
       <section className="cosmic-section">
         <div className="cosmic-container fade-in-cosmic">
           <h2 className="cosmic-title">
-            <FaStar className="section-icon" />
+            <FaCubes className="section-icon" />
             Featured Galactic Assets
           </h2>
-          <FeaturedAssets isLoading={false} listings={featuredAssets} />
+          <div className="featured-card-float">
+            <FeaturedAssets isLoading={false} listings={featuredAssets} />
+          </div>
+        </div>
+      </section>
+
+      {/* Asset Discovery Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaSearch className="section-icon" />
+            Asset Discovery
+          </h2>
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>Explore the vast universe of digital assets on the Evrmore blockchain. Our advanced search tools help you discover rare, valuable, and trending assets with ease.</p>
+              <ul className="feature-list">
+                <li>Filter by categories, attributes, and rarity</li>
+                <li>Real-time market data for informed decisions</li>
+                <li>Save favorite searches and receive alerts</li>
+                <li>Discover newly minted assets instantly</li>
+              </ul>
+              <a href="/search" className="cosmic-button">Explore Assets</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Asset Trading Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaExchangeAlt className="section-icon" />
+            Asset Trading
+          </h2>
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>Our seamless trading platform enables secure, fast, and transparent transactions for all Evrmore-based digital assets.</p>
+              <ul className="feature-list">
+                <li>Peer-to-peer secure transactions</li>
+                <li>Low fees with transparent pricing</li>
+                <li>Escrow protection for buyers and sellers</li>
+                <li>Comprehensive transaction history</li>
+              </ul>
+              <a href="/trade" className="cosmic-button">Start Trading</a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -413,36 +423,119 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Evrmore Info Section */}
+      {/* Evrmore Faucet Section */}
       <section className="cosmic-section">
         <div className="cosmic-container fade-in-cosmic">
           <h2 className="cosmic-title">
-            <FaAtom className="section-icon" />
-            Evrmore Universe
+            <FaFaucet className="section-icon" />
+            Evrmore Faucet
           </h2>
-          <EvrmoreInfo />
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>New to the Evrmore ecosystem? Get started with free EVR tokens from our community faucet and begin your journey in the Evrmore universe.</p>
+              <ul className="feature-list">
+                <li>Receive free EVR tokens to start exploring</li>
+                <li>Simple verification process</li>
+                <li>Learn about Evrmore blockchain basics</li>
+                <li>Community-funded resource</li>
+              </ul>
+              <a href="/faucet" className="cosmic-button">Visit Faucet</a>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Project Highlights Section */}
+      {/* IPFS Storage Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaDatabase className="section-icon" />
+            IPFS Storage
+          </h2>
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>Store your digital assets' metadata on the InterPlanetary File System for permanent decentralized access and enhanced security.</p>
+              <ul className="feature-list">
+                <li>Decentralized and permanent storage</li>
+                <li>Content-addressed data structure</li>
+                <li>Built-in versioning and deduplication</li>
+                <li>Seamless integration with Evrmore assets</li>
+              </ul>
+              <a href="/ipfs" className="cosmic-button">Explore IPFS</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Network Status Section */}
+      <section className="cosmic-section">
+        <div className="cosmic-container fade-in-cosmic">
+          <h2 className="cosmic-title">
+            <FaSatelliteDish className="section-icon" />
+            Network Status
+          </h2>
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>Monitor the health and performance of the Evrmore network with our real-time status dashboard and analytics tools.</p>
+              <ul className="feature-list">
+                <li>Real-time network metrics and statistics</li>
+                <li>Block explorer with detailed information</li>
+                <li>Node status and distribution map</li>
+                <li>Historical performance data</li>
+              </ul>
+              <a href="/network" className="cosmic-button">Check Status</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Launch Pad Section */}
       <section className="cosmic-section">
         <div className="cosmic-container fade-in-cosmic">
           <h2 className="cosmic-title">
             <FaRocket className="section-icon" />
-            Cosmic Achievements
+            Asset Launch Pad
           </h2>
-          <ProjectHighlights />
+          <div className="cosmic-card">
+            <div className="cosmic-content">
+              <p>Launch your digital assets into the Evrmore ecosystem with our comprehensive suite of creation, minting, and distribution tools.</p>
+              <ul className="feature-list">
+                <li>Guided asset creation workflow</li>
+                <li>Metadata management and IPFS integration</li>
+                <li>Marketing and promotion features</li>
+                <li>Distribution and sales tools</li>
+              </ul>
+              <a href="/launch" className="cosmic-button">Launch Assets</a>
+            </div>
+          </div>
         </div>
       </section>
-
-      {/* Services Grid Section */}
+      
+      {/* Roadmap Section */}
       <section className="cosmic-section">
         <div className="cosmic-container fade-in-cosmic">
           <h2 className="cosmic-title">
-            <FaLayerGroup className="section-icon" />
-            Galactic Ecosystem
+            <FaRoad className="section-icon" />
+            Cosmic Roadmap
           </h2>
-          <ServicesGrid />
+          <div className="cosmic-card roadmap-container">
+            <div className="timeline">
+              {roadmapEvents.map((period, index) => (
+                <div key={index} className="timeline-item">
+                  <div className="timeline-marker"></div>
+                  <div className="timeline-content">
+                    <h3>{period.title}</h3>
+                    <ul>
+                      {period.events.map((event, eventIndex) => (
+                        <li key={eventIndex}>{event}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a href="/roadmap" className="cosmic-button">View Full Roadmap</a>
+          </div>
         </div>
       </section>
 
@@ -456,7 +549,7 @@ const Home: React.FC = () => {
           <ListingsScroll listings={scrollingListings} />
         </div>
       </section>
-
+      
       {/* Footer */}
       <Footer />
     </div>
