@@ -36,15 +36,10 @@
 
 /* Cosmic section styling with tech borders */
 .cosmic-section {
-  width: 100%;
-  padding: var(--section-padding) 0;
-  margin: var(--section-spacing) 0;
   position: relative;
+  padding: 3rem 0;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity var(--scroll-reveal-speed) var(--scroll-reveal-ease),
-              transform var(--scroll-reveal-speed) var(--scroll-reveal-ease);
+  transition: all 0.3s ease;
 }
 
 .tech-border {
@@ -95,9 +90,9 @@
 }
 
 .cosmic-container {
-  max-width: var(--content-max-width);
-  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1.5rem;
   position: relative;
   z-index: 2;
 }
@@ -673,8 +668,7 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .cosmic-section {
-    padding: var(--section-padding) 0;
-    margin: var(--section-spacing-mobile) 0;
+    padding: 2rem 0;
   }
   
   .cosmic-container {
@@ -716,6 +710,11 @@
   .tech-border::before, .tech-border::after {
     width: 95%;
   }
+  
+  .home > section:not(:first-child),
+  .home > .cosmic-section {
+    margin-bottom: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -744,5 +743,84 @@
   .button-glow {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* New animation classes for enhanced scroll effects */
+.animate-from-bottom {
+  animation: slideInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-from-top {
+  animation: slideInDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-scale {
+  animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Improve visible state for fading elements */
+.fade-in-cosmic.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.cosmic-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Additional parallax effect styles */
+.parallax-element {
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+/* Optimize animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-from-bottom,
+  .animate-from-top,
+  .animate-scale,
+  .fade-in-cosmic,
+  .fade-in-cosmic.visible,
+  .cosmic-section,
+  .cosmic-section.visible {
+    animation: none !important;
+    transition: opacity 0.3s ease-in-out !important;
+    transform: none !important;
   }
 } 

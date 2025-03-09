@@ -11,6 +11,14 @@ import ListingsScroll from './components/ListingsScroll/ListingsScroll';
 import Footer from '@/Application/components/navigation/footer/footer';
 import CosmicBackground from './components/CosmicBackground';
 import SectionTitle from './components/SectionTitle';
+import AssetDiscovery from './components/AssetDiscovery';
+import AssetTrading from './components/AssetTrading';
+import BlockchainSecurity from './components/BlockchainSecurity';
+import DeveloperUniverse from './components/DeveloperUniverse';
+import EvrmooreFaucet from './components/EvrmooreFaucet';
+import InterstellarStorage from './components/InterstellarStorage';
+import NetworkStatus from './components/NetworkStatus';
+import LaunchPad from './components/LaunchPad';
 import { 
   FaSearch, 
   FaExchangeAlt, 
@@ -141,18 +149,40 @@ const Home: React.FC = () => {
     };
   }, [isAnimating]);
   
-  // Initialize IntersectionObserver for animations
+  // Initialize IntersectionObserver for animations with enhanced effects
   useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.1
+      threshold: 0.15 // Slightly increased threshold for better timing
     };
     
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
+          // Add visible class for basic animations
           entry.target.classList.add('visible');
+          
+          // Add data-animated attribute to prevent re-animation
+          if (!entry.target.hasAttribute('data-animated')) {
+            entry.target.setAttribute('data-animated', 'true');
+            
+            // Add specific animation classes based on position
+            const rect = entry.target.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const viewportCenter = viewportHeight / 2;
+            
+            if (rect.top > viewportCenter) {
+              // Element is below center - animate up
+              entry.target.classList.add('animate-from-bottom');
+            } else if (rect.top + rect.height < viewportCenter) {
+              // Element is above center - animate down
+              entry.target.classList.add('animate-from-top');
+            } else {
+              // Element is near center - scale animation
+              entry.target.classList.add('animate-scale');
+            }
+          }
         }
       });
     };
@@ -160,12 +190,34 @@ const Home: React.FC = () => {
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     
     // Get all animated elements
-    const animatedElements = document.querySelectorAll('.fade-in-cosmic, .cosmic-stagger, .cosmic-section, .tech-glow');
+    const animatedElements = document.querySelectorAll('.fade-in-cosmic, .cosmic-stagger, .cosmic-section, .tech-glow, .evrmoore-faucet-content, .launch-pad-content');
     animatedElements.forEach(el => observer.observe(el));
+    
+    // Add scroll event listener for parallax effects
+    const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      
+      // Apply parallax effect to stars and nebulas
+      const stars = document.querySelectorAll('.star');
+      const nebulas = document.querySelectorAll('.nebula');
+      
+      stars.forEach((star, index) => {
+        const speed = 0.05 + (index % 5) * 0.01;
+        (star as HTMLElement).style.transform = `translateY(${scrollY * speed}px)`;
+      });
+      
+      nebulas.forEach((nebula, index) => {
+        const speed = 0.03 + (index % 3) * 0.01;
+        (nebula as HTMLElement).style.transform = `translateY(${scrollY * speed}px)`;
+      });
+    };
+    
+    window.addEventListener('scroll', handleScroll);
     
     return () => {
       animatedElements.forEach(el => observer.unobserve(el));
       observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
   
@@ -267,39 +319,6 @@ const Home: React.FC = () => {
   
   // Feature card data for generic sections
   const featureCards = {
-    assetDiscovery: {
-      title: "Quantum Asset Discovery",
-      description: "Navigate the digital cosmos with our advanced discovery system. Find exactly what you're looking for in the vast universe of Evrmore assets.",
-      features: [
-        "Neural network filtering",
-        "Categorical quantum indexing",
-        "Trend analysis algorithms",
-        "Personalized discovery matrix"
-      ],
-      buttonText: "Explore Assets"
-    },
-    assetTrading: {
-      title: "Secure Stellar Trading",
-      description: "Exchange digital assets with the security of a neutron star. Our advanced trading system ensures safe, fast, and reliable transactions.",
-      features: [
-        "Quantum-encrypted escrow",
-        "Light-speed transfers",
-        "Minimal transaction fees",
-        "Immutable ledger history"
-      ],
-      buttonText: "Start Trading"
-    },
-    blockchainSecurity: {
-      title: "Supernova Security Protocol",
-      description: "Your assets are protected by state-of-the-art blockchain security measures, ensuring maximum protection across the digital universe.",
-      features: [
-        "Quantum-resistant encryption",
-        "Distributed security matrix",
-        "Real-time threat analysis",
-        "Multi-layer authentication"
-      ],
-      buttonText: "Learn More"
-    },
     developmentKit: {
       title: "Stellar Development Framework",
       description: "Build on the Evrmore blockchain with our comprehensive toolkit designed for developers of all experience levels.",
@@ -393,6 +412,39 @@ const Home: React.FC = () => {
     </section>
   );
   
+  // Navigation handlers for new components
+  const handleDiscoveryNavigation = () => {
+    window.location.href = '/discovery';
+  };
+  
+  const handleTradingNavigation = () => {
+    window.location.href = '/trading';
+  };
+  
+  const handleSecurityNavigation = () => {
+    window.location.href = '/security';
+  };
+  
+  const handleStartBuildingClick = () => {
+    window.location.href = '/developers';
+  };
+  
+  const handleAccessFaucetClick = () => {
+    window.location.href = '/faucet';
+  };
+  
+  const handleExploreStorageClick = () => {
+    window.location.href = '/storage';
+  };
+  
+  const handleCheckStatusClick = () => {
+    window.location.href = '/network';
+  };
+  
+  const handleExploreProjectsClick = () => {
+    window.location.href = '/launch-pad';
+  };
+  
   return (
     <div className="home cosmic-purple">
       {/* Cursor light effect */}
@@ -428,17 +480,17 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      {/* Asset Discovery */}
-      {renderFeatureCard("Quantum Asset Discovery", <FaSearch />, featureCards.assetDiscovery)}
+      {/* Asset Discovery - Using new modular component */}
+      <AssetDiscovery onExploreClick={handleDiscoveryNavigation} />
       
-      {/* Asset Trading */}
-      {renderFeatureCard("Stellar Trading System", <FaExchangeAlt />, featureCards.assetTrading)}
+      {/* Asset Trading - Using new modular component */}
+      <AssetTrading onStartTradingClick={handleTradingNavigation} />
       
-      {/* Blockchain Security */}
-      {renderFeatureCard("Supernova Security", <FaShieldAlt />, featureCards.blockchainSecurity)}
+      {/* Blockchain Security - Using new modular component */}
+      <BlockchainSecurity onLearnMoreClick={handleSecurityNavigation} />
       
-      {/* Developer Toolkit */}
-      {renderFeatureCard("Developer Universe", <FaCode />, featureCards.developmentKit)}
+      {/* Developer Universe - Using new modular component */}
+      <DeveloperUniverse onStartBuildingClick={handleStartBuildingClick} />
       
       {/* Wallet Connection */}
       <section className="cosmic-section tech-border">
@@ -448,17 +500,17 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      {/* Evrmore Faucet */}
-      {renderFeatureCard("Cosmic EVR Faucet", <FaTint />, featureCards.evrmoreeFaucet)}
+      {/* Evrmoore Faucet - Using new modular component */}
+      <EvrmooreFaucet onAccessFaucetClick={handleAccessFaucetClick} />
       
-      {/* IPFS Storage */}
-      {renderFeatureCard("Interstellar Storage", <FaDatabase />, featureCards.ipfsStorage)}
+      {/* Interstellar Storage - Using new modular component */}
+      <InterstellarStorage onExploreStorageClick={handleExploreStorageClick} />
       
-      {/* Network Status */}
-      {renderFeatureCard("Cosmic Network", <FaNetworkWired />, featureCards.networkStatus)}
+      {/* Network Status - Using new modular component */}
+      <NetworkStatus onCheckStatusClick={handleCheckStatusClick} />
       
-      {/* Launch Pad */}
-      {renderFeatureCard("Asset Launch Platform", <FaRocket />, featureCards.launchPad)}
+      {/* Launch Pad - Using new modular component */}
+      <LaunchPad onExploreProjectsClick={handleExploreProjectsClick} />
       
       {/* Roadmap */}
       <section className="cosmic-section tech-border">

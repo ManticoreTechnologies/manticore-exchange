@@ -1,0 +1,500 @@
+.launch-pad-section {
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.launch-pad-content {
+  position: relative;
+  background: rgba(13, 17, 23, 0.7);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(14, 21, 47, 0.4);
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.launch-pad-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 60%);
+  z-index: -1;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.launch-pad-content:hover {
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.3);
+  transform: translateY(-5px);
+}
+
+.launch-pad-content h3 {
+  font-size: 2rem;
+  background: linear-gradient(90deg, #c084fc, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.launch-description {
+  color: #a5b4fc;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.launch-visualization {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  position: relative;
+  gap: 2rem;
+}
+
+.rocket-platform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 250px;
+  margin-bottom: 2rem;
+}
+
+.launch-base {
+  width: 200px;
+  height: 20px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 5px;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.base-light {
+  width: 8px;
+  height: 8px;
+  background: #60a5fa;
+  border-radius: 50%;
+  animation: blinkLight 1.5s infinite alternate;
+}
+
+.base-light:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.base-light:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.rocket-container {
+  position: absolute;
+  bottom: 20px;
+  width: 80px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(0);
+  animation: rocketHover 3s ease-in-out infinite;
+}
+
+.rocket-model {
+  position: relative;
+  height: 120px;
+  width: 30px;
+  z-index: 2;
+}
+
+.rocket-body {
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  height: 80px;
+  background: linear-gradient(180deg, #a5b4fc, #818cf8);
+  border-radius: 5px;
+}
+
+.rocket-head {
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: 40px;
+  background: linear-gradient(180deg, #c084fc, #a5b4fc);
+  border-radius: 50% 50% 0 0;
+}
+
+.window {
+  position: absolute;
+  top: 15px;
+  left: 7px;
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  border: 2px solid #818cf8;
+}
+
+.fin {
+  position: absolute;
+  bottom: 0;
+  width: 15px;
+  height: 25px;
+  background: #818cf8;
+}
+
+.fin-left {
+  left: -15px;
+  border-radius: 5px 0 0 5px;
+}
+
+.fin-right {
+  right: -15px;
+  border-radius: 0 5px 5px 0;
+}
+
+.exhaust {
+  position: absolute;
+  bottom: -30px;
+  left: 5px;
+  width: 20px;
+  height: 30px;
+  overflow: hidden;
+}
+
+.flame {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 25px;
+  background: linear-gradient(180deg, #f59e0b, #ef4444);
+  border-radius: 10px 10px 20px 20px;
+  animation: flameFlicker 0.2s infinite alternate;
+}
+
+.smoke {
+  position: absolute;
+  bottom: -10px;
+  width: 30px;
+  left: -5px;
+  height: 15px;
+  background: rgba(203, 213, 225, 0.3);
+  border-radius: 50%;
+  filter: blur(5px);
+  animation: smokeRise 2s infinite;
+}
+
+.launch-pad-light {
+  position: absolute;
+  bottom: -10px;
+  width: 100px;
+  height: 15px;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.3), transparent 70%);
+  border-radius: 50%;
+  animation: lightPulse 2s infinite alternate;
+}
+
+.launch-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.project-card {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #a855f7, #3b82f6);
+  z-index: 1;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.project-header {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.project-header h4 {
+  font-size: 1.3rem;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.project-creator {
+  font-size: 0.9rem;
+  color: #a5b4fc;
+  display: flex;
+  align-items: center;
+}
+
+.project-description {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  min-height: 70px;
+}
+
+.project-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.launch-date, .project-community {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.launch-date svg, .project-community svg {
+  margin-right: 0.5rem;
+  color: #818cf8;
+}
+
+.progress-container {
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #3b82f6);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+.project-status {
+  display: flex;
+  align-items: center;
+  color: #10b981;
+  font-size: 0.9rem;
+}
+
+.project-status svg {
+  margin-right: 0.5rem;
+}
+
+.launch-pad-content .feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+}
+
+.launch-pad-content .feature-list li {
+  color: #cbd5e1;
+  padding: 0.7rem 0 0.7rem 2rem;
+  position: relative;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.launch-pad-content .feature-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+  background-image: linear-gradient(45deg, transparent 45%, #a5b4fc 45%, #a5b4fc 55%, transparent 55%),
+                    linear-gradient(135deg, transparent 45%, #a5b4fc 45%, #a5b4fc 55%, transparent 55%);
+}
+
+.launch-pad-content .feature-list li:hover {
+  color: #e2e8f0;
+  transform: translateX(5px);
+}
+
+.launch-pad-content .feature-list li:hover::before {
+  background-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.launch-pad-content .cosmic-button {
+  display: block;
+  margin: 2.5rem auto 0;
+  padding: 12px 30px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+}
+
+.launch-pad-content .cosmic-button .button-text {
+  position: relative;
+  z-index: 1;
+}
+
+.launch-pad-content .cosmic-button .button-glow {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 120%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  transform: rotate(45deg);
+}
+
+.launch-pad-content .cosmic-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+  background: linear-gradient(90deg, #5046e6, #8344e6);
+}
+
+.launch-pad-content .cosmic-button:hover .button-glow {
+  opacity: 0.3;
+}
+
+@keyframes blinkLight {
+  0% { opacity: 0.4; box-shadow: 0 0 5px rgba(96, 165, 250, 0.5); }
+  100% { opacity: 1; box-shadow: 0 0 15px rgba(96, 165, 250, 0.8); }
+}
+
+@keyframes rocketHover {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes flameFlicker {
+  0% { height: 25px; opacity: 0.8; }
+  100% { height: 20px; opacity: 1; }
+}
+
+@keyframes smokeRise {
+  0% { opacity: 0.5; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-20px) scale(1.5); }
+}
+
+@keyframes lightPulse {
+  0% { opacity: 0.3; transform: scale(1); }
+  100% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes launchRocket {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-300px); }
+}
+
+@media (max-width: 768px) {
+  .launch-pad-section {
+    padding: 3rem 0;
+  }
+  
+  .launch-pad-content {
+    padding: 1.5rem;
+  }
+  
+  .launch-pad-content h3 {
+    font-size: 1.8rem;
+  }
+  
+  .launch-description {
+    font-size: 1rem;
+  }
+  
+  .launch-projects {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .launch-pad-content h3 {
+    font-size: 1.6rem;
+  }
+  
+  .launch-pad-content .feature-list li {
+    font-size: 0.95rem;
+  }
+  
+  .rocket-platform {
+    height: 200px;
+  }
+  
+  .launch-base {
+    width: 150px;
+  }
+  
+  .rocket-model {
+    height: 100px;
+  }
+  
+  .rocket-body {
+    height: 70px;
+    width: 25px;
+  }
+  
+  .rocket-head {
+    width: 25px;
+    height: 30px;
+  }
+} 
