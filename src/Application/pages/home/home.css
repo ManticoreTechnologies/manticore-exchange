@@ -1163,223 +1163,89 @@
     }
 }
 
-/* Cursor light optimization - reduce complexity and add hardware acceleration */
+/* Enhanced Cursor light with space theme colors */
 .cursor-light {
   position: fixed;
   pointer-events: none;
-  width: 250px; /* Further reduced for better performance */
-  height: 250px; /* Further reduced for better performance */
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
-  transform: translate(-50%, -50%) translateZ(0);
+  transform: translate(-50%, -50%);
   mix-blend-mode: screen;
   z-index: 1000;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.4) 15%,
-    rgba(255, 107, 107, 0.2) 40%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(65, 224, 253, 0.5) 15%,
+    rgba(154, 85, 255, 0.3) 30%,
+    rgba(255, 42, 109, 0.2) 45%,
     transparent 70%
   );
   opacity: 0.8;
-  /* Remove transition for smoother direct positioning */
-  filter: blur(8px); /* Further reduced blur radius for better performance */
-  will-change: transform; /* Optimize for transform changes only */
-  backface-visibility: hidden; /* Additional performance optimization */
+  filter: blur(10px);
+  will-change: left, top;
+  left: 50%;
+  top: 50%;
 }
 
-/* Optimize pseudo-elements for better performance */
-.cursor-light::before,
-.cursor-light::after {
-  --flare-rotation: 0deg;
+/* Add a pulsing inner glow */
+.cursor-light::before {
   content: '';
   position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 107, 107, 0.2) 50%,
-    transparent 70%
-  );
-  transform: translateZ(0) rotate(var(--flare-rotation));
-  will-change: transform, opacity;
-  transition: transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
-  backface-visibility: hidden;
-}
-
-.cursor-light::before {
-  width: 60%; /* Reduced size */
-  height: 60%; /* Reduced size */
-  top: 15%;
-  left: 15%;
-  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.95);
+  transform: translate(-50%, -50%);
   filter: blur(5px);
-  animation: flare-rotate 15s linear infinite;
+  animation: cursorPulse 2s infinite alternate ease-in-out;
 }
 
+/* Add a subtle outer ring */
 .cursor-light::after {
-  width: 40%; /* Reduced size */
-  height: 40%; /* Reduced size */
-  top: 35%;
-  left: 35%;
-  opacity: 0.5;
-  filter: blur(3px);
-  animation: flare-rotate 8s linear infinite reverse;
-}
-
-.cursor-light .flare-dots {
+  content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-.cursor-light .flare-dot {
-  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
-  pointer-events: none;
-  will-change: opacity, transform;
+  border: 2px solid rgba(65, 224, 253, 0.2);
+  transform: translate(-50%, -50%);
+  animation: cursorRing 4s infinite linear;
 }
 
-.cursor-light.active {
-  animation: flare-burst 0.5s ease-out forwards;
-}
-
-@keyframes flare-burst {
-  0% {
-    transform: translate(-50%, -50%) translateZ(0) scale(1);
+@keyframes cursorPulse {
+  0% { 
+    width: 40px; 
+    height: 40px; 
     opacity: 0.8;
-    filter: blur(8px);
+    background: rgba(255, 255, 255, 0.95);
+  }
+  100% { 
+    width: 60px; 
+    height: 60px; 
+    opacity: 0.6;
+    background: rgba(65, 224, 253, 0.8);
+  }
+}
+
+@keyframes cursorRing {
+  0% { 
+    transform: translate(-50%, -50%) rotate(0deg); 
+    width: 220px;
+    height: 220px;
   }
   50% {
-    transform: translate(-50%, -50%) translateZ(0) scale(1.2);
-    opacity: 0.9;
-    filter: blur(12px);
+    width: 230px;
+    height: 230px;
   }
-  100% {
-    transform: translate(-50%, -50%) translateZ(0) scale(1);
-    opacity: 0.8;
-    filter: blur(8px);
-  }
-}
-
-@keyframes flare-pulse-small {
-  0% {
-    opacity: 0.3;
-    transform: scale(0.9) translateZ(0);
-  }
-  100% {
-    opacity: 0.6;
-    transform: scale(1.1) translateZ(0);
-  }
-}
-
-@keyframes flare-rotate {
-  0% {
-    transform: rotate(0deg) translateZ(0);
-  }
-  100% {
-    transform: rotate(360deg) translateZ(0);
-  }
-}
-
-/* Smoother animation for pulse effect */
-@keyframes pulse-light {
-  0% {
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-    opacity: 0.7;
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 107, 107, 0.7);
-    opacity: 0.9;
-  }
-  100% {
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-    opacity: 0.7;
-  }
-}
-
-/* Optimize Hero background wrapper for better performance */
-.hero-background-wrapper::before {
-  will-change: background-position;
-  /* Reduce the complexity of the gradient */
-  background: radial-gradient(
-    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 107, 107, 0.15),
-    rgba(157, 78, 221, 0.08),
-    rgba(0, 0, 0, 0)
-  );
-  /* Reduce animation duration for better performance */
-  animation: bg-shift 8s infinite alternate ease-in-out;
-}
-
-/* Optimize background wrapper after pseudo-element */
-.hero-background-wrapper::after {
-  will-change: opacity, background-position;
-  /* Reduce the complexity of the gradient */
-  background: radial-gradient(
-    circle at var(--mouse-x, 50%) var(--mouse-y, 30%),
-    rgba(255, 107, 107, 0.1),
-    rgba(0, 0, 0, 0)
-  );
-  /* Reduce animation duration for better performance */
-  animation: glow-shift 10s infinite alternate ease-in-out;
-}
-
-/* Optimize media queries for better mobile performance */
-@media (max-width: 768px) {
-  .cursor-light {
-    width: 200px;
-    height: 200px;
-    opacity: 0.6;
-    filter: blur(8px);
-  }
-  
-  .cursor-light::before,
-  .cursor-light::after {
-    width: 80px;
-    height: 1px;
-  }
-  
-  /* Reduce animation complexity on mobile */
-  @keyframes flare-burst {
-    0% {
-      transform: translate(-50%, -50%) scale(1) translateZ(0);
-      filter: blur(5px);
-    }
-    100% {
-      transform: translate(-50%, -50%) scale(1.1) translateZ(0);
-      filter: blur(10px);
-      opacity: 0.3;
-    }
-  }
-}
-
-/* Fix the missing keyframes */
-@keyframes bg-shift {
-  0% {
-    opacity: 0.5;
-    background-position: 0% 0%;
-  }
-  100% {
-    opacity: 0.7;
-    background-position: 100% 100%;
-  }
-}
-
-@keyframes glow-shift {
-  0% {
-    filter: blur(40px) brightness(1);
-    transform: scale(0.95);
-  }
-  100% {
-    filter: blur(30px) brightness(1.2);
-    transform: scale(1.05);
+  100% { 
+    transform: translate(-50%, -50%) rotate(360deg); 
+    width: 220px;
+    height: 220px;
   }
 }
 

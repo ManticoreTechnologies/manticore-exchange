@@ -75,6 +75,12 @@ const Home: React.FC = () => {
   
   // Cursor animation effect
   useEffect(() => {
+    // Initialize cursor in the center of screen
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    setTargetCursorPosition({ x: centerX, y: centerY });
+    setCursorPosition({ x: centerX, y: centerY });
+    
     // Handle cursor effects
     const handleMouseMove = (e: MouseEvent) => {
       setTargetCursorPosition({ x: e.clientX, y: e.clientY });
@@ -85,9 +91,22 @@ const Home: React.FC = () => {
       setIsAnimating(!document.hidden);
     };
     
+    // Handle window resize
+    const handleResize = () => {
+      // Ensure cursor is in visible area after resize
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      setTargetCursorPosition(prev => ({
+        x: Math.min(Math.max(prev.x, 0), viewportWidth),
+        y: Math.min(Math.max(prev.y, 0), viewportHeight)
+      }));
+    };
+    
     // Set up event listeners
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('resize', handleResize);
     
     // Animation frame for cursor movement
     let animationFrame: number;
@@ -102,22 +121,25 @@ const Home: React.FC = () => {
       }));
       
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${cursorPosition.x}px, ${cursorPosition.y}px) translateZ(0)`;
+        // Use translate3d for hardware acceleration and ensure cursor is on screen
+        cursorRef.current.style.left = `${cursorPosition.x}px`;
+        cursorRef.current.style.top = `${cursorPosition.y}px`;
       }
       
       animationFrame = requestAnimationFrame(animateCursor);
     };
     
-    // Start the animation
+    // Start animation
     animationFrame = requestAnimationFrame(animateCursor);
     
-    // Clean up event listeners and animations
+    // Clean up
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrame);
     };
-  }, [isAnimating, targetCursorPosition, cursorPosition]);
+  }, [isAnimating]);
   
   // Initialize IntersectionObserver for animations
   useEffect(() => {
